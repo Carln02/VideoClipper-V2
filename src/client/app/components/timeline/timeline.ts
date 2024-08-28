@@ -26,7 +26,6 @@ import {ClipTimelineEntry} from "./timeline.types";
 import {PanelThumb} from "../basicComponents/panelThumb/panelThumb";
 import {Direction, PanelThumbProperties} from "../basicComponents/panelThumb/panelThumb.types";
 import {randomColor} from "../../../utils/random";
-import {YWrappedObject} from "../../../../ywrap/ywrap.types";
 import {SyncedComponent} from "../../abstract/syncedComponent/syncedComponent";
 import {SyncedType} from "../../abstract/syncedComponent/syncedComponent.types";
 
@@ -59,7 +58,7 @@ export class Timeline extends SyncedComponent<SyncedType<SyncedClip[]>> {
         this.initUI(properties);
         this.initEvents();
 
-        this.data = data as YWrappedObject<SyncedClip[]>;
+        this.data = data as SyncedType<SyncedClip[]>;
     }
 
     private initUI(properties: PanelThumbProperties) {

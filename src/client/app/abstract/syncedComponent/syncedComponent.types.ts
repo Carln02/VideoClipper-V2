@@ -1,4 +1,4 @@
-import {YWrappedObject} from "../../../../ywrap/ywrap.types";
+import {YWrappedObject} from "../../../../yWrap/yWrapper/yWrapper.types";
 
 type ElementTypeFromArray<ElementType> = ElementType extends (infer EntryType)[] ? (EntryType | ElementType) : ElementType;
 

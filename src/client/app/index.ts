@@ -12,7 +12,6 @@ import "./main.css";
 import "./styles/input.css";
 import "./styles/markingMenu.css";
 import {get_doc} from "../sync/datastore";
-import {set_observable} from "../../ywrap/internals/utils";
 
 turbofy();
 

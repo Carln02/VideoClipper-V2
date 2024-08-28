@@ -1,5 +1,4 @@
-import * as core from "./plugins/core"
-import * as blob from "./plugins/blob"
+
 
 //  When changes are observed on a binding node, YWrap will attempt to call the camel-cased
 //  "on<field><action>" function on all objects this node is currently bound to, eg. calling onPositionChanged
@@ -19,19 +18,9 @@ import * as blob from "./plugins/blob"
 
 //  TODO document section
 
-export let load_plugins = [ core, blob ];
-
-
-
-//  ===============
-//  CHANGE BATCHING
-//  ===============
-
-//  TODO document section
-
-export let batch_changes_ms = 100;
-export let batch_changes_rolling = true;
-
+import {objectHandler} from "./yHandlers/types/objectHandler";
+import {arrayHandler} from "./yHandlers/types/arrayHandler";
+import {blobHandler} from "./yHandlers/types/blobHandler";
 
 
 //  ==============
@@ -48,8 +37,6 @@ export let batch_changes_rolling = true;
 //  Keep in mind the callback's <field> component will always be set to the bound class's direct subfield that
 //  contains the changes, with the specifically affected node passed as the callback's first argument.
 
-export let subtree_events = true;
-
 
 
 //  =====================
@@ -64,41 +51,48 @@ export let subtree_events = true;
 //  The "field_specific" parameter will tell YWrap whether it should try the field specific or the catch-all version of the
 //  callback in this case, while the "action" parameter will simply specify the <action> component of said callback.
 
-let added =		{ action: "Added",		arguments: change => [change.new] 				};
-let updated =	{ action: "Updated",	arguments: change => [change.new, change.old]	};
-let deleted =	{ action: "Deleted",	arguments: change => [change.old]				};
-let changed =	{ action: "Changed",	arguments: change => [change.new, change.local]	};
-let init = 		{ action: "Init",		arguments: change => [change.new]				};
+const added =		{ action: "Added",		arguments: change => [change.new] 				};
+const updated =	{ action: "Updated",	arguments: change => [change.new, change.old]	};
+const deleted =	{ action: "Deleted",	arguments: change => [change.old]				};
+const changed =	{ action: "Changed",	arguments: change => [change.new, change.local]	};
+const init = 		{ action: "Init",		arguments: change => [change.new]				};
 
-export let events = {
-	add: [
-		{ ...added,		fallback: false },
-		{ ...updated,	fallback: false },
-		{ ...added,		fallback: true },
-		{ ...updated,	fallback: true }
-	],
-	update: [
-		{ ...updated,	fallback: false },
-		{ ...updated,	fallback: true }
-	],
-	delete: [
-		{ ...deleted,	fallback: false },
-		{ ...updated,	fallback: false },
-		{ ...deleted,	fallback: true },
-		{ ...updated,	fallback: true }
-	],
-	generic: [
-		{ ...changed,	fallback: false },
-		{ ...changed,	fallback: true }
-	],
-	init: [
-		{ ...init,		fallback: false },
-		{ ...init,		fallback: true },
-		{ ...added,		fallback: false },
-		{ ...updated,	fallback: false },
-		{ ...added,		fallback: true },
-		{ ...updated,	fallback: true }
-	]
+export const config = {
+	handlers: [ objectHandler, arrayHandler, blobHandler ],
+
+	batch_changes_ms: 100,
+	batch_changes_rolling: true,
+
+	subtree_events: true,
+
+	events: {
+		add: [
+			{ ...added,		fallback: false },
+			{ ...updated,	fallback: false },
+			{ ...added,		fallback: true },
+			{ ...updated,	fallback: true }
+		],
+		update: [
+			{ ...updated,	fallback: false },
+			{ ...updated,	fallback: true }
+		],
+		delete: [
+			{ ...deleted,	fallback: false },
+			{ ...updated,	fallback: false },
+			{ ...deleted,	fallback: true },
+			{ ...updated,	fallback: true }
+		],
+		generic: [
+			{ ...changed,	fallback: false },
+			{ ...changed,	fallback: true }
+		],
+		init: [
+			{ ...init,		fallback: false },
+			{ ...init,		fallback: true },
+			{ ...added,		fallback: false },
+			{ ...updated,	fallback: false },
+			{ ...added,		fallback: true },
+			{ ...updated,	fallback: true }
+		]
+	}
 }
-
-

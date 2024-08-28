@@ -5,7 +5,7 @@ import { IndexeddbPersistence } from 'y-indexeddb'
 import * as crypto from "./crypto"
 import WebsocketProvider from "./websocket_manager"
 
-import wrap from "../../ywrap/ywrap"
+import wrap from "../../yWrap/yWrap";
 import {YWrappedObject} from "../../ywrap/ywrap.types";
 
 
