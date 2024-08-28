@@ -1,0 +1,5 @@
+Just to re-explain (because I realized wasn't clear and made an error previously):
+
+onFieldUpdated (resp. onUpdated, with Field appended as the first path element) is called everytime there were some changes on Field (or it's subtree, if enabled). The path array will point you to wherever a new value was assigned in your JS, so typically where you would see the "equals" sign, or eg. the specific element that changed when using Array.splice. The old and new values will be the values under that path. This is called for every value that changed in such a way.
+
+onFieldChanged (resp. onChanged) is called everytime there were some changes on Field (or it's subtree, if enabled). The path array will always be empty (if using onFieldChanged) or just contain the Field name (if using onChanged). The new value will be the whole new value of the specified Field. This is called after every other callback. In case you receive a batch of changes from a remote peer, this would only be called once even if there were several updates in the subtree, making it more efficient if you're only interested in Field's whole new value.

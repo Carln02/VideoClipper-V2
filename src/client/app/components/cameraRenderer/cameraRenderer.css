@@ -1,0 +1,7 @@
+vc-camera-renderer > #snapshot-effect-div {
+    display: none;
+
+    background-color: black;
+    opacity: 0;
+    transition: opacity 0.05s ease-out;
+}

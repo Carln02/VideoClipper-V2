@@ -1,0 +1,29 @@
+vc-toolbar {
+    display: flex;
+    gap: var(--base-padding);
+
+    position: fixed;
+
+    padding: calc(1.5 * var(--base-padding));
+    border-radius: var(--card-radius);
+    border: var(--border-style);
+    background-color: white;
+
+    z-index: 2;
+}
+
+vc-toolbar.bottom-toolbar {
+    flex-direction: row;
+
+    bottom: calc(2 * var(--base-padding));
+    left: 15vw;
+    right: 15vw;
+}
+
+vc-toolbar.left-toolbar {
+    flex-direction: column;
+
+    left: calc(2 * var(--base-padding));
+    top: 50%;
+    transform: translate(0, -50%);
+}

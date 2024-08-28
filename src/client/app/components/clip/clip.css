@@ -1,0 +1,87 @@
+vc-clip {
+    position: relative;
+    display: block;
+    max-height: 100%;
+}
+
+vc-clip .vc-clip-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 0.35em;
+    overflow: hidden;
+}
+
+vc-clip.hidden-clip .vc-clip-content {
+    background: url("../../../../../public/assets/misc/DiagonalStripes.png") repeat;
+    background-size: 200px;
+}
+
+vc-clip.selected {
+    height: calc(100% - 0.5em);
+    z-index: 1;
+}
+
+vc-clip.selected .vc-clip-content {
+    border-radius: 0.35em;
+}
+
+vc-clip.selected .vc-clip-content {
+    border: 0.3em solid #fff4f4;
+}
+
+vc-clip .clip-handle-left, vc-clip .clip-handle-right {
+    position: absolute;
+    top: 0;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #fff4f4;
+    border: 0.3em solid #fff4f4;
+}
+
+vc-clip.selected .clip-handle-left {
+    right: calc(100% - 0.5em);
+    padding-right: -0.5em;
+    border-radius: 0.75em 0 0 0.75em;
+    border-left-width: 0;
+}
+
+vc-clip.selected .clip-handle-right {
+    left: calc(100% - 0.5em);
+    padding-left: 0.5em;
+    border-radius: 0 0.75em 0.75em 0;
+    border-right-width: 0;
+}
+
+vc-clip turbo-icon {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+vc-clip .thumbnail {
+    position: relative;
+    margin: 0.3em;
+    max-width: calc(100% - 0.6em);
+    height: calc(100% - 0.6em);
+    aspect-ratio: 1.33;
+
+    object-fit: cover;
+    border-radius: 0.1em;
+}
+
+vc-clip-renderer#snapshot-renderer {
+    z-index: -1;
+    width: 100vw;
+    aspect-ratio: 1.33;
+
+    pointer-events: none;
+    position: absolute;
+    bottom: 99.5%;
+
+    border: none;
+}

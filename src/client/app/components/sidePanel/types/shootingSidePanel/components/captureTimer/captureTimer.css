@@ -1,0 +1,16 @@
+vc-capture-timer {
+    position: absolute;
+    top: 1em;
+    left: 0;
+    right: 0;
+
+    display: flex;
+    justify-content: center;
+}
+
+vc-capture-timer > div {
+    padding: 0.6em 0.8em;
+    background-color: red;
+    border-radius: 5em;
+    color: white;
+}

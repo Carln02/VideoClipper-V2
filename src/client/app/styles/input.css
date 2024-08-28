@@ -1,0 +1,26 @@
+turbo-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+turbo-input > label {
+}
+
+turbo-input > turbo-rich-element {
+    display: flex;
+    flex-direction: row;
+
+    background-color: white;
+    border: 1px solid lightgray;
+    padding: 0.5em;
+    color: black;
+}
+
+turbo-input input {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    width: 100%;
+}

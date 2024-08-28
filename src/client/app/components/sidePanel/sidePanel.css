@@ -1,0 +1,33 @@
+camera-side-panel {
+    position: absolute;
+    height: calc(100% - 4em);
+    right: 0;
+
+    padding: 2em;
+
+    background-color: rgba(0, 0, 0, 0.3);
+    transition: width 0.3s ease-out;
+}
+
+camera-side-panel .side-panel-buttons-div {
+    position: absolute;
+    right: 2em;
+    z-index: 2;
+
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    padding: 0.7em 1em;
+    border-radius: 10em;
+    background-color: rgba(255, 255, 255, 0.1);
+
+}
+
+camera-side-panel .side-panel-buttons-div .icon {
+    width: 2em;
+    height: 2em;
+}
+
+camera-side-panel .side-panel-buttons-div .icon svg {
+    fill: rgba(255, 255, 255, 0.7);
+}

@@ -1,0 +1,80 @@
+metadata-drawer {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    padding: 1em;
+    background-color: white;
+    border-radius: 6px;
+}
+
+.metadata-drawer-parent {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 100%;
+    overflow: hidden;
+}
+
+metadata-drawer > panel-thumb.bottom-thumb {
+    right: unset;
+    transform: unset;
+    left: 1em;
+}
+
+metadata-drawer > animated-content-switch {
+    min-width: 100%;
+}
+
+metadata-drawer .metadata-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+}
+
+metadata-drawer turbo-input {
+    display: flex;
+    flex-direction: row;
+    gap: 0.6em;
+    overflow: visible;
+    align-items: center;
+}
+
+metadata-drawer turbo-input label {
+    font-weight: 600;
+    font-size: 0.9em;
+    color: #727377;
+    white-space:nowrap;
+}
+
+metadata-drawer turbo-input turbo-rich-element {
+    padding: 0;
+    border: none;
+}
+
+metadata-drawer .separator {
+    height: 1em;
+}
+
+metadata-drawer turbo-input input {
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
+metadata-drawer turbo-input div {
+    padding: 0;
+    border: none;
+}
+
+textarea {
+    resize: none;
+    border: none;
+    padding: 0;
+    max-height: 8em;
+    min-height: 1em;
+    min-width: 16em;
+}

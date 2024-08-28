@@ -1,0 +1,15 @@
+vc-flow {
+    position: absolute;
+    transform: translate3d(-50%, -50%, 0);
+}
+
+vc-flow svg {
+    image-rendering: crisp-edges;
+    pointer-events: none;
+}
+
+vc-flow path {
+    fill: none;
+    stroke: #727377;
+    stroke-width: 2;
+}

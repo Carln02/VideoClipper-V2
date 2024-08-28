@@ -1,0 +1,44 @@
+vc-card {
+    position: absolute;
+
+    width: 13.3em;
+    height: 10em;
+    background-color: antiquewhite;
+}
+
+vc-card .vc-renderer {
+    border: none;
+}
+
+vc-card > .timeline-parent {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+
+    min-height: 15em; /* TODO CHANGE LATER */
+    width: 40px;
+    overflow: hidden;
+}
+
+vc-card > .card-title {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+
+    top: -2em;
+    left: 0;
+    right: 0;
+
+    padding: 0;
+}
+
+vc-card > .card-title > turbo-input > turbo-rich-element {
+    padding: 0;
+    margin: 0;
+
+    background-color: transparent;
+    border: none;
+    color: black;
+}

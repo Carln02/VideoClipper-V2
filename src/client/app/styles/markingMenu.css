@@ -1,0 +1,36 @@
+turbo-marking-menu > turbo-select-entry {
+    position: absolute;
+    height: 1.5rem;
+    opacity: 0;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.4rem;
+
+    background-color: pink;
+    /*border: var(--overlay-stroke) 1px solid;*/
+
+    transform: translate(-50%, -50%);
+
+    transition: scale 0.1s ease-out;
+    /*box-shadow: var(--default-shadow);*/
+}
+
+turbo-marking-menu > turbo-select-entry:hover {
+    scale: 1.1;
+}
+
+turbo-marking-menu > turbo-select-entry img {
+    height: 80%;
+    aspect-ratio: 1;
+}
+
+turbo-marking-menu > turbo-select-entry p {
+    margin: 0 0 0 6px;
+    display: inline-block;
+    flex-grow: 1;
+    white-space: nowrap;
+}

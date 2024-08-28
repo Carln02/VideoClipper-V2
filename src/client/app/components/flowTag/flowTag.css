@@ -1,0 +1,9 @@
+vc-flow-tag {
+    position: absolute;
+    right: 100%;
+
+    top: 20px;
+    background-color: cyan;
+    padding: 1em;
+    border-radius: 6px 0 0 6px;
+}
