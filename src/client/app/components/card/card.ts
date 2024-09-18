@@ -1,21 +1,21 @@
 import {ClickMode, DefaultEventName, define, div, Point, TurboEvent, TurboEventName, TurboInput} from "turbodombuilder";
 import "./card.css";
-import {SyncedCard, SyncedCardData} from "./card.types";
+import {SyncedCard} from "./card.types";
 import {Timeline} from "../timeline/timeline";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {BranchingNode} from "../branchingNode/branchingNode";
 import {formatMmSs} from "../../../utils/time";
 import {Direction} from "../basicComponents/panelThumb/panelThumb.types";
-import {SyncedType, YWrapObserver} from "../../abstract/syncedComponent/syncedComponent.types";
 import {SyncedClipData} from "../clip/clip.types";
 import {Clip} from "../clip/clip";
 import {MetadataDrawer} from "../metadataDrawer/metadataDrawer";
+import {proxied, YProxyEventName} from "../../../../yWrap-v3/yProxy/yProxy.types";
 
 /**
  * @description Class representing a card
  */
 @define("vc-card")
-export class Card extends BranchingNode<SyncedCard> implements YWrapObserver<SyncedCard> {
+export class Card extends BranchingNode<SyncedCard> {
     public readonly renderer: ClipRenderer;
 
     private readonly metadataDrawerParent: HTMLDivElement;
@@ -65,6 +65,7 @@ export class Card extends BranchingNode<SyncedCard> implements YWrapObserver<Syn
         this.renderer.cardData = this.data;
 
         this.addEventListener(DefaultEventName.clickStart, () => this.bringToFront());
+        this.setupCallbacks();
     }
 
     /**
@@ -75,16 +76,13 @@ export class Card extends BranchingNode<SyncedCard> implements YWrapObserver<Syn
      * default title to the card as "Card - [counter]," where counter is an incremented shared integer. It also sets
      * the metadata and clips array as observable, so components that would attach to one of the latter will be able
      * to observe them.
-     * @param {SyncedCardData} data - The data to create the card from.
+     * @param {SyncedCard} data - The data to create the card from.
      * @returns {Promise<string>} - The ID of the created card in root.cards.
      */
-    public static async create(data: SyncedCardData): Promise<string> {
+    public static async create(data: SyncedCard): Promise<string> {
         this.root.counters.cards++;
-        data.title = "Card - " + this.root.counters.cards;
-        const id = await super.createInObject(data, this.root.cards as SyncedType<Record<string, SyncedCard>>);
-        this.root.cards[id].metadata?.set_observable();
-        this.root.cards[id].syncedClips?.set_observable();
-        return id;
+        data.title = proxied("Card - " + this.root.counters.cards);
+        return await super.createInObject(data, this.root.cards);
     }
 
     /**
@@ -94,9 +92,13 @@ export class Card extends BranchingNode<SyncedCard> implements YWrapObserver<Syn
      * @returns {Card[]} - Array containing all the cards in the document.
      */
     public static getAll(): Card[] {
-        return Object.values(this.root.cards)
-            .flatMap(cardData => cardData.get_observers())
-            .filter(observer => observer instanceof Card);
+        return Object.values(this.root.cards.value)
+            .flatMap(cardData => cardData.getBoundObjectsOfType(Card));
+    }
+
+    protected setupCallbacks(): void {
+        super.setupCallbacks();
+        this.data.title.bind(YProxyEventName.updated, (value: string) => this.titleElement.value = value, this);
     }
 
     /**

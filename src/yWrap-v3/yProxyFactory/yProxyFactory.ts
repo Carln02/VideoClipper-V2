@@ -26,18 +26,19 @@ export class YProxyFactory {
             constructor: YMapProxy,
         });
 
-        this.root = new YRootProxy(root, this);
+        const rawRoot = new YRootProxy(root, this);
+        this.root = rawRoot.generateProxy();
     }
 
     public add(...entries: YProxyHandler[]) {
         entries.forEach(entry => this.constructors.push(entry));
     }
 
-    public toYjs(data: unknown): YValue {
+    public toYjs(data: unknown, key: string | number, parent: YProxy): YValue {
         if (data instanceof YAbstractType) return data as YValue;
 
         for (const constructor of this.constructors) {
-            if (constructor.canHandle(data, this)) return constructor.toYjs(data, this);
+            if (constructor.canHandle(data, this)) return constructor.toYjs(data, key, parent, this);
         }
 
         return data as YValue;

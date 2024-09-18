@@ -85,7 +85,7 @@ export class SelectionTool extends Tool {
             this.insertIndicatorAfterClosestClip(e);
         } else if (this.context.view == ContextView.canvas && this.currentTarget instanceof BranchingNode) {
             this.currentTarget.move(e.scaledDeltaPosition);
-            FlowManagementHandler.updateFlowsAfterMovingNode(this.currentTarget.id, e.scaledDeltaPosition);
+            //TODO FlowManagementHandler.updateFlowsAfterMovingNode(this.currentTarget.id, e.scaledDeltaPosition);
         } else if (this.context.view == ContextView.camera && this.currentTarget instanceof TextElement) {
             this.currentTarget.translateBy(e.scaledDeltaPosition);
             // this.context.getAllOfType(TextElement).forEach(entry => {

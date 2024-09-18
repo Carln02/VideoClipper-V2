@@ -1,8 +1,9 @@
 import {Popup} from "../../../components/popup/popup";
 import * as logman from "../../../../sync/logman";
 import * as index from "../../../index";
-import {get_doc} from "../../../../sync/datastore";
 import {DocumentData} from "../../canvas/canvas.types";
+import {documentRoot} from "../../../../sync/datastore";
+import {YRootProxy} from "../../../../../yWrap-v3/yProxy/types/yRootProxy";
 
 let popup = null;
 
@@ -26,13 +27,12 @@ function create(name) {
 
     logman.connect_project(id);
 
-    const doc: DocumentData = get_doc()
-    doc.set_observable();
-    doc.cards = {};
-    doc.branchingNodes = {};
-    doc.flows = {};
-    doc.media = {};
-    doc.counters = {cards: 0, flows: 0};
+    // const doc: YRootProxy<DocumentData> & DocumentData = get_docV3()
+    // doc.cards = {};
+    // doc.branchingNodes = {};
+    // doc.flows = {};
+    // doc.media = {};
+    // doc.counters = {cards: 0, flows: 0};
 
     index.show_project();
 }

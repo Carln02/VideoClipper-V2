@@ -11,7 +11,7 @@ import {ContextView} from "./managers/contextManager/contextManager.types";
 import "./main.css";
 import "./styles/input.css";
 import "./styles/markingMenu.css";
-import {get_doc} from "../sync/datastore";
+import {documentRoot} from "../sync/datastore";
 
 turbofy();
 
@@ -57,9 +57,9 @@ export function show_project() {
     new ToolManager();
     new CursorManager();
 
-    let doc = get_doc();
+    const doc3 = documentRoot();
 
-    setTimeout(() => { contents = new Canvas(doc) }, 100)
+    setTimeout(() => { contents = new Canvas(doc3 as any) }, 1000)
 }
 
 //  Populate page

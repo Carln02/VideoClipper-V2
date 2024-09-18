@@ -51,7 +51,7 @@ export class ClipRenderer extends Renderer {
         if (this.cardData == value) return;
         this.cardData?.unobserve(this);
         this._cardData = value;
-        value.observe(this);
+        // value.observe(this);
     }
 
     public get clipData(): SyncedClip {

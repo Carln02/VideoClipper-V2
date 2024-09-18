@@ -4,31 +4,54 @@ import {YValue} from "../yProxy.types";
 import {YProxyFactory} from "../../yProxyFactory/yProxyFactory";
 
 export class YMapProxy<Type extends object = object> extends YProxy<YMap, Type> {
-    public static toYjs(object: object, factory: YProxyFactory): YMap {
-        const yMap = new YMap();
+    public static toYjs(object: object, key: string, parent: YProxy, factory: YProxyFactory): YMap {
+        if (object instanceof YMap) return object;
+        if (object instanceof YAbstractType) throw new Error("Converting a non-compatible Yjs type to YMap.");
 
-        Object.entries(object).forEach(([key, value]) => {
-            if (typeof value === "object" && value !== null && !(value instanceof YAbstractType)) {
-                // Recursively convert nested objects or arrays to YMaps or YArrays
-                yMap.set(key, factory.toYjs(value));
-            } else {
-                // Otherwise, set primitive values directly
-                yMap.set(key, value);
-            }
-        });
+        const yMap = new YMap();
+        if (parent) (parent as YMapProxy).setByKey(key, yMap);
+
+        const yMapProxy: YProxy = (parent as YMapProxy).getCachedProxy(key);
+        Object.entries(object).forEach(([key, value]) => factory.toYjs(value, key, yMapProxy));
 
         return yMap;
     }
 
-    public static canHandle(data: unknown, factory: YProxyFactory): boolean {
-        return typeof data == "object";
+    public static canHandle(data: unknown): boolean {
+        return (data !== null && typeof data === "object" && !(data instanceof YAbstractType)) || (data instanceof YMap);
     }
+
+    public diffAndUpdate(data: Type): void {
+        //TODO MAKE ALSO DIFF AND UPDATE FOR PENDING CHANGE (SO WHEN SETTING A BIG BLOCK OF DATA, EACH HAS ITS OWN
+        // TIMER. AND ALSO STORE IN VAR OLD VALUE FOR CALLBACKS
+        if (typeof data !== "object" || data === null) throw new Error("Data to update must be an object.");
+
+        const yMap = this.yData as YMap;
+        const keysToDelete = new Set<string>(yMap.keys());
+
+        for (const [key, newValue] of Object.entries(data)) {
+            keysToDelete.delete(key);
+
+            const currentYValue = yMap.get(key);
+            if (!currentYValue) {
+                this.factory.toYjs(newValue, key, this);
+            } else {
+                const childProxy = this.getCachedProxy(key);
+                if (childProxy) (childProxy as YMapProxy).diffAndUpdate(newValue);
+                else this.factory.toYjs(newValue, key, this);
+            }
+        }
+
+        for (const key of keysToDelete) yMap.delete(key);
+    }
+
 
     protected getByKey(key: string | number): unknown {
-        return this.yData.get(key.toString());
+        if (!this.yData) return undefined;
+        return this.yData.getForced(key.toString());
     }
 
-    protected setByKey(key: string | number, value: YValue): boolean {
+    public setByKey(key: string | number, value: YValue): boolean {
         this.yData.set(key.toString(), value);
         return true;
     }

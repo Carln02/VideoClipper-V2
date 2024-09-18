@@ -18,43 +18,43 @@ declare module "yjs" {
     }
 }
 
-// Object.defineProperties(YMap.prototype, {
-//     getForced: {
-//         value: function (key: string) {
-//             return this.doc == null ? this._prelimContent.get(key) : this.get(key);
-//         }
-//     },
-//     hasForced: {
-//         value: function (key: string) {
-//             return this.doc == null ? this._prelimContent.has(key) : this.has(key);
-//         }
-//     },
-//     entriesForced: {
-//         value: function () {
-//             return this.doc == null ? this._prelimContent : this.entries();
-//         }
-//     }
-// });
-//
-// Object.defineProperties(YArray.prototype, {
-//     getForced: {
-//         value: function (index: number) {
-//             return this.doc == null ? this._prelimContent[index] : this.get(index);
-//         }
-//     },
-//     arrayForced: {
-//         value: function () {
-//             return this.doc == null ? this._prelimContent : this.toArray();
-//         }
-//     }
-// });
-//
-// Object.defineProperties(YAbstractType.prototype, {
-//     parentForced: {
-//         value: function () {
-//             return this.doc == null ? this._prelimParent : this.parent;
-//         }
-//     }
-// });
+Object.defineProperties(YMap.prototype, {
+    getForced: {
+        value: function (key: string) {
+            return this.doc == null ? this._prelimContent.get(key) : this.get(key);
+        }
+    },
+    hasForced: {
+        value: function (key: string) {
+            return this.doc == null ? this._prelimContent.has(key) : this.has(key);
+        }
+    },
+    entriesForced: {
+        value: function () {
+            return this.doc == null ? this._prelimContent : this.entries();
+        }
+    }
+});
+
+Object.defineProperties(YArray.prototype, {
+    getForced: {
+        value: function (index: number) {
+            return this.doc == null ? this._prelimContent[index] : this.get(index);
+        }
+    },
+    arrayForced: {
+        value: function () {
+            return this.doc == null ? this._prelimContent : this.toArray();
+        }
+    }
+});
+
+Object.defineProperties(YAbstractType.prototype, {
+    parentForced: {
+        value: function () {
+            return this.doc == null ? this._prelimParent : this.parent;
+        }
+    }
+});
 
 export {YMap, YArray, YAbstractType, YText, YDoc};

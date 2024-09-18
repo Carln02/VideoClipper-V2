@@ -2,16 +2,13 @@ import {SyncedCard} from "../../components/card/card.types";
 import {SyncedFlow} from "../../components/flow/flow.types";
 import {SyncedMedia} from "../camera/manager/captureManager/captureManager.types";
 import {SyncedBranchingNode} from "../../components/branchingNode/branchingNode.types";
-import {SyncedType} from "../../abstract/syncedComponent/syncedComponent.types";
+import {YProxied, YNumber, YRecord} from "../../../../yWrap-v3/yProxy/yProxy.types";
 
-export type DocumentData = SyncedType & {
-    cards?: Record<string, SyncedCard>,
-    branchingNodes?: Record<string, SyncedBranchingNode>,
-    flows?: Record<string, SyncedFlow>,
-    media?: Record<string, SyncedMedia>,
+export type DocumentData = YProxied<{
+    cards?: YRecord<string, SyncedCard>,
+    branchingNodes?: YRecord<string, SyncedBranchingNode>,
+    flows?: YRecord<string, SyncedFlow>,
+    media?: YRecord<string, SyncedMedia>,
 
-    counters?: {
-        cards: number,
-        flows: number,
-    }
-}
+    counters?: YProxied<{ cards: YNumber, flows: YNumber }>
+}>

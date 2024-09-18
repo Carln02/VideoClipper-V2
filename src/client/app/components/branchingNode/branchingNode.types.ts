@@ -1,8 +1,5 @@
-import {SyncedType} from "../../abstract/syncedComponent/syncedComponent.types";
-import {Coordinate} from "turbodombuilder";
+import {YCoordinate, YProxied} from "../../../../yWrap-v3/yProxy/yProxy.types";
 
-export type SyncedBranchingNodeData = {
-    origin?: Coordinate
-};
-
-export type SyncedBranchingNode = SyncedType<SyncedBranchingNodeData>;
+export type SyncedBranchingNode = YProxied<{
+    origin?: YCoordinate
+}>

@@ -1,7 +1,8 @@
 import {TurboElement, TurboProperties} from "turbodombuilder";
-import {generate_unique_id, get_doc} from "../../../sync/datastore";
+import {generate_unique_id, documentRoot} from "../../../sync/datastore";
 import {DocumentData} from "../../views/canvas/canvas.types";
-import {SyncedArray, SyncedType} from "./syncedComponent.types";
+import {SyncedType} from "./syncedComponent.types";
+import {YProxied, YProxiedArray} from "../../../../yWrap-v3/yProxy/yProxy.types";
 
 /**
  * @class SyncedComponent
@@ -11,7 +12,7 @@ import {SyncedArray, SyncedType} from "./syncedComponent.types";
  * include defined callbacks that will be triggered by Thibaut's Ywrapper accordingly when the attached data changes.
  * @template {SyncedType} DataType
  */
-export abstract class SyncedComponent<DataType extends SyncedType = SyncedType> extends TurboElement {
+export abstract class SyncedComponent<DataType extends YProxied = YProxied> extends TurboElement {
     private _data: DataType;
     private _selected: boolean = false;
 
@@ -19,12 +20,14 @@ export abstract class SyncedComponent<DataType extends SyncedType = SyncedType> 
         super(properties);
     }
 
+    protected abstract setupCallbacks(): void;
+
     /**
      * @static
      * @description The root of the Yjs document.
      */
     public static get root(): DocumentData {
-        return get_doc() as DocumentData;
+        return documentRoot();
     }
 
     /**
@@ -38,10 +41,9 @@ export abstract class SyncedComponent<DataType extends SyncedType = SyncedType> 
      * document.
      * @returns {Promise<string>} - The ID of the data in its parent.
      */
-    public static async createInObject(data: object, parentData: SyncedType): Promise<string> {
+    public static async createInObject(data: object, parentData: YProxied): Promise<string> {
         const id = await generate_unique_id(parentData) as string;
         parentData[id] = data;
-        parentData[id].set_observable();
         return id;
     }
 
@@ -56,15 +58,14 @@ export abstract class SyncedComponent<DataType extends SyncedType = SyncedType> 
      * is pushed at the end of the array.
      * @returns {number} - The index of the data in its parent.
      */
-    public static createInArray(data: object, parentData: SyncedArray, index?: number): number {
+    public static createInArray(data: object, parentData: YProxiedArray, index?: number): number {
         if (index == undefined || index > parentData.length) {
             index = parentData.length;
             parentData.push(data as SyncedType);
         } else {
             if (index < 0) index = 0;
-            parentData.splice(index, 0, data as SyncedType);
+            parentData.splice(index, 0, data);
         }
-        parentData[index].set_observable();
         return index;
     }
 
@@ -77,16 +78,14 @@ export abstract class SyncedComponent<DataType extends SyncedType = SyncedType> 
     }
 
     public set data(value: DataType) {
-        this.data?.unobserve(this);
         this._data = value;
-        if (value?.observe) value.observe(this);
     }
 
     /**
      * @description The ID of this component's attached data in the parent object.
      */
     public get id(): string {
-        return this.data.get_key().toString();
+        return this.data.id;
     }
 
     /**
@@ -94,8 +93,7 @@ export abstract class SyncedComponent<DataType extends SyncedType = SyncedType> 
      * Useful usually when the parent is an array and the ID is the data's index in the array.
      */
     public get index(): number {
-        const key = this.data.get_key();
-        return typeof key == "number" ? key : NaN;
+        return this.data.index;
     }
 
     /**
@@ -117,7 +115,8 @@ export abstract class SyncedComponent<DataType extends SyncedType = SyncedType> 
      * (including this component).
      */
     public delete() {
-        this.data.destroy_observers();
-        delete this.data.get_parent()[this.data.get_key() as (string | number)];
+        delete this.data.parent[this.data.key];
+        if ("destroy" in this && typeof this.destroy == "function") this.destroy();
+        //TODO IMPLEMENT DESTROY ALL BOUND ELEMENTS IN PROXY
     }
 }

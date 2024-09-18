@@ -1,9 +1,9 @@
 import {SyncedComponent} from "../../abstract/syncedComponent/syncedComponent";
-import {SyncedBranchingNode, SyncedBranchingNodeData} from "./branchingNode.types";
+import {SyncedBranchingNode} from "./branchingNode.types";
 import {define, Point} from "turbodombuilder";
 import "./branchingNode.css";
-import {SyncedType, YWrapObserver} from "../../abstract/syncedComponent/syncedComponent.types";
 import {FlowManagementHandler} from "../flow/handlers/types/flowManagement.handler";
+import {YCoordinate, YProxyEventName} from "../../../../yWrap-v3/yProxy/yProxy.types";
 
 /**
  * @class BranchingNode
@@ -14,11 +14,21 @@ import {FlowManagementHandler} from "../flow/handlers/types/flowManagement.handl
  * @template {SyncedBranchingNode} Type
  */
 @define("branching-node")
-export class BranchingNode<Type extends SyncedBranchingNode = SyncedBranchingNode> extends SyncedComponent<Type>
-    implements YWrapObserver<SyncedBranchingNode> {
+export class BranchingNode<Type extends SyncedBranchingNode = SyncedBranchingNode> extends SyncedComponent<Type> {
     constructor(data: Type, parent: HTMLElement) {
         super({parent: parent});
-        if (data) this.data = data;
+        if (data) {
+            this.data = data;
+            this.setupCallbacks();
+        }
+    }
+
+    protected setupCallbacks() {
+        console.log(this.data);
+        this.data.origin.bind(YProxyEventName.selfOrSubTreeUpdated, () => {
+            this.setStyle("transform", `translate3d(calc(${this.data.origin.x}px - 50%), 
+            calc(${this.data.origin.y}px - 50%), 0)`);
+        }, this);
     }
 
     /**
@@ -26,11 +36,11 @@ export class BranchingNode<Type extends SyncedBranchingNode = SyncedBranchingNod
      * @static
      * @async
      * @description Creates a new branching node from the provided data by adding the latter to the Yjs document.
-     * @param {SyncedBranchingNodeData} data - The data to create the branching node from.
+     * @param {SyncedBranchingNode} data - The data to create the branching node from.
      * @returns {Promise<string>} - The ID of the created branching node in root.branchingNodes.
      */
-    public static async create(data: SyncedBranchingNodeData): Promise<string> {
-        return await super.createInObject(data, this.root.branchingNodes as SyncedType<Record<string, SyncedBranchingNode>>);
+    public static async create(data: SyncedBranchingNode): Promise<string> {
+        return await super.createInObject(data, this.root.branchingNodes);
     }
 
     /**
@@ -52,10 +62,7 @@ export class BranchingNode<Type extends SyncedBranchingNode = SyncedBranchingNod
      * @returns {BranchingNode} - The branching node retrieved (if any).
      */
     public static getById(id: string): BranchingNode {
-        for (const observer of this.getDataById(id).get_observers()) {
-            if (observer instanceof BranchingNode) return observer;
-        }
-        return null;
+        return this.getDataById(id).getBoundObjectOfType(BranchingNode);
     }
 
     /**
@@ -65,18 +72,8 @@ export class BranchingNode<Type extends SyncedBranchingNode = SyncedBranchingNod
      * @returns {BranchingNode[]} - Array containing all the branching nodes in the document.
      */
     public static getAll(): BranchingNode[] {
-        return Object.values(this.root.branchingNodes).concat(Object.values(this.root.cards))
-            .flatMap(branchingNodeData => branchingNodeData.get_observers())
-            .filter(observer => observer instanceof BranchingNode);
-    }
-
-    /**
-     * @function onOriginUpdated
-     * @description YWrapper callback. Updates branching node's position when the data's origin field changes.
-     */
-    public onOriginUpdated() {
-        this.setStyle("transform", `translate3d(calc(${this.data.origin.x}px - 50%), 
-        calc(${this.data.origin.y}px - 50%), 0)`);
+        return Object.values(this.root.branchingNodes.value).concat(Object.values(this.root.cards.value))
+            .flatMap(branchingNodeData => branchingNodeData.getBoundObjectsOfType(BranchingNode))
     }
 
     /**
@@ -85,7 +82,7 @@ export class BranchingNode<Type extends SyncedBranchingNode = SyncedBranchingNod
      * @param {Point} deltaPosition - The values by which to move the data.
      */
     public move(deltaPosition: Point) {
-        this.data.origin = deltaPosition.add(this.data.origin).object;
+        this.data.origin = deltaPosition.add(this.data.origin.value).object as YCoordinate;
     }
 
     /**
