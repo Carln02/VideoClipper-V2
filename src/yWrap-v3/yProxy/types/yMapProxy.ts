@@ -1,6 +1,6 @@
-import {YMap, YAbstractType} from "../../conversionManagment/yjsEnhancement";
+import {YAbstractType, YMap} from "../../conversionManagment/yjsEnhancement";
 import {YProxy} from "../yProxy";
-import {YValue} from "../yProxy.types";
+import {YProxyChanged, YProxyEventName, YValue} from "../yProxy.types";
 import {YProxyFactory} from "../../yProxyFactory/yProxyFactory";
 
 export class YMapProxy<Type extends object = object> extends YProxy<YMap, Type> {
@@ -20,6 +20,54 @@ export class YMapProxy<Type extends object = object> extends YProxy<YMap, Type> 
     public static canHandle(data: unknown): boolean {
         return (data !== null && typeof data === "object" && !(data instanceof YAbstractType)) || (data instanceof YMap);
     }
+
+    protected diffChanges(newValue: Type, toBeDeleted: boolean = false, oldValue: Type = this.value): YProxyChanged {
+        const changed: YProxyChanged = {
+            selfChanged: false,
+            entryChanged: false,
+            subTreeChanged: false,
+        };
+
+        if (toBeDeleted) {
+            this.scheduleChange(newValue, oldValue, YProxyEventName.deleted);
+            changed.selfChanged = true;
+            return changed;
+        }
+
+        if (typeof newValue !== "object" || newValue === null) {
+            throw new Error("Invalid value for YMapProxy");
+        }
+
+        const keysToDelete = new Set(this.getYjsKeys());
+
+        for (const [key, newChildValue] of Object.entries(newValue)) {
+            keysToDelete.delete(key);
+
+            const childProxy = this.getCachedProxy(key);
+
+            if (childProxy) {
+                const childChanged = (childProxy as YMapProxy).diffChanges(newChildValue, false, oldValue[key]);
+                if (childChanged.selfChanged) changed.entryChanged = true;
+                if (childChanged.entryChanged || childChanged.subTreeChanged) changed.subTreeChanged = true;
+            } else {
+                this.factory.toYjs(newChildValue, key, this);
+                const proxy = this.getCachedProxy(key);
+                (proxy as YMapProxy).scheduleChange(newChildValue, undefined, YProxyEventName.added);
+                changed.entryChanged = true;
+            }
+        }
+
+        for (const key of keysToDelete) {
+            const childProxy = this.getCachedProxy(key);
+            if (childProxy) {
+                (childProxy as YMapProxy).diffChanges(undefined, true, oldValue[key]);
+                changed.entryChanged = true;
+            }
+        }
+
+        return changed;
+    }
+
 
     public diffAndUpdate(data: Type): void {
         //TODO MAKE ALSO DIFF AND UPDATE FOR PENDING CHANGE (SO WHEN SETTING A BIG BLOCK OF DATA, EACH HAS ITS OWN

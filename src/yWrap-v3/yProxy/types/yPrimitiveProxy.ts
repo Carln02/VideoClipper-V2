@@ -1,5 +1,5 @@
-import { YProxy } from "../yProxy";
-import {YPrimitive} from "../yProxy.types";
+import {YProxy} from "../yProxy";
+import {YPrimitive, YProxyChanged, YProxyEventName} from "../yProxy.types";
 
 export class YPrimitiveProxy<Type extends YPrimitive = "string"> extends YProxy<Type, Type> {
     public static toYjs(data: YPrimitive, key: string | number, parent: YProxy): YPrimitive {
@@ -9,6 +9,24 @@ export class YPrimitiveProxy<Type extends YPrimitive = "string"> extends YProxy<
 
     public static canHandle(data: unknown): boolean {
         return typeof data == "boolean" || typeof data == "number" || typeof data == "string";
+    }
+
+    protected diffChanges(newValue: Type, toBeDeleted: boolean = false, oldValue: Type = this.value): YProxyChanged {
+        const changedState: YProxyChanged = {
+            selfChanged: false,
+            entryChanged: false,
+            subTreeChanged: false,
+        };
+
+        if (toBeDeleted) {
+            this.scheduleChange(newValue, oldValue, YProxyEventName.deleted);
+            changedState.selfChanged = true;
+        } else if (oldValue !== newValue) {
+            this.scheduleChange(newValue, oldValue, YProxyEventName.updated);
+            changedState.selfChanged = true;
+        }
+
+        return changedState;
     }
 
     public diffAndUpdate(data: Type): void {

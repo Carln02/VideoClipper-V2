@@ -97,4 +97,10 @@ export type YProxiedArray<Type = any> = YProxied<Array<Type>>;
 
 export function proxied<Type>(data: Type): YProxied<Type> {
     return data as YProxied<Type>;
-}
+};
+
+export type YProxyChanged = {
+    selfChanged?: boolean,
+    entryChanged?: boolean,
+    subTreeChanged?: boolean
+};

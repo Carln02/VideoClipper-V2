@@ -1,5 +1,5 @@
 import {YProxy} from "../yProxy/yProxy";
-import {YValue} from "../yProxy/yProxy.types";
+import {YProxyChanged, YValue} from "../yProxy/yProxy.types";
 import {YProxyHandler} from "./yProxyFactory.types";
 import {YPrimitiveProxy} from "../yProxy/types/yPrimitiveProxy";
 import {YArrayProxy} from "../yProxy/types/yArrayProxy";

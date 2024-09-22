@@ -1,6 +1,7 @@
 import {
     YEventTypes,
     YPath,
+    YProxyChanged,
     YProxyEventName,
     YRawEventType,
     YValue,
@@ -12,22 +13,22 @@ import {YMapProxy} from "./types/yMapProxy";
 import {equalToAny} from "turbodombuilder";
 import {TurboWeakSet} from "../../client/utils/weakSet/weakSet";
 
-export abstract class YProxy<YType extends YValue = any, DataType = any> {
+export abstract class YProxy<YType extends YValue = YValue, DataType = unknown> {
     protected yData: YType;
 
     public readonly key: string | number;
     public readonly parent: YProxy;
 
-    public __internal__changesThrottlingTime: 1000;
+    public static changesThrottlingTime: 500;
 
     public readonly factory: YProxyFactory;
 
     private readonly __internal__boundObjects: TurboWeakSet;
 
     private __internal__changeToken: number;
-    private __internal__pendingChange: DataType;
-    private __internal__hasPendingChange: boolean;
-    private __internal__toBeDeleted: boolean;
+    protected __internal__pendingChange: DataType;
+    protected __internal__hasPendingChange: boolean;
+    protected __internal__toBeDeleted: boolean;
 
     private readonly __internal__eventListeners: Map<YProxyEventName, YWrapCallbackData[]>;
     private readonly __internal__proxyCache: Map<string | number, YProxy>;
@@ -72,6 +73,8 @@ export abstract class YProxy<YType extends YValue = any, DataType = any> {
     }
 
     //To be overridden
+
+    protected abstract diffChanges(newValue: DataType, toBeDeleted?: boolean, oldValue?: DataType): YProxyChanged;
 
     protected abstract diffAndUpdate(data: unknown): void;
 
@@ -184,8 +187,7 @@ export abstract class YProxy<YType extends YValue = any, DataType = any> {
         if (equalToAny(eventType, YProxyEventName.added, YProxyEventName.changed, YProxyEventName.updated,
             YProxyEventName.selfOrSubTreeAdded, YProxyEventName.selfOrSubTreeChanged, YProxyEventName.selfOrSubTreeUpdated)) {
             this.executeCallback(callbackData, this, this, false, path);
-        }
-        else if (equalToAny(eventType, YProxyEventName.entryAdded, YProxyEventName.entryChanged, YProxyEventName.entryUpdated)) {
+        } else if (equalToAny(eventType, YProxyEventName.entryAdded, YProxyEventName.entryChanged, YProxyEventName.entryUpdated)) {
             this.getYjsKeys().forEach(key => {
                 const value = this.getCachedProxy(key);
                 this.executeCallback(callbackData, value, value, false, [...path, key]);
@@ -193,59 +195,142 @@ export abstract class YProxy<YType extends YValue = any, DataType = any> {
         }
     }
 
-    protected dispatchCallbacks(eventType: YRawEventType, newValue: DataType, oldValue: DataType, isLocal: boolean,
+    protected dispatchCallbacks(eventType: YRawEventType, oldValue: DataType, isLocal: boolean,
                                 path: (string | number)[] = this.getPath()) {
         const eventTypes = YProxy.getEventTypes(eventType);
 
-        this.fire(newValue, oldValue, isLocal, path, eventTypes.event, YProxyEventName.changed,
+        this.fire(this, oldValue, isLocal, path, eventTypes.event, YProxyEventName.changed,
             eventTypes.selfOrSubTreeEvent, YProxyEventName.selfOrSubTreeChanged);
 
         let parent = this.parent;
         if (!parent) return;
 
-        parent.fire(newValue, oldValue, isLocal, path, eventTypes.entryEvent, YProxyEventName.entryChanged);
+        parent.fire(this, oldValue, isLocal, path, eventTypes.entryEvent, YProxyEventName.entryChanged);
 
         while (parent != null) {
-            parent.fire(newValue, oldValue, isLocal, path, eventTypes.subTreeEvent, YProxyEventName.subTreeChanged);
+            parent.fire(this, oldValue, isLocal, path, eventTypes.subTreeEvent, YProxyEventName.subTreeChanged);
             parent = parent.parent;
         }
     }
 
     private setupBasicListeners() {
-        this.bind(YProxyEventName.deleted, () => {
+        this.bind(YProxyEventName.deleted, (_newValue, _oldValue, isLocal: boolean) => {
+            if (isLocal) return;
             this.yData = undefined;
             this.parent.clearCacheEntry(this.key);
         }, this, false);
 
-        this.bind(YProxyEventName.updated, (newValue: DataType) => this.diffAndUpdate(newValue), this, false);
+        this.bind(YProxyEventName.updated, (newValue: DataType, _oldValue, isLocal: boolean) => {
+            if (isLocal) return;
+            this.diffAndUpdate(newValue);
+        }, this, false);
     }
+
 
     //Scheduling and applying changes
 
-    private scheduleChange(value: DataType, isDelete: boolean = false) {
+    // protected diffChanges(newValue: DataType, toBeDeleted: boolean = false, oldValue = this.value): YProxyChanged {
+    //     const changed: YProxyChanged = {
+    //         selfChanged: false,
+    //         entryChanged: changedParent.selfChanged || false,
+    //         subTreeChanged: changedParent.entryChanged || changedParent.subTreeChanged || false,
+    //     };
+    //
+    //     this.__internal__toBeDeleted = toBeDeleted;
+    //
+    //     if (toBeDeleted) {
+    //         this.__internal__hasPendingChange = false;
+    //         this.__internal__pendingChange = null;
+    //         this.dispatchCallbacks(YProxyEventName.deleted, oldValue, true);
+    //         this.scheduleChange();
+    //         changed.selfChanged = true;
+    //         return changed;
+    //     }
+    //
+    //     //Primitive override
+    //     if (typeof oldValue !== "object" || oldValue === null
+    //         || typeof newValue !== "object" || newValue === null) {
+    //         if (oldValue === newValue) return changed;
+    //         this.__internal__hasPendingChange = true;
+    //         this.__internal__pendingChange = newValue as DataType;
+    //         this.dispatchCallbacks(YProxyEventName.updated, oldValue, true);
+    //         this.scheduleChange();
+    //         return {...changed, selfChanged: true};
+    //     }
+    //
+    //     const keysToDelete = new Set(this.getYjsKeys());
+    //
+    //     //Map override
+    //     for (const [key, newChildValue] of Object.entries(newValue)) {
+    //         keysToDelete.delete(key);
+    //
+    //         if (key in oldValue) {
+    //             const proxy = this.getCachedProxy(key);
+    //             const childChanged = proxy.diffChanges(newChildValue, false, changed, oldValue[key]);
+    //             if (childChanged.selfChanged) changed.entryChanged = true;
+    //             if (childChanged.entryChanged || childChanged.subTreeChanged) changed.subTreeChanged = true;
+    //         } else {
+    //             this.factory.toYjs(newChildValue, key, this);
+    //             const proxy = this.getCachedProxy(key);
+    //             proxy.dispatchCallbacks(YProxyEventName.added, undefined, true);
+    //             proxy.scheduleChange();
+    //         }
+    //     }
+    //
+    //     return changed;
+    // }
+
+    // private scheduleChange() {
+    //     this.__internal__changeToken++;
+    //     const token = this.__internal__changeToken;
+    //
+    //     if (this.__internal__timer) clearTimeout(this.__internal__timer);
+    //     this.__internal__timer = setTimeout(() => {
+    //         if (token != this.__internal__changeToken) return;
+    //
+    //         if (this.__internal__toBeDeleted) {
+    //             this.parent.clearCacheEntry(this.key);
+    //             this.parent.deleteByKey(this.key);
+    //         } else if (this.__internal__hasPendingChange) {
+    //             this.diffAndUpdate(this.__internal__pendingChange);
+    //         }
+    //
+    //         this.__internal__hasPendingChange = false;
+    //         this.__internal__toBeDeleted = false;
+    //         this.__internal__pendingChange = null;
+    //     }, YProxy.changesThrottlingTime);
+    // }
+
+    protected scheduleChange(newValue: DataType, oldValue: DataType, changeType: YRawEventType) {
         this.__internal__changeToken++;
 
-        this.__internal__hasPendingChange = !isDelete;
-        this.__internal__toBeDeleted = isDelete;
-        this.__internal__pendingChange = isDelete ? null : value;
+        const isDeleted = changeType == YProxyEventName.deleted;
+        this.__internal__hasPendingChange = !isDeleted;
+        this.__internal__toBeDeleted = isDeleted;
+        this.__internal__pendingChange = isDeleted ? null : newValue;
 
         const token = this.__internal__changeToken;
+        this.dispatchCallbacks(changeType, oldValue, true);
+
+        if (changeType == YProxyEventName.added) return;
 
         if (this.__internal__timer) clearTimeout(this.__internal__timer);
         this.__internal__timer = setTimeout(() => {
             if (token != this.__internal__changeToken) return;
 
+            //TODO FIX THIS
             if (this.__internal__toBeDeleted) {
                 this.parent.clearCacheEntry(this.key);
                 this.parent.deleteByKey(this.key);
             } else if (this.__internal__hasPendingChange) {
-                this.diffAndUpdate(this.__internal__pendingChange);
+                this.parent.setByKey(this.key, this.__internal__pendingChange as YValue);
+                // this.diffAndUpdate(this.__internal__pendingChange);
             }
 
             this.__internal__hasPendingChange = false;
             this.__internal__toBeDeleted = false;
             this.__internal__pendingChange = null;
-        }, 300);
+        }, YProxy.changesThrottlingTime);
     }
 
     //Proxy generation method
@@ -266,15 +351,13 @@ export abstract class YProxy<YType extends YValue = any, DataType = any> {
 
                 if (typeof target.yData != "object") return true;
 
-                //TODO Always return proxy -- fix
                 const child = target.getCachedProxy(prop);
-                if (!child) {
-                    this.factory.toYjs(value, prop, this);
-                    const proxy = target.getCachedProxy(prop);
-                    proxy.dispatchCallbacks(YProxyEventName.added, proxy, undefined, true);
+                if (child) {
+                    child.diffChanges(value, false, child.value);
                 } else {
-                    child.dispatchCallbacks(YProxyEventName.updated, value, child, true);
-                    child.scheduleChange(value);
+                    target.factory.toYjs(value, prop, target);
+                    const proxy = target.getCachedProxy(prop);
+                    proxy.scheduleChange(value, undefined, YProxyEventName.added);
                 }
                 return true;
             },
@@ -283,10 +366,7 @@ export abstract class YProxy<YType extends YValue = any, DataType = any> {
                 if (typeof target.yData != "object") return target.deleteByKey(undefined);
 
                 const child = target.getCachedProxy(prop);
-                if (child) {
-                    child.dispatchCallbacks(YProxyEventName.deleted, undefined, child.value, true);
-                    child.scheduleChange(null, true);
-                }
+                if (child) child.diffChanges(undefined, true);
                 return true;
             },
             has: (target: YProxy<YType, DataType>, prop: string) =>

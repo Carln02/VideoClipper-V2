@@ -1,6 +1,6 @@
 import {YAbstractType, YArray} from "../../conversionManagment/yjsEnhancement";
 import {YProxy} from "../yProxy";
-import {YValue} from "../yProxy.types";
+import {YProxyChanged, YProxyEventName, YValue} from "../yProxy.types";
 import {YProxyFactory} from "../../yProxyFactory/yProxyFactory";
 
 export class YArrayProxy<Type extends unknown[] = unknown[]> extends YProxy<YArray, Type> {
@@ -19,6 +19,50 @@ export class YArrayProxy<Type extends unknown[] = unknown[]> extends YProxy<YArr
 
     public static canHandle(data: unknown): boolean {
         return (typeof data == "object" && Array.isArray(data) && !(data instanceof YAbstractType)) || data instanceof YArray;
+    }
+
+    protected diffChanges(newValue: Type, toBeDeleted: boolean = false, oldValue: Type = this.value): YProxyChanged {
+        const changed: YProxyChanged = {
+            selfChanged: false,
+            entryChanged: false,
+            subTreeChanged: false,
+        };
+
+        if (toBeDeleted) {
+            this.scheduleChange(newValue, oldValue, YProxyEventName.deleted);
+            changed.selfChanged = true;
+            return changed;
+        }
+
+        if (!Array.isArray(newValue)) {
+            throw new Error("Invalid value for YArrayProxy");
+        }
+
+        const maxLength = Math.max(oldValue.length, newValue.length);
+        for (let i = 0; i < maxLength; i++) {
+            const oldItem = oldValue[i] as unknown[];
+            const newItem = newValue[i] as unknown[];
+
+            const childProxy = this.getCachedProxy(i);
+
+            if (i < newValue.length) {
+                if (childProxy) {
+                    const childChanged = (childProxy as YArrayProxy).diffChanges(newItem, false, oldItem);
+                    if (childChanged.selfChanged) changed.entryChanged = true;
+                    if (childChanged.entryChanged || childChanged.subTreeChanged) changed.subTreeChanged = true;
+                } else {
+                    this.factory.toYjs(newItem, i, this);
+                    const proxy = this.getCachedProxy(i);
+                    (proxy as YArrayProxy).scheduleChange(newItem, undefined, YProxyEventName.added);
+                    changed.entryChanged = true;
+                }
+            } else if (childProxy) {
+                (childProxy as YArrayProxy).diffChanges(undefined, true, oldItem);
+                changed.entryChanged = true;
+            }
+        }
+
+        return changed;
     }
 
     public diffAndUpdate(data: unknown): void {
