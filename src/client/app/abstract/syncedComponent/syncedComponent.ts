@@ -2,7 +2,7 @@ import {TurboElement, TurboProperties} from "turbodombuilder";
 import {generate_unique_id, documentRoot} from "../../../sync/datastore";
 import {DocumentData} from "../../views/canvas/canvas.types";
 import {SyncedType} from "./syncedComponent.types";
-import {YProxied, YProxiedArray} from "../../../../yWrap-v3/yProxy/yProxy.types";
+import {YProxied, YProxiedArray} from "../../../../yProxy/yProxy";
 
 /**
  * @class SyncedComponent
@@ -26,6 +26,7 @@ export abstract class SyncedComponent<DataType extends YProxied = YProxied> exte
      * @static
      * @description The root of the Yjs document.
      */
+    //TODO REMOVE
     public static get root(): DocumentData {
         return documentRoot();
     }

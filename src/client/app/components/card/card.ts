@@ -6,10 +6,10 @@ import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {BranchingNode} from "../branchingNode/branchingNode";
 import {formatMmSs} from "../../../utils/time";
 import {Direction} from "../basicComponents/panelThumb/panelThumb.types";
-import {SyncedClipData} from "../clip/clip.types";
+import {SyncedClip} from "../clip/clip.types";
 import {Clip} from "../clip/clip";
 import {MetadataDrawer} from "../metadataDrawer/metadataDrawer";
-import {proxied, YProxyEventName} from "../../../../yWrap-v3/yProxy/yProxy.types";
+import {proxied, YProxyEventName, YString} from "../../../../yProxy/yProxy";
 
 /**
  * @description Class representing a card
@@ -65,6 +65,7 @@ export class Card extends BranchingNode<SyncedCard> {
         this.renderer.cardData = this.data;
 
         this.addEventListener(DefaultEventName.clickStart, () => this.bringToFront());
+        this.titleElement.addEventListener(DefaultEventName.blur, () => this.data.title = this.titleElement.value as YString);
         this.setupCallbacks();
     }
 
@@ -98,15 +99,7 @@ export class Card extends BranchingNode<SyncedCard> {
 
     protected setupCallbacks(): void {
         super.setupCallbacks();
-        this.data.title.bind(YProxyEventName.updated, (value: string) => this.titleElement.value = value, this);
-    }
-
-    /**
-     * @function onTitleUpdated
-     * @description YWrapper callback. Updates card's title when the data's title field changes.
-     */
-    public onTitleUpdated(value: string) {
-        this.titleElement.value = value;
+        this.data.title.bind(YProxyEventName.changed, (value: string) => this.titleElement.value = value, this);
     }
 
     /**
@@ -136,11 +129,11 @@ export class Card extends BranchingNode<SyncedCard> {
      * @function addClip
      * @async
      * @description Adds the provided clip data in the Yjs document at the provided index.
-     * @param {SyncedClipData} clip - The data to append.
+     * @param {SyncedClip} clip - The data to append.
      * @param {number} [index] - The index at which to append the data. If not provided, the clip will be pushed at
      * the end of the card's syncedClips array.
      */
-    public async addClip(clip: SyncedClipData, index?: number) {
+    public async addClip(clip: SyncedClip, index?: number) {
         return await this.timeline.addClip(clip, index);
     }
 

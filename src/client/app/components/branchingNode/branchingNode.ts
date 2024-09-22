@@ -2,8 +2,7 @@ import {SyncedComponent} from "../../abstract/syncedComponent/syncedComponent";
 import {SyncedBranchingNode} from "./branchingNode.types";
 import {define, Point} from "turbodombuilder";
 import "./branchingNode.css";
-import {FlowManagementHandler} from "../flow/handlers/types/flowManagement.handler";
-import {YCoordinate, YProxyEventName} from "../../../../yWrap-v3/yProxy/yProxy.types";
+import {YCoordinate, YProxyEventName} from "../../../../yProxy/yProxy";
 
 /**
  * @class BranchingNode
@@ -24,8 +23,7 @@ export class BranchingNode<Type extends SyncedBranchingNode = SyncedBranchingNod
     }
 
     protected setupCallbacks() {
-        console.log(this.data);
-        this.data.origin.bind(YProxyEventName.selfOrSubTreeUpdated, () => {
+        this.data.origin.bind(YProxyEventName.selfOrSubTreeChanged, () => {
             this.setStyle("transform", `translate3d(calc(${this.data.origin.x}px - 50%), 
             calc(${this.data.origin.y}px - 50%), 0)`);
         }, this);
@@ -91,7 +89,7 @@ export class BranchingNode<Type extends SyncedBranchingNode = SyncedBranchingNod
      * amd updates the attached flows accordingly.
      */
     public delete() {
-        FlowManagementHandler.updateFlowsOnDetachingCard(this.id);
+        // FlowManagementHandler.updateFlowsOnDetachingCard(this.id);
         super.delete();
     }
 }

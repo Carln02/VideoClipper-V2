@@ -1,9 +1,12 @@
 import {Popup} from "../../../components/popup/popup";
 import * as logman from "../../../../sync/logman";
 import * as index from "../../../index";
-import {DocumentData} from "../../canvas/canvas.types";
 import {documentRoot} from "../../../../sync/datastore";
-import {YRootProxy} from "../../../../../yWrap-v3/yProxy/types/yRootProxy";
+import {proxied, YNumber, YRecord} from "../../../../../yProxy/yProxy/types/proxied.types";
+import {SyncedCard} from "../../../components/card/card.types";
+import {SyncedBranchingNode} from "../../../components/branchingNode/branchingNode.types";
+import {SyncedFlow} from "../../../components/flow/flow.types";
+import {SyncedMedia} from "../../camera/manager/captureManager/captureManager.types";
 
 let popup = null;
 
@@ -27,12 +30,12 @@ function create(name) {
 
     logman.connect_project(id);
 
-    // const doc: YRootProxy<DocumentData> & DocumentData = get_docV3()
-    // doc.cards = {};
-    // doc.branchingNodes = {};
-    // doc.flows = {};
-    // doc.media = {};
-    // doc.counters = {cards: 0, flows: 0};
+    const document = documentRoot();
+    document.cards = {} as YRecord<string, SyncedCard>;
+    document.branchingNodes = {} as YRecord<string, SyncedBranchingNode>;
+    document.flows = {} as YRecord<string, SyncedFlow>;
+    document.media = {} as YRecord<string, SyncedMedia>;
+    document.counters = proxied({cards: 0 as YNumber, flows: 0 as YNumber});
 
     index.show_project();
 }

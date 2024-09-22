@@ -1,4 +1,4 @@
-import {SyncedType} from "../../../../abstract/syncedComponent/syncedComponent.types";
+import {YNumber, YProxied, YString} from "../../../../../../yProxy/yProxy/types/proxied.types";
 
 export enum CaptureMode {
     photo = "PHOTO",
@@ -7,7 +7,12 @@ export enum CaptureMode {
     videoShooting = "VIDEO SHOOTING"
 }
 
-export type SyncedMedia = SyncedType<SyncedMediaWithoutId>;
+export type SyncedMedia = YProxied<{
+    type?: YProxied<"image" | "video">,
+    timestamp?: YNumber,
+    duration?: YNumber,
+    media?: YString
+}>;
 
 export type SyncedMediaWithoutId = {
     type?: "image" | "video",

@@ -1,6 +1,8 @@
 import {SyncedMediaWithoutId} from "./captureManager.types";
 import {Camera} from "../../camera";
 import {add_video} from "../../../../../sync/videostore";
+import {proxied, YNumber, YProxiedArray} from "../../../../../../yProxy/yProxy/types/proxied.types";
+import {SyncedText} from "../../../../components/textElement/textElement.types";
 
 export class CaptureManager {
     private readonly camera: Camera;
@@ -170,11 +172,11 @@ export class CaptureManager {
         if (type == "video") this.lastMedia.duration = (Date.now() - this.lastTimestamp) / 1000;
 
         const mediaId = add_video(data, this.lastMedia);
-        await this.camera.card.addClip({
-            startTime: 0,
-            endTime: this.lastMedia.duration ? this.lastMedia.duration : 5,
+        await this.camera.card.addClip(proxied({
+            startTime: 0 as YNumber,
+            endTime: (this.lastMedia.duration ? this.lastMedia.duration : 5) as YNumber,
             mediaId: mediaId,
-            content: []
-        }, this.camera.card.timeline.currentClip.index);
+            content: [] as YProxiedArray<SyncedText>
+        }), this.camera.card.timeline.currentClip.index);
     }
 }

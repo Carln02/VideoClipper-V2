@@ -1,6 +1,6 @@
 import {SyncedType} from "../../abstract/syncedComponent/syncedComponent.types";
 import {Coordinate} from "turbodombuilder";
-import {YProxied} from "../../../../yWrap-v3/yProxy/yProxy.types";
+import {YProxied} from "../../../../yProxy/yProxy";
 
 /**
  * @description Datatype of a synced flow. Contains an array of branches

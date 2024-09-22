@@ -9,7 +9,7 @@ import {TextElement} from "../../components/textElement/textElement";
 import {SyncedClip} from "../../components/clip/clip.types";
 import {SyncedCardMetadata} from "../../components/metadataDrawer/metadataDrawer.types";
 import {SyncedType} from "../../abstract/syncedComponent/syncedComponent.types";
-import {proxied, YCoordinate, YProxiedArray} from "../../../../yWrap-v3/yProxy/yProxy.types";
+import {proxied, YCoordinate, YProxiedArray} from "../../../../yProxy/yProxy";
 
 /**
  * @description Tool that creates cards

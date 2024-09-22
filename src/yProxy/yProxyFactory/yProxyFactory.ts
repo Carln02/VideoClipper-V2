@@ -1,11 +1,10 @@
 import {YProxy} from "../yProxy/yProxy";
-import {YProxyChanged, YValue} from "../yProxy/yProxy.types";
 import {YProxyHandler} from "./yProxyFactory.types";
-import {YPrimitiveProxy} from "../yProxy/types/yPrimitiveProxy";
-import {YArrayProxy} from "../yProxy/types/yArrayProxy";
-import {YMapProxy} from "../yProxy/types/yMapProxy";
-import {YAbstractType, YMap} from "../conversionManagment/yjsEnhancement";
-import {YRootProxy} from "../yProxy/types/yRootProxy";
+import {YPrimitiveProxy} from "../yProxyBaseTypes/yPrimitiveProxy";
+import {YRootProxy} from "../yProxyBaseTypes/yRootProxy";
+import {YArrayProxy} from "../yProxyBaseTypes/yArrayProxy";
+import {YMapProxy} from "../yProxyBaseTypes/yMapProxy";
+import {YAbstractType, YMap, YValue} from "../yProxy/types/base.types";
 
 export class YProxyFactory {
     public readonly constructors: YProxyHandler[] = [];
@@ -27,7 +26,7 @@ export class YProxyFactory {
         });
 
         const rawRoot = new YRootProxy(root, this);
-        this.root = rawRoot.generateProxy();
+        this.root = rawRoot.getProxy();
     }
 
     public add(...entries: YProxyHandler[]) {
@@ -38,7 +37,9 @@ export class YProxyFactory {
         if (data instanceof YAbstractType) return data as YValue;
 
         for (const constructor of this.constructors) {
-            if (constructor.canHandle(data, this)) return constructor.toYjs(data, key, parent, this);
+            if (constructor.canHandle(data, this)) {
+                return constructor.toYjs(data, key, parent, this);
+            }
         }
 
         return data as YValue;

@@ -8,13 +8,11 @@ import {AppBar} from "../../components/appBar/appBar";
 import {DocumentData} from "./canvas.types";
 import {Card} from "../../components/card/card";
 import {SyncedCard} from "../../components/card/card.types";
-// import {SyncedFlow} from "../../components/flow/flow.types";
-// import {Flow} from "../../components/flow/flow";
 import {SyncedBranchingNode} from "../../components/branchingNode/branchingNode.types";
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {SyncedFlow} from "../../components/flow/flow.types";
 import {Flow} from "../../components/flow/flow";
-import {YPath, YProxied, YProxyEventName} from "../../../../yWrap-v3/yProxy/yProxy.types";
+import {YPath, YProxied, YProxyEventName} from "../../../../yProxy/yProxy";
 
 /**
  * @description Class representing a canvas on which the user can add cards, connect them, move them around, etc.
@@ -77,15 +75,6 @@ export class Canvas extends TurboElement {
         this.data = data;
         this.setupCallbacks();
 
-        // data.observe(this);
-
-
-        // if (data3.cards) {
-        //     (data3.cards as any).bind(YProxyEventName.entryChanged, () => console.log("CARD CHANGED"));
-        // } else {
-        //     console.error('cards property is undefined on data3');
-        // }
-
     }
 
     protected setupCallbacks() {
@@ -97,49 +86,18 @@ export class Canvas extends TurboElement {
                 new constructor(newValue, parent);
             };
 
-        this.data.bind(YProxyEventName.entryAdded, (newValue, _oldValue, _isLocal, path) => {
-            switch (path[path.length - 1]) {
-                case "cards":
-                    this.data.cards.bind(YProxyEventName.entryAdded,
-                        creationCallback<SyncedCard>(Card, this.cardsParent), this);
-                    break;
-                case "flows":
-                    this.data.flows.bind(YProxyEventName.entryAdded,
-                        creationCallback<SyncedFlow>(Flow, this.flowsParent), this);
-                    break;
-                case "branchingNodes":
-                    this.data.branchingNodes.bind(YProxyEventName.entryAdded,
-                        creationCallback<SyncedBranchingNode>(BranchingNode, this.cardsParent), this);
-            }
-        });
+        this.data.cards.bind(YProxyEventName.entryAdded,
+            creationCallback<SyncedCard>(Card, this.cardsParent), this);
+        this.data.flows.bind(YProxyEventName.entryAdded,
+            creationCallback<SyncedFlow>(Flow, this.flowsParent), this);
+        this.data.branchingNodes.bind(YProxyEventName.entryAdded,
+            creationCallback<SyncedBranchingNode>(BranchingNode, this.cardsParent), this);
     }
-
-    // public onInit(newValue: any) {
-    //     newValue.forward_callbacks(this);
-    // }
-    //
-    // public onCardsUpdated(newValue: SyncedCard, oldValue: SyncedCard, path: (string | number)[]) {
-    //     if (path.length != 1) throw "Something went wrong in Canvas.onCardsUpdated";
-    //     // oldValue?.destroy_observers();
-    //     new Card(newValue, this.cardsParent);
-    // }
-    //
-    // public onBranchingNodesUpdated(newValue: SyncedBranchingNode, oldValue: SyncedBranchingNode, path: (string | number)[]) {
-    //     if (path.length != 1) throw "Something went wrong in Canvas.onBranchingNodesUpdated";
-    //     // oldValue?.destroy_observers();
-    //     new BranchingNode(newValue, this.cardsParent);
-    // }
-    //
-    // public onFlowsUpdated(newValue: SyncedFlow, oldValue: SyncedFlow, path: (string | number)[]) {
-    //     if (path.length != 1) throw "Something went wrong in Canvas.onFlowsUpdated";
-    //     if (!oldValue && newValue?.get_observers().length > 0) return;
-    //     oldValue?.destroy_observers();
-    //     new Flow(newValue, this.flowsParent);
-    // }
 
     private clear() {
         for (const card of Object.values(this.data.cards.value)) card.destroyBoundObjects();
         for (const flow of Object.values(this.data.flows.value)) flow.destroyBoundObjects();
+        for (const branchingNode of Object.values(this.data.branchingNodes.value)) branchingNode.destroyBoundObjects();
     }
 
     public remove(): this {

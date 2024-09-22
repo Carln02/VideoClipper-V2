@@ -77,7 +77,6 @@ export class FlowDrawingHandler extends FlowHandler {
         if (path.length == 0) return newValue.forward_callbacks(this);
         if (!newValue && !oldValue) return;
         this.redrawBranch(path.find(entry => typeof entry == "number"));
-        console.log(newValue?.flowEntries?.length);
     }
 
     private redrawBranch(branchIndex: number = this.flow.currentBranchIndex) {

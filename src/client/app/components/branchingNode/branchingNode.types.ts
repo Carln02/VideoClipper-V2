@@ -1,4 +1,4 @@
-import {YCoordinate, YProxied} from "../../../../yWrap-v3/yProxy/yProxy.types";
+import {YCoordinate, YProxied} from "../../../../yProxy/yProxy";
 
 export type SyncedBranchingNode = YProxied<{
     origin?: YCoordinate

@@ -1,4 +1,4 @@
-import {SyncedClip, SyncedClipData} from "./clip.types";
+import {SyncedClip} from "./clip.types";
 import "./clip.css";
 import {get_video} from "../../../sync/videostore";
 import {ContextManager} from "../../managers/contextManager/contextManager";
@@ -17,16 +17,17 @@ import {
 } from "turbodombuilder";
 import {randomColor} from "../../../utils/random";
 import {SyncedComponent} from "../../abstract/syncedComponent/syncedComponent";
-import {YWrapObserver} from "../../abstract/syncedComponent/syncedComponent.types";
 import {Timeline} from "../timeline/timeline";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import domToImage from "dom-to-image-more";
 import {SyncedText, TextType} from "../textElement/textElement.types";
 import {TextElement} from "../textElement/textElement";
 import {SyncedMedia} from "../../views/camera/manager/captureManager/captureManager.types";
+import {YNumber, YString} from "../../../../yProxy/yProxy/types/proxied.types";
+import {YProxyEventName} from "../../../../yProxy/yProxy/types/events.types";
 
 @define("vc-clip")
-export class Clip extends SyncedComponent<SyncedClip> implements YWrapObserver<SyncedClip> {
+export class Clip extends SyncedComponent<SyncedClip> {
     private static renderer: ClipRenderer;
     private static rendererInitialized = false;
 
@@ -48,7 +49,7 @@ export class Clip extends SyncedComponent<SyncedClip> implements YWrapObserver<S
         this.thumbnailImage = img({src: "", parent: this.clipContent, classes: "thumbnail"});
         this.thumbnailImage.show(false);
 
-        if (!data.color) data.color = randomColor();
+        if (!data.color) data.color = randomColor() as YString;
         this.data = data;
     }
 
@@ -56,13 +57,13 @@ export class Clip extends SyncedComponent<SyncedClip> implements YWrapObserver<S
      * @function create
      * @static
      * @description Creates a new clip in the Yjs document from the provided data and in the card with the provided ID.
-     * @param {SyncedClipData} data - The provided data.
+     * @param {SyncedClip} data - The provided data.
      * @param {string} cardId - The ID of the card to which the clip will be added.
      * @param {number} [index] - Optional index to specify the position of the clip in the card's syncedClips array.
      * By default, the clip will be pushed to the end of the array.
      * @returns {number} - The index of the created clip in the card's syncedClips array, or -1 if an issue occurred.
      */
-    public static create(data: SyncedClipData, cardId: string, index?: number): number {
+    public static create(data: SyncedClip, cardId: string, index?: number): number {
         const cardClips = this.root.cards[cardId]?.syncedClips;
         if (!cardClips) return -1;
         return super.createInArray(data, cardClips, index);
@@ -83,6 +84,54 @@ export class Clip extends SyncedComponent<SyncedClip> implements YWrapObserver<S
     }
 
     //Update data
+
+    protected setupCallbacks(): void {
+        this.data.bind(YProxyEventName.changed, (_newValue, _oldValue, isLocal, path) => {
+            if ((path && path[0] == "thumbnail") || !isLocal) return;
+            this.reloadThumbnail();
+        });
+
+        this.data.bind(YProxyEventName.entryAdded, (_newValue, _oldValue, _isLocal, path) => {
+            const key = path[path.length - 1].toString();
+            switch (key) {
+                case "color":
+                    this.data.color.bind(YProxyEventName.changed, (value: string) =>
+                        this.clipContent.setStyle("backgroundColor", value), this);
+                    break;
+                case "startTime":
+                case "endTime":
+                    this.data[key].bind(YProxyEventName.changed, () => this.reloadSize(), this);
+                    break;
+                case "mediaId":
+                    this.data.mediaId.bind(YProxyEventName.changed, (value: string) =>
+                        this.updateMediaId(value), this);
+                    break;
+                case "hidden":
+                    this.data.hidden.bind(YProxyEventName.changed, (value: boolean) =>
+                        this.toggleClass("hidden-clip", value), this);
+                    break;
+                case "thumbnail":
+                    this.data.thumbnail.bind(YProxyEventName.changed, (value: string) => {
+                        this.thumbnailImage.show(true);
+                        this.thumbnailImage.src = value;
+                    }, this);
+                    break;
+            }
+        }, this);
+    }
+
+    private updateMediaId(value: string) {
+        const media = get_video(value);
+
+        this.metadata = media?.metadata ?? null;
+        this.uri = media?.uri ?? null;
+        this.videoDuration = media?.metadata?.type == "video" ? media.metadata.duration : null;
+
+        //TODO maybe remove this? idk
+        // if (media.metadata?.thumbnail) {
+        //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
+        // }
+    }
 
     /**
      * @function addText
@@ -107,7 +156,7 @@ export class Clip extends SyncedComponent<SyncedClip> implements YWrapObserver<S
     public removeText(entry: TextElement) {
         const index = this.data.content?.indexOf(entry.data);
         if (index < 0) return;
-        entry.data.destroy_observers();
+        entry.data.destroyBoundObjects();
         this.data.content?.splice(index, 1);
     }
 
@@ -118,7 +167,7 @@ export class Clip extends SyncedComponent<SyncedClip> implements YWrapObserver<S
      */
     public removeTextAt(index: number) {
         if (index < 0 || index >= this.data.content?.length) return;
-        this.data.content[index].destroy_observers();
+        this.data.content[index].destroyBoundObjects();
         this.data.content?.splice(index, 1);
     }
 
@@ -159,8 +208,7 @@ export class Clip extends SyncedComponent<SyncedClip> implements YWrapObserver<S
     //Getters and setters
 
     public get timeline(): Timeline {
-        for (const observer of this.data.get_parent().get_observers()) {
-            if (!(observer instanceof Timeline)) continue;
+        for (const observer of this.data.parent.getBoundObjectsOfType(Timeline)) {
             if (observer.clips.includes(this)) return observer;
         }
         return;
@@ -177,7 +225,7 @@ export class Clip extends SyncedComponent<SyncedClip> implements YWrapObserver<S
     public set startTime(value: number) {
         if (this.videoDuration && value < 0) value = 0;
         if (value > this.endTime - this.minimumDuration) value = this.endTime - this.minimumDuration;
-        this.data.startTime = value;
+        this.data.startTime = value as YNumber;
     }
 
     public get endTime(): number {
@@ -187,7 +235,7 @@ export class Clip extends SyncedComponent<SyncedClip> implements YWrapObserver<S
     public set endTime(value: number) {
         if (value < this.startTime + this.minimumDuration) value = this.startTime + this.minimumDuration;
         if (this.videoDuration && value > this.videoDuration) value = this.videoDuration;
-        this.data.endTime = value;
+        this.data.endTime = value as YNumber;
     }
 
     private get pixelsPerSecondUnit(): number {
@@ -209,50 +257,11 @@ export class Clip extends SyncedComponent<SyncedClip> implements YWrapObserver<S
 
     //Callbacks
 
-    public onColorUpdated(value: string) {
-        this.clipContent.setStyle("backgroundColor", value);
-    }
-
-    public onStartTimeUpdated() {
-        this.reloadSize();
-    }
-
-    public onEndTimeUpdated() {
-        this.reloadSize();
-    }
-
     private normalizeTime() {
         if (this.videoDuration) return;
         const oldStartTime = this.startTime;
         this.startTime = 0;
         this.endTime = this.endTime - oldStartTime;
-    }
-
-    public onMediaIdUpdated(value: number) {
-        const media = get_video(value);
-
-        this.metadata = media?.metadata ?? null;
-        this.uri = media?.uri ?? null;
-        this.videoDuration = media?.metadata?.type == "video" ? media.metadata.duration : null;
-
-        //TODO maybe remove this? idk
-        // if (media.metadata?.thumbnail) {
-        //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
-        // }
-    }
-
-    public onHiddenUpdated(value: boolean) {
-        this.toggleClass("hidden-clip", value);
-    }
-
-    public onThumbnailUpdated(value: string) {
-        this.thumbnailImage.show(true);
-        this.thumbnailImage.src = value;
-    }
-
-    public onChanged(newValue: unknown, local: boolean, path: (string | number)[]) {
-        if ((path && path[0] == "thumbnail") || !local) return;
-        this.reloadThumbnail();
     }
 
     //Utilities

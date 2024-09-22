@@ -1,7 +1,7 @@
-import {YAbstractType, YArray} from "../../conversionManagment/yjsEnhancement";
-import {YProxy} from "../yProxy";
-import {YProxyChanged, YProxyEventName, YValue} from "../yProxy.types";
-import {YProxyFactory} from "../../yProxyFactory/yProxyFactory";
+import {YProxy} from "../yProxy/yProxy";
+import {YProxyFactory} from "../yProxyFactory/yProxyFactory";
+import {YAbstractType, YArray, YProxyChanged, YValue} from "../yProxy/types/base.types";
+import {YProxyEventName} from "../yProxy/types/events.types";
 
 export class YArrayProxy<Type extends unknown[] = unknown[]> extends YProxy<YArray, Type> {
     public static toYjs(array: unknown[], key: number, parent: YProxy, factory: YProxyFactory): YArray {
@@ -29,7 +29,7 @@ export class YArrayProxy<Type extends unknown[] = unknown[]> extends YProxy<YArr
         };
 
         if (toBeDeleted) {
-            this.scheduleChange(newValue, oldValue, YProxyEventName.deleted);
+            this.changeHandler.scheduleChange(newValue, oldValue, YProxyEventName.deleted);
             changed.selfChanged = true;
             return changed;
         }
@@ -43,7 +43,7 @@ export class YArrayProxy<Type extends unknown[] = unknown[]> extends YProxy<YArr
             const oldItem = oldValue[i] as unknown[];
             const newItem = newValue[i] as unknown[];
 
-            const childProxy = this.getCachedProxy(i);
+            const childProxy = this.getProxyByKey(i);
 
             if (i < newValue.length) {
                 if (childProxy) {
@@ -52,8 +52,8 @@ export class YArrayProxy<Type extends unknown[] = unknown[]> extends YProxy<YArr
                     if (childChanged.entryChanged || childChanged.subTreeChanged) changed.subTreeChanged = true;
                 } else {
                     this.factory.toYjs(newItem, i, this);
-                    const proxy = this.getCachedProxy(i);
-                    (proxy as YArrayProxy).scheduleChange(newItem, undefined, YProxyEventName.added);
+                    const proxy = this.getProxyByKey(i);
+                    proxy.callbackHandler.dispatchCallbacks(YProxyEventName.added, undefined, true);
                     changed.entryChanged = true;
                 }
             } else if (childProxy) {
@@ -65,70 +65,39 @@ export class YArrayProxy<Type extends unknown[] = unknown[]> extends YProxy<YArr
         return changed;
     }
 
-    public diffAndUpdate(data: unknown): void {
-        if (typeof data !== "object" || data === null || !Array.isArray(data)) {
-            this.factory.toYjs(data, this.key, this.parent);
-            return;
-        }
-
-        const yArray = this.yData as YArray;
-        const keysToDelete = new Set<number>();
-        for (let i = 0; i < yArray.length; i++) keysToDelete.add(i);
-
-        for (const [key, newValue] of Object.entries(data)) {
-            const index = Number.parseInt(key);
-            keysToDelete.delete(index);
-
-            const currentYValue = yArray.get(index);
-            if (!currentYValue) {
-                this.factory.toYjs(newValue, index, this);
-            } else {
-                const childProxy = this.getCachedProxy(index);
-                if (childProxy) (childProxy as YArrayProxy).diffAndUpdate(newValue);
-                else this.factory.toYjs(newValue, index, this);
-            }
-        }
-
-        for (const key of keysToDelete) yArray.delete(key);
-    }
-
-    public set(index: number, value: unknown) {
-        this.yData.doc?.transact(() => {
-            this.deleteByKey(index);
-            this.yData.insert(index, [value]);
-        });
-    }
-
-    protected getByKey(key: number): unknown {
+    public getByKey(key: number): unknown {
         return this.yData.get(key);
     }
 
     public setByKey(key: number, value: YValue): boolean {
-        this.set(key, value);
+        this.yData.doc?.transact(() => {
+            this.deleteByKey(key);
+            this.yData.insert(key, [value]);
+        });
         return true;
     }
 
-    protected deleteByKey(key: number): boolean {
+    public deleteByKey(key: number): boolean {
         this.yData.delete(key, 1);
         return true;
     }
 
-    protected hasByKey(key: number): boolean {
+    public hasByKey(key: number): boolean {
         return key >= 0 && this.yData.length > key;
     }
 
-    protected getYjsKeys(): string[] {
+    public getYjsKeys(): string[] {
         return new Array(this.yData.length).map((item, index) => index.toString());
     }
 
-    protected toJSON(): Type {
+    public toJSON(): Type {
         const result: Type = [] as Type;
 
         for (let i = 0; i < this.yData.length; i++) {
-            const proxy = this.getCachedProxy(i) as YArrayProxy;
+            const proxy = this.getProxyByKey(i) as YArrayProxy;
 
             // If it's a proxy, call toJSON() on it, otherwise use the value directly
-            if (proxy) result.push(proxy.toJSON());
+            if (proxy) result.push(proxy.value);
             else result.push(this.yData.get(i));
         }
 

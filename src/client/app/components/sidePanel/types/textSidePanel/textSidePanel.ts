@@ -6,11 +6,12 @@ import {SyncedComponent} from "../../../../abstract/syncedComponent/syncedCompon
 import {ContextEntry} from "../../../../managers/contextManager/contextManager.types";
 import {TextElement} from "../../../textElement/textElement";
 import {SidePanelInstance} from "../../sidePanel.types";
-import {YWrapObserver} from "../../../../abstract/syncedComponent/syncedComponent.types";
 import {ContextManager} from "../../../../managers/contextManager/contextManager";
+import {YCoordinate, YNumber} from "../../../../../../yProxy/yProxy/types/proxied.types";
+import {YProxyEventName} from "../../../../../../yProxy/yProxy";
 
 @define("text-side-panel")
-export class TextSidePanel extends SyncedComponent<SyncedText> implements SidePanelInstance, YWrapObserver<SyncedText> {
+export class TextSidePanel extends SyncedComponent<SyncedText> implements SidePanelInstance {
     private readonly sidePanel: SidePanel;
 
     private originXInput: TurboNumericalInput;
@@ -25,6 +26,22 @@ export class TextSidePanel extends SyncedComponent<SyncedText> implements SidePa
 
         this.initInputFields();
         this.initUI();
+    }
+
+    protected setupCallbacks() {
+        this.data.bind(YProxyEventName.entryAdded, (_newValue, _oldValue, _isLocal, path) => {
+            switch (path[path.length - 1].toString()) {
+                case "origin":
+                    this.data.origin.bind(YProxyEventName.changed, (value: Coordinate) => {
+                        this.originXInput.value = value.x;
+                        this.originYInput.value = value.y;
+                    }, this);
+                    break;
+                case "fontSize":
+                    this.data.fontSize.bind(YProxyEventName.changed, (value: number) =>
+                        this.fontSizeInput.value = value, this);
+            }
+        }, this);
     }
 
     public attach() {
@@ -57,7 +74,7 @@ export class TextSidePanel extends SyncedComponent<SyncedText> implements SidePa
             listeners: {
                 input: () => {
                     if (!this.data) return;
-                    this.data.origin = {x: this.originXInput.value, y: this.originYInput.value};
+                    this.data.origin = {x: this.originXInput.value, y: this.originYInput.value} as YCoordinate;
                 }
             }
         });
@@ -73,7 +90,7 @@ export class TextSidePanel extends SyncedComponent<SyncedText> implements SidePa
             listeners: {
                 input: () => {
                     if (!this.data) return;
-                    this.data.origin = {x: this.originXInput.value, y: this.originYInput.value};
+                    this.data.origin = {x: this.originXInput.value, y: this.originYInput.value} as YCoordinate;
                 }
             }
         });
@@ -89,7 +106,7 @@ export class TextSidePanel extends SyncedComponent<SyncedText> implements SidePa
             listeners: {
                 input: () => {
                     if (!this.data) return;
-                    this.data.fontSize = this.fontSizeInput.value;
+                    this.data.fontSize = this.fontSizeInput.value as YNumber;
                 }
             }
         });
@@ -103,14 +120,5 @@ export class TextSidePanel extends SyncedComponent<SyncedText> implements SidePa
         });
 
         this.addChild(this.fontSizeInput);
-    }
-
-    public onOriginUpdated(value: Coordinate) {
-        this.originXInput.value = value.x;
-        this.originYInput.value = value.y;
-    }
-
-    public onFontSizeUpdated(value: number) {
-        this.fontSizeInput.value = value;
     }
 }

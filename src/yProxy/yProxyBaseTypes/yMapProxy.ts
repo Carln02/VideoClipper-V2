@@ -1,7 +1,7 @@
-import {YAbstractType, YMap} from "../../conversionManagment/yjsEnhancement";
-import {YProxy} from "../yProxy";
-import {YProxyChanged, YProxyEventName, YValue} from "../yProxy.types";
-import {YProxyFactory} from "../../yProxyFactory/yProxyFactory";
+import {YProxy} from "../yProxy/yProxy";
+import {YProxyFactory} from "../yProxyFactory/yProxyFactory";
+import {YAbstractType, YMap, YProxyChanged, YValue} from "../yProxy/types/base.types";
+import {YProxyEventName} from "../yProxy/types/events.types";
 
 export class YMapProxy<Type extends object = object> extends YProxy<YMap, Type> {
     public static toYjs(object: object, key: string, parent: YProxy, factory: YProxyFactory): YMap {
@@ -9,9 +9,9 @@ export class YMapProxy<Type extends object = object> extends YProxy<YMap, Type> 
         if (object instanceof YAbstractType) throw new Error("Converting a non-compatible Yjs type to YMap.");
 
         const yMap = new YMap();
-        if (parent) (parent as YMapProxy).setByKey(key, yMap);
+        if (parent) parent.setByKey(key, yMap);
 
-        const yMapProxy: YProxy = (parent as YMapProxy).getCachedProxy(key);
+        const yMapProxy: YProxy = parent.getProxyByKey(key);
         Object.entries(object).forEach(([key, value]) => factory.toYjs(value, key, yMapProxy));
 
         return yMap;
@@ -29,7 +29,7 @@ export class YMapProxy<Type extends object = object> extends YProxy<YMap, Type> 
         };
 
         if (toBeDeleted) {
-            this.scheduleChange(newValue, oldValue, YProxyEventName.deleted);
+            this.changeHandler.scheduleChange(newValue, oldValue, YProxyEventName.deleted);
             changed.selfChanged = true;
             return changed;
         }
@@ -43,7 +43,7 @@ export class YMapProxy<Type extends object = object> extends YProxy<YMap, Type> 
         for (const [key, newChildValue] of Object.entries(newValue)) {
             keysToDelete.delete(key);
 
-            const childProxy = this.getCachedProxy(key);
+            const childProxy = this.getProxyByKey(key);
 
             if (childProxy) {
                 const childChanged = (childProxy as YMapProxy).diffChanges(newChildValue, false, oldValue[key]);
@@ -51,14 +51,14 @@ export class YMapProxy<Type extends object = object> extends YProxy<YMap, Type> 
                 if (childChanged.entryChanged || childChanged.subTreeChanged) changed.subTreeChanged = true;
             } else {
                 this.factory.toYjs(newChildValue, key, this);
-                const proxy = this.getCachedProxy(key);
-                (proxy as YMapProxy).scheduleChange(newChildValue, undefined, YProxyEventName.added);
+                const proxy = this.getProxyByKey(key);
+                proxy.callbackHandler.dispatchCallbacks(YProxyEventName.added, undefined, true);
                 changed.entryChanged = true;
             }
         }
 
         for (const key of keysToDelete) {
-            const childProxy = this.getCachedProxy(key);
+            const childProxy = this.getProxyByKey(key);
             if (childProxy) {
                 (childProxy as YMapProxy).diffChanges(undefined, true, oldValue[key]);
                 changed.entryChanged = true;
@@ -69,34 +69,9 @@ export class YMapProxy<Type extends object = object> extends YProxy<YMap, Type> 
     }
 
 
-    public diffAndUpdate(data: Type): void {
-        //TODO MAKE ALSO DIFF AND UPDATE FOR PENDING CHANGE (SO WHEN SETTING A BIG BLOCK OF DATA, EACH HAS ITS OWN
-        // TIMER. AND ALSO STORE IN VAR OLD VALUE FOR CALLBACKS
-        if (typeof data !== "object" || data === null) throw new Error("Data to update must be an object.");
-
-        const yMap = this.yData as YMap;
-        const keysToDelete = new Set<string>(yMap.keys());
-
-        for (const [key, newValue] of Object.entries(data)) {
-            keysToDelete.delete(key);
-
-            const currentYValue = yMap.get(key);
-            if (!currentYValue) {
-                this.factory.toYjs(newValue, key, this);
-            } else {
-                const childProxy = this.getCachedProxy(key);
-                if (childProxy) (childProxy as YMapProxy).diffAndUpdate(newValue);
-                else this.factory.toYjs(newValue, key, this);
-            }
-        }
-
-        for (const key of keysToDelete) yMap.delete(key);
-    }
-
-
-    protected getByKey(key: string | number): unknown {
+    public getByKey(key: string | number): unknown {
         if (!this.yData) return undefined;
-        return this.yData.getForced(key.toString());
+        return this.yData.get(key.toString());
     }
 
     public setByKey(key: string | number, value: YValue): boolean {
@@ -104,27 +79,27 @@ export class YMapProxy<Type extends object = object> extends YProxy<YMap, Type> 
         return true;
     }
 
-    protected deleteByKey(key: string | number): boolean {
+    public deleteByKey(key: string | number): boolean {
         this.yData.delete(key.toString());
         return true;
     }
 
-    protected hasByKey(key: string | number): boolean {
+    public hasByKey(key: string | number): boolean {
         return this.yData.has(key.toString());
     }
 
-    protected getYjsKeys(): string[] {
+    public getYjsKeys(): string[] {
         return Array.from(this.yData.keys());
     }
 
-    protected toJSON(): Type {
+    public toJSON(): Type {
         const result: Type = {} as Type;
 
         // Loop through the keys of the YMap
         for (const key of this.getYjsKeys()) {
-            const proxy = this.getCachedProxy(key) as YMapProxy;
+            const proxy = this.getProxyByKey(key) as YMapProxy;
 
-            if (proxy) result[key] = proxy.toJSON();
+            if (proxy) result[key] = proxy.value;
             else result[key] = this.yData.get(key);
         }
 

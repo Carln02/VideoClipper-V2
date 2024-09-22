@@ -32,14 +32,15 @@ export class MetadataDrawer extends SyncedComponent<SyncedCardMetadata> {
         this.initUI(properties);
 
         this.data = data;
+        this.setupCallbacks();
+    }
+
+    protected setupCallbacks() {
+
     }
 
     public get card() {
-        for (const observer of this.data.get_parent().get_observers()) {
-            if (!(observer instanceof Card)) continue;
-            return observer;
-        }
-        return;
+        return this.data.parent.getBoundObjectOfType(Card);
     }
 
     private initUI(properties: PanelThumbProperties) {

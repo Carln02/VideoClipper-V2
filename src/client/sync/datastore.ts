@@ -4,7 +4,7 @@ import { IndexeddbPersistence } from 'y-indexeddb'
 
 import * as crypto from "./crypto"
 import WebsocketProvider from "./websocket_manager"
-import {YProxyFactory} from "../../yWrap-v3/yProxyFactory/yProxyFactory";
+import {YProxyFactory} from "../../yProxy/yProxy";
 import {DocumentData} from "../app/views/canvas/canvas.types";
 
 
@@ -51,8 +51,8 @@ export function documentRoot(): DocumentData {
 //	Though that's just a random.uint32() and might blow up the entire document if they are identical, WTF YJS ?
 
 export async function generate_unique_id(object) {
-	let generate = async function() {
-		let raw = document.clientID.toString(32) + crypto.get_random_id()
+	const generate = async function() {
+		const raw = document.clientID.toString(32) + crypto.get_random_id()
 		return await crypto.hash(raw);
 	}
 

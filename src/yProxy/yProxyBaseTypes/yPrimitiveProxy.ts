@@ -1,5 +1,6 @@
-import {YProxy} from "../yProxy";
-import {YPrimitive, YProxyChanged, YProxyEventName} from "../yProxy.types";
+import {YProxy} from "../yProxy/yProxy";
+import {YPrimitive, YProxyChanged} from "../yProxy/types/base.types";
+import {YProxyEventName} from "../yProxy/types/events.types";
 
 export class YPrimitiveProxy<Type extends YPrimitive = "string"> extends YProxy<Type, Type> {
     public static toYjs(data: YPrimitive, key: string | number, parent: YProxy): YPrimitive {
@@ -19,23 +20,17 @@ export class YPrimitiveProxy<Type extends YPrimitive = "string"> extends YProxy<
         };
 
         if (toBeDeleted) {
-            this.scheduleChange(newValue, oldValue, YProxyEventName.deleted);
+            this.changeHandler.scheduleChange(newValue, oldValue, YProxyEventName.deleted);
             changedState.selfChanged = true;
         } else if (oldValue !== newValue) {
-            this.scheduleChange(newValue, oldValue, YProxyEventName.updated);
+            this.changeHandler.scheduleChange(newValue, oldValue, YProxyEventName.updated);
             changedState.selfChanged = true;
         }
 
         return changedState;
     }
 
-    public diffAndUpdate(data: Type): void {
-        if (this.yData === data) return;
-        this.yData = data as Type;
-        if (this.parent) this.parent.setByKey(this.key, this.yData);
-    }
-
-    protected getByKey(): unknown {
+    public getByKey(): unknown {
         throw new Error("Cannot get property of a primitive value.");
     }
 
@@ -43,20 +38,20 @@ export class YPrimitiveProxy<Type extends YPrimitive = "string"> extends YProxy<
         throw new Error("Cannot set property of a primitive value.");
     }
 
-    protected deleteByKey(): boolean {
+    public deleteByKey(): boolean {
         throw new Error("Cannot delete property of a primitive value.");
     }
 
-    protected hasByKey(): boolean {
+    public hasByKey(): boolean {
         return false;
     }
 
     // Primitive types don't have keys, so return an empty array
-    protected getYjsKeys(): string[] {
+    public getYjsKeys(): string[] {
         return [];
     }
 
-    protected toJSON(): Type {
+    public toJSON(): Type {
         return this.yData as Type;
     }
 

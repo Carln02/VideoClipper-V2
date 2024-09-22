@@ -13,6 +13,7 @@ import {ToolManager} from "../../../../managers/toolManager/toolManager";
 import {Timeline} from "../../timeline";
 import {ToolType} from "../../../../managers/toolManager/toolManager.types";
 import {ScrubberMenu} from "./scrubber.types";
+import {YBoolean} from "../../../../../../yProxy/yProxy/types/proxied.types";
 
 @define("vc-scrubber")
 export class Scrubber extends TurboElement {
@@ -47,7 +48,7 @@ export class Scrubber extends TurboElement {
 
         const mute = new TurboSelectEntry({
             value: ScrubberMenu.mute, text: "Mute",
-            action: () => this.timeline.currentClip.clip.data.muted = !this.timeline.currentClip.clip.data.muted
+            action: () => this.timeline.currentClip.clip.data.muted = !this.timeline.currentClip.clip.data.muted as YBoolean
         });
 
         const insertCard = new TurboSelectEntry({

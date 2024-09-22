@@ -1,11 +1,12 @@
-import {define, video, div, TurboProperties} from "turbodombuilder";
+import {define, div, TurboProperties, video} from "turbodombuilder";
 import {TextElement} from "../textElement/textElement";
 import {ClipRendererVideoInfo, ClipRendererVisibility} from "./clipRenderer.types";
 import {Clip} from "../clip/clip";
 import {Renderer} from "../../abstract/renderer/renderer";
 import {SyncedClip} from "../clip/clip.types";
-import {SyncedText} from "../textElement/textElement.types";
+import {SyncedText, TextType} from "../textElement/textElement.types";
 import {SyncedCard} from "../card/card.types";
+import {YProxyEventName} from "../../../../yProxy/yProxy/types/events.types";
 
 @define("vc-clip-renderer")
 export class ClipRenderer extends Renderer {
@@ -43,15 +44,45 @@ export class ClipRenderer extends Renderer {
         this.resize();
     }
 
+    private setupCardCallbacks() {
+        this.cardData.bindAtKey("title", YProxyEventName.changed, () => {
+            const entries = this.textElements.filter(value => value.data.type == TextType.title);
+            if (entries.length == 0) return;
+            entries.forEach(entry => entry.textValue = this.title);
+            this.reloadVisibility(true);
+        }, this);
+    }
+
+    private setupClipCallbacks() {
+        this.clipData.bindAtKey("content", YProxyEventName.entryChanged, (newValue: SyncedText, oldValue, isLocal, path) => {
+            if (!newValue && !oldValue) return;
+
+            const key = path[path.length - 1];
+            const index: number = typeof key == "number" ? key : Number.parseInt(key);
+
+            if (!newValue) {
+                this.textElements[index]?.destroy();
+                this.textElements.splice(index, 1);
+            } else if (!oldValue) {
+                const text = new TextElement(newValue, this);
+                this.textParent.addChild(text, index);
+                this.textElements.splice(index, 0, text);
+            } else {
+                const text = this.textElements[index];
+                if (text) text.data = newValue;
+            }
+        }, this);
+    }
+
     public get cardData(): SyncedCard {
         return this._cardData;
     }
 
     public set cardData(value: SyncedCard) {
         if (this.cardData == value) return;
-        this.cardData?.unobserve(this);
+        // this.cardData?.unbindObject(this);
         this._cardData = value;
-        // value.observe(this);
+        this.setupCardCallbacks();
     }
 
     public get clipData(): SyncedClip {
@@ -60,9 +91,9 @@ export class ClipRenderer extends Renderer {
 
     public set clipData(value: SyncedClip) {
         if (this.clipData == value) return;
-        this.clipData?.unobserve(this);
+        this.clipData?.unbindObject(this);
         this._clipData = value;
-        value.observe(this);
+        this.setupClipCallbacks();
     }
 
     public get video(): HTMLVideoElement {
@@ -174,27 +205,6 @@ export class ClipRenderer extends Renderer {
 
     public pause() {
         if (!this.video.paused) this.video.pause();
-    }
-
-    public onContentUpdated(newValue: SyncedText, oldValue: SyncedText, path: (string | number)[]) {
-        if (path.length == 0) return newValue.forward_callbacks(this);
-        if (!newValue && !oldValue) return;
-
-        const index = (oldValue || newValue).get_key() as number;
-
-        if (!newValue) {
-            this.textElements[index]?.destroy();
-            this.textElements.splice(index, 1);
-        } else if (!oldValue) {
-            console.log(newValue);
-            const text = new TextElement(newValue, this);
-            this.textParent.addChild(text, index);
-            this.textElements.splice(index, 0, text);
-        } else {
-            console.log(newValue);
-            const text = this.textElements[index];
-            if (text) text.data = newValue;
-        }
     }
 
     public get visibilityMode() {
