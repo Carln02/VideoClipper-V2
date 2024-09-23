@@ -138,8 +138,8 @@ export class SelectionTool extends Tool {
 
         if (closestTimeline && this.timelineIndicatorIndex != -1) {
             const clipData = this.clipClone.originElement.data;
-            const clipIndex = clipData.get_key() as number;
-            const cardId = clipData.get_parent().get_parent().get_key() as string;
+            const clipIndex = clipData.index;
+            const cardId = clipData.parent.parent.id;
 
             this.context.clearContext();
 

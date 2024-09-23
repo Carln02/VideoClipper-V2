@@ -1,5 +1,20 @@
-import {SyncedText} from "../textElement/textElement.types";
-import {YBoolean, YNumber, YProxied, YProxiedArray, YString} from "../../../../yProxy/yProxy/types/proxied.types";
+import {SyncedText, SyncedTextData} from "../textElement/textElement.types";
+import {YBoolean, YNumber, YProxied, YProxiedArray, YString} from "../../../../yProxy";
+
+export type SyncedClipData = {
+    startTime?: number,
+    endTime?: number,
+
+    backgroundFill?: string,
+    mediaId?: string,
+    thumbnail?: string,
+
+    content?: SyncedTextData[],
+    color?: string,
+
+    hidden?: boolean,
+    muted?: boolean
+};
 
 export type SyncedClip = YProxied<{
     startTime?: YNumber,

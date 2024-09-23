@@ -12,13 +12,14 @@ import {FlowBranchingHandler} from "./handlers/types/flowBranching.handler";
 import {FlowManagementHandler} from "./handlers/types/flowManagement.handler";
 import {FlowIntersectionHandler} from "./handlers/types/flowIntersection.handler";
 import * as d3 from "d3";
-import {SyncedType, YWrapObserver} from "../../abstract/syncedComponent/syncedComponent.types";
+import {SyncedType} from "../../abstract/syncedComponent/syncedComponent.types";
+import {YPath, YProxiedArray, YProxyEventName} from "../../../../yProxy";
 
 /**
  * @description A reactiveComponent that represents a flow connecting cards
  */
 @define("vc-flow")
-export class Flow extends SyncedComponent<SyncedFlow> implements YWrapObserver<SyncedFlow> {
+export class Flow extends SyncedComponent<SyncedFlow> {
     public readonly svg: SVGSVGElement;
     public readonly svgGroups: Map<number, SVGGElement>;
 
@@ -79,18 +80,13 @@ export class Flow extends SyncedComponent<SyncedFlow> implements YWrapObserver<S
             } as SyncedFlowTag]
         };
 
-        const id = await super.createInObject(data, this.root.flows as SyncedType<Record<string, SyncedFlow>>);
-        data = this.root.flows[id];
-        data.flowBranches.set_observable();
-        data.flowTags.forEach(flowTag => flowTag.set_observable());
-
+        const id = await super.createInObject(data, this.root.flows);
         return new Flow(this.root.flows[id], Canvas.instance?.flowsParent);
     }
 
     public static getAll(): Flow[] {
-        return Object.values(this.root.flows)
-            .flatMap(flowData => flowData.get_observers())
-            .filter(observer => observer instanceof Flow);
+        return Object.values(this.root.flows.value)
+            .flatMap(flowData => flowData.getBoundObjectsOfType(Flow));
     }
 
     public static getDataById(id: string): SyncedFlow {
@@ -98,35 +94,35 @@ export class Flow extends SyncedComponent<SyncedFlow> implements YWrapObserver<S
     }
 
     public static getById(id: string): Flow {
-        for (const observer of this.getDataById(id).get_observers()) {
-            if (observer instanceof Flow) return observer;
-        }
-        return null;
+        return this.getDataById(id).getBoundObjectOfType(Flow);
     }
 
-    public get flowBranches(): SyncedType<SyncedFlowBranch[]> {
+    protected setupCallbacks() {
+        this.data.flowTags.bind(YProxyEventName.entryChanged,
+            (newValue: SyncedFlowTag, oldValue: SyncedFlowTag, _isLocal, path: YPath) => {
+                if (!newValue && !oldValue) return;
+
+                const key = path[path.length - 1];
+                const index = typeof key == "number" ? key : Number.parseInt(key);
+
+                if (!newValue) {
+                    this.flowTagsElements[index]?.destroy();
+                    this.flowTagsElements.splice(index, 1);
+                } else if (!oldValue) {
+                    const flowTag = new FlowTag(this, newValue);
+                    this.flowTagsElements.splice(index, 0, flowTag);
+                } else {
+                    const flowTag = this.flowTagsElements[index];
+                    if (flowTag) flowTag.data = newValue;
+                }
+            }, this);
+    }
+
+    public get flowBranches(): YProxiedArray<SyncedFlowBranch> {
         return this.data.flowBranches;
     }
 
     public get currentBranch(): SyncedFlowBranch {
         return this.data.flowBranches[this.currentBranchIndex];
-    }
-
-    public onFlowTagsUpdated(newValue: SyncedFlowTag, oldValue: SyncedFlowTag, path: (string | number)[]) {
-        if (path.length == 0) return newValue.forward_callbacks(this);
-        if (!newValue && !oldValue) return;
-
-        const index = (oldValue || newValue).get_key() as number;
-
-        if (!newValue) {
-            this.flowTagsElements[index]?.destroy();
-            this.flowTagsElements.splice(index, 1);
-        } else if (!oldValue) {
-            const flowTag = new FlowTag(this, newValue);
-            this.flowTagsElements.splice(index, 0, flowTag);
-        } else {
-            const flowTag = this.flowTagsElements[index];
-            if (flowTag) flowTag.data = newValue;
-        }
     }
 }

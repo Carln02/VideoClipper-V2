@@ -6,7 +6,7 @@ import {Renderer} from "../../abstract/renderer/renderer";
 import {SyncedClip} from "../clip/clip.types";
 import {SyncedText, TextType} from "../textElement/textElement.types";
 import {SyncedCard} from "../card/card.types";
-import {YProxyEventName} from "../../../../yProxy/yProxy/types/events.types";
+import {YProxyEventName} from "../../../../yProxy";
 
 @define("vc-clip-renderer")
 export class ClipRenderer extends Renderer {
@@ -45,16 +45,16 @@ export class ClipRenderer extends Renderer {
     }
 
     private setupCardCallbacks() {
-        this.cardData.bindAtKey("title", YProxyEventName.changed, () => {
+        this.cardData.title.bind(YProxyEventName.changed, () => {
             const entries = this.textElements.filter(value => value.data.type == TextType.title);
             if (entries.length == 0) return;
-            entries.forEach(entry => entry.textValue = this.title);
+            entries.forEach(entry => entry.textValue = this.cardData.title.value);
             this.reloadVisibility(true);
         }, this);
     }
 
     private setupClipCallbacks() {
-        this.clipData.bindAtKey("content", YProxyEventName.entryChanged, (newValue: SyncedText, oldValue, isLocal, path) => {
+        this.clipData.content.bind(YProxyEventName.entryChanged, (newValue: SyncedText, oldValue, isLocal, path) => {
             if (!newValue && !oldValue) return;
 
             const key = path[path.length - 1];
@@ -80,7 +80,7 @@ export class ClipRenderer extends Renderer {
 
     public set cardData(value: SyncedCard) {
         if (this.cardData == value) return;
-        // this.cardData?.unbindObject(this);
+        this.cardData?.unbindObject(this);
         this._cardData = value;
         this.setupCardCallbacks();
     }
@@ -132,7 +132,7 @@ export class ClipRenderer extends Renderer {
 
     private async setCurrentClipBackground(clip: Clip, forceCanvas: boolean = false) {
         if (clip.data.backgroundFill) {
-            this.setCanvas(clip.data.backgroundFill);
+            this.setCanvas(clip.data.backgroundFill.value);
         } else if (clip.data.mediaId) {
             if (this.currentClip.metadata?.type == "image") this.setCanvas(this.currentClip.uri);
             else {

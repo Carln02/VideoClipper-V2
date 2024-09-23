@@ -1,6 +1,6 @@
 import {ClickMode, DefaultEventName, define, div, Point, TurboEvent, TurboEventName, TurboInput} from "turbodombuilder";
 import "./card.css";
-import {SyncedCard} from "./card.types";
+import {SyncedCard, SyncedCardData} from "./card.types";
 import {Timeline} from "../timeline/timeline";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {BranchingNode} from "../branchingNode/branchingNode";
@@ -9,7 +9,7 @@ import {Direction} from "../basicComponents/panelThumb/panelThumb.types";
 import {SyncedClip} from "../clip/clip.types";
 import {Clip} from "../clip/clip";
 import {MetadataDrawer} from "../metadataDrawer/metadataDrawer";
-import {proxied, YProxyEventName, YString} from "../../../../yProxy/yProxy";
+import {proxied, YProxyEventName, YString} from "../../../../yProxy";
 
 /**
  * @description Class representing a card
@@ -53,6 +53,8 @@ export class Card extends BranchingNode<SyncedCard> {
             openOffset: 6,
         });
 
+        this.data = data;
+
         this.timeline = new Timeline(data.syncedClips, this.renderer, {
             parent: this.timelineParent,
             direction: Direction.right,
@@ -61,12 +63,10 @@ export class Card extends BranchingNode<SyncedCard> {
             openOffset: 16
         });
 
-        this.data = data;
         this.renderer.cardData = this.data;
 
         this.addEventListener(DefaultEventName.clickStart, () => this.bringToFront());
         this.titleElement.addEventListener(DefaultEventName.blur, () => this.data.title = this.titleElement.value as YString);
-        this.setupCallbacks();
     }
 
     /**
@@ -80,7 +80,7 @@ export class Card extends BranchingNode<SyncedCard> {
      * @param {SyncedCard} data - The data to create the card from.
      * @returns {Promise<string>} - The ID of the created card in root.cards.
      */
-    public static async create(data: SyncedCard): Promise<string> {
+    public static async create(data: SyncedCardData): Promise<string> {
         this.root.counters.cards++;
         data.title = proxied("Card - " + this.root.counters.cards);
         return await super.createInObject(data, this.root.cards);

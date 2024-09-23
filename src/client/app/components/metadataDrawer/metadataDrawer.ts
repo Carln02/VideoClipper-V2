@@ -32,7 +32,6 @@ export class MetadataDrawer extends SyncedComponent<SyncedCardMetadata> {
         this.initUI(properties);
 
         this.data = data;
-        this.setupCallbacks();
     }
 
     protected setupCallbacks() {

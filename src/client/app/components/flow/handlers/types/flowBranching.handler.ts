@@ -1,7 +1,15 @@
 import {Coordinate} from "turbodombuilder";
-import {FlowPoint, NamedFlowPath, SyncedFlowBranch, SyncedFlowEntry, SyncedFlowTag} from "../../flow.types";
+import {
+    FlowPoint,
+    NamedFlowPath, NamedFlowPathData,
+    SyncedFlowBranch,
+    SyncedFlowEntry,
+    SyncedFlowEntryData,
+    SyncedFlowTag
+} from "../../flow.types";
 import {FlowHandler} from "../flow.handler";
 import {BranchingNode} from "../../../branchingNode/branchingNode";
+import {YCoordinate, YNumber, YProxiedArray} from "../../../../../../yProxy";
 
 export class FlowBranchingHandler extends FlowHandler {
     /**
@@ -21,7 +29,7 @@ export class FlowBranchingHandler extends FlowHandler {
         //Get parent branch
         const parentBranch: SyncedFlowBranch = this.flowData.flowBranches[p.branchIndex];
         //Get static copy of the split entry
-        let splitEntry: SyncedFlowEntry = parentBranch.toJSON().flowEntries[p.entryIndex];
+        let splitEntry: SyncedFlowEntryData = parentBranch.value.flowEntries[p.entryIndex];
 
         //Boolean indicating whether the branch occurs on an existing node
         const branchOnNode = nodeId != undefined
@@ -48,19 +56,19 @@ export class FlowBranchingHandler extends FlowHandler {
                 parentBranch.flowEntries.splice(p.entryIndex, 0, splitEntry);
             } else {
                 //Generate new entries before and after the new split entry
-                const beforeSplitEntry: SyncedFlowEntry = {
+                const beforeSplitEntry: SyncedFlowEntryData = {
                     startNodeId: splitEntry.startNodeId,
                     endNodeId: nodeId,
                     points: structuredClone(splitEntry.points.slice(0, splitPointIndex + 1))
                 };
-                const afterSplitEntry: SyncedFlowEntry = {
+                const afterSplitEntry: SyncedFlowEntryData = {
                     startNodeId: nodeId,
                     endNodeId: splitEntry.endNodeId,
                     points: structuredClone(splitEntry.points.slice(splitPointIndex))
                 };
                 if (branchPosition) {
-                    beforeSplitEntry.points.push(structuredClone(branchPosition));
-                    afterSplitEntry.points.splice(0, 1, structuredClone(branchPosition));
+                    beforeSplitEntry.points.push(branchPosition);
+                    afterSplitEntry.points.splice(0, 1, branchPosition);
                 }
 
                 //Update split entry
@@ -86,10 +94,10 @@ export class FlowBranchingHandler extends FlowHandler {
         //Compute entries of the first child branch (include all entries of the parent starting from the split index)
         const firstChildEntries = parentBranch.toJSON().flowEntries.slice(p.entryIndex);
         //Remove points before pointIndex from the first entry
-        if (branchOnNode) firstChildEntries[0].points = firstChildEntries[0].points.slice(p.pointIndex);
+        if (branchOnNode) firstChildEntries[0].points = firstChildEntries[0].points.slice(p.pointIndex) as YProxiedArray<YCoordinate>;
         const firstChildIndex = this.flowBranches.length;
         //Add first child branch (make sure it is a clone so referenced entries/points are not shared with other branches)
-        this.flowBranches.push({flowEntries: firstChildEntries, childBranches: []} as SyncedFlowBranch);
+        this.flowBranches.push({flowEntries: firstChildEntries, childBranches: []});
         this.flowBranches[p.branchIndex].childBranches.push(firstChildIndex);
 
         this.utilities.loopOnFlowTagEntries((namedPath) => {
@@ -112,15 +120,15 @@ export class FlowBranchingHandler extends FlowHandler {
                     points: [splitEntry.points[p.pointIndex]],
                 }],
                 childBranches: []
-            } as SyncedFlowBranch);
+            });
             this.flowBranches[p.branchIndex].childBranches.push(secondChildIndex);
 
-            const newNamedPaths = new Map<SyncedFlowTag, NamedFlowPath[]>();
+            const newNamedPaths = new Map<SyncedFlowTag, YProxiedArray<NamedFlowPath, NamedFlowPathData>>();
             this.utilities.loopOnFlowTagEntries((namedPath, tag) => {
                 const parentPositionIndex = namedPath.branchIndices.indexOf(p.branchIndex);
                 if (parentPositionIndex < 0) return;
                 const nextIndex = this.utilities.findNextTagNameIndex(namedPath.name);
-                if (!newNamedPaths.get(tag)) newNamedPaths.set(tag, []);
+                if (!newNamedPaths.get(tag)) newNamedPaths.set(tag, [] as YProxiedArray<NamedFlowPath>);
                 newNamedPaths.get(tag).push({
                     name: namedPath.name,
                     index: nextIndex,
@@ -131,7 +139,7 @@ export class FlowBranchingHandler extends FlowHandler {
             newNamedPaths.forEach((namedPaths, tag) => tag.namedPaths.push(...namedPaths));
 
             //Remove the split entries from the parent branch
-            parentBranch.flowEntries = parentBranch.flowEntries.slice(0, p.entryIndex + 1);
+            parentBranch.flowEntries = parentBranch.flowEntries.slice(0, p.entryIndex + 1) as YProxiedArray;
             //Optimize
             this.optimizeBranches();
             //Update flow's current branch ID
@@ -140,12 +148,12 @@ export class FlowBranchingHandler extends FlowHandler {
             //Update flow's current branch ID if it was active
             if (this.currentBranchIndex == p.branchIndex) this.currentBranchIndex = this.flowBranches.length - 1;
             //Remove the split entries from the parent branch
-            parentBranch.flowEntries = parentBranch.flowEntries.slice(0, p.entryIndex + 1);
+            parentBranch.flowEntries = parentBranch.flowEntries.slice(0, p.entryIndex + 1) as YProxiedArray;
         }
 
         if (branchOnNode) {
             const lastParentEntry = parentBranch.flowEntries[parentBranch.flowEntries.length - 1];
-            lastParentEntry.points = lastParentEntry.points.slice(0, p.pointIndex + 1);
+            lastParentEntry.points = lastParentEntry.points.slice(0, p.pointIndex + 1) as YProxiedArray<YCoordinate>;
         }
     }
 

@@ -1,8 +1,8 @@
 import {SyncedComponent} from "../../abstract/syncedComponent/syncedComponent";
-import {SyncedBranchingNode} from "./branchingNode.types";
+import {SyncedBranchingNode, SyncedBranchingNodeData} from "./branchingNode.types";
 import {define, Point} from "turbodombuilder";
 import "./branchingNode.css";
-import {YCoordinate, YProxyEventName} from "../../../../yProxy/yProxy";
+import {YCoordinate, YProxyEventName} from "../../../../yProxy";
 
 /**
  * @class BranchingNode
@@ -16,10 +16,7 @@ import {YCoordinate, YProxyEventName} from "../../../../yProxy/yProxy";
 export class BranchingNode<Type extends SyncedBranchingNode = SyncedBranchingNode> extends SyncedComponent<Type> {
     constructor(data: Type, parent: HTMLElement) {
         super({parent: parent});
-        if (data) {
-            this.data = data;
-            this.setupCallbacks();
-        }
+        if (data) this.data = data;
     }
 
     protected setupCallbacks() {
@@ -37,7 +34,7 @@ export class BranchingNode<Type extends SyncedBranchingNode = SyncedBranchingNod
      * @param {SyncedBranchingNode} data - The data to create the branching node from.
      * @returns {Promise<string>} - The ID of the created branching node in root.branchingNodes.
      */
-    public static async create(data: SyncedBranchingNode): Promise<string> {
+    public static async create(data: SyncedBranchingNodeData): Promise<string> {
         return await super.createInObject(data, this.root.branchingNodes);
     }
 

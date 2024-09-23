@@ -65,15 +65,77 @@ export class YArrayProxy<Type extends unknown[] = unknown[]> extends YProxy<YArr
         return changed;
     }
 
+    protected customProxyGetter(prop: string | symbol): unknown {
+        const methodName = prop.toString();
+        if (!["push", "unshift", "insert", "splice", "indexOf"].includes(methodName)) return this.yData[methodName];
+
+        return (...args: unknown[]) => {
+            if (methodName == "indexOf") {
+                if (!args[0]) return -1;
+                if (args[0] instanceof YProxy) return args[0].key;
+                for (const i of this.getYjsKeys()) {
+                    if (this.getProxyByKey(i).value == args[0]) return i;
+                }
+                return -1;
+            }
+
+            let index: number;
+            switch (methodName) {
+                case "push":
+                    index = this.yData.length;
+                    break;
+                case "unshift":
+                    index = 0;
+                    break;
+                case "insert":
+                case "splice":
+                    if (typeof args[0] !== "number") {
+                        throw new TypeError(`Expected a number for index in ${methodName} method.`);
+                    }
+                    index = args[0] as number;
+                    break;
+                default:
+                    throw new Error(`Unsupported method: ${methodName}`);
+            }
+
+            const executeOperation = () => {
+                if (methodName == "splice") {
+                    const toDelete = args[1] as number;
+                    if (toDelete) {
+                        for (let i = index + toDelete - 1; i >= index; i--) {
+                            const proxy = this.getProxyByKey(i);
+                            if (proxy) (proxy as YArrayProxy).diffChanges(undefined, true);
+                        }
+                    }
+                }
+
+                const startArgIndex = methodName == "splice" ? 2 : methodName == "insert" ? 1 : 0;
+                const itemsToAdd = args.slice(startArgIndex);
+
+                if (itemsToAdd.length > 0) itemsToAdd.forEach((item, i) => {
+                    const currentIndex = index + i;
+                    // this.yData.insert(currentIndex, [""]);
+                    this.factory.toYjs(item, currentIndex, this);
+                    const proxy = this.getProxyByKey(currentIndex);
+                    proxy.callbackHandler.dispatchCallbacks(YProxyEventName.added, undefined, true);
+                });
+            };
+
+            const doc = this.getDoc();
+            if (doc) doc.transact(executeOperation);
+            else executeOperation();
+
+            return this.yData.length;
+        };
+    }
+
     public getByKey(key: number): unknown {
         return this.yData.get(key);
     }
 
     public setByKey(key: number, value: YValue): boolean {
-        this.yData.doc?.transact(() => {
-            this.deleteByKey(key);
-            this.yData.insert(key, [value]);
-        });
+        if (this.yData.length < key) this.deleteByKey(key);
+        this.yData.insert(key, [value]);
         return true;
     }
 
@@ -87,7 +149,9 @@ export class YArrayProxy<Type extends unknown[] = unknown[]> extends YProxy<YArr
     }
 
     public getYjsKeys(): string[] {
-        return new Array(this.yData.length).map((item, index) => index.toString());
+        const keys = [];
+        for (let i = 0; i < this.yData.length; i++) keys.push(i);
+        return keys;
     }
 
     public toJSON(): Type {

@@ -52,15 +52,30 @@ export abstract class Renderer extends TurboElement {
 
         if (typeof fill == "string") {
             if (fill.length < 30) {
+                // Assume it's a color string
                 this.canvasContext.fillStyle = fill;
                 this.canvasContext.fillRect(0, 0, this.width, this.height);
                 return;
+            } else {
+                // Assume it's a data URL string representing an image
+                const img = new Image();
+                img.onload = () => {
+                    this.canvasContext.drawImage(img, 0, 0, this.width, this.height);
+                };
+                img.onerror = (err) => {
+                    console.error("Failed to load image:", err);
+                    // Handle the error as needed
+                };
+                img.src = fill;
+                // Return here to prevent execution of the code below
+                return;
             }
-
         } else {
+            // Assume 'fill' is a CanvasImageSource
             this.canvasContext.drawImage(fill, 0, 0, this.width, this.height);
         }
     }
+
 
     public async drawFromImageSource(src: CanvasImageSource) {
         if (src instanceof HTMLVideoElement) await this.waitForVideoLoad(src);

@@ -6,10 +6,6 @@ import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {Timeline} from "../../components/timeline/timeline";
 import {Clip} from "../../components/clip/clip";
 import {TextElement} from "../../components/textElement/textElement";
-import {SyncedClip} from "../../components/clip/clip.types";
-import {SyncedCardMetadata} from "../../components/metadataDrawer/metadataDrawer.types";
-import {SyncedType} from "../../abstract/syncedComponent/syncedComponent.types";
-import {proxied, YCoordinate, YProxiedArray} from "../../../../yProxy/yProxy";
 
 /**
  * @description Tool that creates cards
@@ -31,23 +27,24 @@ export class CreateCardTool extends Tool {
     }
 
     private async createCard(position: Point) {
-        const cardId = await Card.create(proxied({
-            origin: {x: position.x, y: position.y} as YCoordinate,
-            syncedClips: [] as YProxiedArray<SyncedClip>,
-            metadata: {} as SyncedCardMetadata,
-        }));
+        const cardId = await Card.create({
+            origin: {x: position.x, y: position.y},
+            syncedClips: [],
+            metadata: {},
+        });
 
-        // const clipId = Clip.create({
-        //     startTime: 0,
-        //     endTime: 5,
-        //     backgroundFill: "#FFFFFF",
-        //     content: []
-        // }, cardId);
-        //
-        // TextElement.create({
-        //     type: TextType.title,
-        //     fontSize: 0.1,
-        //     origin: {x: 0.5, y: 0.5}
-        // }, cardId, clipId);
+        const clipId = Clip.create({
+            startTime: 0,
+            endTime: 5,
+            backgroundFill: "#FFFFFF",
+            content: [],
+            mediaId: undefined
+        }, cardId);
+
+        TextElement.create({
+            type: TextType.title,
+            fontSize: 0.1,
+            origin: {x: 0.5, y: 0.5}
+        }, cardId, clipId);
     }
 }

@@ -1,13 +1,12 @@
-import {SyncedType} from "../../abstract/syncedComponent/syncedComponent.types";
 import {Coordinate} from "turbodombuilder";
-import {YProxied} from "../../../../yProxy/yProxy";
+import {YCoordinate, YNumber, YProxied, YProxiedArray, YString} from "../../../../yProxy";
 
 /**
  * @description Datatype of a synced flow. Contains an array of branches
  */
 export type SyncedFlowData = {
-    flowBranches?: SyncedType<SyncedFlowBranch[]>,
-    flowTags?: SyncedFlowTag[],
+    flowBranches?: SyncedFlowBranchData[],
+    flowTags?: SyncedFlowTagData[],
     defaultName?: string,
 };
 
@@ -15,9 +14,9 @@ export type SyncedFlowData = {
  * @description Datatype of a synced flow. Contains an array of branches
  */
 export type SyncedFlow = YProxied<{
-    flowBranches?: SyncedType<SyncedFlowBranch[]>,
-    flowTags?: SyncedFlowTag[],
-    defaultName?: string,
+    flowBranches?: YProxiedArray<SyncedFlowBranch, SyncedFlowBranchData>,
+    flowTags?: YProxiedArray<SyncedFlowTag, SyncedFlowTagData>,
+    defaultName?: YString,
 }>;
 
 /**
@@ -25,10 +24,21 @@ export type SyncedFlow = YProxied<{
  * @property overwriting - Indicates the index (if any) of the branch it is overwriting
  * @property flowEntries - An array of flow entries constituting this branch. Explained below.
  */
-export type SyncedFlowBranch = SyncedType<{
-    flowEntries?: SyncedFlowEntry[],
+export type SyncedFlowBranchData = {
+    flowEntries?: SyncedFlowEntryData[],
     childBranches?: number[],
     overwriting?: number,
+};
+
+/**
+ * @description A synced flow's branch datatype.
+ * @property overwriting - Indicates the index (if any) of the branch it is overwriting
+ * @property flowEntries - An array of flow entries constituting this branch. Explained below.
+ */
+export type SyncedFlowBranch = YProxied<{
+    flowEntries?: YProxiedArray<SyncedFlowEntry, SyncedFlowEntryData>,
+    childBranches?: YProxiedArray<YNumber, number>,
+    overwriting?: YProxiedArray<YNumber, number>,
 }>;
 
 /**
@@ -37,22 +47,45 @@ export type SyncedFlowBranch = SyncedType<{
  * @property endNodeId - The ID of the node where the entry ends (can be the same as startNodeId)
  * @property points - An array of x-y coordinates representing points lying between startNode and endNode
  */
-export type SyncedFlowEntry = {
+export type SyncedFlowEntryData = {
     startNodeId?: string,
     endNodeId?: string,
     points?: Coordinate[]
 };
 
-export type SyncedFlowTag = SyncedType<{
-    nodeId?: string,
-    namedPaths?: NamedFlowPath[],
+/**
+ * @description Data representing a flow entry
+ * @property startNodeId - The ID of the node where the entry starts
+ * @property endNodeId - The ID of the node where the entry ends (can be the same as startNodeId)
+ * @property points - An array of x-y coordinates representing points lying between startNode and endNode
+ */
+export type SyncedFlowEntry = YProxied<{
+    startNodeId?: YString,
+    endNodeId?: YString,
+    points?: YProxiedArray<YCoordinate, Coordinate>
 }>;
 
-export type NamedFlowPath = {
+export type SyncedFlowTagData = {
+    nodeId?: string,
+    namedPaths?: NamedFlowPathData[],
+};
+
+export type SyncedFlowTag = YProxied<{
+    nodeId?: YString,
+    namedPaths?: YProxiedArray<NamedFlowPath, NamedFlowPathData>,
+}>;
+
+export type NamedFlowPathData = {
     name?: string,
     index?: number,
     branchIndices?: number[]
-}
+};
+
+export type NamedFlowPath = YProxied<{
+    name?: YString,
+    index?: YNumber,
+    branchIndices?: YProxiedArray<YNumber, number>
+}>;
 
 /**
  * @description Data representing information to locate a point inside a synced flow

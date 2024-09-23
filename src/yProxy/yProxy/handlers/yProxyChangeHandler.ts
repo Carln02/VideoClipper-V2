@@ -49,6 +49,6 @@ export class YProxyChangeHandler<Type = unknown> {
             this.hasPendingChange = false;
             this.toBeDeleted = false;
             this.pendingChange = null;
-        }, 1000);
+        }, YProxy.changesThrottlingTime);
     }
 }

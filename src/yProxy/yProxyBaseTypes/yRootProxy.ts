@@ -6,7 +6,7 @@ import {YProxyEventName, YRawEventType} from "../yProxy/types/events.types";
 import {YAbstractType, YMap} from "../yProxy/types/base.types";
 
 export class YRootProxy<Type extends object = object> extends YMapProxy<Type> {
-    constructor(data: Type | YMap<Type>, factory: YProxyFactory) {
+    constructor(data: YMap<Type>, factory: YProxyFactory) {
         super(data, null, null, factory);
         this.setupDeepObserver();
     }

@@ -28,9 +28,7 @@ import {PanelThumb} from "../basicComponents/panelThumb/panelThumb";
 import {Direction, PanelThumbProperties} from "../basicComponents/panelThumb/panelThumb.types";
 import {randomColor} from "../../../utils/random";
 import {SyncedComponent} from "../../abstract/syncedComponent/syncedComponent";
-import {YProxiedArray, YString} from "../../../../yProxy/yProxy/types/proxied.types";
-import {YProxyEventName} from "../../../../yProxy/yProxy/types/events.types";
-import {YPath} from "../../../../yProxy/yProxy/types/base.types";
+import {YProxiedArray, YString, YProxyEventName, YPath} from "../../../../yProxy";
 
 @define("vc-timeline")
 export class Timeline extends SyncedComponent<YProxiedArray<SyncedClip>> {
@@ -75,9 +73,10 @@ export class Timeline extends SyncedComponent<YProxiedArray<SyncedClip>> {
                 this.clips[index]?.destroy();
                 this.clips.splice(index, 1);
             } else if (!oldValue) {
-                const clip = new Clip(newValue);
+                const clip = new Clip();
                 this.clipsContainer.addChild(clip, index);
                 this.clips.splice(index, 0, clip);
+                clip.data = newValue;
             } else {
                 const clip: Clip = this.clips[index];
                 if (clip) clip.data = newValue;
@@ -85,7 +84,7 @@ export class Timeline extends SyncedComponent<YProxiedArray<SyncedClip>> {
 
             this.reloadTime();
             this.reloadCurrentClip();
-        }, this);
+        }, this, true);
     }
 
     private initUI(properties: PanelThumbProperties) {

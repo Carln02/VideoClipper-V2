@@ -7,6 +7,13 @@ export enum CaptureMode {
     videoShooting = "VIDEO SHOOTING"
 }
 
+export type SyncedMediaData = {
+    type?: "image" | "video",
+    timestamp?: number,
+    duration?: number,
+    media?: string
+};
+
 export type SyncedMedia = YProxied<{
     type?: YProxied<"image" | "video">,
     timestamp?: YNumber,

@@ -3,6 +3,7 @@ import {YProxy} from "../yProxy";
 import {equalToAny} from "turbodombuilder";
 import {YEventTypes, YProxyEventName, YRawEventType, YCallback, YCallbackData} from "../types/events.types";
 import {YPath} from "../types/base.types";
+import {Timeline} from "../../../client/app/components/timeline/timeline";
 
 export class YProxyCallbackHandler {
     private readonly proxy: YProxy;
@@ -25,8 +26,12 @@ export class YProxyCallbackHandler {
 
         const callbackData: YCallbackData = {callback: callback, context: context};
         this.eventListeners.get(eventType)!.push(callbackData);
-        if (context) this.boundObjectsSet.add(context);
+        this.bindObject(context);
         if (executeOnBind) this.initializeCallback(eventType, callbackData);
+    }
+
+    public bindObject(object: object) {
+        if (object) this.boundObjectsSet.add(object);
     }
 
     public unbindCallback(eventType: YProxyEventName, callback: YCallback) {
@@ -70,11 +75,11 @@ export class YProxyCallbackHandler {
         const path = this.proxy.getPath();
         if (equalToAny(eventType, YProxyEventName.added, YProxyEventName.changed, YProxyEventName.updated,
             YProxyEventName.selfOrSubTreeAdded, YProxyEventName.selfOrSubTreeChanged, YProxyEventName.selfOrSubTreeUpdated)) {
-            this.executeCallback(callbackData, this.proxy, this.proxy, false, path);
+            this.executeCallback(callbackData, this.proxy, undefined, false, path);
         } else if (equalToAny(eventType, YProxyEventName.entryAdded, YProxyEventName.entryChanged, YProxyEventName.entryUpdated)) {
             this.proxy.getYjsKeys().forEach(key => {
                 const value = this.proxy.getProxyByKey(key);
-                this.executeCallback(callbackData, value, value, false, [...path, key]);
+                this.executeCallback(callbackData, value, undefined, false, [...path, key]);
             });
         }
     }

@@ -4,8 +4,8 @@ import { IndexeddbPersistence } from 'y-indexeddb'
 
 import * as crypto from "./crypto"
 import WebsocketProvider from "./websocket_manager"
-import {YProxyFactory} from "../../yProxy/yProxy";
-import {DocumentData} from "../app/views/canvas/canvas.types";
+import {YProxyFactory} from "../../yProxy";
+import {SyncedDocumentData} from "../app/views/canvas/canvas.types";
 
 
 
@@ -41,7 +41,7 @@ export function leave_room() {
 	y_room = undefined;
 }
 
-export function documentRoot(): DocumentData {
+export function documentRoot(): SyncedDocumentData {
 	return factory?.root;
 }
 

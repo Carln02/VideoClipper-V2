@@ -3,7 +3,7 @@ import {YProxyCallbackHandler} from "./handlers/yProxyCallbackHandler";
 import {YProxyCacheHandler} from "./handlers/yProxyCacheHandler";
 import {YProxyChangeHandler} from "./handlers/yProxyChangeHandler";
 import {YMapProxy} from "../yProxyBaseTypes/yMapProxy";
-import {YPath, YProxyChanged, YValue} from "./types/base.types";
+import {YDoc, YPath, YProxyChanged, YValue} from "./types/base.types";
 import {YProxyEventName, YCallback} from "./types/events.types";
 
 export abstract class YProxy<YType extends YValue = YValue, DataType = unknown> {
@@ -11,22 +11,23 @@ export abstract class YProxy<YType extends YValue = YValue, DataType = unknown> 
 
     public yData: YType;
 
+    public readonly factory: YProxyFactory;
+
     public readonly key: string | number;
     public readonly parent: YProxy;
 
-    public static changesThrottlingTime: 500;
-
-    public readonly factory: YProxyFactory;
+    public static changesThrottlingTime: number = 500;
 
     public readonly callbackHandler: YProxyCallbackHandler;
     public readonly cacheHandler: YProxyCacheHandler;
     public readonly changeHandler: YProxyChangeHandler<DataType>;
 
-    public constructor(data: DataType | YType, key: string | number, parent: YProxy, factory: YProxyFactory) {
+    public constructor(data: YType, key: string | number, parent: YProxy, factory: YProxyFactory) {
         this.proxy = this.generateProxy();
 
+        this.yData = data;
+
         this.factory = factory;
-        this.yData = this.factory.toYjs(data, key, parent) as YType;
 
         this.key = key;
         this.parent = parent;
@@ -84,6 +85,9 @@ export abstract class YProxy<YType extends YValue = YValue, DataType = unknown> 
         return current as YMapProxy;
     }
 
+    public getDoc(): YDoc {
+        return this.getRoot().yData.doc;
+    }
 
     public getPath(): (string | number)[] {
         const path = [];
@@ -114,12 +118,21 @@ export abstract class YProxy<YType extends YValue = YValue, DataType = unknown> 
         this.bind(YProxyEventName.entryAdded, tempCallback, this);
     }
 
+    public bindObject(object: object) {
+        this.callbackHandler.bindObject(object);
+    }
+
     public unbindCallback(eventType: YProxyEventName, callback: YCallback) {
         this.callbackHandler.unbindCallback(eventType, callback);
     }
 
-    public unbindObject(context: object) {
-        this.callbackHandler.unbindObject(context);
+    public unbindObject(object: object) {
+        this.callbackHandler.unbindObject(object);
+    }
+
+    public unbindObjectDeep(object: object) {
+        this.callbackHandler.unbindObject(object);
+        this.proxy.getYjsKeys().forEach(key => this.proxy.getProxyByKey(key).unbindObjectDeep(object));
     }
 
     public getBoundObjectOfType<Type extends object>(type: new (...args: unknown[]) => Type): Type {
@@ -158,12 +171,16 @@ export abstract class YProxy<YType extends YValue = YValue, DataType = unknown> 
 
     //Proxy generation method
 
-    private generateProxy(): this & DataType {
+    protected generateProxy(): this & DataType {
         return new Proxy(this, {
             get: (target: YProxy<YType, DataType>, prop: string | symbol) => {
                 if (prop === Symbol.toPrimitive) return (hint: string) => target[Symbol.toPrimitive](hint);
                 if (target.isInPrototype(prop)) return target[prop];
-                return target?.getProxyByKey(prop.toString());
+
+                const proxy = target?.getProxyByKey(prop.toString());
+                if (proxy) return proxy;
+
+                return target.customProxyGetter(prop);
             },
             set: (target: YProxy<YType, DataType>, prop: string | symbol, value) => {
                 const key = prop.toString();
@@ -176,14 +193,18 @@ export abstract class YProxy<YType extends YValue = YValue, DataType = unknown> 
                 if (typeof target.yData != "object") return true;
 
                 const child = target.getProxyByKey(key);
+                const doc = target.getDoc();
 
                 if (child) {
-                    child.diffChanges(value, false, child.value);
+                    if (doc) doc.transact(() => child.diffChanges(value, false, child.value));
+                    else child.diffChanges(value, false, child.value);
                 } else {
-                    target.factory.toYjs(value, key, target);
+                    if (doc) doc.transact(() => target.factory.toYjs(value, key, target));
+                    else target.factory.toYjs(value, key, target);
                     const proxy = target.getProxyByKey(key);
                     proxy.callbackHandler.dispatchCallbacks(YProxyEventName.added, undefined, true);
                 }
+
                 return true;
             },
             deleteProperty: (target: YProxy<YType, DataType>, prop: string) => {
@@ -209,6 +230,10 @@ export abstract class YProxy<YType extends YValue = YValue, DataType = unknown> 
                 return undefined;
             },
         }) as this & DataType;
+    }
+
+    protected customProxyGetter(prop: string | symbol): unknown {
+        return this.yData[prop];
     }
 
     //Private utilities

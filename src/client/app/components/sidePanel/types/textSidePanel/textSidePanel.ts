@@ -8,7 +8,7 @@ import {TextElement} from "../../../textElement/textElement";
 import {SidePanelInstance} from "../../sidePanel.types";
 import {ContextManager} from "../../../../managers/contextManager/contextManager";
 import {YCoordinate, YNumber} from "../../../../../../yProxy/yProxy/types/proxied.types";
-import {YProxyEventName} from "../../../../../../yProxy/yProxy";
+import {YProxyEventName} from "../../../../../../yProxy";
 
 @define("text-side-panel")
 export class TextSidePanel extends SyncedComponent<SyncedText> implements SidePanelInstance {
@@ -29,19 +29,13 @@ export class TextSidePanel extends SyncedComponent<SyncedText> implements SidePa
     }
 
     protected setupCallbacks() {
-        this.data.bind(YProxyEventName.entryAdded, (_newValue, _oldValue, _isLocal, path) => {
-            switch (path[path.length - 1].toString()) {
-                case "origin":
-                    this.data.origin.bind(YProxyEventName.changed, (value: Coordinate) => {
-                        this.originXInput.value = value.x;
-                        this.originYInput.value = value.y;
-                    }, this);
-                    break;
-                case "fontSize":
-                    this.data.fontSize.bind(YProxyEventName.changed, (value: number) =>
-                        this.fontSizeInput.value = value, this);
-            }
+        this.data.origin.bind(YProxyEventName.changed, (value: Coordinate) => {
+            this.originXInput.value = value.x;
+            this.originYInput.value = value.y;
         }, this);
+
+        this.data.fontSize.bind(YProxyEventName.changed, (value: number) =>
+            this.fontSizeInput.value = value, this);
     }
 
     public attach() {

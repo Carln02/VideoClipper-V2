@@ -5,14 +5,14 @@ import {Toolbar} from "../../components/toolbar/toolbar";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {ContextView} from "../../managers/contextManager/contextManager.types";
 import {AppBar} from "../../components/appBar/appBar";
-import {DocumentData} from "./canvas.types";
+import {SyncedDocumentData} from "./canvas.types";
 import {Card} from "../../components/card/card";
 import {SyncedCard} from "../../components/card/card.types";
 import {SyncedBranchingNode} from "../../components/branchingNode/branchingNode.types";
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {SyncedFlow} from "../../components/flow/flow.types";
 import {Flow} from "../../components/flow/flow";
-import {YPath, YProxied, YProxyEventName} from "../../../../yProxy/yProxy";
+import {YPath, YProxied, YProxyEventName} from "../../../../yProxy";
 
 /**
  * @description Class representing a canvas on which the user can add cards, connect them, move them around, etc.
@@ -22,7 +22,7 @@ export class Canvas extends TurboElement {
     //Singleton
     private static _instance: Canvas = null;
 
-    private data: DocumentData;
+    private data: SyncedDocumentData;
 
     private appBar: AppBar;
 
@@ -40,7 +40,7 @@ export class Canvas extends TurboElement {
     //Main toolbar
     private readonly toolbar: Toolbar;
 
-    constructor(data: DocumentData) {
+    constructor(data: SyncedDocumentData) {
         ContextManager.instance.view = ContextView.canvas;
 
         //Cancel construction if exists already

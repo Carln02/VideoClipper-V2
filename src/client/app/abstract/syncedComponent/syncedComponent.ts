@@ -1,8 +1,8 @@
 import {TurboElement, TurboProperties} from "turbodombuilder";
 import {generate_unique_id, documentRoot} from "../../../sync/datastore";
-import {DocumentData} from "../../views/canvas/canvas.types";
+import {SyncedDocumentData} from "../../views/canvas/canvas.types";
 import {SyncedType} from "./syncedComponent.types";
-import {YProxied, YProxiedArray} from "../../../../yProxy/yProxy";
+import {YProxied, YProxiedArray} from "../../../../yProxy";
 
 /**
  * @class SyncedComponent
@@ -20,14 +20,14 @@ export abstract class SyncedComponent<DataType extends YProxied = YProxied> exte
         super(properties);
     }
 
-    protected abstract setupCallbacks(): void;
+    protected abstract setupCallbacks(newData: DataType, oldData: DataType): void;
 
     /**
      * @static
      * @description The root of the Yjs document.
      */
     //TODO REMOVE
-    public static get root(): DocumentData {
+    public static get root(): SyncedDocumentData {
         return documentRoot();
     }
 
@@ -79,7 +79,11 @@ export abstract class SyncedComponent<DataType extends YProxied = YProxied> exte
     }
 
     public set data(value: DataType) {
+        const oldData = this.data;
+        oldData?.unbindObjectDeep(this);
         this._data = value;
+        value.bindObject(this);
+        this.setupCallbacks(value, oldData);
     }
 
     /**

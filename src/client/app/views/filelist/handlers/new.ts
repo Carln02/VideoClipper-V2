@@ -2,7 +2,7 @@ import {Popup} from "../../../components/popup/popup";
 import * as logman from "../../../../sync/logman";
 import * as index from "../../../index";
 import {documentRoot} from "../../../../sync/datastore";
-import {proxied, YNumber, YRecord} from "../../../../../yProxy/yProxy/types/proxied.types";
+import {proxied, YNumber, YRecord} from "../../../../../yProxy";
 import {SyncedCard} from "../../../components/card/card.types";
 import {SyncedBranchingNode} from "../../../components/branchingNode/branchingNode.types";
 import {SyncedFlow} from "../../../components/flow/flow.types";

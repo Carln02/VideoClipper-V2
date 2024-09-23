@@ -3,10 +3,10 @@ import * as d3 from "d3";
 import {FlowHandler} from "../flow.handler";
 import {Flow} from "../../flow";
 import {SyncedFlowBranch} from "../../flow.types";
-import {SyncedType} from "../../../../abstract/syncedComponent/syncedComponent.types";
+import {YProxiedArray} from "../../../../../../yProxy";
 
 export class FlowDrawingHandler extends FlowHandler {
-    private _data: SyncedType<SyncedFlowBranch[]>;
+    private _data: YProxiedArray<SyncedFlowBranch>;
 
     //Intervals at which chevrons are placed
     private readonly chevronInterval = 300 as const;
@@ -32,14 +32,14 @@ export class FlowDrawingHandler extends FlowHandler {
         this.data = flow.data.flowBranches;
     }
 
-    public get data(): SyncedType<SyncedFlowBranch[]> {
+    public get data(): YProxiedArray<SyncedFlowBranch> {
         return this._data;
     }
 
-    private set data(value: SyncedType<SyncedFlowBranch[]>) {
-        this.data?.unobserve(this);
+    private set data(value: YProxiedArray<SyncedFlowBranch>) {
+        this.data?.unbindObjectDeep(this);
         this._data = value;
-        if (value && value.observe) value.observe(this);
+        value.bindObject(this);
     }
 
     /**

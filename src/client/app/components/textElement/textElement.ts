@@ -1,4 +1,4 @@
-import {SyncedText, TextType} from "./textElement.types";
+import {SyncedText, SyncedTextData, TextType} from "./textElement.types";
 import {Coordinate, define, element, Point, TurboEvent, TurboEventName} from "turbodombuilder";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import "./textElement.css";
@@ -11,8 +11,7 @@ import {Resizer} from "../basicComponents/resizer/resizer";
 import {SyncedComponent} from "../../abstract/syncedComponent/syncedComponent";
 import {Card} from "../card/card";
 import {Camera} from "../../views/camera/camera";
-import {YCoordinate, YNumber, YString} from "../../../../yProxy/yProxy/types/proxied.types";
-import {YProxyEventName} from "../../../../yProxy/yProxy/types/events.types";
+import {YCoordinate, YNumber, YString, YProxyEventName} from "../../../../yProxy";
 
 @define("vc-text-entry")
 export class TextElement extends SyncedComponent<SyncedText> {
@@ -43,48 +42,36 @@ export class TextElement extends SyncedComponent<SyncedText> {
     }
 
     protected setupCallbacks() {
-        this.data.bind(YProxyEventName.entryAdded, (_newValue, _oldValue, _isLocal, path) => {
-            switch (path[path.length - 1].toString()) {
-                case "text":
-                    this.data.text.bind(YProxyEventName.changed, (value: string) => {
-                        if (this.data.type == TextType.custom) this.textContent = value;
-                    }, this);
-                    break;
-                case "type":
-                    this.data.type.bind(YProxyEventName.changed, (value: TextType) => {
-                        switch (value) {
-                            case TextType.timestamp:
-                                this.textValue = this.card.data.metadata.timestamp;
-                                return;
-                            case TextType.title:
-                                this.textValue = this.card.data.title;
-                                return;
-                            default:
-                                this.textValue = this.data.text;
-                                return;
-                        }
-                    }, this);
-                    break;
-                case "origin":
-                    this.data.origin.bind(YProxyEventName.changed, (value: Coordinate) => {
-                        this.setStyle("transform", `translate3d(calc(${(value.x * this.renderer.width) || 0}px - 50%), 
+        this.data.origin.bind(YProxyEventName.changed, (value: Coordinate) => {
+            this.setStyle("transform", `translate3d(calc(${(value.x * this.renderer.width) || 0}px - 50%), 
                         calc(${(value.y * this.renderer.height) || 0}px - 50%), 0)`);
-                    }, this);
-                    break;
-                case "fontSize":
-                    this.data.fontSize.bind(YProxyEventName.changed, (value: number) => this.content
-                        .setStyle("fontSize", value * this.renderer.offsetHeight + "px"), this);
-                    break;
-                case "boxWidth":
-                    this.data.boxWidth.bind(YProxyEventName.changed, (value: number) =>
-                        this.setStyle("width", value + "%"), this);
-                    break;
-                case "boxHeight":
-                    this.data.boxHeight.bind(YProxyEventName.changed, (value: number) =>
-                        this.setStyle("height", value + "%"), this);
-                    break;
+        }, this);
+
+        this.data.type.bind(YProxyEventName.changed, (value: TextType) => {
+            switch (value.valueOf()) {
+                case TextType.timestamp:
+                    this.textValue = this.card.data.metadata.timestamp.value;
+                    return;
+                case TextType.title:
+                    this.textValue = this.card.data.title.value;
+                    return;
+                default:
+                    this.textValue = this.data.text.value;
+                    return;
             }
         }, this);
+
+        this.data.fontSize.bind(YProxyEventName.changed, (value: number) => this.content
+            .setStyle("fontSize", value * this.renderer.offsetHeight + "px"), this);
+
+        this.data.bindAtKey("text", YProxyEventName.changed, (value: YString) => {
+            if (this.data.type == TextType.custom) this.textContent = value.value;
+        }, this);
+
+        this.data.bindAtKey("boxWidth", YProxyEventName.changed, (value: number) =>
+            this.setStyle("width", value + "%"), this);
+        this.data.bindAtKey("boxHeight", YProxyEventName.changed, (value: number) =>
+            this.setStyle("height", value + "%"), this);
     }
 
     public get clip(): Clip {
@@ -95,7 +82,7 @@ export class TextElement extends SyncedComponent<SyncedText> {
         return this.clip.card;
     }
 
-    public static create(data: SyncedText, cardId: string, clipIndex: number, index?: number): number {
+    public static create(data: SyncedTextData, cardId: string, clipIndex: number, index?: number): number {
         const clipContent = this.root.cards[cardId]?.syncedClips[clipIndex]?.content;
         if (!clipContent) return -1;
         return super.createInArray(data, clipContent, index);

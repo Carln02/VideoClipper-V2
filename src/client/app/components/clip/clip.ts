@@ -1,4 +1,4 @@
-import {SyncedClip} from "./clip.types";
+import {SyncedClip, SyncedClipData} from "./clip.types";
 import "./clip.css";
 import {get_video} from "../../../sync/videostore";
 import {ContextManager} from "../../managers/contextManager/contextManager";
@@ -23,8 +23,7 @@ import domToImage from "dom-to-image-more";
 import {SyncedText, TextType} from "../textElement/textElement.types";
 import {TextElement} from "../textElement/textElement";
 import {SyncedMedia} from "../../views/camera/manager/captureManager/captureManager.types";
-import {YNumber, YString} from "../../../../yProxy/yProxy/types/proxied.types";
-import {YProxyEventName} from "../../../../yProxy/yProxy/types/events.types";
+import {YNumber, YString, YProxyEventName} from "../../../../yProxy";
 
 @define("vc-clip")
 export class Clip extends SyncedComponent<SyncedClip> {
@@ -43,14 +42,20 @@ export class Clip extends SyncedComponent<SyncedClip> {
 
     private readonly minimumDuration: number = 0.3 as const;
 
-    constructor(data: SyncedClip, properties: TurboProperties = {}) {
+    constructor(properties: TurboProperties = {}) {
         super(properties);
         this.clipContent = div({classes: "vc-clip-content", parent: this});
         this.thumbnailImage = img({src: "", parent: this.clipContent, classes: "thumbnail"});
         this.thumbnailImage.show(false);
+    }
 
-        if (!data.color) data.color = randomColor() as YString;
-        this.data = data;
+    public get data(): SyncedClip {
+        return super.data;
+    }
+
+    public set data(value: SyncedClip) {
+        if (!value.color) value.color = randomColor() as YString;
+        super.data = value;
     }
 
     /**
@@ -63,7 +68,7 @@ export class Clip extends SyncedComponent<SyncedClip> {
      * By default, the clip will be pushed to the end of the array.
      * @returns {number} - The index of the created clip in the card's syncedClips array, or -1 if an issue occurred.
      */
-    public static create(data: SyncedClip, cardId: string, index?: number): number {
+    public static create(data: SyncedClipData, cardId: string, index?: number): number {
         const cardClips = this.root.cards[cardId]?.syncedClips;
         if (!cardClips) return -1;
         return super.createInArray(data, cardClips, index);
@@ -91,46 +96,32 @@ export class Clip extends SyncedComponent<SyncedClip> {
             this.reloadThumbnail();
         });
 
-        this.data.bind(YProxyEventName.entryAdded, (_newValue, _oldValue, _isLocal, path) => {
-            const key = path[path.length - 1].toString();
-            switch (key) {
-                case "color":
-                    this.data.color.bind(YProxyEventName.changed, (value: string) =>
-                        this.clipContent.setStyle("backgroundColor", value), this);
-                    break;
-                case "startTime":
-                case "endTime":
-                    this.data[key].bind(YProxyEventName.changed, () => this.reloadSize(), this);
-                    break;
-                case "mediaId":
-                    this.data.mediaId.bind(YProxyEventName.changed, (value: string) =>
-                        this.updateMediaId(value), this);
-                    break;
-                case "hidden":
-                    this.data.hidden.bind(YProxyEventName.changed, (value: boolean) =>
-                        this.toggleClass("hidden-clip", value), this);
-                    break;
-                case "thumbnail":
-                    this.data.thumbnail.bind(YProxyEventName.changed, (value: string) => {
-                        this.thumbnailImage.show(true);
-                        this.thumbnailImage.src = value;
-                    }, this);
-                    break;
-            }
+        this.data.color.bind(YProxyEventName.changed, (value: string) =>
+            this.clipContent.setStyle("backgroundColor", value), this);
+
+        this.data.startTime.bind(YProxyEventName.changed, () => this.reloadSize(), this);
+        this.data.endTime.bind(YProxyEventName.changed, () => this.reloadSize(), this);
+
+        this.data.bindAtKey("mediaId", YProxyEventName.changed, (value: string) => {
+            const media = get_video(value);
+
+            this.metadata = media?.metadata ?? null;
+            this.uri = media?.uri ?? null;
+            this.videoDuration = media?.metadata?.type == "video" ? media.metadata.duration : null;
+
+            //TODO maybe remove this? idk
+            // if (media.metadata?.thumbnail) {
+            //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
+            // }
         }, this);
-    }
 
-    private updateMediaId(value: string) {
-        const media = get_video(value);
+        this.data.bindAtKey("hidden", YProxyEventName.changed, (value: boolean) =>
+            this.toggleClass("hidden-clip", value), this);
 
-        this.metadata = media?.metadata ?? null;
-        this.uri = media?.uri ?? null;
-        this.videoDuration = media?.metadata?.type == "video" ? media.metadata.duration : null;
-
-        //TODO maybe remove this? idk
-        // if (media.metadata?.thumbnail) {
-        //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
-        // }
+        this.data.bindAtKey("thumbnail", YProxyEventName.changed, (value: string) => {
+            this.thumbnailImage.show(true);
+            this.thumbnailImage.src = value;
+        }, this);
     }
 
     /**
@@ -211,7 +202,7 @@ export class Clip extends SyncedComponent<SyncedClip> {
         for (const observer of this.data.parent.getBoundObjectsOfType(Timeline)) {
             if (observer.clips.includes(this)) return observer;
         }
-        return;
+        return this.data.parent.getBoundObjectOfType(Timeline);
     }
 
     public get card(): Card {
@@ -239,7 +230,7 @@ export class Clip extends SyncedComponent<SyncedClip> {
     }
 
     private get pixelsPerSecondUnit(): number {
-        return this.card?.timeline.pixelsPerSecondUnit;
+        return this.timeline?.pixelsPerSecondUnit;
     }
 
     public get duration() {
@@ -272,7 +263,7 @@ export class Clip extends SyncedComponent<SyncedClip> {
      */
     public reloadSize() {
         this.setStyle("width", this.pixelsPerSecondUnit * this.duration + "px");
-        this.card?.timeline.reloadTime();
+        this.timeline.reloadTime();
     }
 
     /**
@@ -281,7 +272,8 @@ export class Clip extends SyncedComponent<SyncedClip> {
      * @returns {Clip} - The clone.
      */
     public clone(): Clip {
-        const clone = new Clip(this.data);
+        const clone = new Clip();
+        clone.data = this.data;
         clone.setStyle("width", this.offsetWidth + "px");
         clone.setStyle("height", this.offsetHeight + "px");
         clone.selected = this.selected;

@@ -1,9 +1,10 @@
 import {define, Direction, TurboSelectEntry, TurboSelectWheel} from "turbodombuilder";
 import "./flowTag.css";
-import {NamedFlowPath, SyncedFlowTag} from "../flow/flow.types";
+import {NamedFlowPath, NamedFlowPathData, SyncedFlowTag} from "../flow/flow.types";
 import {BranchingNode} from "../branchingNode/branchingNode";
 import {Flow} from "../flow/flow";
 import {SyncedComponent} from "../../abstract/syncedComponent/syncedComponent";
+import {YProxiedArray} from "../../../../yProxy";
 
 @define("vc-flow-tag")
 export class FlowTag extends SyncedComponent<SyncedFlowTag> {
@@ -26,6 +27,9 @@ export class FlowTag extends SyncedComponent<SyncedFlowTag> {
         }).setStyle("margin", 0);
     }
 
+    protected setupCallbacks() {
+    }
+
     private get attachedNode(): BranchingNode {
         return BranchingNode.getById(this.data.nodeId);
     }
@@ -45,13 +49,13 @@ export class FlowTag extends SyncedComponent<SyncedFlowTag> {
 
     public regeneratePaths(updateWheel: boolean = true) {
         const paths = this.flow.managementHandler.getPathsFromNode(this.data.nodeId);
-        if (!this.data.namedPaths) this.data.namedPaths = [];
+        if (!this.data.namedPaths) this.data.namedPaths = [] as YProxiedArray<NamedFlowPath>;
 
         const sortedNamedPaths: NamedFlowPath[] = this.data.namedPaths
             .sort((p1, p2) => p2.branchIndices.length - p1.branchIndices.length);
 
-        const newNamedPaths: NamedFlowPath[] = [];
-        paths.forEach(path => newNamedPaths.push(this.getName(path, sortedNamedPaths)));
+        const newNamedPaths: YProxiedArray<NamedFlowPath> = [] as YProxiedArray<NamedFlowPath>;
+        paths.forEach(path => newNamedPaths.push(this.getName(path, sortedNamedPaths) as NamedFlowPath));
         this.data.namedPaths = newNamedPaths;
         if (updateWheel) {
             const selectedValue = this.wheel.selectedValue;
@@ -60,7 +64,7 @@ export class FlowTag extends SyncedComponent<SyncedFlowTag> {
         }
     }
 
-    private getName(path: number[], namedPaths: NamedFlowPath[]): NamedFlowPath {
+    private getName(path: number[], namedPaths: NamedFlowPath[]): NamedFlowPathData {
         for (const namedPath of namedPaths) {
             if (namedPath.branchIndices.length > path.length) continue;
             let skip = false;
