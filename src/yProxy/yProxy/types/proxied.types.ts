@@ -36,7 +36,9 @@ export type YProxied<Type = object> = Type & {
     getRoot(): YMapProxy,
     getDoc(): YDoc,
     getPath(): (string | number)[],
+
     getProxyByKey(key: string | number): YProxy,
+    getAllChildren(): YProxy[],
 
     bind(eventType: YProxyEventName, callback: YCallback, context?: object, executeOnBind?: boolean): void,
     bindAtKey(key: string | number, eventType: YProxyEventName, handler: YCallback, context?: object,
@@ -76,4 +78,5 @@ export type YProxiedArray<YType = YProxied, DataType = unknown> = YProxied<Array
     splice(index: number, deleteCount: number, ...entries: (YType | DataType)[]): number;
     insert(index: number, ...entries: (YType | DataType)[]): number;
     indexOf(entry: YType | DataType): number;
+    includes(entry: YType | DataType): boolean;
 };

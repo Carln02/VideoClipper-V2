@@ -93,8 +93,7 @@ export class Card extends BranchingNode<SyncedCard> {
      * @returns {Card[]} - Array containing all the cards in the document.
      */
     public static getAll(): Card[] {
-        return Object.values(this.root.cards.value)
-            .flatMap(cardData => cardData.getBoundObjectsOfType(Card));
+        return this.root.cards.getAllChildren().flatMap(cardData => cardData.getBoundObjectsOfType(Card));
     }
 
     protected setupCallbacks(): void {

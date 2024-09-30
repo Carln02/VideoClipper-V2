@@ -11,11 +11,10 @@ export class YArrayProxy<Type extends unknown[] = unknown[]> extends YProxy<YArr
         const yArray = new YArray();
         if (parent) (parent as YArrayProxy).setByKey(key, yArray);
 
-        const yArrayProxy: YProxy = parent[key];
-        array.forEach((item, key) => yArray.push([factory.toYjs(item, key, yArrayProxy)]));
+        const yArrayProxy: YProxy = parent.getProxyByKey(key);
+        array.forEach((item, childKey) => factory.toYjs(item, childKey, yArrayProxy));
         return yArray;
     }
-
 
     public static canHandle(data: unknown): boolean {
         return (typeof data == "object" && Array.isArray(data) && !(data instanceof YAbstractType)) || data instanceof YArray;
@@ -67,18 +66,9 @@ export class YArrayProxy<Type extends unknown[] = unknown[]> extends YProxy<YArr
 
     protected customProxyGetter(prop: string | symbol): unknown {
         const methodName = prop.toString();
-        if (!["push", "unshift", "insert", "splice", "indexOf"].includes(methodName)) return this.yData[methodName];
+        if (!["push", "unshift", "insert", "splice"].includes(methodName)) return this.yData[methodName];
 
         return (...args: unknown[]) => {
-            if (methodName == "indexOf") {
-                if (!args[0]) return -1;
-                if (args[0] instanceof YProxy) return args[0].key;
-                for (const i of this.getYjsKeys()) {
-                    if (this.getProxyByKey(i).value == args[0]) return i;
-                }
-                return -1;
-            }
-
             let index: number;
             switch (methodName) {
                 case "push":
@@ -129,6 +119,19 @@ export class YArrayProxy<Type extends unknown[] = unknown[]> extends YProxy<YArr
         };
     }
 
+    public indexOf(value: Type): number {
+        if (!value) return -1;
+        if (value instanceof YProxy) return value.index;
+        for (const i of this.getYjsKeys()) {
+            if (this.getProxyByKey(i).value === value) return i;
+        }
+        return -1;
+    }
+
+    public includes(value: Type): boolean {
+        return this.indexOf(value) != -1;
+    }
+
     public getByKey(key: number): unknown {
         return this.yData.get(key);
     }
@@ -148,7 +151,7 @@ export class YArrayProxy<Type extends unknown[] = unknown[]> extends YProxy<YArr
         return key >= 0 && this.yData.length > key;
     }
 
-    public getYjsKeys(): string[] {
+    public getYjsKeys(): number[] {
         const keys = [];
         for (let i = 0; i < this.yData.length; i++) keys.push(i);
         return keys;

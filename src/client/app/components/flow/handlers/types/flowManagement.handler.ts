@@ -1,4 +1,4 @@
-import {Point} from "turbodombuilder";
+import {Coordinate, Point} from "turbodombuilder";
 import {Flow} from "../../flow";
 import {FlowPoint, SyncedFlowBranch, SyncedFlowEntry} from "../../flow.types";
 import {FlowHandler} from "../flow.handler";
@@ -19,9 +19,10 @@ export class FlowManagementHandler extends FlowHandler {
                 //If the flow entry represents points inside the node that has moved --> increment all points' coordinates
                 // by deltaPosition
                 if (entry.startNodeId == nodeId && entry.endNodeId == nodeId) {
-                    entry.points.forEach(p => {
-                        p.x += deltaPosition.x;
-                        p.y += deltaPosition.y;
+                    entry.points.forEach((p: Coordinate) => {
+                        console.log(p);
+                        p.x = p.x + deltaPosition.x;
+                        p.y = p.y + deltaPosition.y;
                     });
                 }
                     //Otherwise --> the entry corresponds to points connecting the moved node with another node. Thus, I move each
@@ -34,8 +35,9 @@ export class FlowManagementHandler extends FlowHandler {
                         //Flip interpolation if points start from the given node (as then it should start high and end low)
                         if (entry.startNodeId == nodeId) moveFactor = 1 - moveFactor;
                         //Update accordingly the point's coordinates
-                        entry.points[i].x += deltaPosition.x * moveFactor;
-                        entry.points[i].y += deltaPosition.y * moveFactor;
+                        const point: Coordinate = entry.points[i];
+                        point.x = point.x + deltaPosition.x * moveFactor;
+                        point.y = point.y + deltaPosition.y * moveFactor;
                     }
                 }
             });

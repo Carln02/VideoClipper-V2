@@ -2,7 +2,7 @@ import {define, Point} from "turbodombuilder";
 import {Canvas} from "../../views/canvas/canvas";
 import "./flow.css";
 import {SyncedComponent} from "../../abstract/syncedComponent/syncedComponent";
-import {SyncedFlow, SyncedFlowBranch, SyncedFlowData, SyncedFlowTag} from "./flow.types";
+import {SyncedFlow, SyncedFlowBranch, SyncedFlowData} from "./flow.types";
 import {FlowTag} from "../flowTag/flowTag";
 import {FlowDrawingHandler} from "./handlers/types/flowDrawing.handler";
 import {FlowPointHandler} from "./handlers/types/flowPoint.handler";
@@ -12,8 +12,7 @@ import {FlowBranchingHandler} from "./handlers/types/flowBranching.handler";
 import {FlowManagementHandler} from "./handlers/types/flowManagement.handler";
 import {FlowIntersectionHandler} from "./handlers/types/flowIntersection.handler";
 import * as d3 from "d3";
-import {SyncedType} from "../../abstract/syncedComponent/syncedComponent.types";
-import {YPath, YProxiedArray, YProxyEventName} from "../../../../yProxy";
+import {YProxiedArray} from "../../../../yProxy";
 
 /**
  * @description A reactiveComponent that represents a flow connecting cards
@@ -43,33 +42,35 @@ export class Flow extends SyncedComponent<SyncedFlow> {
     constructor(data: SyncedFlow, parent: HTMLElement) {
         super({parent: parent});
 
-        this.data = data;
-
         //Create SVG using D3
         this.svg = d3.select(this).append("svg")
             .attr("namespace", "http://www.w3.org/2000/svg").node();
         this.svgGroups = new Map<number, SVGGElement>();
 
+        this.data = data;
+
         this.utilities = new FlowUtilities(this);
 
-        this.drawingHandler = new FlowDrawingHandler(this);
+        this.drawingHandler = new FlowDrawingHandler(this, data.flowBranches);
         this.intersectionHandler = new FlowIntersectionHandler(this);
 
         this.pointHandler = new FlowPointHandler(this);
         this.branchingHandler = new FlowBranchingHandler(this);
         this.managementHandler = new FlowManagementHandler(this);
         this.searchHandler = new FlowSearchHandler(this);
+
+
     }
 
     public static async create(p: Point, nodeId: string): Promise<Flow> {
         this.root.counters.flows++;
         const defaultName = "Flow " + this.root.counters.flows;
-        let data: SyncedFlowData = {
+        const data: SyncedFlowData = {
             defaultName: defaultName,
             flowBranches: [{
                 flowEntries: [{startNodeId: nodeId, endNodeId: nodeId, points: [p.object]}],
                 childBranches: []
-            }] as SyncedType<SyncedFlowBranch[]>,
+            }],
             flowTags: [{
                 nodeId: nodeId,
                 namedPaths: [{
@@ -77,7 +78,7 @@ export class Flow extends SyncedComponent<SyncedFlow> {
                     index: 1,
                     branchIndices: [0]
                 }]
-            } as SyncedFlowTag]
+            }]
         };
 
         const id = await super.createInObject(data, this.root.flows);
@@ -85,8 +86,7 @@ export class Flow extends SyncedComponent<SyncedFlow> {
     }
 
     public static getAll(): Flow[] {
-        return Object.values(this.root.flows.value)
-            .flatMap(flowData => flowData.getBoundObjectsOfType(Flow));
+        return this.root.flows.getAllChildren().flatMap(flowData => flowData.getBoundObjectsOfType(Flow));
     }
 
     public static getDataById(id: string): SyncedFlow {
@@ -98,24 +98,24 @@ export class Flow extends SyncedComponent<SyncedFlow> {
     }
 
     protected setupCallbacks() {
-        this.data.flowTags.bind(YProxyEventName.entryChanged,
-            (newValue: SyncedFlowTag, oldValue: SyncedFlowTag, _isLocal, path: YPath) => {
-                if (!newValue && !oldValue) return;
-
-                const key = path[path.length - 1];
-                const index = typeof key == "number" ? key : Number.parseInt(key);
-
-                if (!newValue) {
-                    this.flowTagsElements[index]?.destroy();
-                    this.flowTagsElements.splice(index, 1);
-                } else if (!oldValue) {
-                    const flowTag = new FlowTag(this, newValue);
-                    this.flowTagsElements.splice(index, 0, flowTag);
-                } else {
-                    const flowTag = this.flowTagsElements[index];
-                    if (flowTag) flowTag.data = newValue;
-                }
-            }, this);
+        // this.data.flowTags.bind(YProxyEventName.entryChanged,
+        //     (newValue: SyncedFlowTag, oldValue: SyncedFlowTag, _isLocal, path: YPath) => {
+        //         if (!newValue && !oldValue) return;
+        //
+        //         const key = path[path.length - 1];
+        //         const index = typeof key == "number" ? key : Number.parseInt(key);
+        //
+        //         if (!newValue) {
+        //             this.flowTagsElements[index]?.destroy();
+        //             this.flowTagsElements.splice(index, 1);
+        //         } else if (!oldValue) {
+        //             const flowTag = new FlowTag(this, newValue);
+        //             this.flowTagsElements.splice(index, 0, flowTag);
+        //         } else {
+        //             const flowTag = this.flowTagsElements[index];
+        //             if (flowTag) flowTag.data = newValue;
+        //         }
+        //     }, this);
     }
 
     public get flowBranches(): YProxiedArray<SyncedFlowBranch> {

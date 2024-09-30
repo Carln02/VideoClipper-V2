@@ -48,20 +48,20 @@ export class FlowTag extends SyncedComponent<SyncedFlowTag> {
     }
 
     public regeneratePaths(updateWheel: boolean = true) {
-        const paths = this.flow.managementHandler.getPathsFromNode(this.data.nodeId);
-        if (!this.data.namedPaths) this.data.namedPaths = [] as YProxiedArray<NamedFlowPath>;
-
-        const sortedNamedPaths: NamedFlowPath[] = this.data.namedPaths
-            .sort((p1, p2) => p2.branchIndices.length - p1.branchIndices.length);
-
-        const newNamedPaths: YProxiedArray<NamedFlowPath> = [] as YProxiedArray<NamedFlowPath>;
-        paths.forEach(path => newNamedPaths.push(this.getName(path, sortedNamedPaths) as NamedFlowPath));
-        this.data.namedPaths = newNamedPaths;
-        if (updateWheel) {
-            const selectedValue = this.wheel.selectedValue;
-            this.wheel.values = this.generateWheelEntries();
-            this.wheel.select(selectedValue);
-        }
+        // const paths = this.flow.managementHandler.getPathsFromNode(this.data.nodeId);
+        // if (!this.data.namedPaths) this.data.namedPaths = [] as YProxiedArray<NamedFlowPath>;
+        //
+        // const sortedNamedPaths: NamedFlowPath[] = this.data.namedPaths
+        //     .sort((p1, p2) => p2.branchIndices.length - p1.branchIndices.length);
+        //
+        // const newNamedPaths: YProxiedArray<NamedFlowPath> = [] as YProxiedArray<NamedFlowPath>;
+        // paths.forEach(path => newNamedPaths.push(this.getName(path, sortedNamedPaths) as NamedFlowPath));
+        // this.data.namedPaths = newNamedPaths;
+        // if (updateWheel) {
+        //     const selectedValue = this.wheel.selectedValue;
+        //     this.wheel.values = this.generateWheelEntries();
+        //     this.wheel.select(selectedValue);
+        // }
     }
 
     private getName(path: number[], namedPaths: NamedFlowPath[]): NamedFlowPathData {

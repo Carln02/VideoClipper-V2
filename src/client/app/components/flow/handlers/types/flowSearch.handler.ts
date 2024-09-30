@@ -58,17 +58,19 @@ export class FlowSearchHandler extends FlowHandler {
         if (!flowEntries) return null;
 
         //Loop on entries
-        for (const entry of flowEntries) {
+        for (let entryIndex = 0; entryIndex < flowEntries.length; entryIndex++) {
+            const entry = flowEntries[entryIndex];
             //If entry is inside the given node --> store it
             if (entry.startNodeId == nodeId && entry.endNodeId == nodeId) {
                 return {
                     flowId: this.flow.id,
                     branchIndex: branchIndex,
-                    entryIndex: flowEntries.indexOf(entry),
+                    entryIndex: entryIndex,
                     lastNodeId: entry.startNodeId
                 };
             }
         }
+
         return null;
     }
 

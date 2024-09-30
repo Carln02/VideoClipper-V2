@@ -7,7 +7,6 @@ import {YCoordinate, YProxyEventName} from "../../../../yProxy";
 /**
  * @class BranchingNode
  * @extends SyncedComponent
- * @implements YWrapObserver<SyncedBranchingNode>
  * @description Component representing a node where flows start, branch, or end. Can be manipulated and moved on the
  * canvas.
  * @template {SyncedBranchingNode} Type
@@ -67,8 +66,8 @@ export class BranchingNode<Type extends SyncedBranchingNode = SyncedBranchingNod
      * @returns {BranchingNode[]} - Array containing all the branching nodes in the document.
      */
     public static getAll(): BranchingNode[] {
-        return Object.values(this.root.branchingNodes.value).concat(Object.values(this.root.cards.value))
-            .flatMap(branchingNodeData => branchingNodeData.getBoundObjectsOfType(BranchingNode))
+        return this.root.branchingNodes.getAllChildren().concat(this.root.cards.getAllChildren())
+            .flatMap(branchingNodeData => branchingNodeData.getBoundObjectsOfType(BranchingNode));
     }
 
     /**

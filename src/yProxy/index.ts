@@ -20,5 +20,4 @@ import {YProxyEventName, YRawEventType, YCallback, YCallbackData, YEventTypes} f
 export {YProxyEventName, YRawEventType, YCallback, YCallbackData, YEventTypes};
 
 import {proxied, YProxied, YBoolean, YNumber, YProxiedArray, YRecord, YString, YCoordinate, YPartialRecord} from "./yProxy/types/proxied.types";
-export {proxied, YProxied, YBoolean, YNumber
-    , YProxiedArray, YRecord, YString, YCoordinate, YPartialRecord};
+export {proxied, YProxied, YBoolean, YNumber, YProxiedArray, YRecord, YString, YCoordinate, YPartialRecord};

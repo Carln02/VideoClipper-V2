@@ -1,5 +1,6 @@
 import {Point} from "turbodombuilder";
 import {FlowHandler} from "../flow.handler";
+import {YString} from "../../../../../../yProxy";
 
 export class FlowPointHandler extends FlowHandler {
     /**
@@ -43,7 +44,7 @@ export class FlowPointHandler extends FlowHandler {
         }
         //Otherwise, if point in a new node --> add a flow entry starting and ending at that node, as well as the point
         else if (nodeId) {
-            if (!currentEntry.endNodeId) currentEntry.endNodeId = nodeId;
+            if (!currentEntry.endNodeId) currentEntry.endNodeId = nodeId as YString;
             flowEntries.push({startNodeId: nodeId, endNodeId: nodeId, points: [p.object]});
         }
         //Otherwise (point outside a node)
@@ -53,7 +54,7 @@ export class FlowPointHandler extends FlowHandler {
             if (!currentEntry.endNodeId) currentEntry.points.push(p.object);
                 //Otherwise --> create a new entry that connects the last node and a future unknown node, and add to
             //it the point
-            else flowEntries.push({startNodeId: currentEntry.endNodeId, points: [p.object]});
+            else flowEntries.push({startNodeId: currentEntry.endNodeId.value, points: [p.object]});
         }
     }
 }

@@ -38,7 +38,7 @@ export type SyncedFlowBranchData = {
 export type SyncedFlowBranch = YProxied<{
     flowEntries?: YProxiedArray<SyncedFlowEntry, SyncedFlowEntryData>,
     childBranches?: YProxiedArray<YNumber, number>,
-    overwriting?: YProxiedArray<YNumber, number>,
+    overwriting?: YNumber
 }>;
 
 /**

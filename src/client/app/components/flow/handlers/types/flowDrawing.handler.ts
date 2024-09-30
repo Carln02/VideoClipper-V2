@@ -2,11 +2,14 @@ import {auto, Point} from "turbodombuilder";
 import * as d3 from "d3";
 import {FlowHandler} from "../flow.handler";
 import {Flow} from "../../flow";
-import {SyncedFlowBranch} from "../../flow.types";
-import {YProxiedArray} from "../../../../../../yProxy";
+import {SyncedFlowBranch, SyncedFlowBranchData} from "../../flow.types";
+import {YCoordinate, YPath, YProxiedArray, YProxyEventName} from "../../../../../../yProxy";
 
 export class FlowDrawingHandler extends FlowHandler {
     private _data: YProxiedArray<SyncedFlowBranch>;
+
+    private readonly lastRedraws: Map<number, number>;
+    private readonly redrawInterval: number = 100 as const;
 
     //Intervals at which chevrons are placed
     private readonly chevronInterval = 300 as const;
@@ -15,7 +18,7 @@ export class FlowDrawingHandler extends FlowHandler {
     //Timeout before chevrons are drawn
     private readonly chevronTimeout = 200 as const;
     //Timers to not draw chevrons when performing moving actions
-    private chevronTimers: Map<number, NodeJS.Timeout> = new Map<number, NodeJS.Timeout>();
+    private readonly chevronTimers: Map<number, NodeJS.Timeout>;
 
     // Added margin to the computed viewBox
     private readonly viewBoxPadding = 200 as const;
@@ -23,13 +26,16 @@ export class FlowDrawingHandler extends FlowHandler {
     private readonly viewBoxUpdateRate = 200 as const;
     // Keeps track of the last time the viewBox was updated
     private lastViewBoxUpdate = 0;
-    private lastViewBoxValues: Point = new Point();
+    private lastViewBoxValues: Point;
 
-    constructor(flow: Flow) {
+    constructor(flow: Flow, data: YProxiedArray<SyncedFlowBranch, SyncedFlowBranchData>) {
         super(flow);
         //Init fields
         this.temporaryPoint = null;
-        this.data = flow.data.flowBranches;
+        this.lastRedraws = new Map<number, number>();
+        this.chevronTimers = new Map<number, NodeJS.Timeout>();
+        this.lastViewBoxValues = new Point();
+        this.data = data;
     }
 
     public get data(): YProxiedArray<SyncedFlowBranch> {
@@ -37,9 +43,23 @@ export class FlowDrawingHandler extends FlowHandler {
     }
 
     private set data(value: YProxiedArray<SyncedFlowBranch>) {
-        this.data?.unbindObjectDeep(this);
+        this.data?.unbindObject(this);
         this._data = value;
         value.bindObject(this);
+
+        this.data.bind(YProxyEventName.entryChanged, (newValue: SyncedFlowBranch) => {
+            if (!newValue) return;
+            const index = newValue.index;
+            this.redrawBranch(index, true);
+        }, this);
+
+        this.data.bind(YProxyEventName.selfOrSubTreeChanged, (_newValue, _oldValue,
+                                                              _isLocal, path: YPath) => {
+            if (path.length < 4) return;
+            let index = path[3];
+            if (typeof index == "string") index = Number.parseInt(index);
+            this.redrawBranch(index, true);
+        }, this);
     }
 
     /**
@@ -54,34 +74,33 @@ export class FlowDrawingHandler extends FlowHandler {
      * @description The points of the flow mapped into a single array
      */
     public get points(): Point[] {
-        const points = this.flowBranches?.flatMap(branch => [...branch.flowEntries])
-            .flatMap(cardWithConnections => [...cardWithConnections.points])
-            .map(point => new Point(point));
-        if (this.temporaryPoint) points.push(this.temporaryPoint);
-        return points;
+        if (!this.flowBranches || this.flowBranches.length == 0) return [];
+
+        return this.flowBranches.flatMap((_branch, index) =>
+            this.getPointsInBranch(index));
     }
 
     /**
      * @description The points of the flow mapped into a single array
      */
-    public getPointsInBranch(branchIndex: number): Point[] {
+    public getPointsInBranch(branchIndex: number, includeTemporaryPoint: boolean =
+    branchIndex == this.currentBranchIndex): Point[] {
         if (!this.flowBranches || this.flowBranches.length == 0) return [];
         const points = this.flowBranches[branchIndex].flowEntries
-            .flatMap(cardWithConnections => [...cardWithConnections.points])
-            .map(point => new Point(point));
-        if (this.temporaryPoint) points.push(this.temporaryPoint);
+            .flatMap(cardWithConnections => cardWithConnections.points)
+            .map((point: YCoordinate) => new Point(point.value));
+        if (includeTemporaryPoint && this.temporaryPoint) points.push(this.temporaryPoint);
         return points;
     }
 
-    public onUpdated(newValue: SyncedFlowBranch, oldValue: SyncedFlowBranch, path: (string | number)[]) {
-        if (path.length == 0) return newValue.forward_callbacks(this);
-        if (!newValue && !oldValue) return;
-        this.redrawBranch(path.find(entry => typeof entry == "number"));
-    }
-
-    private redrawBranch(branchIndex: number = this.flow.currentBranchIndex) {
+    private redrawBranch(branchIndex: number = this.flow.currentBranchIndex, force: boolean = false) {
         if (!this.svg) return;
         if (branchIndex >= this.flowBranches.length) return;
+        if (!force) {
+           const lastRedraw = this.lastRedraws.get(branchIndex);
+           if (lastRedraw && Date.now() - lastRedraw < this.redrawInterval) return;
+        }
+        this.lastRedraws.set(branchIndex, Date.now());
         this.updateViewBox(this.points);
         this.drawPath(branchIndex);
     }

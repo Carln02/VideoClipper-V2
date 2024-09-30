@@ -3,7 +3,7 @@ import {YProxyCallbackHandler} from "./handlers/yProxyCallbackHandler";
 import {YProxyCacheHandler} from "./handlers/yProxyCacheHandler";
 import {YProxyChangeHandler} from "./handlers/yProxyChangeHandler";
 import {YMapProxy} from "../yProxyBaseTypes/yMapProxy";
-import {YDoc, YPath, YProxyChanged, YValue} from "./types/base.types";
+import {YArray, YDoc, YPath, YProxyChanged, YValue} from "./types/base.types";
 import {YProxyEventName, YCallback} from "./types/events.types";
 
 export abstract class YProxy<YType extends YValue = YValue, DataType = unknown> {
@@ -71,7 +71,7 @@ export abstract class YProxy<YType extends YValue = YValue, DataType = unknown> 
 
     public abstract hasByKey(key: string | number): boolean;
 
-    public abstract getYjsKeys(): string[];
+    public abstract getYjsKeys(): (string | number)[];
 
     //Public utilities
 
@@ -101,6 +101,12 @@ export abstract class YProxy<YType extends YValue = YValue, DataType = unknown> 
 
     public getProxyByKey(key: string | number): YProxy {
         return this.cacheHandler.getCachedProxy(key);
+    }
+
+    public getAllChildren(): YProxy[] {
+        const proxies = [];
+        for (const key of this.getYjsKeys()) proxies.push(this.getProxyByKey(key));
+        return proxies;
     }
 
     public bind(eventType: YProxyEventName, callback: YCallback, context?: object, executeOnBind: boolean = true) {
@@ -216,7 +222,7 @@ export abstract class YProxy<YType extends YValue = YValue, DataType = unknown> 
                 return true;
             },
             has: (target: YProxy<YType, DataType>, prop: string) => target.isInPrototype(prop) || target.hasByKey(prop),
-            ownKeys: (target: YProxy<YType, DataType>) => target.getYjsKeys(),
+            ownKeys: (target: YProxy<YType, DataType>) => target.getYjsKeys().map(key => key.toString()),
             getOwnPropertyDescriptor: (target: YProxy<YType, DataType>, prop: string | symbol) => {
                 if (target.isInPrototype(prop)) return Object.getOwnPropertyDescriptor(target, prop) || undefined;
 
@@ -234,6 +240,63 @@ export abstract class YProxy<YType extends YValue = YValue, DataType = unknown> 
 
     protected customProxyGetter(prop: string | symbol): unknown {
         return this.yData[prop];
+    }
+
+    //Built-in utilities overrides
+
+    public forEach(callback: (entry: YProxy, key: string | number, self: this) => boolean | void): void {
+        for (const key of this.getYjsKeys()) {
+            if (callback(this.getProxyByKey(key), key, this) === false) break;
+        }
+    }
+
+    public traverse(callback: (entry: YProxy, key: string | number, self: this) => void): void {
+        this.forEach((entry, key, self) => {
+            callback(entry, key, self);
+            entry.traverse(callback);
+        });
+    }
+
+    public filter(callback: (entry: YProxy, key: string | number, self: this) => boolean): YProxy[] {
+        const result = [];
+        this.forEach((entry, key, self) => {
+            if (callback(entry, key, self)) {
+                result.push(entry);
+            }
+        });
+        return result;
+    }
+
+    public map<ResultType>(callback: (entry: YProxy, key: string | number, self: this) => ResultType): ResultType[] {
+        const results: ResultType[] = [];
+        this.forEach((entry, key, self) => {
+            results.push(callback(entry, key, self));
+        });
+        return results;
+    }
+
+    public reduce<ResultType>(callback: (accumulator: ResultType, entry: YProxy, key: string | number, self: this) =>
+        ResultType, initialValue: ResultType): ResultType {
+        let accumulator = initialValue;
+        this.forEach((entry, key, self) => {
+            accumulator = callback(accumulator, entry, key, self);
+        });
+        return accumulator;
+    }
+
+    public flatMap<ResultType>(callback: (value: YProxy, key: string | number, array: this) =>
+        ResultType | ResultType[] | YProxy<YArray, ResultType[]>): ResultType[] {
+        const results: ResultType[] = [];
+
+        this.forEach((entry, key, self) => {
+            const result = callback(entry, key, self);
+
+            if (result instanceof YProxy && result.yData instanceof YArray) results.push(...result.getAllChildren() as ResultType[]);
+            else if (Array.isArray(result)) results.push(...result);
+            else results.push(result as ResultType);
+        });
+
+        return results;
     }
 
     //Private utilities

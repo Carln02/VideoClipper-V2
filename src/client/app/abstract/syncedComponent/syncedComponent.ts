@@ -1,7 +1,6 @@
 import {TurboElement, TurboProperties} from "turbodombuilder";
 import {generate_unique_id, documentRoot} from "../../../sync/datastore";
 import {SyncedDocumentData} from "../../views/canvas/canvas.types";
-import {SyncedType} from "./syncedComponent.types";
 import {YProxied, YProxiedArray} from "../../../../yProxy";
 
 /**
@@ -10,7 +9,7 @@ import {YProxied, YProxiedArray} from "../../../../yProxy";
  * @description A general class representing a component attached to a Ywrapped data object. It takes as a
  * generic the datatype of the data that is shared through Yjs. Components that extend this class would ideally
  * include defined callbacks that will be triggered by Thibaut's Ywrapper accordingly when the attached data changes.
- * @template {SyncedType} DataType
+ * @template {YProxied} DataType
  */
 export abstract class SyncedComponent<DataType extends YProxied = YProxied> extends TurboElement {
     private _data: DataType;
@@ -53,7 +52,7 @@ export abstract class SyncedComponent<DataType extends YProxied = YProxied> exte
      * @static
      * @description Adds the provided data in the provided parent array in the Yjs document.
      * @param {object} data - The data to append to the Yjs document.
-     * @param {SyncedArray} parentData - The pointer to the parent array to which the data should be appended in
+     * @param {YProxiedArray} parentData - The pointer to the parent array to which the data should be appended in
      * the Yjs document.
      * @param {number} [index] - The index position in the array where the data should be added. By default, the data
      * is pushed at the end of the array.
@@ -62,7 +61,7 @@ export abstract class SyncedComponent<DataType extends YProxied = YProxied> exte
     public static createInArray(data: object, parentData: YProxiedArray, index?: number): number {
         if (index == undefined || index > parentData.length) {
             index = parentData.length;
-            parentData.push(data as SyncedType);
+            parentData.push(data);
         } else {
             if (index < 0) index = 0;
             parentData.splice(index, 0, data);

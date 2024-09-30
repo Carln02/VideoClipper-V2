@@ -12,7 +12,7 @@ export class YMapProxy<Type extends object = object> extends YProxy<YMap, Type> 
         if (parent) parent.setByKey(key, yMap);
 
         const yMapProxy: YProxy = parent.getProxyByKey(key);
-        Object.entries(object).forEach(([key, value]) => factory.toYjs(value, key, yMapProxy));
+        Object.entries(object).forEach(([childKey, value]) => factory.toYjs(value, childKey, yMapProxy));
 
         return yMap;
     }
