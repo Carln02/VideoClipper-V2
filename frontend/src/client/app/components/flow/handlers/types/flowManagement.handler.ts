@@ -20,7 +20,6 @@ export class FlowManagementHandler extends FlowHandler {
                 // by deltaPosition
                 if (entry.startNodeId == nodeId && entry.endNodeId == nodeId) {
                     entry.points.forEach((p: Coordinate) => {
-                        console.log(p);
                         p.x = p.x + deltaPosition.x;
                         p.y = p.y + deltaPosition.y;
                     });

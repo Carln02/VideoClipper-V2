@@ -6,7 +6,7 @@
     "build": "npx webpack",
     "frontend-dev": "webpack-dev-server",
     "lint": "npx eslint",
-    "launch": "npx concurrently \"webpack-dev-server\" \"cross-env YPERSISTENCE=./persist node ./node_modules/y-websocket/bin/server.cjs\""
+    "launch": "npx concurrently \"webpack-dev-server\" \"cross-env YPERSISTENCE=../persist node ./node_modules/y-websocket/bin/server.cjs\""
   },
   "repository": {
     "type": "git",
