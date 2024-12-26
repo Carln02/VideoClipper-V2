@@ -183,6 +183,9 @@ export abstract class YProxy<YType extends YValue = YValue, DataType = unknown> 
                 if (prop === Symbol.toPrimitive) return (hint: string) => target[Symbol.toPrimitive](hint);
                 if (target.isInPrototype(prop)) return target[prop];
 
+                if (prop == "length") console.log("NOT IN PROTOTYPE", prop)
+                if (this.changeHandler.toBeDeleted) return undefined;
+
                 const proxy = target?.getProxyByKey(prop.toString());
                 if (proxy) return proxy;
 
@@ -244,9 +247,19 @@ export abstract class YProxy<YType extends YValue = YValue, DataType = unknown> 
 
     //Built-in utilities overrides
 
+    public get length(): number {
+        if (this.changeHandler.toBeDeleted) return 0;
+        let count = 0;
+        this.forEach(() => {count++;});
+        return count;
+    }
+
     public forEach(callback: (entry: YProxy, key: string | number, self: this) => boolean | void): void {
+        if (this.changeHandler.toBeDeleted) return;
         for (const key of this.getYjsKeys()) {
-            if (callback(this.getProxyByKey(key), key, this) === false) break;
+            const proxy = this.getProxyByKey(key);
+            if (proxy.changeHandler.toBeDeleted) continue;
+            if (callback(proxy, key, this) === false) break;
         }
     }
 

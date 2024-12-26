@@ -3,7 +3,6 @@ import {YProxy} from "../yProxy";
 import {equalToAny} from "turbodombuilder";
 import {YEventTypes, YProxyEventName, YRawEventType, YCallback, YCallbackData} from "../types/events.types";
 import {YPath} from "../types/base.types";
-import {Timeline} from "../../../client/app/components/timeline/timeline";
 
 export class YProxyCallbackHandler {
     private readonly proxy: YProxy;

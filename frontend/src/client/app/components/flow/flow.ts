@@ -1,5 +1,4 @@
 import {define, Point} from "turbodombuilder";
-import {Canvas} from "../../views/canvas/canvas";
 import "./flow.css";
 import {SyncedComponent} from "../../abstract/syncedComponent/syncedComponent";
 import {SyncedFlow, SyncedFlowBranch, SyncedFlowData} from "./flow.types";
@@ -82,7 +81,8 @@ export class Flow extends SyncedComponent<SyncedFlow> {
         };
 
         const id = await super.createInObject(data, this.root.flows);
-        return new Flow(this.root.flows[id], Canvas.instance?.flowsParent);
+        //TODO MIGHT CAUSE ERROR DEPENDING ON EXEC TIME (IF CALLBACKS FIRED LATER) -- TO CHECK
+        return this.root.flows[id].getBoundObjectOfType(Flow);
     }
 
     public static getAll(): Flow[] {

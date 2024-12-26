@@ -236,7 +236,7 @@ export class FlowBranchingHandler extends FlowHandler {
         });
 
         //Merge branches
-        for (let branchIndex = this.flowBranches.length - 1; branchIndex >= 0; branchIndex--) {
+        for (let branchIndex = this.flowBranches?.length - 1; branchIndex >= 0; branchIndex--) {
             //Get branch and its first entry
             const branch = this.flowBranches[branchIndex];
             const firstEntry = branch.flowEntries[0];

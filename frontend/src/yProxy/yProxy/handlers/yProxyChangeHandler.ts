@@ -10,7 +10,7 @@ export class YProxyChangeHandler<Type = unknown> {
 
     private pendingChange: Type;
     private hasPendingChange: boolean;
-    private toBeDeleted: boolean;
+    private _toBeDeleted: boolean;
 
     public constructor(proxy: YProxy<YValue, Type>) {
         this.proxy = proxy;
@@ -23,12 +23,16 @@ export class YProxyChangeHandler<Type = unknown> {
         return this.proxy.toJSON();
     }
 
+    public get toBeDeleted(): boolean {
+        return this._toBeDeleted;
+    }
+    
     public scheduleChange(newValue: Type, oldValue: Type, changeType: YRawEventType) {
         this.changeToken++;
         const token = this.changeToken;
 
         this.hasPendingChange = changeType !== YProxyEventName.deleted;
-        this.toBeDeleted = changeType === YProxyEventName.deleted;
+        this._toBeDeleted = changeType === YProxyEventName.deleted;
         this.pendingChange = this.toBeDeleted ? null : newValue;
 
         this.proxy.callbackHandler.dispatchCallbacks(changeType, oldValue, true);
@@ -47,7 +51,7 @@ export class YProxyChangeHandler<Type = unknown> {
             }
 
             this.hasPendingChange = false;
-            this.toBeDeleted = false;
+            this._toBeDeleted = false;
             this.pendingChange = null;
         }, YProxy.changesThrottlingTime);
     }

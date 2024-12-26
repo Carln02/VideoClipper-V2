@@ -74,10 +74,8 @@ export class FlowDrawingHandler extends FlowHandler {
      * @description The points of the flow mapped into a single array
      */
     public get points(): Point[] {
-        if (!this.flowBranches || this.flowBranches.length == 0) return [];
-
-        return this.flowBranches.flatMap((_branch, index) =>
-            this.getPointsInBranch(index));
+        return this.flowBranches?.flatMap((_branch, index) =>
+            this.getPointsInBranch(index)) || [];
     }
 
     /**
@@ -86,16 +84,23 @@ export class FlowDrawingHandler extends FlowHandler {
     public getPointsInBranch(branchIndex: number, includeTemporaryPoint: boolean =
     branchIndex == this.currentBranchIndex): Point[] {
         if (!this.flowBranches || this.flowBranches.length == 0) return [];
-        const points = this.flowBranches[branchIndex].flowEntries
-            .flatMap(cardWithConnections => cardWithConnections.points)
-            .map((point: YCoordinate) => new Point(point.value));
+        const points = this.flowBranches[branchIndex]?.flowEntries
+            ?.flatMap(cardWithConnections => cardWithConnections.points)
+            .filter((point: YCoordinate) => !!point)
+            .map((point: YCoordinate) => new Point(point.value)) || [];
         if (includeTemporaryPoint && this.temporaryPoint) points.push(this.temporaryPoint);
         return points;
     }
 
     private redrawBranch(branchIndex: number = this.flow.currentBranchIndex, force: boolean = false) {
         if (!this.svg) return;
-        if (branchIndex >= this.flowBranches.length) return;
+        if (branchIndex >= this.flowBranches.length) {
+            if (this.svgGroups.has(branchIndex))
+                d3.select(this.svgGroups.get(branchIndex)).remove();
+            this.svgGroups.delete(branchIndex);
+            this.chevronTimers.delete(branchIndex);
+            return;
+        }
         if (!force) {
            const lastRedraw = this.lastRedraws.get(branchIndex);
            if (lastRedraw && Date.now() - lastRedraw < this.redrawInterval) return;

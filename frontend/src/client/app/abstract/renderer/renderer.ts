@@ -1,4 +1,4 @@
-import {canvas, Transition, TurboElement, TurboProperties} from "turbodombuilder";
+import {canvas, Shown, StatefulReifect, TurboElement, TurboProperties} from "turbodombuilder";
 import "./renderer.css";
 
 export abstract class Renderer extends TurboElement {
@@ -7,7 +7,11 @@ export abstract class Renderer extends TurboElement {
 
     protected currentFill: string | CanvasImageSource = null;
 
-    private static rendererShowTransition: Transition = new Transition({properties: "opacity", defaultStyles: {in: 1, out: 0}});
+    private static rendererShowTransition: StatefulReifect<Shown> = new StatefulReifect<Shown>({
+        properties: "opacity",
+        styles: {visible: 1, hidden: 0},
+        states: [Shown.visible, Shown.hidden]
+    });
 
     protected constructor(canvasProperties: TurboProperties<"canvas"> = {}, properties: TurboProperties = {}) {
         super(properties);

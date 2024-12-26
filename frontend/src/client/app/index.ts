@@ -57,9 +57,7 @@ export function show_project() {
     new ToolManager();
     new CursorManager();
 
-    const doc3 = documentRoot();
-
-    setTimeout(() => { contents = new Canvas(doc3 as any) }, 1000)
+    setTimeout(() => { contents = new Canvas(documentRoot()) }, 1000)
 }
 
 //  Populate page

@@ -13,7 +13,7 @@ import {ToolManager} from "../../../../managers/toolManager/toolManager";
 import {Timeline} from "../../timeline";
 import {ToolType} from "../../../../managers/toolManager/toolManager.types";
 import {ScrubberMenu} from "./scrubber.types";
-import {YBoolean} from "../../../../../../yProxy/yProxy/types/proxied.types";
+import {YBoolean} from "../../../../../../yProxy";
 
 @define("vc-scrubber")
 export class Scrubber extends TurboElement {
@@ -97,7 +97,8 @@ export class Scrubber extends TurboElement {
             endAngle: Math.PI * 0.8,
             semiMajor: 40,
             semiMinor: 40,
-            values: [split, mute, insertCard, trimRight, deleteRight, deleteEntry, trimLeft, deleteLeft, reshoot, hide]
+            values: [split, mute, insertCard, trimRight, deleteRight, deleteEntry, trimLeft, deleteLeft, reshoot, hide],
+            onSelect: () => Scrubber.markingMenu.show(false)
         });
         Canvas.instance.content.addChild(Scrubber.markingMenu);
     }
@@ -123,20 +124,12 @@ export class Scrubber extends TurboElement {
             if (ToolManager.instance.getFiredTool(e).name == ToolType.shoot) this.timeline.snapToClosest();
         });
 
-        this.markingMenuHandle.addEventListener(TurboEventName.click, (e: TurboEvent) => {
-            console.log(Scrubber.markingMenu);
+        Scrubber.markingMenu.attachTo(this.markingMenuHandle, (e: TurboEvent) => {
             this.initMarkingMenu();
-            Scrubber.markingMenu.show(undefined, e.scaledPosition);
-        });
-
-        this.markingMenuHandle.addEventListener(TurboEventName.dragStart, (e: TurboDragEvent) => {
-            e.stopImmediatePropagation();
+            Scrubber.markingMenu.show(true, e.scaledPosition);
+        }, (e: TurboDragEvent) => {
             this.initMarkingMenu();
             Scrubber.markingMenu.show(undefined, e.scaledOrigins.first);
-        });
-
-        this.markingMenuHandle.addEventListener(TurboEventName.dragEnd, (e: TurboDragEvent) => {
-            Scrubber.markingMenu.select(Scrubber.markingMenu.getEntryInDirection(e.scaledPositions.first));
         });
     }
 

@@ -43,7 +43,6 @@ export class ConnectionTool extends Tool {
             // }
             //Otherwise --> create a new flow
             this.currentFlow = await Flow.create(e.scaledPosition, this.lastNodeId);
-            console.log(this.currentFlow);
             return;
         }
         //Otherwise --> get the point data (if any) that the user initiated the drag from

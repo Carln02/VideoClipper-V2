@@ -61,7 +61,7 @@ export class ToolManager {
 
     private initTools() {
         //Create all tools
-        this.addTool(new SelectionTool(), "Shift");
+        this.addTool(new SelectionTool(), "Shift"); this.addTool(new SelectionTool(), "Shift");
         this.addTool(new NavigatorTool(), "Control");
         this.addTool(new CreateCardTool());
         this.addTool(new ConnectionTool());

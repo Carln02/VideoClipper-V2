@@ -33,11 +33,7 @@ module.exports = [
                                 target: "ES6"
                             }
                         }
-                    },
-                    exclude: [
-                        /node_modules/,
-                        path.resolve(__dirname, "src/client/appOld")
-                    ]
+                    }
                 },
                 {
                     test: /\.css$/,

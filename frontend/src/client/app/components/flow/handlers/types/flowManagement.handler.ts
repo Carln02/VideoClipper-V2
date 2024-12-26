@@ -20,12 +20,12 @@ export class FlowManagementHandler extends FlowHandler {
                 // by deltaPosition
                 if (entry.startNodeId == nodeId && entry.endNodeId == nodeId) {
                     entry.points.forEach((p: Coordinate) => {
-                        p.x = p.x + deltaPosition.x;
-                        p.y = p.y + deltaPosition.y;
+                        p.x += deltaPosition.x;
+                        p.y += deltaPosition.y;
                     });
                 }
-                    //Otherwise --> the entry corresponds to points connecting the moved node with another node. Thus, I move each
-                    //point by deltaPosition multiplied by a moveFactor (linearly interpolated based on the number of points and
+                //Otherwise --> the entry corresponds to points connecting the moved node with another node. Thus, I move each
+                //point by deltaPosition multiplied by a moveFactor (linearly interpolated based on the number of points and
                 // how close the current point is from the moved node) for a natural-looking update of the flow
                 else {
                     for (let i = 0; i < entry.points.length; i++) {
@@ -35,8 +35,8 @@ export class FlowManagementHandler extends FlowHandler {
                         if (entry.startNodeId == nodeId) moveFactor = 1 - moveFactor;
                         //Update accordingly the point's coordinates
                         const point: Coordinate = entry.points[i];
-                        point.x = point.x + deltaPosition.x * moveFactor;
-                        point.y = point.y + deltaPosition.y * moveFactor;
+                        point.x += deltaPosition.x * moveFactor;
+                        point.y += deltaPosition.y * moveFactor;
                     }
                 }
             });
@@ -102,10 +102,6 @@ export class FlowManagementHandler extends FlowHandler {
         if (!this.flowData) return;
         //Optimize it
         this.flow.branchingHandler.optimizeBranches();
-
-        flowEntries.forEach((flowEntry, index) => {
-            console.log("FlowEntry " + index + ", startNodeId: " + flowEntry.startNodeId + ", endNodeId: " + flowEntry.endNodeId);
-        });
     }
 
     /**

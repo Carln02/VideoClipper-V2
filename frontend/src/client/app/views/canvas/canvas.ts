@@ -80,8 +80,7 @@ export class Canvas extends TurboElement {
     protected setupCallbacks() {
         const creationCallback = <DataType extends YProxied>
         (constructor: new (...args: unknown[]) => HTMLElement, parent: HTMLElement) =>
-            (newValue: DataType, oldValue: DataType, _isLocal: boolean, path: YPath) => {
-                if (path[path.length - 1].toString().startsWith("__yWrap__")) return;
+            (newValue: DataType, oldValue: DataType, _isLocal: boolean) => {
                 oldValue?.destroyBoundObjects();
                 new constructor(newValue, parent);
             };
