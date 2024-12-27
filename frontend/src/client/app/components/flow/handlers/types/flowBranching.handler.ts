@@ -27,8 +27,9 @@ export class FlowBranchingHandler extends FlowHandler {
 
         //Get parent branch
         const parentBranch: SyncedFlowBranch = this.flowData.flowBranches[p.branchIndex];
+
         //Get static copy of the split entry
-        let splitEntry: SyncedFlowEntryData = parentBranch.value.flowEntries[p.entryIndex];
+        let splitEntry: SyncedFlowEntryData = parentBranch.flowEntries[p.entryIndex].value;
 
         //Boolean indicating whether the branch occurs on an existing node
         const branchOnNode = nodeId != undefined
@@ -91,9 +92,12 @@ export class FlowBranchingHandler extends FlowHandler {
         this.lastNode = nodeId;
 
         //Compute entries of the first child branch (include all entries of the parent starting from the split index)
-        const firstChildEntries = parentBranch.toJSON().flowEntries.slice(p.entryIndex);
+        const firstChildEntries = parentBranch.flowEntries.slice(p.entryIndex);
         //Remove points before pointIndex from the first entry
-        if (branchOnNode) firstChildEntries[0].points = firstChildEntries[0].points.slice(p.pointIndex) as YProxiedArray<YCoordinate>;
+
+        if (branchOnNode) firstChildEntries[0].points =
+            (firstChildEntries[0].points?.slice(p.pointIndex) || []) as YProxiedArray<YCoordinate>;
+
         const firstChildIndex = this.flowBranches.length;
         //Add first child branch (make sure it is a clone so referenced entries/points are not shared with other branches)
         this.flowBranches.push({flowEntries: firstChildEntries, childBranches: []});
@@ -138,21 +142,23 @@ export class FlowBranchingHandler extends FlowHandler {
             newNamedPaths.forEach((namedPaths, tag) => tag.namedPaths.push(...namedPaths));
 
             //Remove the split entries from the parent branch
-            parentBranch.flowEntries = parentBranch.flowEntries.slice(0, p.entryIndex + 1) as YProxiedArray;
+            parentBranch.flowEntries.splice(p.entryIndex);
+
             //Optimize
             this.optimizeBranches();
+
             //Update flow's current branch ID
             this.currentBranchIndex = this.flowBranches.length - 1;
         } else {
             //Update flow's current branch ID if it was active
             if (this.currentBranchIndex == p.branchIndex) this.currentBranchIndex = this.flowBranches.length - 1;
             //Remove the split entries from the parent branch
-            parentBranch.flowEntries = parentBranch.flowEntries.slice(0, p.entryIndex + 1) as YProxiedArray;
+            parentBranch.flowEntries.splice(p.entryIndex);
         }
 
         if (branchOnNode) {
             const lastParentEntry = parentBranch.flowEntries[parentBranch.flowEntries.length - 1];
-            lastParentEntry.points = lastParentEntry.points.slice(0, p.pointIndex + 1) as YProxiedArray<YCoordinate>;
+            lastParentEntry.points.splice(p.pointIndex);
         }
     }
 
@@ -190,6 +196,8 @@ export class FlowBranchingHandler extends FlowHandler {
     public removeBranch(branchIndex: number) {
         //Get parent indices of removed branch
         const parentIndices = [];
+        if (!this.flowBranches) return;
+
         this.flowBranches.forEach((branch, index) => {
             if (branch.childBranches.includes(branchIndex)) parentIndices.push(index);
         });
@@ -204,12 +212,11 @@ export class FlowBranchingHandler extends FlowHandler {
         this.flowBranches.splice(branchIndex, 1);
 
         //Update connections
-        for (const parentIndex of parentIndices) {
-            for (const childIndex of childIndices) {
+        parentIndices.forEach(parentIndex =>
+            childIndices.forEach(childIndex => {
                 if (!this.flowBranches[parentIndex].childBranches.includes(childIndex))
                     this.flowBranches[parentIndex].childBranches.push(childIndex);
-            }
-        }
+            }));
 
         //Update all branches' indices accordingly
         this.flowBranches.forEach(branch => {
@@ -225,6 +232,7 @@ export class FlowBranchingHandler extends FlowHandler {
      * without other branches reaching that node, and creating new branches when more than 2 lines reach a node.
      */
     public optimizeBranches() {
+        return;
         if (!this.flow) return;
 
         const branchReachCount: Map<string, number> = new Map<string, number>();

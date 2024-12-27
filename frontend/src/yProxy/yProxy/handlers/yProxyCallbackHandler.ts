@@ -58,6 +58,8 @@ export class YProxyCallbackHandler {
 
     //Event listeners management
 
+    //TODO MAKE IT BATCH CALLS EVERY FRAME OR 2 AND FIRE THE UNIQUE ONES THEN
+    //MAYBE THEN MAKE oldValue INTO AN ARRAY WITH CORRESPONDING path AND isLocal
     private fire(newValue: YProxy, oldValue: unknown, isLocal: boolean, path: YPath, ...eventTypes: YProxyEventName[]) {
         eventTypes.forEach(eventType => {
             const callbacks = this.eventListeners.get(eventType);

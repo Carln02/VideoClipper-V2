@@ -3,7 +3,7 @@ import {YProxyCallbackHandler} from "./handlers/yProxyCallbackHandler";
 import {YProxyCacheHandler} from "./handlers/yProxyCacheHandler";
 import {YProxyChangeHandler} from "./handlers/yProxyChangeHandler";
 import {YMapProxy} from "../yProxyBaseTypes/yMapProxy";
-import {YArray, YDoc, YPath, YProxyChanged, YValue} from "./types/base.types";
+import {YArray, YDoc, YMap, YPath, YProxyChanged, YValue} from "./types/base.types";
 import {YProxyEventName, YCallback} from "./types/events.types";
 
 export abstract class YProxy<YType extends YValue = YValue, DataType = unknown> {
@@ -184,9 +184,15 @@ export abstract class YProxy<YType extends YValue = YValue, DataType = unknown> 
                 if (target.isInPrototype(prop)) return target[prop];
 
                 if (prop == "length") console.log("NOT IN PROTOTYPE", prop)
-                if (this.changeHandler.toBeDeleted) return undefined;
 
                 const proxy = target?.getProxyByKey(prop.toString());
+
+                if (this.changeHandler.toBeDeleted) {
+                    if (proxy.yData instanceof YArray) return [];
+                    if (proxy.yData instanceof YMap) return {};
+                    return undefined;
+                }
+
                 if (proxy) return proxy;
 
                 return target.customProxyGetter(prop);

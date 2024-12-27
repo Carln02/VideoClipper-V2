@@ -4,6 +4,7 @@ import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {Flow} from "../../components/flow/flow";
 import {FlowIntersectionHandler} from "../../components/flow/handlers/types/flowIntersection.handler";
+import {FlowSearchHandler} from "../../components/flow/handlers/types/flowSearch.handler";
 
 /**
  * @description Tool that handles creating flows and connecting nodes
@@ -33,14 +34,14 @@ export class ConnectionTool extends Tool {
             //Set last node ID
             this.lastNodeId = closestNode.id;
             //Find first flow intersection with this node
-            // const intersection = FlowSearchHandler.findNodeEntryInFlows(closestNode.id);
-            // //If intersection found
-            // if (intersection && intersection.flowId != undefined) {
-            //     //Assign flow ID
-            //     this.currentFlow = Flow.getById(intersection.flowId);
-            //     //Create a new branch at this node
-            //     return this.currentFlow.branchingHandler.branchAtPoint(intersection, undefined, this.lastNodeId);
-            // }
+            const intersection = FlowSearchHandler.findNodeEntryInFlows(closestNode.id);
+            //If intersection found
+            if (intersection && intersection.flowId != undefined) {
+                //Assign flow ID
+                this.currentFlow = Flow.getById(intersection.flowId);
+                //Create a new branch at this node
+                return this.currentFlow.branchingHandler.branchAtPoint(intersection, undefined, this.lastNodeId);
+            }
             //Otherwise --> create a new flow
             this.currentFlow = await Flow.create(e.scaledPosition, this.lastNodeId);
             return;

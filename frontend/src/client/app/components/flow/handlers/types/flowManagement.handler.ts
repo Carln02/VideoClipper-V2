@@ -87,6 +87,7 @@ export class FlowManagementHandler extends FlowHandler {
 
         const currentBranch = this.currentBranch;
         const flowEntries = currentBranch?.flowEntries;
+        if (!currentBranch || !flowEntries) return;
 
         //If flow ends with an entry that doesn't have an end node --> the flow was stopped outside a node --> remove
         //the last entry and save

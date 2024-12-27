@@ -24,13 +24,14 @@ export class SidePanel extends TurboElement {
 
     constructor(camera: Camera, captureManager: CaptureManager) {
         super({parent: camera});
+
+        this.camera = camera;
+        this.captureManager = captureManager;
+
         this.panels = new Map<ToolType, SidePanelInstance>();
 
         this.panels.set(ToolType.shoot, new ShootingSidePanel(this.camera, this.captureManager, this));
         this.panels.set(ToolType.text, new TextSidePanel(this));
-
-        this.camera = camera;
-        this.captureManager = captureManager;
 
         const buttons = div({
             classes: "side-panel-buttons-div",
@@ -69,7 +70,7 @@ export class SidePanel extends TurboElement {
     private changePanel(toolName: ToolType) {
         if (this.currentToolName == toolName) return;
 
-        this.currentPanel.detach();
+        this.currentPanel?.detach();
         this.removeChild(this.currentPanel);
 
         this.currentPanel = this.panels.get(toolName);
