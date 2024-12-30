@@ -28,10 +28,8 @@ import {PanelThumb} from "../basicComponents/panelThumb/panelThumb";
 import {Direction, PanelThumbProperties} from "../basicComponents/panelThumb/panelThumb.types";
 import {randomColor} from "../../../utils/random";
 import {YArray} from "../../../../yProxy";
-import {YArrayManager} from "../../yjsManagement/yArrayManager";
-import {YComponent} from "../../yjsManagement/yComponent";
-import {YUtilities} from "../../yjsManagement/yUtilities";
-
+import {YComponent} from "../../../../yManagement/yMvc/yComponent";
+import {YUtilities} from "../../../../yManagement/yUtilities";
 @define("vc-timeline")
 export class Timeline extends YComponent<YArray<SyncedClip>, YArray> {
     public readonly pixelsPerSecondUnit: number = 20 as const;

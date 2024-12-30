@@ -10,7 +10,7 @@ import {Clip} from "../clip/clip";
 import {Resizer} from "../basicComponents/resizer/resizer";
 import {Card} from "../card/card";
 import {Camera} from "../../views/camera/camera";
-import {YComponent} from "../../yjsManagement/yComponent";
+import {YComponent} from "../../yManagement/yComponent";
 
 @define("vc-text-entry")
 export class TextElement extends YComponent<SyncedText> {

@@ -9,10 +9,10 @@ import {
 import {PanelThumbProperties} from "../basicComponents/panelThumb/panelThumb.types";
 import {Card} from "../card/card";
 import {getSize} from "../../../utils/size";
-import {YComponent} from "../../yjsManagement/yComponent";
+import {YComponent} from "../../../../yManagement/yMvc/yComponent";
 
 @define("metadata-drawer")
-export class MetadataDrawer extends YComponent<SyncedCardMetadata> {
+export class MetadataDrawer extends YComponent<any, SyncedCardMetadata> {
     private readonly _card: Card;
 
     private thumb: PanelThumb;

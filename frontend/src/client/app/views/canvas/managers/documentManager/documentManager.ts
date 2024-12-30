@@ -1,17 +1,17 @@
 import {SyncedDocument} from "./documentManager.types";
-import {YMapManager} from "../../../../yjsManagement/yMapManager";
+import {YMapManager} from "../../../../yManagement/yMapManager";
 import {BranchingNodeType, SyncedBranchingNode} from "../../../../components/branchingNode/branchingNode.types";
 import {BranchingNode} from "../../../../components/branchingNode/branchingNode";
 import {Card} from "../../../../components/card/card";
 import {YDoc, YMap} from "../../../../../../yProxy";
 import {SyncedCard} from "../../../../components/card/card.types";
 import {SyncedFlow} from "../../../../components/flow/flow.types";
-import {YDocument} from "../../../../yjsManagement/yDocument";
+import {YDocument} from "../../../../yManagement/yDocument";
 import {Point} from "turbodombuilder";
 import {SyncedText, TextType} from "../../../../components/textElement/textElement.types";
 import {SyncedClip} from "../../../../components/clip/clip.types";
 import {randomColor} from "../../../../../utils/random";
-import {YUtilities} from "../../../../yjsManagement/yUtilities";
+import {YUtilities} from "../../../../yManagement/yUtilities";
 
 export class DocumentManager extends YDocument {
     private readonly data: SyncedDocument;

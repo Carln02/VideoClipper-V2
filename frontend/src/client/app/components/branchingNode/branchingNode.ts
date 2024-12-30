@@ -1,8 +1,9 @@
 import {SyncedBranchingNode} from "./branchingNode.types";
-import {Coordinate, define, Point} from "turbodombuilder";
+import {define, Point, TurboProperties} from "turbodombuilder";
 import "./branchingNode.css";
-import {YComponent} from "../../yjsManagement/yComponent";
-import {YMap} from "../../../../yProxy/yProxy/types/base.types";
+import {BranchingNodeModel} from "./branchingNode.model";
+import {BranchingNodeView} from "./branchingNode.view";
+import {YComponent} from "../../../../yManagement/yMvc/yComponent";
 
 /**
  * @class BranchingNode
@@ -12,28 +13,17 @@ import {YMap} from "../../../../yProxy/yProxy/types/base.types";
  * @template {SyncedBranchingNode} Type
  */
 @define("branching-node")
-export class BranchingNode<Type extends SyncedBranchingNode = SyncedBranchingNode> extends YComponent<Type> {
-    public constructor(data: Type, parent: HTMLElement) {
-        super({parent: parent});
-        if (data) this.data = data;
-    }
-
-    public get origin(): Coordinate {
-        return this.getData("origin") as Coordinate;
-    }
-
-    public set origin(value: Coordinate) {
-        this.setData("origin", value);
-    }
-
-    public originChanged(value: Coordinate) {
-        //TODO REMOVE
-        if (value instanceof YMap) value = {
-            x: value.get("x"),
-            y: value.get("y")
-        };
-
-        this.setStyle("transform", `translate3d(calc(${value.x}px - 50%), calc(${value.y}px - 50%), 0)`);
+export class BranchingNode<
+    View extends BranchingNodeView = BranchingNodeView,
+    Model extends BranchingNodeModel = BranchingNodeModel
+> extends YComponent<View, Model> {
+    public constructor(data: SyncedBranchingNode, properties: TurboProperties = {}) {
+        super(properties);
+        if (data) {
+            this.model = new BranchingNodeModel(data, this) as Model;
+            this.view = new BranchingNodeView(this) as unknown as View;
+            this.model.initialize();
+        }
     }
 
     /**
@@ -42,7 +32,7 @@ export class BranchingNode<Type extends SyncedBranchingNode = SyncedBranchingNod
      * @param {Point} deltaPosition - The values by which to move the data.
      */
     public move(deltaPosition: Point) {
-        this.origin = deltaPosition.add(this.origin).object;
+        this.model.origin = deltaPosition.add(this.model.origin).object;
     }
 
     /**
@@ -52,6 +42,5 @@ export class BranchingNode<Type extends SyncedBranchingNode = SyncedBranchingNod
      */
     public delete() {
         // FlowManagementHandler.updateFlowsOnDetachingCard(this.id);
-        super.delete();
     }
 }

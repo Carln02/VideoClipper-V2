@@ -5,14 +5,14 @@ import {Clip} from "../clip/clip";
 import {Renderer} from "../../abstract/renderer/renderer";
 import {SyncedText, TextType} from "../textElement/textElement.types";
 import {YMap} from "../../../../yProxy";
-import {YArrayManager} from "../../yjsManagement/yArrayManager";
+import {YArrayManagerModel} from "../../../../yManagement/yMvc/yModel/types/yManagerModel/types/yArrayManagerModel";
 
 @define("vc-clip-renderer")
 export class ClipRenderer extends Renderer {
     private readonly videos: ClipRendererVideoInfo[] = [];
     private _currentVideoIndex: number = 0;
 
-    private readonly textManager: YArrayManager<SyncedText, TextElement>;
+    private readonly textManager: YArrayManagerModel<SyncedText, TextElement>;
     public readonly textParent: HTMLDivElement;
 
     private currentOffset: number = 0;
@@ -35,7 +35,7 @@ export class ClipRenderer extends Renderer {
 
         this.addChild(this.canvasElement);
 
-        this.textManager = new YArrayManager();
+        this.textManager = new YArrayManagerModel();
         this.textManager.onAdded = (syncedText, id) => {
             const text = new TextElement(syncedText, this);
             this.textParent.addChild(text, id);

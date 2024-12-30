@@ -1,4 +1,4 @@
-import {YArray, YMap} from "../../../yProxy/yProxy/types/base.types";
+import {YArray, YMap} from "./yManagement.types";
 import {generate_unique_id} from "../../sync/datastore";
 
 export class YUtilities {

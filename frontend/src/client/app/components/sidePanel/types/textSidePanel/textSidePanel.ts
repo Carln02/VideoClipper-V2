@@ -9,7 +9,7 @@ import {SidePanelInstance} from "../../sidePanel.types";
 import {ContextManager} from "../../../../managers/contextManager/contextManager";
 import {YCoordinate, YNumber} from "../../../../../../yProxy/yProxy/types/proxied.types";
 import {YProxyEventName} from "../../../../../../yProxy";
-import {YComponent} from "../../../../yjsManagement/yComponent";
+import {YComponent} from "../../../../yManagement/yComponent";
 
 @define()
 export class TextSidePanel extends YComponent<SyncedText> implements SidePanelInstance {

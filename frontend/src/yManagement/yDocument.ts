@@ -1,4 +1,4 @@
-import {YDoc} from "../../../yProxy";
+import {YDoc} from "./yManagement.types";
 
 export class YDocument {
     protected readonly document: YDoc;

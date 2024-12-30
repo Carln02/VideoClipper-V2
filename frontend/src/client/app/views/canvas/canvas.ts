@@ -8,7 +8,7 @@ import {AppBar} from "../../components/appBar/appBar";
 import {Card} from "../../components/card/card";
 import {SyncedBranchingNode} from "../../components/branchingNode/branchingNode.types";
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
-import {YMapManager} from "../../yjsManagement/yMapManager";
+import {YMapManager} from "../../yManagement/yMapManager";
 import {DocumentManager} from "./managers/documentManager/documentManager";
 import {SelectionTool} from "../../tools/selection/selection";
 import {NavigatorTool} from "../../tools/navigator/navigator";
