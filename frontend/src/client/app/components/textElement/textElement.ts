@@ -1,5 +1,5 @@
-import {SyncedText, SyncedTextData, TextType} from "./textElement.types";
-import {Coordinate, define, element, Point, TurboEvent, TurboEventName} from "turbodombuilder";
+import {SyncedText, TextType} from "./textElement.types";
+import {Coordinate, define, element, Point, TurboEvent, TurboEventName, TurboProperties} from "turbodombuilder";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import "./textElement.css";
 import {ContextManager} from "../../managers/contextManager/contextManager";
@@ -8,20 +8,19 @@ import {ToolManager} from "../../managers/toolManager/toolManager";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {Clip} from "../clip/clip";
 import {Resizer} from "../basicComponents/resizer/resizer";
-import {SyncedComponent} from "../../abstract/syncedComponent/syncedComponent";
 import {Card} from "../card/card";
 import {Camera} from "../../views/camera/camera";
-import {YCoordinate, YNumber, YString, YProxyEventName} from "../../../../yProxy";
+import {YComponent} from "../../yjsManagement/yComponent";
 
 @define("vc-text-entry")
-export class TextElement extends SyncedComponent<SyncedText> {
+export class TextElement extends YComponent<SyncedText> {
     private readonly content: HTMLSpanElement;
     private readonly resizer: Resizer;
 
     private readonly renderer: ClipRenderer;
 
-    constructor(data: SyncedText, renderer: ClipRenderer) {
-        super();
+    constructor(data: SyncedText, renderer: ClipRenderer, properties: TurboProperties = {}) {
+        super(properties);
         this.content = element({tag: "span", contentEditable: "true", role: "textbox", parent: this});
         this.renderer = renderer;
 
@@ -37,55 +36,76 @@ export class TextElement extends SyncedComponent<SyncedText> {
         });
 
         this.addEventListener("blur", () => {
-            if (this.data.type == TextType.custom) this.data.text = this.content.textContent as YString;
+            if (this.type == TextType.custom) this.text = this.content.textContent;
         });
     }
 
-    protected setupCallbacks() {
-        this.data.origin.bind(YProxyEventName.changed, (value: Coordinate) => {
-            this.setStyle("transform", `translate3d(calc(${(value.x * this.renderer.width) || 0}px - 50%), 
-                        calc(${(value.y * this.renderer.height) || 0}px - 50%), 0)`);
-        }, this);
-
-        this.data.type.bind(YProxyEventName.changed, (value: TextType) => {
-            switch (value.valueOf()) {
-                case TextType.timestamp:
-                    this.textValue = this.card.data.metadata.timestamp.value;
-                    return;
-                case TextType.title:
-                    this.textValue = this.card.data.title.value;
-                    return;
-                default:
-                    this.textValue = this.data.text.value;
-                    return;
-            }
-        }, this);
-
-        this.data.fontSize.bind(YProxyEventName.changed, (value: number) => this.content
-            .setStyle("fontSize", value * this.renderer.offsetHeight + "px"), this);
-
-        this.data.bindAtKey("text", YProxyEventName.changed, (value: YString) => {
-            if (this.data.type == TextType.custom) this.textContent = value.value;
-        }, this);
-
-        this.data.bindAtKey("boxWidth", YProxyEventName.changed, (value: number) =>
-            this.setStyle("width", value + "%"), this);
-        this.data.bindAtKey("boxHeight", YProxyEventName.changed, (value: number) =>
-            this.setStyle("height", value + "%"), this);
-    }
-
     public get clip(): Clip {
-        return this.data.parent.parent.getBoundObjectOfType(Clip);
+        return this.renderer.currentClip;
     }
 
     public get card(): Card {
         return this.clip.card;
     }
 
-    public static create(data: SyncedTextData, cardId: string, clipIndex: number, index?: number): number {
-        const clipContent = this.root.cards[cardId]?.syncedClips[clipIndex]?.content;
-        if (!clipContent) return -1;
-        return super.createInArray(data, clipContent, index);
+    public get type(): TextType {
+        return this.getData("type") as TextType;
+    }
+
+    public set type(value: TextType) {
+        this.setData("type", value);
+    }
+
+    public get text(): string {
+        return this.getData("text") as string;
+    }
+
+    public set text(value: string) {
+        this.setData("text", value);
+    }
+
+    public get origin(): Coordinate {
+        return this.getData("origin") as Coordinate;
+    }
+
+    public set origin(value: Coordinate) {
+        this.setData("origin", value);
+    }
+
+    public get fontSize(): number {
+        return this.getData("fontSize") as number;
+    }
+
+    public set fontSize(value: number) {
+        this.setData("fontSize", value);
+    }
+
+    public get boxWidth(): number {
+        let boxWidth = this.getData("boxWidth") as number;
+        if (!boxWidth) {
+            boxWidth = (this.offsetWidth / this.renderer?.offsetWidth * 100) || 0;
+            this.boxWidth = boxWidth;
+        }
+        return boxWidth;
+    }
+
+    public set boxWidth(value: number) {
+        if (this.boxWidth == value) return;
+        this.setData("boxWidth", value);
+    }
+
+    public get boxHeight() {
+        let boxHeight = this.getData("boxHeight") as number;
+        if (!boxHeight) {
+            boxHeight = (this.offsetHeight / this.renderer?.offsetHeight * 100) || 0;
+            this.boxHeight = boxHeight;
+        }
+        return boxHeight;
+    }
+
+    public set boxHeight(value: number) {
+        if (this.boxHeight == value) return;
+        this.setData("boxHeight", value);
     }
 
     public get textValue(): string {
@@ -96,33 +116,46 @@ export class TextElement extends SyncedComponent<SyncedText> {
         this.content.textContent = value;
     }
 
-    public get boxWidth() {
-        if (!this.data.boxWidth) this.data.boxWidth = ((this.offsetWidth
-            / this.renderer?.offsetWidth * 100) || 0) as YNumber;
-        return this.data.boxWidth;
+    public typeChanged(value: TextType) {
+        switch (value.valueOf()) {
+            case TextType.timestamp:
+                this.textValue = this.card.metadata.timestamp;
+                return;
+            case TextType.title:
+                this.textValue = this.card.title;
+                return;
+            default:
+                this.textValue = this.text;
+                return;
+        }
     }
 
-    public set boxWidth(value: number) {
-        if (this.data.boxWidth == value) return;
-        this.data.boxWidth = value as YNumber;
+    public originChanged(value: Coordinate) {
+        this.setStyle("transform", `translate3d(calc(${(value.x * this.renderer.width) || 0}px - 50%), 
+                        calc(${(value.y * this.renderer.height) || 0}px - 50%), 0)`);
     }
 
-    public get boxHeight() {
-        if (!this.data.boxHeight) this.data.boxHeight = ((this.offsetHeight
-            / this.renderer?.offsetHeight * 100) || 0) as YNumber;
-        return this.data.boxHeight || 0;
+    public fontSizeChanged(value: number) {
+        this.content.setStyle("fontSize", value * this.renderer.offsetHeight + "px");
     }
 
-    public set boxHeight(value: number) {
-        if (this.data.boxHeight == value) return;
-        this.data.boxHeight = value as YNumber;
+    public textChanged(value: string) {
+        if (this.type == TextType.custom) this.textContent = value;
+    }
+
+    public boxWidthChanged(value: number) {
+        this.setStyle("width", value + "%");
+    }
+
+    public boxHeightChanged(value: number) {
+        this.setStyle("height", value + "%");
     }
 
     public translateBy(deltaPosition: Point) {
-        this.data.origin = deltaPosition
+        this.origin = deltaPosition
             .div(Camera.instance.frameWidth, Camera.instance.frameHeight)
             .add(this.data.origin)
-            .object as YCoordinate;
+            .object;
     }
 
     public select(b: boolean) {

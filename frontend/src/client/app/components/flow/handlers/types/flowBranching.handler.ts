@@ -44,7 +44,7 @@ export class FlowBranchingHandler extends FlowHandler {
             const splitPointIndex = p.pointIndex != undefined ? p.pointIndex : splitEntry.points.length - 1;
             const splitPoint: Coordinate = {...splitEntry.points[splitPointIndex]};
             //Update last node ID
-            nodeId = await BranchingNode.create({origin: branchPosition ? branchPosition : splitPoint});
+            // nodeId = await BranchingNode.create({origin: branchPosition ? branchPosition : splitPoint});
 
             if (splitEntry.startNodeId == splitEntry.endNodeId) {
                 splitEntry = {

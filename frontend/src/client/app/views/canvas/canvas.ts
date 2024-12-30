@@ -1,18 +1,23 @@
-import {css, define, div, Point, TurboElement} from "turbodombuilder";
+import {auto, ClickMode, css, define, div, Point, TurboElement} from "turbodombuilder";
 import {NavigationManager} from "./managers/navigationManager/navigationManager";
 import "./canvas.css";
 import {Toolbar} from "../../components/toolbar/toolbar";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {ContextView} from "../../managers/contextManager/contextManager.types";
 import {AppBar} from "../../components/appBar/appBar";
-import {SyncedDocumentData} from "./canvas.types";
 import {Card} from "../../components/card/card";
-import {SyncedCard} from "../../components/card/card.types";
 import {SyncedBranchingNode} from "../../components/branchingNode/branchingNode.types";
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
-import {SyncedFlow} from "../../components/flow/flow.types";
-import {Flow} from "../../components/flow/flow";
-import {YPath, YProxied, YProxyEventName} from "../../../../yProxy";
+import {YMapManager} from "../../yjsManagement/yMapManager";
+import {DocumentManager} from "./managers/documentManager/documentManager";
+import {SelectionTool} from "../../tools/selection/selection";
+import {NavigatorTool} from "../../tools/navigator/navigator";
+import {CreateCardTool} from "../../tools/createCard/createCard";
+import {ConnectionTool} from "../../tools/connection/connection";
+import {TextTool} from "../../tools/text/text";
+import {ShootTool} from "../../tools/shoot/shoot";
+import {DeleteTool} from "../../tools/delete/delete";
+import {ToolManager} from "../../managers/toolManager/toolManager";
 
 /**
  * @description Class representing a canvas on which the user can add cards, connect them, move them around, etc.
@@ -22,17 +27,14 @@ export class Canvas extends TurboElement {
     //Singleton
     private static _instance: Canvas = null;
 
-    private data: SyncedDocumentData;
+    public readonly cardsManager: YMapManager<SyncedBranchingNode, BranchingNode | Card>;
+    // private flowsManager: YMapManager<SyncedFlow, Flow>;
+    // private branchingNodesManager: YMapManager<SyncedBranchingNode, BranchingNode>;
 
     private appBar: AppBar;
 
     //Canvas parent --> contains the main components that are translated/scaled
     public readonly content: HTMLDivElement;
-
-    //Parents used to segregate different types of elements placed on the canvas
-    //Mainly to make sure that flows are below cards
-    public readonly cardsParent: HTMLDivElement;
-    public readonly flowsParent: HTMLDivElement;
 
     //Canvas's attached navigation manager
     public readonly navigationManager: NavigationManager;
@@ -40,14 +42,14 @@ export class Canvas extends TurboElement {
     //Main toolbar
     private readonly toolbar: Toolbar;
 
-    constructor(data: SyncedDocumentData) {
+    constructor() {
         ContextManager.instance.view = ContextView.canvas;
 
         //Cancel construction if exists already
         if (Canvas.instance) {
             if (Canvas.instance.parentElement == null) {
                 document.body.addChild(Canvas.instance);
-                Canvas.instance.clear();
+                Canvas.instance.documentManager.clear();
             }
             return Canvas.instance;
         }
@@ -55,48 +57,37 @@ export class Canvas extends TurboElement {
         super({parent: document.body});
         Canvas.instance = this;
 
-        // this.data = data;
-
         this.appBar = new AppBar({parent: this});
 
         this.content = div({parent: this, id: "canvas-content"});
-
-        //Init parents
-        this.flowsParent = div({parent: this.content});
-        this.cardsParent = div({parent: this.content});
 
         //Init navigation manager
         this.navigationManager = new NavigationManager(this);
 
         //Init toolbar
         this.toolbar = new Toolbar({parent: this, classes: "bottom-toolbar"});
+    }
+
+    private initTools() {
+        //Create all tools
+        ToolManager.instance.addTool(new SelectionTool(this.documentManager), "Shift");
+        ToolManager.instance.addTool(new NavigatorTool(this.documentManager), "Control");
+        ToolManager.instance.addTool(new CreateCardTool(this.documentManager));
+        ToolManager.instance.addTool(new ConnectionTool(this.documentManager));
+        ToolManager.instance.addTool(new TextTool(this.documentManager));
+        ToolManager.instance.addTool(new ShootTool(this.documentManager));
+        ToolManager.instance.addTool(new DeleteTool(this.documentManager));
+
+        //Init default tools at hand
+        ToolManager.instance.setTool(ToolManager.instance.getToolByKey("Shift"), ClickMode.left);
+        ToolManager.instance.setTool(ToolManager.instance.getToolByKey("Control"), ClickMode.middle, {select: false, activate: false});
         this.toolbar.populateWithAllTools();
-
-        this.data = data;
-        this.setupCallbacks();
-
     }
 
-    protected setupCallbacks() {
-        const creationCallback = <DataType extends YProxied>
-        (constructor: new (...args: unknown[]) => HTMLElement, parent: HTMLElement) =>
-            (newValue: DataType, oldValue: DataType, _isLocal: boolean) => {
-                oldValue?.destroyBoundObjects();
-                new constructor(newValue, parent);
-            };
-
-        this.data.cards.bind(YProxyEventName.entryAdded,
-            creationCallback<SyncedCard>(Card, this.cardsParent), this);
-        this.data.flows.bind(YProxyEventName.entryAdded,
-            creationCallback<SyncedFlow>(Flow, this.flowsParent), this);
-        this.data.branchingNodes.bind(YProxyEventName.entryAdded,
-            creationCallback<SyncedBranchingNode>(BranchingNode, this.cardsParent), this);
-    }
-
-    private clear() {
-        for (const card of Object.values(this.data.cards.value)) card.destroyBoundObjects();
-        for (const flow of Object.values(this.data.flows.value)) flow.destroyBoundObjects();
-        for (const branchingNode of Object.values(this.data.branchingNodes.value)) branchingNode.destroyBoundObjects();
+    @auto()
+    public set documentManager(value: DocumentManager) {
+        this.content.addChild([value.flowsParent, value.cardsParent]);
+        this.initTools();
     }
 
     public remove(): this {

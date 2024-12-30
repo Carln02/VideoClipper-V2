@@ -172,11 +172,11 @@ export class CaptureManager {
         if (type == "video") this.lastMedia.duration = (Date.now() - this.lastTimestamp) / 1000;
 
         const mediaId = add_video(data, this.lastMedia);
-        await this.camera.card.addClip(proxied({
-            startTime: 0 as YNumber,
-            endTime: (this.lastMedia.duration ? this.lastMedia.duration : 5) as YNumber,
-            mediaId: mediaId,
-            content: [] as YProxiedArray<SyncedText>
-        }), this.camera.card.timeline.currentClip.index);
+        // await this.camera.card.addClip(proxied({
+        //     startTime: 0 as YNumber,
+        //     endTime: (this.lastMedia.duration ? this.lastMedia.duration : 5) as YNumber,
+        //     mediaId: mediaId,
+        //     content: [] as YProxiedArray<SyncedText>
+        // }), this.camera.card.timeline.currentClip.index);
     }
 }

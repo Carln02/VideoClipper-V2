@@ -68,21 +68,21 @@ export class Camera extends TurboElement {
     public initialize(card: Card) {
         this.card = card;
 
-        if (!this.timeline) this.timeline = new Timeline(card.data.syncedClips, this.clipRenderer, {
-            parent: this,
-            direction: Direction.top,
-            openOffset: -4,
-            initiallyClosed: false,
-            invertOpenAndClosedValues: true
-        });
-        else this.timeline.data = card.data.syncedClips;
-
-        this.metadataDrawer = new MetadataDrawer(card.data.metadata, {
-            parent: this,
-            direction: Direction.bottom,
-            initiallyClosed: false,
-            openOffset: 6
-        });
+        // if (!this.timeline) this.timeline = new Timeline(card.data.syncedClips, this.clipRenderer, {
+        //     parent: this,
+        //     direction: Direction.top,
+        //     openOffset: -4,
+        //     initiallyClosed: false,
+        //     invertOpenAndClosedValues: true
+        // });
+        // else this.timeline.data = card.data.syncedClips;
+        //
+        // this.metadataDrawer = new MetadataDrawer(card.data.metadata, {
+        //     parent: this,
+        //     direction: Direction.bottom,
+        //     initiallyClosed: false,
+        //     openOffset: 6
+        // });
 
         const selectedClip = ContextManager.instance.getContext(2);
         if (selectedClip && selectedClip[0] instanceof Clip) this.timeline.snapToClosest();

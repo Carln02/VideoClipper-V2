@@ -1,10 +1,11 @@
-import {YCoordinate, YProxied} from "../../../../yProxy";
 import {Coordinate} from "turbodombuilder";
 
-export type SyncedBranchingNodeData = {
-    origin?: Coordinate
-};
+export enum BranchingNodeType {
+    card = "card",
+    node = "node"
+}
 
-export type SyncedBranchingNode = YProxied<{
-    origin?: YCoordinate
-}>;
+export type SyncedBranchingNode = {
+    origin?: Coordinate,
+    type?: BranchingNodeType
+};

@@ -2,7 +2,7 @@ import {Canvas} from "./views/canvas/canvas";
 import * as logman from "../sync/logman";
 import {ToolManager} from "./managers/toolManager/toolManager";
 import {CursorManager} from "./managers/cursorManager/cursorManager";
-import {Point, TurboEventManager, turbofy, TurboIcon} from "turbodombuilder";
+import {div, Point, TurboEventManager, turbofy, TurboIcon} from "turbodombuilder";
 import {GroupList} from "./views/grouplist/grouplist";
 import {FileList} from "./views/filelist/filelist";
 import {ContextManager} from "./managers/contextManager/contextManager";
@@ -11,7 +11,8 @@ import {ContextView} from "./managers/contextManager/contextManager.types";
 import "./main.css";
 import "./styles/input.css";
 import "./styles/markingMenu.css";
-import {documentRoot} from "../sync/datastore";
+import {documentRoot, getDocument} from "../sync/datastore";
+import {DocumentManager} from "./views/canvas/managers/documentManager/documentManager";
 
 turbofy();
 
@@ -54,10 +55,18 @@ export function show_project() {
     eventManager.defaultState.preventDefaultTouch = true;
     eventManager.defaultState.preventDefaultMouse = true;
     new ContextManager();
-    new ToolManager();
     new CursorManager();
+    new ToolManager();
 
-    setTimeout(() => { contents = new Canvas(documentRoot()) }, 1000)
+    // contents = new Canvas(getDocument().getMap("document_content"));
+
+    setTimeout(() => {
+        // contents = new Canvas(documentRoot())
+        contents = new Canvas();
+        const documentManager = new DocumentManager(getDocument(), div(), div());
+        (contents as Canvas).documentManager = documentManager;
+
+    }, 1000)
 }
 
 //  Populate page

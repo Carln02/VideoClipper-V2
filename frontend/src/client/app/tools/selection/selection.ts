@@ -12,6 +12,7 @@ import {MovableComponent} from "../../components/basicComponents/movableComponen
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {FlowManagementHandler} from "../../components/flow/handlers/types/flowManagement.handler";
 import structuredClone from "@ungap/structured-clone";
+import {DocumentManager} from "../../views/canvas/managers/documentManager/documentManager";
 
 /**
  * @description Tool that allows user to select elements and move them around
@@ -26,8 +27,8 @@ export class SelectionTool extends Tool {
 
     private currentTarget: Element;
 
-    constructor() {
-        super(ToolType.selection);
+    public constructor(documentManager: DocumentManager) {
+        super(documentManager, ToolType.selection);
         this.context = ContextManager.instance;
         this.timelineIndicator = div({style: "background-color: pink; width: 5px; border: 2px solid cyan"});
     }
@@ -138,21 +139,21 @@ export class SelectionTool extends Tool {
 
         if (closestTimeline && this.timelineIndicatorIndex != -1) {
             const clipData = this.clipClone.originElement.data;
-            const clipIndex = clipData.index;
-            const cardId = clipData.parent.parent.id;
-
-            this.context.clearContext();
-
-            if (newCard.id == cardId && this.timelineIndicatorIndex >= clipIndex) this.timelineIndicatorIndex--;
-
-            newCard.addClip(structuredClone(clipData), this.timelineIndicatorIndex).then(() => {
-                const newClip = newCard.clips[this.timelineIndicatorIndex];
-                this.context.setContext(newCard, 1);
-                this.context.setContext(newClip, 2);
-                newClip.selected = true;
-            });
-
-            this.clipClone.originElement.card.removeClip(this.clipClone.originElement);
+            // const clipIndex = clipData.index;
+            // const cardId = clipData.parent.parent.id;
+            //
+            // this.context.clearContext();
+            //
+            // if (newCard.id == cardId && this.timelineIndicatorIndex >= clipIndex) this.timelineIndicatorIndex--;
+            //
+            // newCard.addClip(structuredClone(clipData), this.timelineIndicatorIndex).then(() => {
+            //     const newClip = newCard.clips[this.timelineIndicatorIndex];
+            //     this.context.setContext(newCard, 1);
+            //     this.context.setContext(newClip, 2);
+            //     newClip.selected = true;
+            // });
+            //
+            // this.clipClone.originElement.card.removeClip(this.clipClone.originElement);
         }
 
         this.clipClone.originElement.setStyle("opacity", "1");

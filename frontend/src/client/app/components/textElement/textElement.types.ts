@@ -1,6 +1,5 @@
 import {Coordinate} from "turbodombuilder";
-import {ResizableType, SyncedResizableType} from "../basicComponents/resizer/resizer.types";
-import {YCoordinate, YNumber, YProxied, YString} from "../../../../yProxy";
+import {SyncedResizableType} from "../basicComponents/resizer/resizer.types";
 
 export enum TextType {
     custom = "custom",
@@ -9,16 +8,9 @@ export enum TextType {
     timestamp = "timestamp"
 }
 
-export type SyncedTextData = ResizableType & {
+export type SyncedText = SyncedResizableType & {
     text?: string,
     type?: TextType,
     origin?: Coordinate,
     fontSize?: number
-};
-
-export type SyncedText = SyncedResizableType & {
-    text?: YString,
-    type?: YProxied<TextType>,
-    origin?: YCoordinate,
-    fontSize?: YNumber
 };

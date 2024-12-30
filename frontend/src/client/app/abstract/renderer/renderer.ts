@@ -1,7 +1,8 @@
-import {canvas, Shown, StatefulReifect, TurboElement, TurboProperties} from "turbodombuilder";
+import {canvas, Shown, StatefulReifect, TurboProperties} from "turbodombuilder";
 import "./renderer.css";
+import {YComponent} from "../../yjsManagement/yComponent";
 
-export abstract class Renderer extends TurboElement {
+export abstract class Renderer extends YComponent {
     public readonly canvasElement: HTMLCanvasElement;
     public readonly canvasContext: CanvasRenderingContext2D;
 

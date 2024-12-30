@@ -8,6 +8,7 @@ import {ShootTool} from "../../tools/shoot/shoot";
 import {NavigatorTool} from "../../tools/navigator/navigator";
 import {SelectionTool} from "../../tools/selection/selection";
 import {TextTool} from "../../tools/text/text";
+import {DocumentManager} from "../../views/canvas/managers/documentManager/documentManager";
 
 //TODO handle key combinations maybe? Also fix the issue with 2-finger navigation on mobile when app starts
 /**
@@ -44,7 +45,6 @@ export class ToolManager {
         this.onToolChange = new Delegate<(oldTool: Tool, newTool: Tool, type: ClickMode) => void>();
 
         //Initialization
-        this.initTools();
         this.initEvents();
     }
 
@@ -57,21 +57,6 @@ export class ToolManager {
 
     private static set instance(value: ToolManager) {
         this._instance = value;
-    }
-
-    private initTools() {
-        //Create all tools
-        this.addTool(new SelectionTool(), "Shift"); this.addTool(new SelectionTool(), "Shift");
-        this.addTool(new NavigatorTool(), "Control");
-        this.addTool(new CreateCardTool());
-        this.addTool(new ConnectionTool());
-        this.addTool(new TextTool());
-        this.addTool(new ShootTool());
-        this.addTool(new DeleteTool());
-
-        //Init default tools at hand
-        this.setTool(this.getToolByKey("Shift"), ClickMode.left);
-        this.setTool(this.getToolByKey("Control"), ClickMode.middle, {select: false, activate: false});
     }
 
     //Utility callback to get the current tool based on the fired event's information

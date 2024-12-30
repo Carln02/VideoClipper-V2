@@ -5,14 +5,15 @@ import {ClickMode, define, TurboDragEvent, TurboEvent} from "turbodombuilder";
 import {Cursor} from "../../managers/cursorManager/cursorManager.types";
 import {CursorManager} from "../../managers/cursorManager/cursorManager";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
+import {DocumentManager} from "../../views/canvas/managers/documentManager/documentManager";
 
 /**
  * @description Tool that allows the user to pan the canvas
  */
 @define("navigator-tool")
 export class NavigatorTool extends Tool {
-    constructor() {
-        super(ToolType.navigator);
+    public constructor(documentManager: DocumentManager) {
+        super(documentManager, ToolType.navigator);
     }
 
     private get navigationManager(): NavigationManager {

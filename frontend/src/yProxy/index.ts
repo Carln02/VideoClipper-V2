@@ -1,5 +1,5 @@
-import {YAbstractType, YMap, YArray, YDoc, YText} from "./yProxy/types/base.types";
-export {YAbstractType, YMap, YArray, YDoc, YText};
+import {YAbstractType, YMap, YArray, YDoc, YText, YMapEvent, YEvent, YArrayEvent} from "./yProxy/types/base.types";
+export {YAbstractType, YMap, YArray, YDoc, YText, YMapEvent, YEvent, YArrayEvent};
 
 import {YProxy} from "./yProxy/yProxy";
 import {YMapProxy} from "./yProxyBaseTypes/yMapProxy";

@@ -5,6 +5,7 @@ import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {Flow} from "../../components/flow/flow";
 import {FlowIntersectionHandler} from "../../components/flow/handlers/types/flowIntersection.handler";
 import {FlowSearchHandler} from "../../components/flow/handlers/types/flowSearch.handler";
+import {DocumentManager} from "../../views/canvas/managers/documentManager/documentManager";
 
 /**
  * @description Tool that handles creating flows and connecting nodes
@@ -20,8 +21,8 @@ export class ConnectionTool extends Tool {
     //The last time a point was added permanently (used for when drawing flows)
     private lastDrawnTime: number = 0;
 
-    constructor() {
-        super(ToolType.connection);
+    public constructor(documentManager: DocumentManager) {
+        super(documentManager, ToolType.connection);
     }
 
     private async initializeFlow(e: TurboEvent) {

@@ -3,21 +3,17 @@ import {TextElement} from "../textElement/textElement";
 import {ClipRendererVideoInfo, ClipRendererVisibility} from "./clipRenderer.types";
 import {Clip} from "../clip/clip";
 import {Renderer} from "../../abstract/renderer/renderer";
-import {SyncedClip} from "../clip/clip.types";
 import {SyncedText, TextType} from "../textElement/textElement.types";
-import {SyncedCard} from "../card/card.types";
-import {YProxyEventName} from "../../../../yProxy";
+import {YMap} from "../../../../yProxy";
+import {YArrayManager} from "../../yjsManagement/yArrayManager";
 
 @define("vc-clip-renderer")
 export class ClipRenderer extends Renderer {
-    private _cardData: SyncedCard;
-    private _clipData: SyncedClip;
-
     private readonly videos: ClipRendererVideoInfo[] = [];
     private _currentVideoIndex: number = 0;
 
+    private readonly textManager: YArrayManager<SyncedText, TextElement>;
     public readonly textParent: HTMLDivElement;
-    private readonly textElements: TextElement[];
 
     private currentOffset: number = 0;
 
@@ -38,62 +34,41 @@ export class ClipRenderer extends Renderer {
         });
 
         this.addChild(this.canvasElement);
-        this.textParent = div({parent: this});
-        this.textElements = [];
 
+        this.textManager = new YArrayManager();
+        this.textManager.onAdded = (syncedText, id) => {
+            const text = new TextElement(syncedText, this);
+            this.textParent.addChild(text, id);
+            return text;
+        };
+
+        this.textParent = div({parent: this});
         this.resize();
     }
 
-    private setupCardCallbacks() {
-        this.cardData.title.bind(YProxyEventName.changed, () => {
-            const entries = this.textElements.filter(value => value.data.type == TextType.title);
-            if (entries.length == 0) return;
-            entries.forEach(entry => entry.textValue = this.cardData.title.value);
-            this.reloadVisibility(true);
-        }, this);
+    public titleChanged() {
+        const entries = this.textManager.getAllComponents()
+            .filter(textElement => textElement.type == TextType.title);
+        if (entries.length == 0) return;
+        entries.forEach(entry => entry.textValue = this.cardData.get("title"));
+        this.reloadVisibility(true);
     }
 
-    private setupClipCallbacks() {
-        this.clipData.content.bind(YProxyEventName.entryChanged, (newValue: SyncedText, oldValue, isLocal, path) => {
-            if (!newValue && !oldValue) return;
-
-            const key = path[path.length - 1];
-            const index: number = typeof key == "number" ? key : Number.parseInt(key);
-
-            if (!newValue) {
-                this.textElements[index]?.destroy();
-                this.textElements.splice(index, 1);
-            } else if (!oldValue) {
-                const text = new TextElement(newValue, this);
-                this.textParent.addChild(text, index);
-                this.textElements.splice(index, 0, text);
-            } else {
-                const text = this.textElements[index];
-                if (text) text.data = newValue;
-            }
-        }, this);
+    public get cardData(): YMap {
+        return this.getDataBlock("cardData");
     }
 
-    public get cardData(): SyncedCard {
-        return this._cardData;
+    public set cardData(value: YMap) {
+        this.setDataBlock(value, "cardData");
     }
 
-    public set cardData(value: SyncedCard) {
-        if (this.cardData == value) return;
-        this.cardData?.unbindObject(this);
-        this._cardData = value;
-        this.setupCardCallbacks();
+    public get clipData(): YMap {
+        return this.getDataBlock("clipData");
     }
 
-    public get clipData(): SyncedClip {
-        return this._clipData;
-    }
-
-    public set clipData(value: SyncedClip) {
-        if (this.clipData == value) return;
-        this.clipData?.unbindObject(this);
-        this._clipData = value;
-        this.setupClipCallbacks();
+    public set clipData(value: YMap) {
+        this.setDataBlock(value, "clipData");
+        this.textManager.data = value.get("content");
     }
 
     public get video(): HTMLVideoElement {
@@ -131,9 +106,9 @@ export class ClipRenderer extends Renderer {
     }
 
     private async setCurrentClipBackground(clip: Clip, forceCanvas: boolean = false) {
-        if (clip.data.backgroundFill) {
-            this.setCanvas(clip.data.backgroundFill.value);
-        } else if (clip.data.mediaId) {
+        if (clip.backgroundFill) {
+            this.setCanvas(clip.backgroundFill);
+        } else if (clip.mediaId) {
             if (this.currentClip.metadata?.type == "image") this.setCanvas(this.currentClip.uri);
             else {
                 this.setCanvas(null);
@@ -162,7 +137,7 @@ export class ClipRenderer extends Renderer {
         this.pause();
         this.clipData = clip.data;
 
-        if (clip.data.mediaId && clip.data.mediaId == this.currentClip?.data.mediaId) {
+        if (clip.mediaId && clip.mediaId == this.currentClip?.mediaId) {
             this.setCanvas(null);
             if (this.currentClip.metadata?.type == "video") this.video.currentTime = offsetTime;
             if (forceCanvas) {
@@ -225,7 +200,7 @@ export class ClipRenderer extends Renderer {
                 if (setFrame) this.setFrame(this.currentClip, this.currentOffset, true);
                 break;
             case ClipRendererVisibility.ghosting:
-                this.setStyle("opacity", this.currentClip.data.backgroundFill ? "0" : "0.2");
+                this.setStyle("opacity", this.currentClip.backgroundFill ? "0" : "0.2");
                 if (typeof this.currentFill == "string" && this.currentFill.length < 30) this.setCanvas(null);
                 this.textParent.setStyle("display", "none");
                 if (setFrame) this.setFrame(this.currentClip, this.currentOffset, true);

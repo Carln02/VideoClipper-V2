@@ -18,7 +18,15 @@ let factory;
 let persist_provider;
 let ws_provider;
 
+export function setupDocument() {
+	document = new Y.Doc();
+}
 
+export function connectToRoom(group_id, room_id) {
+	y_room = `${group_id}/ROOM:${room_id}`;
+	persist_provider = new IndexeddbPersistence(y_room, document);
+	ws_provider = new WebsocketProvider(y_room, document);
+}
 
 export function join_room(group_id, room_id) {
 	y_room = `${group_id}/ROOM:${room_id}`;
@@ -45,6 +53,9 @@ export function documentRoot(): SyncedDocumentData {
 	return factory?.root;
 }
 
+export function getDocument(): Y.Doc {
+	return document;
+}
 
 
 //	Should be unique even offline, thanks to Yjs's ClientID

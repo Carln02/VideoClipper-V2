@@ -1,7 +1,6 @@
 import {SyncedCardMetadata} from "./metadataDrawer.types";
 import {define, div, TurboInput} from "turbodombuilder";
 import "./metadataDrawer.css";
-import {SyncedComponent} from "../../abstract/syncedComponent/syncedComponent";
 import {PanelThumb} from "../basicComponents/panelThumb/panelThumb";
 import {TabbedMenu} from "../basicComponents/tabbedMenu/tabbedMenu";
 import {
@@ -10,9 +9,12 @@ import {
 import {PanelThumbProperties} from "../basicComponents/panelThumb/panelThumb.types";
 import {Card} from "../card/card";
 import {getSize} from "../../../utils/size";
+import {YComponent} from "../../yjsManagement/yComponent";
 
 @define("metadata-drawer")
-export class MetadataDrawer extends SyncedComponent<SyncedCardMetadata> {
+export class MetadataDrawer extends YComponent<SyncedCardMetadata> {
+    private readonly _card: Card;
+
     private thumb: PanelThumb;
 
     private tabbedMenu: TabbedMenu;
@@ -25,8 +27,9 @@ export class MetadataDrawer extends SyncedComponent<SyncedCardMetadata> {
 
     private readonly elementToFit: HTMLElement;
 
-    constructor(data: SyncedCardMetadata, properties: PanelThumbProperties) {
+    constructor(card: Card, data: SyncedCardMetadata, properties: PanelThumbProperties) {
         super(properties);
+        this._card = card;
 
         if (properties.fitSizeOf) this.elementToFit = properties.fitSizeOf;
         this.initUI(properties);
@@ -34,12 +37,8 @@ export class MetadataDrawer extends SyncedComponent<SyncedCardMetadata> {
         this.data = data;
     }
 
-    protected setupCallbacks() {
-
-    }
-
     public get card() {
-        return this.data.parent.getBoundObjectOfType(Card);
+        return this._card;
     }
 
     private initUI(properties: PanelThumbProperties) {

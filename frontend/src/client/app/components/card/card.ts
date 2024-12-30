@@ -1,6 +1,6 @@
 import {ClickMode, DefaultEventName, define, div, Point, TurboEvent, TurboEventName, TurboInput} from "turbodombuilder";
 import "./card.css";
-import {SyncedCard, SyncedCardData} from "./card.types";
+import {SyncedCard} from "./card.types";
 import {Timeline} from "../timeline/timeline";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {BranchingNode} from "../branchingNode/branchingNode";
@@ -9,7 +9,8 @@ import {Direction} from "../basicComponents/panelThumb/panelThumb.types";
 import {SyncedClip} from "../clip/clip.types";
 import {Clip} from "../clip/clip";
 import {MetadataDrawer} from "../metadataDrawer/metadataDrawer";
-import {proxied, YProxyEventName, YString} from "../../../../yProxy";
+import {SyncedCardMetadata} from "../metadataDrawer/metadataDrawer.types";
+import {YArray} from "../../../../yProxy/yProxy/types/base.types";
 
 /**
  * @description Class representing a card
@@ -28,7 +29,7 @@ export class Card extends BranchingNode<SyncedCard> {
 
     private readonly durationElement: HTMLDivElement;
 
-    constructor(data: SyncedCard, parent: HTMLElement) {
+    public constructor(data: SyncedCard, parent: HTMLElement) {
         super(undefined, parent);
 
         this.renderer = new ClipRenderer({parent: this});
@@ -45,7 +46,7 @@ export class Card extends BranchingNode<SyncedCard> {
             children: [this.titleElement, this.durationElement]
         }));
 
-        this.metadataDrawer = new MetadataDrawer(data.metadata, {
+        this.metadataDrawer = new MetadataDrawer(this, this.metadata, {
             parent: this.metadataDrawerParent,
             direction: Direction.bottom,
             fitSizeOf: this.metadataDrawerParent,
@@ -55,7 +56,7 @@ export class Card extends BranchingNode<SyncedCard> {
 
         this.data = data;
 
-        this.timeline = new Timeline(data.syncedClips, this.renderer, {
+        this.timeline = new Timeline(this.syncedClips, this, this.renderer, {
             parent: this.timelineParent,
             direction: Direction.right,
             fitSizeOf: this.timelineParent,
@@ -66,39 +67,27 @@ export class Card extends BranchingNode<SyncedCard> {
         this.renderer.cardData = this.data;
 
         this.addEventListener(DefaultEventName.clickStart, () => this.bringToFront());
-        this.titleElement.addEventListener(DefaultEventName.blur, () => this.data.title = this.titleElement.value as YString);
+        this.titleElement.addEventListener(DefaultEventName.blur, () => this.title = this.titleElement.value);
     }
 
-    /**
-     * @function create
-     * @static
-     * @async
-     * @description Creates a new card from the provided data by adding the latter to the Yjs document. It assigns a
-     * default title to the card as "Card - [counter]," where counter is an incremented shared integer. It also sets
-     * the metadata and clips array as observable, so components that would attach to one of the latter will be able
-     * to observe them.
-     * @param {SyncedCard} data - The data to create the card from.
-     * @returns {Promise<string>} - The ID of the created card in root.cards.
-     */
-    public static async create(data: SyncedCardData): Promise<string> {
-        this.root.counters.cards++;
-        data.title = proxied("Card - " + this.root.counters.cards);
-        return await super.createInObject(data, this.root.cards);
+    public get title(): string {
+        return this.getData("title") as string;
     }
 
-    /**
-     * @function getAll
-     * @static
-     * @description Retrieves all cards in the document.
-     * @returns {Card[]} - Array containing all the cards in the document.
-     */
-    public static getAll(): Card[] {
-        return this.root.cards.getAllChildren().flatMap(cardData => cardData.getBoundObjectsOfType(Card));
+    public set title(value: string) {
+        this.setData("title", value);
     }
 
-    protected setupCallbacks(): void {
-        super.setupCallbacks();
-        this.data.title.bind(YProxyEventName.changed, (value: string) => this.titleElement.value = value, this);
+    public get metadata(): SyncedCardMetadata {
+        return this.getData("metadata") as SyncedCardMetadata;
+    }
+
+    public get syncedClips(): YArray<SyncedClip> {
+        return this.getData("syncedClips") as YArray<SyncedClip>;
+    }
+
+    public titleChanged(value: string) {
+        this.titleElement.value = value;
     }
 
     /**

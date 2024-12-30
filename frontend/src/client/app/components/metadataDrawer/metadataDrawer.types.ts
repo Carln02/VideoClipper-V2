@@ -1,13 +1,8 @@
 import {YProxied, YString} from "../../../../yProxy";
+import {YMap} from "yjs/dist/src/types/YMap";
 
-export type SyncedCardMetadataData = {
+export type SyncedCardMetadata = YMap & {
     timestamp?: string,
     description?: string,
     instructions?: string
 };
-
-export type SyncedCardMetadata = YProxied<{
-    timestamp?: YString,
-    description?: YString,
-    instructions?: YString
-}>;

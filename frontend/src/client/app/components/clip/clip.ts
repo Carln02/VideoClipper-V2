@@ -1,6 +1,4 @@
-import {SyncedClip, SyncedClipData} from "./clip.types";
 import "./clip.css";
-import {get_video} from "../../../sync/videostore";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {ContextView} from "../../managers/contextManager/contextManager.types";
 import {Card} from "../card/card";
@@ -15,20 +13,24 @@ import {
     TurboDragEvent,
     TurboProperties
 } from "turbodombuilder";
-import {randomColor} from "../../../utils/random";
-import {SyncedComponent} from "../../abstract/syncedComponent/syncedComponent";
 import {Timeline} from "../timeline/timeline";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import domToImage from "dom-to-image-more";
 import {SyncedText, TextType} from "../textElement/textElement.types";
 import {TextElement} from "../textElement/textElement";
 import {SyncedMedia} from "../../views/camera/manager/captureManager/captureManager.types";
-import {YNumber, YString, YProxyEventName} from "../../../../yProxy";
+import {YComponent} from "../../yjsManagement/yComponent";
+import {SyncedClip} from "./clip.types";
+import {YArray, YMapEvent} from "../../../../yProxy/yProxy/types/base.types";
+import {YUtilities} from "../../yjsManagement/yUtilities";
+import {get_video} from "../../../sync/videostore";
 
 @define("vc-clip")
-export class Clip extends SyncedComponent<SyncedClip> {
+export class Clip extends YComponent<SyncedClip> {
     private static renderer: ClipRenderer;
     private static rendererInitialized = false;
+
+    private _timeline: Timeline;
 
     public metadata: SyncedMedia;
     public uri: string;
@@ -42,36 +44,31 @@ export class Clip extends SyncedComponent<SyncedClip> {
 
     private readonly minimumDuration: number = 0.3 as const;
 
-    constructor(properties: TurboProperties = {}) {
+    constructor(timeline: Timeline, data: SyncedClip, properties: TurboProperties = {}) {
         super(properties);
+        this.timeline = timeline;
+
         this.clipContent = div({classes: "vc-clip-content", parent: this});
         this.thumbnailImage = img({src: "", parent: this.clipContent, classes: "thumbnail"});
         this.thumbnailImage.show(false);
-    }
 
-    public get data(): SyncedClip {
-        return super.data;
-    }
+        this.data = data;
 
-    public set data(value: SyncedClip) {
-        if (!value.color) value.color = randomColor() as YString;
-        super.data = value;
-    }
+        this.data.observeDeep(events => {
+            let relevantChanges = false;
 
-    /**
-     * @function create
-     * @static
-     * @description Creates a new clip in the Yjs document from the provided data and in the card with the provided ID.
-     * @param {SyncedClip} data - The provided data.
-     * @param {string} cardId - The ID of the card to which the clip will be added.
-     * @param {number} [index] - Optional index to specify the position of the clip in the card's syncedClips array.
-     * By default, the clip will be pushed to the end of the array.
-     * @returns {number} - The index of the created clip in the card's syncedClips array, or -1 if an issue occurred.
-     */
-    public static create(data: SyncedClipData, cardId: string, index?: number): number {
-        const cardClips = this.root.cards[cardId]?.syncedClips;
-        if (!cardClips) return -1;
-        return super.createInArray(data, cardClips, index);
+            for (const event of events) {
+                if (!(event instanceof YMapEvent)) continue;
+                for (const [key] of event.changes.keys) {
+                    if (!["startTime", "endTime", "backgroundFill", "mediaId", "content"].includes(key)) continue;
+                    relevantChanges = true;
+                    break;
+                }
+                if (relevantChanges) break;
+            }
+
+            if (relevantChanges) this.reloadThumbnail();
+        });
     }
 
     /**
@@ -81,47 +78,45 @@ export class Clip extends SyncedComponent<SyncedClip> {
      * @description If not already created, creates a new static renderer used to take snapshots of clips and generate
      * thumbnails.
      */
-    private static initializeSnapshotRenderer() {
-        if (this.rendererInitialized) return;
-        this.renderer = new ClipRenderer({parent: document.body, id: "snapshot-renderer"},
+    private initializeSnapshotRenderer() {
+        if (Clip.rendererInitialized) return;
+        Clip.renderer = new ClipRenderer({parent: document.body, id: "snapshot-renderer"},
             {muted: true, playsInline: true});
-        this.rendererInitialized = true;
+        Clip.rendererInitialized = true;
     }
 
-    //Update data
+    public colorChanged(value: string) {
+        this.clipContent.setStyle("backgroundColor", value);
+    }
 
-    protected setupCallbacks(): void {
-        this.data.bind(YProxyEventName.changed, (_newValue, _oldValue, isLocal, path) => {
-            if ((path && path[0] == "thumbnail") || !isLocal) return;
-            this.reloadThumbnail();
-        });
+    public startTimeChanged() {
+        this.reloadSize();
+    }
 
-        this.data.color.bind(YProxyEventName.changed, (value: string) =>
-            this.clipContent.setStyle("backgroundColor", value), this);
+    public endTimeChanged() {
+        this.reloadSize()
+    }
 
-        this.data.startTime.bind(YProxyEventName.changed, () => this.reloadSize(), this);
-        this.data.endTime.bind(YProxyEventName.changed, () => this.reloadSize(), this);
+    public mediaIdChanged(value: string) {
+        const media = get_video(value);
 
-        this.data.bindAtKey("mediaId", YProxyEventName.changed, (value: string) => {
-            const media = get_video(value);
+        this.metadata = media?.metadata ?? null;
+        this.uri = media?.uri ?? null;
+        this.videoDuration = media?.metadata?.type == "video" ? media.metadata.duration : null;
 
-            this.metadata = media?.metadata ?? null;
-            this.uri = media?.uri ?? null;
-            this.videoDuration = media?.metadata?.type == "video" ? media.metadata.duration : null;
+        //TODO maybe remove this? idk
+        // if (media.metadata?.thumbnail) {
+        //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
+        // }
+    }
 
-            //TODO maybe remove this? idk
-            // if (media.metadata?.thumbnail) {
-            //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
-            // }
-        }, this);
+    public hiddenChanged(value: boolean) {
+        this.toggleClass("hidden-clip", value);
+    }
 
-        this.data.bindAtKey("hidden", YProxyEventName.changed, (value: boolean) =>
-            this.toggleClass("hidden-clip", value), this);
-
-        this.data.bindAtKey("thumbnail", YProxyEventName.changed, (value: string) => {
-            this.thumbnailImage.show(true);
-            this.thumbnailImage.src = value;
-        }, this);
+    public thumbnailChanged(value: string) {
+        this.thumbnailImage.show(true);
+        this.thumbnailImage.src = value;
     }
 
     /**
@@ -131,12 +126,12 @@ export class Clip extends SyncedComponent<SyncedClip> {
      * (between 0 and 1).
      */
     public addText(position: Point | Coordinate) {
-        this.data.content?.push({
+        YUtilities.addInYArray({
             text: "Text",
             type: TextType.custom,
             origin: position instanceof Point ? position.object : position,
             fontSize: 0.1
-        } as unknown as SyncedText);
+        }, this.content);
     }
 
     /**
@@ -145,10 +140,11 @@ export class Clip extends SyncedComponent<SyncedClip> {
      * @param {TextElement} entry - The text element to remove.
      */
     public removeText(entry: TextElement) {
-        const index = this.data.content?.indexOf(entry.data);
-        if (index < 0) return;
-        entry.data.destroyBoundObjects();
-        this.data.content?.splice(index, 1);
+        if (!YUtilities.removeFromYArray(entry, this.content)) return;
+        // const index = this.content?.indexOf(entry.data);
+        // if (index < 0) return;
+        // entry.data.destroyBoundObjects();
+        // this.data.content?.splice(index, 1);
     }
 
     /**
@@ -157,9 +153,10 @@ export class Clip extends SyncedComponent<SyncedClip> {
      * @param {number} index - The index of the text to remove.
      */
     public removeTextAt(index: number) {
-        if (index < 0 || index >= this.data.content?.length) return;
-        this.data.content[index].destroyBoundObjects();
-        this.data.content?.splice(index, 1);
+        if (index < 0 || index >= this.content.length) return;
+        this.content.delete(index);
+        // this.data.content[index].destroyBoundObjects();
+        // this.data.content?.splice(index, 1);
     }
 
     //UI
@@ -198,35 +195,35 @@ export class Clip extends SyncedComponent<SyncedClip> {
 
     //Getters and setters
 
+    private set timeline(value: Timeline) {
+        this._timeline = value;
+    }
     public get timeline(): Timeline {
-        for (const observer of this.data.parent.getBoundObjectsOfType(Timeline)) {
-            if (observer.clips.includes(this)) return observer;
-        }
-        return this.data.parent.getBoundObjectOfType(Timeline);
+        return this._timeline;
     }
 
     public get card(): Card {
-        return this.timeline?.card;
+        return this.timeline.card;
     }
 
     public get startTime(): number {
-        return this.data.startTime;
+        return this.getData("startTime") as number;
     }
 
     public set startTime(value: number) {
         if (this.videoDuration && value < 0) value = 0;
         if (value > this.endTime - this.minimumDuration) value = this.endTime - this.minimumDuration;
-        this.data.startTime = value as YNumber;
+        this.setData("startTime", value);
     }
 
     public get endTime(): number {
-        return this.data.endTime;
+        return this.getData("endTime") as number;
     }
 
     public set endTime(value: number) {
         if (value < this.startTime + this.minimumDuration) value = this.startTime + this.minimumDuration;
         if (this.videoDuration && value > this.videoDuration) value = this.videoDuration;
-        this.data.endTime = value as YNumber;
+        this.setData("endTime", value);
     }
 
     private get pixelsPerSecondUnit(): number {
@@ -235,6 +232,62 @@ export class Clip extends SyncedComponent<SyncedClip> {
 
     public get duration() {
         return this.endTime - this.startTime;
+    }
+
+    public get backgroundFill(): string {
+        return this.getData("backgroundFill") as string;
+    }
+
+    public set backgroundFill(value: string) {
+        this.setData("backgroundFill", value);
+    }
+
+    public get mediaId(): string {
+        return this.getData("mediaId") as string;
+    }
+
+    public set mediaId(value: string) {
+        this.setData("mediaId", value);
+    }
+
+    public get thumbnail(): string {
+        return this.getData("thumbnail") as string;
+    }
+
+    public set thumbnail(value: string) {
+        this.setData("thumbnail", value);
+    }
+
+    public get content(): YArray<SyncedText> {
+        return this.getData("content") as YArray<SyncedText>;
+    }
+
+    public set content(value: YArray<SyncedText>) {
+        this.setData("content", value);
+    }
+
+    public get color(): string {
+        return this.getData("color") as string;
+    }
+
+    public set color(value: string) {
+        this.setData("color", value);
+    }
+
+    public get hidden(): boolean {
+        return this.getData("hidden") as boolean;
+    }
+
+    public set hidden(value: boolean) {
+        this.setData("hidden", value);
+    }
+
+    public get muted(): boolean {
+        return this.getData("muted") as boolean;
+    }
+
+    public set muted(value: boolean) {
+        this.setData("muted", value);
     }
 
     /**
@@ -263,7 +316,7 @@ export class Clip extends SyncedComponent<SyncedClip> {
      */
     public reloadSize() {
         this.setStyle("width", this.pixelsPerSecondUnit * this.duration + "px");
-        this.timeline.reloadTime();
+        // this.timeline.reloadTime();
     }
 
     /**
@@ -272,8 +325,7 @@ export class Clip extends SyncedComponent<SyncedClip> {
      * @returns {Clip} - The clone.
      */
     public clone(): Clip {
-        const clone = new Clip();
-        clone.data = this.data;
+        const clone = new Clip(this.timeline, this.data);
         clone.setStyle("width", this.offsetWidth + "px");
         clone.setStyle("height", this.offsetHeight + "px");
         clone.selected = this.selected;
@@ -288,7 +340,7 @@ export class Clip extends SyncedComponent<SyncedClip> {
      * @returns {Promise<string>} - A base64 string of the image output.
      */
     public async reloadThumbnail(offset: number = 0): Promise<string> {
-        Clip.initializeSnapshotRenderer();
+        this.initializeSnapshotRenderer();
         await Clip.renderer.setFrame(this, offset, false, true);
 
         const image = await domToImage.toJpeg(Clip.renderer, {quality: 0.6});

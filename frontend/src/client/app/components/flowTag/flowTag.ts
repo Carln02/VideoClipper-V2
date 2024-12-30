@@ -31,7 +31,8 @@ export class FlowTag extends SyncedComponent<SyncedFlowTag> {
     }
 
     private get attachedNode(): BranchingNode {
-        return BranchingNode.getById(this.data.nodeId);
+        // return BranchingNode.getById(this.data.nodeId);
+        return null;
     }
 
     private generateWheelEntries() {

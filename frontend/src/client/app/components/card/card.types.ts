@@ -1,16 +1,10 @@
-import {SyncedClip, SyncedClipData} from "../clip/clip.types";
-import {SyncedBranchingNode, SyncedBranchingNodeData} from "../branchingNode/branchingNode.types";
-import {SyncedCardMetadata, SyncedCardMetadataData} from "../metadataDrawer/metadataDrawer.types";
-import {YProxiedArray, YString} from "../../../../yProxy";
-
-export type SyncedCardData = SyncedBranchingNodeData & {
-    title?: string,
-    syncedClips?: SyncedClipData[],
-    metadata?: SyncedCardMetadataData
-};
+import {SyncedClip} from "../clip/clip.types";
+import {SyncedBranchingNode} from "../branchingNode/branchingNode.types";
+import {SyncedCardMetadata} from "../metadataDrawer/metadataDrawer.types";
+import { YArray } from "../../../../yProxy";
 
 export type SyncedCard = SyncedBranchingNode & {
-    title?: YString,
-    syncedClips?: YProxiedArray<SyncedClip>,
+    title?: string,
+    syncedClips?: YArray<SyncedClip>,
     metadata?: SyncedCardMetadata
 };

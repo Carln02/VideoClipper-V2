@@ -9,9 +9,10 @@ import {SidePanelInstance} from "../../sidePanel.types";
 import {ContextManager} from "../../../../managers/contextManager/contextManager";
 import {YCoordinate, YNumber} from "../../../../../../yProxy/yProxy/types/proxied.types";
 import {YProxyEventName} from "../../../../../../yProxy";
+import {YComponent} from "../../../../yjsManagement/yComponent";
 
-@define("text-side-panel")
-export class TextSidePanel extends SyncedComponent<SyncedText> implements SidePanelInstance {
+@define()
+export class TextSidePanel extends YComponent<SyncedText> implements SidePanelInstance {
     private readonly sidePanel: SidePanel;
 
     private originXInput: TurboNumericalInput;
@@ -20,7 +21,7 @@ export class TextSidePanel extends SyncedComponent<SyncedText> implements SidePa
     private fontSizeInput: TurboNumericalInput;
 
     constructor(sidePanel: SidePanel) {
-        super();
+        super(null);
         this.sidePanel = sidePanel;
         this.setStyle("top", sidePanel.panelMarginTop + "px");
 
@@ -29,13 +30,13 @@ export class TextSidePanel extends SyncedComponent<SyncedText> implements SidePa
     }
 
     protected setupCallbacks() {
-        this.data.origin.bind(YProxyEventName.changed, (value: Coordinate) => {
-            this.originXInput.value = value.x;
-            this.originYInput.value = value.y;
-        }, this);
-
-        this.data.fontSize.bind(YProxyEventName.changed, (value: number) =>
-            this.fontSizeInput.value = value, this);
+        // this.data.origin.bind(YProxyEventName.changed, (value: Coordinate) => {
+        //     this.originXInput.value = value.x;
+        //     this.originYInput.value = value.y;
+        // }, this);
+        //
+        // this.data.fontSize.bind(YProxyEventName.changed, (value: number) =>
+        //     this.fontSizeInput.value = value, this);
     }
 
     public attach() {

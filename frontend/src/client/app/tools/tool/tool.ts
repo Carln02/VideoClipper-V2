@@ -2,11 +2,14 @@ import "./tool.css";
 import {ToolView} from "./toolView";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {TurboDragEvent, TurboEvent} from "turbodombuilder";
+import {DocumentManager} from "../../views/canvas/managers/documentManager/documentManager";
 
 /**
  * @description General Tool class that defines basic behaviors and "abstract" functions tools could use to handle events
  */
 export class Tool {
+    protected readonly documentManager: DocumentManager;
+
     /**
      * @description The name of the tool
      */
@@ -17,8 +20,9 @@ export class Tool {
     //DOM elements representing this tool
     private readonly instances: ToolView[] = [];
 
-    constructor(name: ToolType) {
+    constructor(documentManager: DocumentManager, name: ToolType) {
         this.name = name;
+        this.documentManager = documentManager;
     }
 
     /**

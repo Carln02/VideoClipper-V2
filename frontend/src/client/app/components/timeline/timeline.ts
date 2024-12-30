@@ -27,12 +27,16 @@ import {ClipTimelineEntry} from "./timeline.types";
 import {PanelThumb} from "../basicComponents/panelThumb/panelThumb";
 import {Direction, PanelThumbProperties} from "../basicComponents/panelThumb/panelThumb.types";
 import {randomColor} from "../../../utils/random";
-import {SyncedComponent} from "../../abstract/syncedComponent/syncedComponent";
-import {YProxiedArray, YString, YProxyEventName, YPath} from "../../../../yProxy";
+import {YArray} from "../../../../yProxy";
+import {YArrayManager} from "../../yjsManagement/yArrayManager";
+import {YComponent} from "../../yjsManagement/yComponent";
+import {YUtilities} from "../../yjsManagement/yUtilities";
 
 @define("vc-timeline")
-export class Timeline extends SyncedComponent<YProxiedArray<SyncedClip>> {
+export class Timeline extends YComponent<YArray<SyncedClip>, YArray> {
     public readonly pixelsPerSecondUnit: number = 20 as const;
+
+    private readonly clipsManager: YArrayManager<SyncedClip, Clip>;
 
     public readonly clips: Clip[] = [];
 
@@ -41,6 +45,7 @@ export class Timeline extends SyncedComponent<YProxiedArray<SyncedClip>> {
     private playTimer: NodeJS.Timeout | null = null;
     private nextTimer: NodeJS.Timeout | null = null;
 
+    private _card: Card;
     private _currentClip: ClipTimelineEntry;
 
     private thumb: PanelThumb;
@@ -52,39 +57,69 @@ export class Timeline extends SyncedComponent<YProxiedArray<SyncedClip>> {
     private totalDurationText: HTMLParagraphElement;
     private playButton: TurboIcon;
 
-    constructor(data: YProxiedArray<SyncedClip>, renderer: ClipRenderer, properties: PanelThumbProperties = {}) {
+    constructor(data: YArray<SyncedClip>, card: Card, renderer: ClipRenderer, properties: PanelThumbProperties = {}) {
         super(properties);
         this.renderer = renderer;
+        this._card = card;
 
         this.initUI(properties);
         this.initEvents();
 
-        this.data = data;
+        this.clipsManager = new YArrayManager();
+        this.clipsManager.onAdded = (syncedClip, id) => {
+            const clip = new Clip(this, syncedClip);
+            this.clipsContainer.addChild(clip, id);
+            return clip;
+        };
+
+        const oldUpdated = this.clipsManager.onUpdated;
+        this.clipsManager.onUpdated = (syncedClip, clip, id, blockKey) => {
+            oldUpdated(syncedClip, clip, id, blockKey);
+            // this.reloadTime();
+            // this.reloadCurrentClip();
+        };
+
+        const oldDeleted = this.clipsManager.onDeleted;
+        this.clipsManager.onDeleted = (syncedClip, clip, id, blockKey) => {
+            oldDeleted(syncedClip, clip, id, blockKey);
+            this.reloadTime();
+            this.reloadCurrentClip();
+        };
+
+        this.clipsManager.data = data;
+    }
+
+    public set data(value: YArray<SyncedClip>) {
+        this.clipsManager.data = value;
+    }
+
+    public get data(): YArray<SyncedClip> {
+        return this.clipsManager.data;
     }
 
     protected setupCallbacks() {
-        this.data.bind(YProxyEventName.entryChanged, (newValue: SyncedClip, oldValue: SyncedClip, _isLocal, path: YPath) => {
-            if (!newValue && !oldValue) return;
-
-            const key = path[path.length - 1];
-            const index = typeof key == "number" ? key : Number.parseInt(key);
-
-            if (!newValue) {
-                this.clips[index]?.destroy();
-                this.clips.splice(index, 1);
-            } else if (!oldValue) {
-                const clip = new Clip();
-                this.clipsContainer.addChild(clip, index);
-                this.clips.splice(index, 0, clip);
-                clip.data = newValue;
-            } else {
-                const clip: Clip = this.clips[index];
-                if (clip) clip.data = newValue;
-            }
-
-            this.reloadTime();
-            this.reloadCurrentClip();
-        }, this, true);
+        // this.data.bind(YProxyEventName.entryChanged, (newValue: SyncedClip, oldValue: SyncedClip, _isLocal, path: YPath) => {
+        //     if (!newValue && !oldValue) return;
+        //
+        //     const key = path[path.length - 1];
+        //     const index = typeof key == "number" ? key : Number.parseInt(key);
+        //
+        //     if (!newValue) {
+        //         this.clips[index]?.destroy();
+        //         this.clips.splice(index, 1);
+        //     } else if (!oldValue) {
+        //         const clip = new Clip(this.card);
+        //         this.clipsContainer.addChild(clip, index);
+        //         this.clips.splice(index, 0, clip);
+        //         clip.data = newValue;
+        //     } else {
+        //         const clip: Clip = this.clips[index];
+        //         if (clip) clip.data = newValue;
+        //     }
+        //
+        //     this.reloadTime();
+        //     this.reloadCurrentClip();
+        // }, this, true);
     }
 
     private initUI(properties: PanelThumbProperties) {
@@ -131,7 +166,7 @@ export class Timeline extends SyncedComponent<YProxiedArray<SyncedClip>> {
     }
 
     public get card(): Card {
-        return this.data.parent.getBoundObjectOfType(Card);
+        return this._card;
     }
 
     public get direction() {
@@ -174,7 +209,7 @@ export class Timeline extends SyncedComponent<YProxiedArray<SyncedClip>> {
     }
 
     public reloadTime() {
-        this.totalDuration = this.clips.reduce((sum, clip) => sum + clip.duration, 0);
+        this.totalDuration = this.clipsManager.getAllComponents().reduce((sum, clip) => sum + clip.duration, 0);
         this.currentTime = (this.scrubber.translation / this.width * this.totalDuration) || 0;
         this.thumb.open = this.thumb.open;
     }
@@ -192,13 +227,13 @@ export class Timeline extends SyncedComponent<YProxiedArray<SyncedClip>> {
 
     public async addClip(clip: SyncedClip, index?: number) {
         if ((!index && index != 0) || index > this.data.length) index = this.data.length;
-        if (!clip.color) clip.color = randomColor() as YString;
-        this.data.splice(index, 0, clip as SyncedClip);
+        if (!clip.color) clip.color = randomColor();
+        YUtilities.addInYArray(clip, this.data, index);
     }
 
     public removeClip(position: number) {
         if (!position && position != 0) return;
-        this.data.splice(position, 1);
+        this.data.delete(position);
     }
 
     public snapToClosest(entry: number | ClipTimelineEntry = this.currentClip) {
@@ -209,7 +244,7 @@ export class Timeline extends SyncedComponent<YProxiedArray<SyncedClip>> {
         for (let i = 0; i < index; i++) currentTime += this.getDuration(i);
         this.currentTime = currentTime;
 
-        this.renderer.setFrame(this.clips[index <= 0 ? index : (index - 1)]);
+        this.renderer.setFrame(this.clipsManager.getInstance(index <= 0 ? index : (index - 1)));
     }
 
     public snapAtEnd() {
@@ -237,7 +272,8 @@ export class Timeline extends SyncedComponent<YProxiedArray<SyncedClip>> {
             accumulatedTime -= this.getDuration(index);
         }
 
-        const clip = this.clips[index];
+        console.log(this.clipsManager.data)
+        const clip = this.clipsManager.getInstance(index);
         const offset = time - accumulatedTime;
         const closestIntersection = accumulatedTime < clip.duration / 2 ? index : (index + 1);
 
@@ -248,16 +284,16 @@ export class Timeline extends SyncedComponent<YProxiedArray<SyncedClip>> {
     }
 
     private async playNext(index: number, offset = 0) {
-        if (index >= this.clips.length) {
+        if (index >= this.clipsManager.getAllData().length) {
             this.play(false);
             return;
         }
 
-        await this.renderer.setFrame(this.clips[index], offset);
+        await this.renderer.setFrame(this.clipsManager.getInstance(index), offset);
         this.renderer.playNext();
 
 
-        this.renderer.loadNext(this.clips[index + 1]);
+        this.renderer.loadNext(this.clipsManager.getInstance(index + 1));
 
         this.nextTimer = setTimeout(() => this.playNext(index + 1),
             1000 * (this.getDuration(index) - offset));
@@ -290,6 +326,6 @@ export class Timeline extends SyncedComponent<YProxiedArray<SyncedClip>> {
     }
 
     private getDuration(index: number) {
-        return this.clips[index].duration;
+        return this.clipsManager.getInstance(index)?.duration || 0;
     }
 }
