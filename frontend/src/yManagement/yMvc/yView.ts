@@ -6,7 +6,7 @@ export class YView<
     ComponentType extends YComponent<any, any> = YComponent<any, any>,
     ModelType extends YModel = YModel
 > extends View<ComponentType, ModelType> {
-    public constructor(element: ComponentType) {
-        super(element);
+    public constructor(element: ComponentType, initialize: boolean = true) {
+        super(element, initialize);
     }
 }

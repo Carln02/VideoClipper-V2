@@ -11,7 +11,7 @@ import {ContextView} from "./managers/contextManager/contextManager.types";
 import "./main.css";
 import "./styles/input.css";
 import "./styles/markingMenu.css";
-import {documentRoot, getDocument} from "../sync/datastore";
+import {getDocument} from "../sync/datastore";
 import {DocumentManager} from "./views/canvas/managers/documentManager/documentManager";
 
 turbofy();
@@ -29,6 +29,7 @@ const eventManager = new TurboEventManager({
 async function start() {
     await logman.init();
     await logman.wait_public_index();
+    console.log("Logged in");
     show_groups();
 }
 
@@ -65,7 +66,6 @@ export function show_project() {
         contents = new Canvas();
         const documentManager = new DocumentManager(getDocument(), div(), div());
         (contents as Canvas).documentManager = documentManager;
-
     }, 1000)
 }
 

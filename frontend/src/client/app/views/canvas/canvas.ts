@@ -5,10 +5,6 @@ import {Toolbar} from "../../components/toolbar/toolbar";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {ContextView} from "../../managers/contextManager/contextManager.types";
 import {AppBar} from "../../components/appBar/appBar";
-import {Card} from "../../components/card/card";
-import {SyncedBranchingNode} from "../../components/branchingNode/branchingNode.types";
-import {BranchingNode} from "../../components/branchingNode/branchingNode";
-import {YMapManager} from "../../yManagement/yMapManager";
 import {DocumentManager} from "./managers/documentManager/documentManager";
 import {SelectionTool} from "../../tools/selection/selection";
 import {NavigatorTool} from "../../tools/navigator/navigator";
@@ -26,10 +22,6 @@ import {ToolManager} from "../../managers/toolManager/toolManager";
 export class Canvas extends TurboElement {
     //Singleton
     private static _instance: Canvas = null;
-
-    public readonly cardsManager: YMapManager<SyncedBranchingNode, BranchingNode | Card>;
-    // private flowsManager: YMapManager<SyncedFlow, Flow>;
-    // private branchingNodesManager: YMapManager<SyncedBranchingNode, BranchingNode>;
 
     private appBar: AppBar;
 

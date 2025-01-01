@@ -1,5 +1,6 @@
 import {YAbstractType, YMap, YArray, YEvent} from "../../yManagement.types";
 import {Model} from "../../../mvc/model";
+import {auto} from "turbodombuilder";
 
 /**
  * @class YComponent
@@ -16,8 +17,9 @@ export abstract class YModel<
 > extends Model<YType, IdType> {
     protected observerMap: Map<string, (event: YEvent) => void> = new Map();
 
-    protected constructor(data: DataType | YType) {
+    protected constructor(data?: DataType | YType) {
         super(data as YType);
+        this.enableCallbacks = true;
     }
 
     /**
@@ -32,6 +34,16 @@ export abstract class YModel<
         super.data = value;
     }
 
+    @auto()
+    public set enableCallbacks(value: boolean) {
+        this.observerMap.forEach((observer, blockKey) => {
+            const block = this.getDataBlock(blockKey);
+            if (!block) return;
+            if (value) block.observe(observer);
+            else block.unobserve(observer);
+        });
+    }
+
     public getSize(blockKey: string = this.defaultBlockKey): number {
         let counter = 0;
         this.dataMap.get(blockKey)?.forEach(() => counter++);
@@ -39,7 +51,7 @@ export abstract class YModel<
     }
 
     protected setDataBlock(value: YType, blockKey: string = this.defaultBlockKey, initialize: boolean = true) {
-        this.dataMap.get(blockKey)?.unobserve(this.observerMap.get(blockKey) as any);
+        if (this.enableCallbacks) this.dataMap.get(blockKey)?.unobserve(this.observerMap.get(blockKey) as any);
         this.clear(blockKey);
         this.dataMap.set(blockKey, value);
         if (initialize) this.initialize(blockKey);
@@ -49,14 +61,14 @@ export abstract class YModel<
         let block = this.getDataBlock(blockKey);
         if (!block) return;
         if (block instanceof YArray) block = block.toArray() as any;
-        block?.forEach((_value, key) => this.callbackOnKeyChange(key, blockKey));
+        if (this.enableCallbacks) block?.forEach((_value, key) => this.callbackOnKeyChange(key, blockKey));
 
         const observerFunction = (event: YEvent) => this.observeChanges(event, blockKey);
         this.observerMap.set(blockKey, observerFunction);
-        block.observe(observerFunction as any);
+        if (this.enableCallbacks) block.observe(observerFunction as any);
     }
 
-    protected clear(blockKey: string = this.defaultBlockKey) {
+    public clear(blockKey: string = this.defaultBlockKey) {
     }
 
     protected abstract observeChanges(event: YEvent, blockKey?: string): void;

@@ -8,7 +8,7 @@ export class YArrayManagerModel<
 > extends YManagerModel<DataType, ComponentType,
     number, YArray<DataType>> {
 
-    public constructor(data: YArray<DataType>) {
+    public constructor(data?: YArray<DataType>) {
         super(data);
     }
 

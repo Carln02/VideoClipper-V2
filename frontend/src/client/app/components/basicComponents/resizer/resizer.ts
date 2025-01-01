@@ -5,14 +5,13 @@ import "./resizer.css";
 @define("vc-resizer")
 export class Resizer extends TurboElement {
     private readonly content: Element;
-    private readonly parent: HTMLElement;
+    public parent: HTMLElement;
 
-    constructor(content: Element, parent: HTMLElement, properties: TurboProperties = {}) {
-        properties.parent = content;
+    constructor(content: Element, properties: TurboProperties = {}) {
         super(properties);
 
         this.content = content;
-        this.parent = parent;
+        this.parent = content.parentElement;
 
         this.initUI();
         this.show(false);
@@ -38,12 +37,12 @@ export class Resizer extends TurboElement {
 
     public incrementWidthByPx(delta: number) {
         if ("boxWidth" in this.content && typeof this.content.boxWidth == "number") {
-            this.content.boxWidth += delta / this.parent.offsetWidth * 100;
+            this.content.boxWidth += delta / this.parent?.offsetWidth * 100;
         }
     }
 
     public incrementHeightByPx(delta: number) {
         if ("boxHeight" in this.content && typeof this.content.boxHeight == "number")
-            this.content.boxHeight += delta / this.parent.offsetHeight * 100;
+            this.content.boxHeight += delta / this.parent?.offsetHeight * 100;
     }
 }

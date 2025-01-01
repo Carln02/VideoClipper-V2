@@ -18,7 +18,7 @@ export class YComponentModel<Element extends YComponent = YComponent> extends YM
      */
     public id: string;
 
-    public constructor(data: any, element: Element) {
+    public constructor(data?: any, element?: Element) {
         super(data);
         this.element = element;
     }
@@ -44,13 +44,14 @@ export class YComponentModel<Element extends YComponent = YComponent> extends YM
     }
 
     protected callbackOnKeyChange(key: string, blockKey: string = this.defaultBlockKey, deleted: boolean = false) {
+        if (!this.element) return;
         const callbackName = key + "Changed";
         const value = deleted ? undefined : this.getData(key, blockKey);
 
         const prototype = Object.getPrototypeOf(this.element.view);
         const callback = prototype?.[callbackName];
 
-        if (typeof callback === "function") callback.call(this, value);
+        if (typeof callback === "function") callback.call(this.element.view, value);
     }
 
     protected observeChanges(event: YMapEvent, blockKey: string | undefined): void {

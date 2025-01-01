@@ -8,7 +8,7 @@ export class YMapManagerModel<
 > extends YManagerModel<DataType, ComponentType,
     string, YMap<DataType>> {
 
-    public constructor(data: YMap<DataType>) {
+    public constructor(data?: YMap<DataType>) {
         super(data);
     }
 

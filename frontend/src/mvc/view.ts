@@ -7,9 +7,12 @@ export class View<
 > {
     protected readonly element: ComponentType;
 
-    public constructor(element: ComponentType) {
+    public constructor(element: ComponentType, initialize: boolean = true) {
         this.element = element;
+        if (initialize) this.initialize();
+    }
 
+    protected initialize(): void {
         this.setupUIElements();
         this.setupUILayout();
         this.setupUIListeners();

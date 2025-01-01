@@ -7,9 +7,8 @@ export abstract class YManagerModel<
     ComponentType extends YComponent, IdType extends string | number,
     YType extends YMap | YArray
 > extends YModel<DataType, YType, IdType>{
-    protected readonly dataMap: Map<string, YType> = new Map();
-    protected readonly observerMap: Map<string, (event: YEvent) => void> = new Map();
     protected readonly instancesMap: Map<string, Map<IdType, ComponentType>> = new Map();
+    protected readonly dceMap: Map<string, Map<IdType, ComponentType>> = new Map();
 
     public onAdded: (data: DataType, id: IdType, blockKey: string) => ComponentType;
 
@@ -25,7 +24,7 @@ export abstract class YManagerModel<
             this.instancesMap.get(blockKey).delete(id);
         };
 
-    protected constructor(data: YType) {
+    protected constructor(data?: YType) {
         super(data);
     }
 
@@ -52,7 +51,8 @@ export abstract class YManagerModel<
         return output;
     }
 
-    protected clear(blockKey: string = this.defaultBlockKey) {
+    public clear(blockKey: string = this.defaultBlockKey) {
+        if (!this.instancesMap) return;
         if (blockKey) {
             this.instancesMap.get(blockKey)?.forEach(instance => instance.remove());
             this.instancesMap.get(blockKey)?.clear();

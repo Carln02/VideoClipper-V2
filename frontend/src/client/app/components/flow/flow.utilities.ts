@@ -48,7 +48,6 @@ export class FlowUtilities extends FlowHandler {
         if (!this.flow) return;
 
         const tags = this.flowData.flowTags;
-        console.log(tags);
         return;
         for (const tag of tags) {
             const namedPaths = tag.namedPaths;

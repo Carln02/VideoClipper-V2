@@ -8,8 +8,7 @@ import {TextElement} from "../../../textElement/textElement";
 import {SidePanelInstance} from "../../sidePanel.types";
 import {ContextManager} from "../../../../managers/contextManager/contextManager";
 import {YCoordinate, YNumber} from "../../../../../../yProxy/yProxy/types/proxied.types";
-import {YProxyEventName} from "../../../../../../yProxy";
-import {YComponent} from "../../../../yManagement/yComponent";
+import {YComponent} from "../../../../../../yManagement/yMvc/yComponent";
 
 @define()
 export class TextSidePanel extends YComponent<SyncedText> implements SidePanelInstance {

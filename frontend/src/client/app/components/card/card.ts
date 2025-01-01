@@ -9,6 +9,7 @@ import {MetadataDrawer} from "../metadataDrawer/metadataDrawer";
 import {CardModel} from "./card.model";
 import {CardView} from "./card.view";
 import {BranchingNode} from "../branchingNode/branchingNode";
+import {SyncedCardMetadata} from "../metadataDrawer/metadataDrawer.types";
 
 /**
  * @description Class representing a card
@@ -21,7 +22,7 @@ export class Card extends BranchingNode<CardView, CardModel> {
         this.view = new CardView(this);
 
         this.model.initialize();
-        this.renderer.cardData = this.model.data;
+        this.renderer.model.cardData = this.model.data;
 
         this.addEventListener(DefaultEventName.clickStart, () => this.bringToFront());
     }
@@ -36,6 +37,10 @@ export class Card extends BranchingNode<CardView, CardModel> {
 
     public get timeline(): Timeline {
         return this.view.timeline;
+    }
+
+    public get metadata(): SyncedCardMetadata {
+        return this.model.metadata;
     }
 
     /**

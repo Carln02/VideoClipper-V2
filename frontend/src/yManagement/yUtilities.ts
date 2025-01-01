@@ -1,5 +1,5 @@
 import {YArray, YMap} from "./yManagement.types";
-import {generate_unique_id} from "../../sync/datastore";
+import {generate_unique_id} from "../client/sync/datastore";
 
 export class YUtilities {
     public static createYMap<DataType = object>(data: DataType): YMap {

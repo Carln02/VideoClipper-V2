@@ -1,23 +1,19 @@
-import {SyncedDocument} from "./documentManager.types";
-import {YMapManager} from "../../../../yManagement/yMapManager";
-import {BranchingNodeType, SyncedBranchingNode} from "../../../../components/branchingNode/branchingNode.types";
+import {BranchingNodeType} from "../../../../components/branchingNode/branchingNode.types";
 import {BranchingNode} from "../../../../components/branchingNode/branchingNode";
 import {Card} from "../../../../components/card/card";
 import {YDoc, YMap} from "../../../../../../yProxy";
 import {SyncedCard} from "../../../../components/card/card.types";
-import {SyncedFlow} from "../../../../components/flow/flow.types";
-import {YDocument} from "../../../../yManagement/yDocument";
 import {Point} from "turbodombuilder";
 import {SyncedText, TextType} from "../../../../components/textElement/textElement.types";
 import {SyncedClip} from "../../../../components/clip/clip.types";
 import {randomColor} from "../../../../../utils/random";
-import {YUtilities} from "../../../../yManagement/yUtilities";
+import {YDocument} from "../../../../../../yManagement/yDocument";
+import {YUtilities} from "../../../../../../yManagement/yUtilities";
+import {DocumentManagerModel} from "./documentManager.model";
 
 export class DocumentManager extends YDocument {
-    private readonly data: SyncedDocument;
-
-    public readonly cardsManager: YMapManager<SyncedBranchingNode, BranchingNode>;
-    // private flowsManager: YMapManager<SyncedFlow, Flow>;
+    public readonly documentModel: DocumentManagerModel;
+    // public readonly flowsModel
 
     //Parents used to segregate different types of elements placed on the canvas
     //Mainly to make sure that flows are below cards
@@ -26,41 +22,24 @@ export class DocumentManager extends YDocument {
 
     public constructor(document: YDoc, cardsParent: HTMLElement, flowsParent: HTMLElement) {
         super(document);
-        this.data = document.getMap("document_content");
 
         this.cardsParent = cardsParent;
         this.flowsParent = flowsParent;
 
-        this.cardsManager = new YMapManager<SyncedBranchingNode, BranchingNode>();
-        this.cardsManager.onAdded = data => {
-            if ((data as YMap).get("type") == BranchingNodeType.node) return new BranchingNode(data, this.cardsParent);
-            else return new Card(data, this.cardsParent);
-        };
+        this.documentModel = new DocumentManagerModel(document.getMap("document_content"));
 
+        this.documentModel.onBranchingNodeAdded = data => new BranchingNode(data, {parent: this.cardsParent});
+        this.documentModel.onCardAdded = data => new Card(data, {parent: this.cardsParent});
+
+        this.documentModel.initialize();
         // this.flowsManager.onAdded = data => new Flow(data, this.flowsParent);
-
-        this.cardsManager.setDataBlock(this.cards, "cards");
-        this.cardsManager.setDataBlock(this.branchingNodes, "branchingNodes");
-
         // this.flowsManager = new YMapManager<SyncedFlow, Flow>(this.flows);
     }
 
     //CARDS
 
-    public get cards(): YMap<SyncedCard> {
-        return this.data.get("cards");
-    }
-
-    public get cardsCount(): number {
-        return this.data.get("counters").get("cards");
-    }
-
-    private incrementCardsCount() {
-        this.data.get("counters").set("cards", this.cardsCount + 1);
-    }
-
     public async createNewCard(position: Point): Promise<string> {
-        this.incrementCardsCount();
+        this.documentModel.incrementCardsCount();
 
         const metadataMap = new YMap();
 
@@ -81,32 +60,16 @@ export class DocumentManager extends YDocument {
 
         const cardMap = YUtilities.createYMap<SyncedCard>({
             origin: position.object,
-            title: "Card - " + this.cardsCount,
+            title: "Card - " + this.documentModel.cardsCount,
             metadata: metadataMap,
             syncedClips: YUtilities.createYArray([defaultClipMap]),
         });
 
-        return await YUtilities.addInYMap(cardMap, this.cards);
-    }
-
-    public get flowsCount(): number {
-        return this.data.get("counters").get("flows");
-    }
-
-    public incrementFlowsCount() {
-        this.data.get("counters").set("flows", this.flowsCount + 1);
-    }
-
-    public get flows(): YMap<SyncedFlow> {
-        return this.data.get("flows");
-    }
-
-    public get branchingNodes(): YMap<SyncedBranchingNode> {
-        return this.data.get("branchingNodes");
+        return await YUtilities.addInYMap(cardMap, this.documentModel.cards);
     }
 
     public clear() {
-        this.cardsManager.clear();
+        this.documentModel.clear();
         // this.flowsManager.clear();
     }
 }

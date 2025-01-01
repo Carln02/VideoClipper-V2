@@ -58,12 +58,12 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
             openOffset: 6,
         });
 
-        this._timeline = new Timeline(this.model.syncedClips, this.element, this.renderer, {
-            direction: Direction.right,
-            // TODO fitSizeOf: this.timelineParent,
-            initiallyClosed: true,
-            openOffset: 16
-        });
+        // this._timeline = new Timeline(this.model.syncedClips, this.element, this.renderer, {
+        //     direction: Direction.right,
+        //     // TODO fitSizeOf: this.timelineParent,
+        //     initiallyClosed: true,
+        //     openOffset: 16
+        // });
 
         this.titleElement = new TurboInput({selectTextOnFocus: true});
         this.durationElement = div();

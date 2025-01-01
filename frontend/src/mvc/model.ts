@@ -2,9 +2,9 @@ export abstract class Model<
     DataType extends object = object,
     DataKeyType extends string | number = string | number
 > {
-    protected dataMap: Map<string, DataType> = new Map();
+    protected readonly dataMap: Map<string, DataType> = new Map();
 
-    protected constructor(data: DataType) {
+    protected constructor(data?: DataType) {
         this.setDataBlock(data, this.defaultBlockKey, false);
     }
 
@@ -37,6 +37,7 @@ export abstract class Model<
     }
 
     protected setDataBlock(value: DataType, blockKey: string = this.defaultBlockKey, initialize: boolean = true) {
+        if (!value) return;
         this.dataMap.set(blockKey, value);
     }
 

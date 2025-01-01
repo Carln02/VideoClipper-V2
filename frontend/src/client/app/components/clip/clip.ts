@@ -16,6 +16,7 @@ import {YComponent} from "../../../../yManagement/yMvc/yComponent";
 import {ClipView} from "./clip.view";
 import {ClipModel} from "./clip.model";
 import {YUtilities} from "../../../../yManagement/yUtilities";
+import {SyncedMedia} from "../../views/camera/manager/captureManager/captureManager.types";
 
 @define("vc-clip")
 export class Clip extends YComponent<ClipView, ClipModel> {
@@ -31,6 +32,48 @@ export class Clip extends YComponent<ClipView, ClipModel> {
         this.model = new ClipModel(data, this);
         this.view = new ClipView(this);
         this.model.initialize();
+    }
+
+    //Getters and setters
+
+    private set timeline(value: Timeline) {
+        this._timeline = value;
+    }
+    public get timeline(): Timeline {
+        return this._timeline;
+    }
+
+    public get card(): Card {
+        return this.timeline.card;
+    }
+
+    /**
+     * @description Whether the element is selected or not. Setting it will accordingly toggle the "selected" CSS
+     * class on the element and update the UI.
+     */
+    public set selected(value: boolean) {
+        super.selected = value;
+        this.view.showHandles(value);
+    }
+
+    public get uri(): string {
+        return this.model.uri;
+    }
+
+    public get metadata(): SyncedMedia {
+        return this.model.metadata;
+    }
+
+    public get videoDuration(): number {
+        return this.model.videoDuration;
+    }
+
+    public get backgroundFill(): string {
+        return this.model.backgroundFill;
+    }
+
+    public get mediaId(): string {
+        return this.model.mediaId;
     }
 
     /**
@@ -85,28 +128,6 @@ export class Clip extends YComponent<ClipView, ClipModel> {
         this.model.content.delete(index);
         // this.data.content[index].destroyBoundObjects();
         // this.data.content?.splice(index, 1);
-    }
-
-    //Getters and setters
-
-    private set timeline(value: Timeline) {
-        this._timeline = value;
-    }
-    public get timeline(): Timeline {
-        return this._timeline;
-    }
-
-    public get card(): Card {
-        return this.timeline.card;
-    }
-
-    /**
-     * @description Whether the element is selected or not. Setting it will accordingly toggle the "selected" CSS
-     * class on the element and update the UI.
-     */
-    public set selected(value: boolean) {
-        super.selected = value;
-        this.view.showHandles(value);
     }
 
     //Utilities
