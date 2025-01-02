@@ -6,8 +6,8 @@ import {div, video} from "turbodombuilder";
 export class CameraRendererView extends RendererView<CameraRenderer, CameraRendererModel> {
     private snapshotEffectDiv: HTMLDivElement;
 
-    public constructor(element: CameraRenderer) {
-        super(element);
+    public constructor(element: CameraRenderer, model: CameraRendererModel) {
+        super(element, model);
     }
 
     protected setupUIElements() {

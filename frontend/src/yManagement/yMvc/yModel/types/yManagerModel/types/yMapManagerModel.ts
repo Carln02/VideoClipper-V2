@@ -1,4 +1,4 @@
-import {YMap, YMapEvent } from "../../../../../yManagement.types";
+import {YMap, YMapEvent} from "../../../../../yManagement.types";
 import {YManagerModel} from "../yManagerModel";
 import {YComponent} from "../../../../yComponent";
 
@@ -28,7 +28,7 @@ export class YMapManagerModel<
             const change = event.changes.keys.get(key);
             switch (change.action) {
                 case "add":
-                    this.callbackOnKeyChange(key, blockKey);
+                    this.fireKeyChangedCallback(key, blockKey);
                     break;
                 case "delete":
                     this.onDeleted?.(change.oldValue as DataType, this.getInstance(key, blockKey), key, blockKey);

@@ -1,23 +1,17 @@
-import {Shown, StatefulReifect, TurboProperties} from "turbodombuilder";
 import "./renderer.css";
 import {YComponent} from "../../../../yManagement/yMvc/yComponent";
 import {RendererView} from "./renderer.view";
 import {RendererModel} from "./renderer.model";
+import {RendererProperties} from "./renderer.types";
 
 export abstract class Renderer<
     ViewType extends RendererView = RendererView<any, any>,
-    ModelType extends RendererModel = RendererModel<any>
-> extends YComponent<ViewType, ModelType> {
-    private static rendererShowTransition: StatefulReifect<Shown> = new StatefulReifect<Shown>({
-        properties: "opacity",
-        styles: {visible: 1, hidden: 0},
-        states: [Shown.visible, Shown.hidden]
-    });
+    ModelType extends RendererModel = RendererModel
+> extends YComponent<ViewType, object, ModelType> {
 
-    protected constructor(properties: TurboProperties = {}) {
+    protected constructor(properties: RendererProperties<ViewType, ModelType> = {}) {
         super(properties);
-        this.addClass("vc-renderer");
-        this.showTransition = Renderer.rendererShowTransition;
+        if (!properties.canvasProperties) properties.canvasProperties = {id: "card-frame-canvas"};
     }
 
     public get width() {

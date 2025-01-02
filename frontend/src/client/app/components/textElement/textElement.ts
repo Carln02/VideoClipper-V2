@@ -1,5 +1,5 @@
-import {SyncedText, TextType} from "./textElement.types";
-import {define, Point, TurboProperties} from "turbodombuilder";
+import {SyncedText, TextElementProperties, TextType} from "./textElement.types";
+import {define, Point} from "turbodombuilder";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import "./textElement.css";
 import {Clip} from "../clip/clip";
@@ -10,16 +10,13 @@ import {TextElementView} from "./textElement.view";
 import {TextElementModel} from "./textElement.model";
 
 @define("vc-text-entry")
-export class TextElement extends YComponent<TextElementView, TextElementModel> {
+export class TextElement extends YComponent<TextElementView, SyncedText, TextElementModel> {
     public readonly renderer: ClipRenderer;
 
-    constructor(data: SyncedText, renderer: ClipRenderer, properties: TurboProperties = {}) {
+    constructor(properties: TextElementProperties) {
         super(properties);
-        this.renderer = renderer;
-
-        this.model = new TextElementModel(data, this);
-        this.view = new TextElementView(this);
-        this.model.initialize();
+        this.renderer = properties.renderer;
+        this.generateViewAndModel(TextElementView, TextElementModel, properties.data);
     }
 
     public get clip(): Clip {

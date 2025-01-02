@@ -1,4 +1,4 @@
-import {SyncedCardMetadata} from "./metadataDrawer.types";
+import {MetadataDrawerProperties, SyncedCardMetadata} from "./metadataDrawer.types";
 import {define, div, TurboInput} from "turbodombuilder";
 import "./metadataDrawer.css";
 import {PanelThumb} from "../basicComponents/panelThumb/panelThumb";
@@ -10,9 +10,11 @@ import {PanelThumbProperties} from "../basicComponents/panelThumb/panelThumb.typ
 import {Card} from "../card/card";
 import {getSize} from "../../../utils/size";
 import {YComponent} from "../../../../yManagement/yMvc/yComponent";
+import {MetadataDrawerView} from "./metadataDrawer.view";
+import {MetadataDrawerModel} from "./metadataDrawer.model";
 
-@define("metadata-drawer")
-export class MetadataDrawer extends YComponent<any, SyncedCardMetadata> {
+@define()
+export class MetadataDrawer extends YComponent<MetadataDrawerView, SyncedCardMetadata, MetadataDrawerModel> {
     private readonly _card: Card;
 
     private thumb: PanelThumb;
@@ -27,14 +29,13 @@ export class MetadataDrawer extends YComponent<any, SyncedCardMetadata> {
 
     private readonly elementToFit: HTMLElement;
 
-    constructor(card: Card, data: SyncedCardMetadata, properties: PanelThumbProperties) {
+    constructor(properties: MetadataDrawerProperties) {
         super(properties);
-        this._card = card;
+        this._card = properties.card;
 
+        // if (!this.model) this.model = new MetadataDrawerModel(this, properties.card.metadata);
         if (properties.fitSizeOf) this.elementToFit = properties.fitSizeOf;
         this.initUI(properties);
-
-        this.data = data;
     }
 
     public get card() {

@@ -1,4 +1,4 @@
-import {DefaultEventName, define, TurboProperties} from "turbodombuilder";
+import {define} from "turbodombuilder";
 import "./card.css";
 import {SyncedCard} from "./card.types";
 import {Timeline} from "../timeline/timeline";
@@ -10,33 +10,49 @@ import {CardModel} from "./card.model";
 import {CardView} from "./card.view";
 import {BranchingNode} from "../branchingNode/branchingNode";
 import {SyncedCardMetadata} from "../metadataDrawer/metadataDrawer.types";
+import {MvcTurboProperties} from "../../../../mvc/mvc.types";
 
 /**
  * @description Class representing a card
  */
 @define("vc-card")
-export class Card extends BranchingNode<CardView, CardModel> {
-    public constructor(data: SyncedCard, properties: TurboProperties = {}) {
-        super(undefined, properties);
-        this.model = new CardModel(data, this);
-        this.view = new CardView(this);
+export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
+    private readonly _renderer: ClipRenderer;
+    private readonly _metadataDrawer: MetadataDrawer;
+    private _timeline: Timeline;
 
-        this.model.initialize();
-        this.renderer.model.cardData = this.model.data;
+    public constructor(properties: MvcTurboProperties<CardView, SyncedCard, CardModel> = {}) {
+        super({...properties, data: undefined});
+        this.generateViewAndModel(CardView, CardModel, properties.data, false);
 
-        this.addEventListener(DefaultEventName.clickStart, () => this.bringToFront());
+        this._renderer = new ClipRenderer();
+        this._metadataDrawer = new MetadataDrawer(this);
+
+        // this._timeline = new Timeline(this.model.syncedClips, this.element, this.renderer, {
+        //     direction: Direction.right,
+        //     // TODO fitSizeOf: this.timelineParent,
+        //     initiallyClosed: true,
+        //     openOffset: 16
+        // });
+
+        this.initialize();
+        this.renderer.card = this;
     }
 
     public get renderer(): ClipRenderer {
-        return this.view.renderer;
+        return this._renderer;
     }
 
     public get metadataDrawer(): MetadataDrawer {
-        return this.view.metadataDrawer;
+        return this._metadataDrawer;
     }
 
     public get timeline(): Timeline {
-        return this.view.timeline;
+        return this._timeline;
+    }
+
+    public get title(): string {
+        return this.model.title;
     }
 
     public get metadata(): SyncedCardMetadata {

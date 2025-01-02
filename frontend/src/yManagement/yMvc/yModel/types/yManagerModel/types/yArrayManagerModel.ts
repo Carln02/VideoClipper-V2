@@ -1,4 +1,4 @@
-import { YArray, YArrayEvent } from "../../../../../yManagement.types";
+import {YArray, YArrayEvent} from "../../../../../yManagement.types";
 import {YManagerModel} from "../yManagerModel";
 import {YComponent} from "../../../../yComponent";
 
@@ -33,7 +33,7 @@ export class YArrayManagerModel<
             if (delta.retain !== undefined) {
                 currentIndex += delta.retain;
             } else if (delta.insert && Array.isArray(delta.insert)) {
-                delta.insert.forEach((_item: DataType, i: number) => this.callbackOnKeyChange(currentIndex + i, blockKey));
+                delta.insert.forEach((_item: DataType, i: number) => this.fireKeyChangedCallback(currentIndex + i, blockKey));
                 currentIndex += delta.insert.length;
             } else if (delta.delete) {
                 for (let i = 0; i < delta.delete; i++) {

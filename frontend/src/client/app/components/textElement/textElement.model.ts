@@ -1,9 +1,8 @@
 import {YComponentModel} from "../../../../yManagement/yMvc/yModel/types/yComponentModel";
-import {TextElement} from "./textElement";
 import {TextType} from "./textElement.types";
 import {Coordinate} from "turbodombuilder";
 
-export class TextElementModel extends YComponentModel<TextElement> {
+export class TextElementModel extends YComponentModel {
     public get type(): TextType {
         return this.getData("type") as TextType;
     }

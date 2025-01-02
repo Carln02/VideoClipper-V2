@@ -1,4 +1,3 @@
-import {BranchingNodeType} from "../../../../components/branchingNode/branchingNode.types";
 import {BranchingNode} from "../../../../components/branchingNode/branchingNode";
 import {Card} from "../../../../components/card/card";
 import {YDoc, YMap} from "../../../../../../yProxy";
@@ -28,8 +27,8 @@ export class DocumentManager extends YDocument {
 
         this.documentModel = new DocumentManagerModel(document.getMap("document_content"));
 
-        this.documentModel.onBranchingNodeAdded = data => new BranchingNode(data, {parent: this.cardsParent});
-        this.documentModel.onCardAdded = data => new Card(data, {parent: this.cardsParent});
+        this.documentModel.onBranchingNodeAdded = data => new BranchingNode({parent: this.cardsParent, data: data});
+        this.documentModel.onCardAdded = data => new Card({parent: this.cardsParent, data: data});
 
         this.documentModel.initialize();
         // this.flowsManager.onAdded = data => new Flow(data, this.flowsParent);

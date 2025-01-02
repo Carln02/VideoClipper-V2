@@ -1,4 +1,4 @@
-import {YMap, YArray, YEvent} from "../../../../yManagement.types";
+import {YMap, YArray} from "../../../../yManagement.types";
 import {YModel} from "../../yModel";
 import {YComponent} from "../../../yComponent";
 
@@ -6,15 +6,14 @@ export abstract class YManagerModel<
     DataType extends object,
     ComponentType extends YComponent, IdType extends string | number,
     YType extends YMap | YArray
-> extends YModel<DataType, YType, IdType>{
+> extends YModel<DataType, YType, IdType> {
     protected readonly instancesMap: Map<string, Map<IdType, ComponentType>> = new Map();
-    protected readonly dceMap: Map<string, Map<IdType, ComponentType>> = new Map();
 
     public onAdded: (data: DataType, id: IdType, blockKey: string) => ComponentType;
 
     public onUpdated: (data: DataType, instance: ComponentType, id: IdType, blockKey: string) => void =
         (data, instance, id) => {
-            if (instance.model) instance.model.data = data as object;
+            instance.data = data as object;
             instance.id = id.toString();
         };
 
@@ -52,6 +51,7 @@ export abstract class YManagerModel<
     }
 
     public clear(blockKey: string = this.defaultBlockKey) {
+        super.clear(blockKey);
         if (!this.instancesMap) return;
         if (blockKey) {
             this.instancesMap.get(blockKey)?.forEach(instance => instance.remove());
@@ -64,7 +64,7 @@ export abstract class YManagerModel<
         }
     }
 
-    protected callbackOnKeyChange(key: IdType, blockKey?: string) {
+    protected fireKeyChangedCallback(key: IdType, blockKey?: string) {
         if (!this.onAdded) return;
 
         const data = this.getData(key, blockKey) as DataType;

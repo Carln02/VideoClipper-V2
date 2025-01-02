@@ -17,9 +17,9 @@ export abstract class YModel<
 > extends Model<YType, IdType> {
     protected observerMap: Map<string, (event: YEvent) => void> = new Map();
 
-    protected constructor(data?: DataType | YType) {
+    public constructor(data?: DataType | YType) {
         super(data as YType);
-        this.enableCallbacks = true;
+        this.enabledCallbacks = true;
     }
 
     /**
@@ -35,7 +35,7 @@ export abstract class YModel<
     }
 
     @auto()
-    public set enableCallbacks(value: boolean) {
+    public set enabledCallbacks(value: boolean) {
         this.observerMap.forEach((observer, blockKey) => {
             const block = this.getDataBlock(blockKey);
             if (!block) return;
@@ -44,6 +44,9 @@ export abstract class YModel<
         });
     }
 
+    protected abstract getData(key: IdType, blockKey?: string): DataType;
+    protected abstract setData(key: IdType, value: DataType, blockKey?: string): void;
+
     public getSize(blockKey: string = this.defaultBlockKey): number {
         let counter = 0;
         this.dataMap.get(blockKey)?.forEach(() => counter++);
@@ -51,7 +54,11 @@ export abstract class YModel<
     }
 
     protected setDataBlock(value: YType, blockKey: string = this.defaultBlockKey, initialize: boolean = true) {
-        if (this.enableCallbacks) this.dataMap.get(blockKey)?.unobserve(this.observerMap.get(blockKey) as any);
+        if (this.enabledCallbacks) {
+            const block = this.getDataBlock(blockKey);
+            const observer = this.observerMap.get(blockKey);
+            if (block && observer) block.unobserve(observer);
+        }
         this.clear(blockKey);
         this.dataMap.set(blockKey, value);
         if (initialize) this.initialize(blockKey);
@@ -61,19 +68,14 @@ export abstract class YModel<
         let block = this.getDataBlock(blockKey);
         if (!block) return;
         if (block instanceof YArray) block = block.toArray() as any;
-        if (this.enableCallbacks) block?.forEach((_value, key) => this.callbackOnKeyChange(key, blockKey));
+        if (this.enabledCallbacks) block?.forEach((_value, key) => this.fireKeyChangedCallback(key, blockKey));
 
         const observerFunction = (event: YEvent) => this.observeChanges(event, blockKey);
         this.observerMap.set(blockKey, observerFunction);
-        if (this.enableCallbacks) block.observe(observerFunction as any);
-    }
-
-    public clear(blockKey: string = this.defaultBlockKey) {
+        if (this.enabledCallbacks) block.observe(observerFunction);
     }
 
     protected abstract observeChanges(event: YEvent, blockKey?: string): void;
-
-    protected abstract callbackOnKeyChange(key: IdType, blockKey?: string, deleted?: boolean);
 
     public getAllKeys(blockKey: string = this.defaultBlockKey): IdType[] {
         const output = [];

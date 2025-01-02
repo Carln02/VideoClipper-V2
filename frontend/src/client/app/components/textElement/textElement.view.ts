@@ -21,6 +21,38 @@ export class TextElementView extends YView<TextElement, TextElementModel> {
         this._resizer = value;
     }
 
+    protected setupChangedCallbacks() {
+        super.setupChangedCallbacks();
+
+        this.setChangedCallback("type", (value: TextType) => {
+            switch (value.valueOf()) {
+                case TextType.timestamp:
+                    this.textValue = this.element.card.metadata.timestamp;
+                    return;
+                case TextType.title:
+                    this.textValue = this.element.card.title;
+                    return;
+                default:
+                    this.textValue = this.model.text;
+                    return;
+            }
+        });
+
+        this.setChangedCallback("origin", (value: Coordinate) => this.element.setStyle("transform",
+            `translate3d(calc(${(value.x * this.element.renderer.width) || 0}px - 50%), 
+                        calc(${(value.y * this.element.renderer.height) || 0}px - 50%), 0)`));
+
+        this.setChangedCallback("fontSize", (value: number) => this.content
+            .setStyle("fontSize", value * this.element.renderer.offsetHeight + "px"));
+
+        this.setChangedCallback("text", (value: string) => {
+            if (this.model.type == TextType.custom) this.content.textContent = value;
+        });
+
+        this.setChangedCallback("boxWidth", (value: number) => this.element.setStyle("width", value + "%"));
+        this.setChangedCallback("boxHeight", (value: number) => this.element.setStyle("height", value + "%"));
+    }
+
     protected setupUIElements() {
         super.setupUIElements();
         this.content = span({contentEditable: "true", role: "textbox"});
@@ -53,40 +85,5 @@ export class TextElementView extends YView<TextElement, TextElementModel> {
 
     public set textValue(value: string) {
         this.content.textContent = value;
-    }
-
-    public typeChanged(value: TextType) {
-        switch (value.valueOf()) {
-            case TextType.timestamp:
-                this.textValue = this.element.card.metadata.timestamp;
-                return;
-            case TextType.title:
-                this.textValue = this.element.card.title;
-                return;
-            default:
-                this.textValue = this.model.text;
-                return;
-        }
-    }
-
-    public originChanged(value: Coordinate) {
-        this.element.setStyle("transform", `translate3d(calc(${(value.x * this.element.renderer.width) || 0}px - 50%), 
-                        calc(${(value.y * this.element.renderer.height) || 0}px - 50%), 0)`);
-    }
-
-    public fontSizeChanged(value: number) {
-        this.content.setStyle("fontSize", value * this.element.renderer.offsetHeight + "px");
-    }
-
-    public textChanged(value: string) {
-        if (this.model.type == TextType.custom) this.element.textContent = value;
-    }
-
-    public boxWidthChanged(value: number) {
-        this.element.setStyle("width", value + "%");
-    }
-
-    public boxHeightChanged(value: number) {
-        this.element.setStyle("height", value + "%");
     }
 }

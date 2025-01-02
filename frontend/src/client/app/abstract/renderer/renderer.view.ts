@@ -1,6 +1,6 @@
 import {YView} from "../../../../yManagement/yMvc/yView";
 import {Renderer} from "./renderer";
-import {canvas} from "turbodombuilder";
+import {canvas, Shown, StatefulReifect} from "turbodombuilder";
 import {RendererModel} from "./renderer.model";
 
 export class RendererView<
@@ -12,8 +12,16 @@ export class RendererView<
 
     protected canvasContext: CanvasRenderingContext2D;
 
-    public constructor(element: ComponentType, initialize: boolean = true) {
-        super(element, initialize);
+    private static rendererShowTransition: StatefulReifect<Shown> = new StatefulReifect<Shown>({
+        properties: "opacity",
+        styles: {visible: 1, hidden: 0},
+        states: [Shown.visible, Shown.hidden]
+    });
+
+    public constructor(element: ComponentType, model: ModelType) {
+        super(element, model);
+        this.element.addClass("vc-renderer");
+        this.element.showTransition = RendererView.rendererShowTransition;
     }
 
     protected setupUIElements() {

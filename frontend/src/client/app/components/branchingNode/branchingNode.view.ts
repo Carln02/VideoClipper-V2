@@ -8,12 +8,15 @@ export class BranchingNodeView<
     Element extends BranchingNode = BranchingNode<any, any>,
     Model extends BranchingNodeModel = BranchingNodeModel
 > extends YView<Element, Model> {
-    public constructor(element: Element) {
-        super(element);
+    public constructor(element: Element, model: BranchingNodeModel) {
+        super(element, model as Model);
     }
 
-    public originChanged(value: Coordinate) {
-        if (value instanceof YMap) value = {x: value.get("x"), y: value.get("y")}; //TODO REMOVE
-        this.element.setStyle("transform", `translate3d(calc(${value.x}px - 50%), calc(${value.y}px - 50%), 0)`);
+    protected setupChangedCallbacks() {
+        super.setupChangedCallbacks();
+        this.setChangedCallback("origin", (value: Coordinate) => {
+            if (value instanceof YMap) value = {x: value.get("x"), y: value.get("y")}; //TODO REMOVE
+            this.element.setStyle("transform", `translate3d(calc(${value.x}px - 50%), calc(${value.y}px - 50%), 0)`);
+        });
     }
 }

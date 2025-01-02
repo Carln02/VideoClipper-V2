@@ -18,10 +18,9 @@ export class ClipRendererView extends RendererView<ClipRenderer, ClipRendererMod
     private readonly frameUpdateFrequency: number = 100 as const;
     private lastFrameUpdate: number = 0;
 
-    public constructor(element: ClipRenderer) {
-        super(element, false);
+    public constructor(element: ClipRenderer, model: ClipRendererModel) {
+        super(element, model);
         this.videoManager = new ClipRendererVideoManager();
-        this.initialize();
     }
 
     public get video(): HTMLVideoElement {
@@ -45,6 +44,17 @@ export class ClipRendererView extends RendererView<ClipRenderer, ClipRendererMod
         this.reloadVisibility(true);
     }
 
+    protected setupChangedCallbacks() {
+        super.setupChangedCallbacks();
+        this.setChangedCallback("title", () => {
+            const entries = this.model.textElements
+                .filter(textElement => textElement.type == TextType.title);
+            if (entries.length == 0) return;
+            entries.forEach(entry => entry.textValue = this.model.cardTitle);
+            this.reloadVisibility(true);
+        });
+    }
+
     protected setupUIElements() {
         super.setupUIElements();
         this.videoManager.videos.push({video: video({id: "1"}), clip: null}, {video: video({id: "2"}), clip: null});
@@ -55,14 +65,6 @@ export class ClipRendererView extends RendererView<ClipRenderer, ClipRendererMod
         super.setupUILayout();
         this.element.addChild(this.videos);
         this.element.addChild([this.canvas, this.textParent]);
-    }
-
-    public titleChanged() {
-        const entries = this.model.textElements
-            .filter(textElement => textElement.type == TextType.title);
-        if (entries.length == 0) return;
-        entries.forEach(entry => entry.textValue = this.model.cardTitle);
-        this.reloadVisibility(true);
     }
 
     public addTextElement(element: TextElement, id?: number) {
@@ -99,7 +101,7 @@ export class ClipRendererView extends RendererView<ClipRenderer, ClipRendererMod
         this.lastFrameUpdate = Date.now();
 
         this.videoManager.pause();
-        this.model.clipData = clip.model.data;
+        this.model.clipData = clip.data;
 
         if (clip.mediaId && clip.mediaId == this.currentClip?.mediaId) {
             this.setCanvas(null);

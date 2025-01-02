@@ -1,7 +1,7 @@
 import {YView} from "../../../../yManagement/yMvc/yView";
 import {ClipModel} from "./clip.model";
 import {Clip} from "./clip";
-import {DefaultEventName, div, icon, img, TurboDragEvent} from "turbodombuilder";
+import {DefaultEventName, define, div, icon, img, TurboDragEvent} from "turbodombuilder";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {ContextView} from "../../managers/contextManager/contextManager.types";
 
@@ -12,8 +12,8 @@ export class ClipView extends YView<Clip, ClipModel> {
     private leftHandle: HTMLDivElement;
     private rightHandle: HTMLDivElement;
 
-    public constructor(element: Clip) {
-        super(element);
+    public constructor(element: Clip, model: ClipModel) {
+        super(element, model);
 
         this.clipContent = div({classes: "vc-clip-content"});
         this.thumbnailImage = img({src: "", classes: "thumbnail"}).show(false);
@@ -28,34 +28,28 @@ export class ClipView extends YView<Clip, ClipModel> {
         // this.timeline.reloadTime();
     }
 
-    public colorChanged(value: string) {
-        this.clipContent.setStyle("backgroundColor", value);
-    }
+    protected setupChangedCallbacks() {
+        super.setupChangedCallbacks();
 
-    public startTimeChanged() {
-        this.reloadSize();
-    }
+        this.setChangedCallback("color", (value: string) => this.clipContent.setStyle("backgroundColor", value));
+        this.setChangedCallback("startTime", () => this.reloadSize());
+        this.setChangedCallback("endTime", () => this.reloadSize());
+        this.setChangedCallback("mediaId", (value: string) => {
+            this.model.updateMediaData(value);
 
-    public endTimeChanged() {
-        this.reloadSize()
-    }
+            //TODO maybe remove this? idk
+            // if (media.metadata?.thumbnail) {
+            //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
+            // }
+        });
 
-    public mediaIdChanged(value: string) {
-        this.model.updateMediaData(value);
+        this.setChangedCallback("hidden", (value: boolean) => this.element.toggleClass("hidden-clip", value));
+        this.setChangedCallback("thumbnail", (value: string) => {
+            this.thumbnailImage.show(true);
+            this.thumbnailImage.src = value;
+        });
 
-        //TODO maybe remove this? idk
-        // if (media.metadata?.thumbnail) {
-        //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
-        // }
-    }
-
-    public hiddenChanged(value: boolean) {
-        this.element.toggleClass("hidden-clip", value);
-    }
-
-    public thumbnailChanged(value: string) {
-        this.thumbnailImage.show(true);
-        this.thumbnailImage.src = value;
+        this.setChangedCallback("__reload_thumbnail", () => this.element.reloadThumbnail());
     }
 
     protected setupUIElements() {

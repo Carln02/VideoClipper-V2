@@ -1,35 +1,24 @@
 import {BranchingNodeView} from "../branchingNode/branchingNode.view";
-import {ClickMode, DefaultEventName, div, Point, TurboEvent, TurboEventName, TurboInput} from "turbodombuilder";
-import {MetadataDrawer} from "../metadataDrawer/metadataDrawer";
-import {Timeline} from "../timeline/timeline";
+import {
+    ClickMode,
+    DefaultEventName,
+    div,
+    Point,
+    TurboEvent,
+    TurboEventName,
+    TurboInput,
+} from "turbodombuilder";
 import {formatMmSs} from "../../../utils/time";
-import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {Direction} from "../basicComponents/panelThumb/panelThumb.types";
 import {Card} from "./card";
 import {CardModel} from "./card.model";
 
 export class CardView extends BranchingNodeView<Card, CardModel> {
-    private _renderer: ClipRenderer;
-    private _metadataDrawer: MetadataDrawer;
-    private _timeline: Timeline;
-
     private titleElement: TurboInput;
     private durationElement: HTMLDivElement;
 
-    public constructor(element: Card) {
-        super(element);
-    }
-
-    public get renderer(): ClipRenderer {
-        return this._renderer;
-    }
-
-    public get metadataDrawer(): MetadataDrawer {
-        return this._metadataDrawer;
-    }
-
-    public get timeline(): Timeline {
-        return this._timeline;
+    public constructor(element: Card, model: CardModel) {
+        super(element, model);
     }
 
     /**
@@ -48,22 +37,18 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
             new TurboEvent(new Point(), ClickMode.left, [], TurboEventName.click));
     }
 
-    protected setupUIElements(): void {
-        this._renderer = new ClipRenderer();
+    protected setupChangedCallbacks() {
+        super.setupChangedCallbacks();
+        this.setChangedCallback("title", (value: string) => this.titleElement.value = value);
+    }
 
-        this._metadataDrawer = new MetadataDrawer(this.element, this.model.metadata, {
+    protected setupUIElements(): void {
+        this.element.metadataDrawer.setProperties({
             direction: Direction.bottom,
             // fitSizeOf: this.metadataDrawerParent,
             initiallyClosed: true,
             openOffset: 6,
         });
-
-        // this._timeline = new Timeline(this.model.syncedClips, this.element, this.renderer, {
-        //     direction: Direction.right,
-        //     // TODO fitSizeOf: this.timelineParent,
-        //     initiallyClosed: true,
-        //     openOffset: 16
-        // });
 
         this.titleElement = new TurboInput({selectTextOnFocus: true});
         this.durationElement = div();
@@ -71,9 +56,9 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
 
     protected setupUILayout(): void {
         this.element.addChild([
-            this.renderer,
-            div({classes: "metadata-drawer-parent", children: this.metadataDrawer}),
-            div({classes: "timeline-parent", children: this.timeline}),
+            this.element.renderer,
+            div({classes: "metadata-drawer-parent", children: this.element.metadataDrawer}),
+            div({classes: "timeline-parent", children: this.element.timeline}),
             div({
                 classes: "card-title",
                 children: [this.titleElement, this.durationElement]
@@ -82,10 +67,7 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
     }
 
     protected setupUIListeners(): void {
+        this.element.addEventListener(DefaultEventName.clickStart, () => this.element.bringToFront());
         this.titleElement.addEventListener(DefaultEventName.blur, () => this.model.title = this.titleElement.value);
-    }
-
-    public titleChanged(value: string) {
-        this.titleElement.value = value;
     }
 }

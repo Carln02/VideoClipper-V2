@@ -1,7 +1,7 @@
-import {TurboProperties} from "turbodombuilder";
 import {YModel} from "./yModel/yModel";
 import {YView} from "./yView";
 import {Component} from "../../mvc/component";
+import {auto} from "turbodombuilder";
 
 /**
  * @class YComponent
@@ -13,24 +13,36 @@ import {Component} from "../../mvc/component";
  */
 export abstract class YComponent<
     ViewType extends YView<any, any> = YView<any, any>,
-    ModelType extends YModel = YModel
-> extends Component<ViewType, ModelType> {
-    private _selected: boolean = false;
-
-    protected constructor(properties: TurboProperties = {}) {
-        super(properties);
-    }
+    DataType extends object = object,
+    ModelType extends YModel<DataType, any, any> = YModel<DataType>
+> extends Component<ViewType, DataType, ModelType> {
+    /**
+     * @description The ID of this component's main attached data (if any) in the parent object.
+     */
+    public id: string;
 
     /**
      * @description Whether the element is selected or not. Setting it will accordingly toggle the "selected" CSS
      * class on the element and update the UI.
      */
-    public get selected(): boolean {
-        return this._selected;
+    @auto()
+    public set selected(value: boolean) {
+        this.toggleClass("selected", value);
     }
 
-    public set selected(value: boolean) {
-        this._selected = value;
-        this.toggleClass("selected", value);
+    /**
+     * @description The ID of this component's attached data in the parent object if it is a number, otherwise NaN.
+     * Useful usually when the parent is an array and the ID is the data's index in the array.
+     */
+    public get index(): number {
+        return Number.parseInt(this.id);
+    }
+
+    public set data(value: DataType & any) {
+        this.model.data = value;
+    }
+
+    public get data(): DataType & any {
+        return this.model.data;
     }
 }

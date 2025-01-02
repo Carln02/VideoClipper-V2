@@ -16,7 +16,7 @@ export class DocumentManagerModel extends YComponentModel {
 
     public constructor(data: SyncedDocument) {
         super(data);
-        this.enableCallbacks = false;
+        this.enabledCallbacks = false;
 
         this.cardsModel = new DocumentManagerCardsModel();
         this.cardsModel.onAdded = (data, id, blockKey) => {

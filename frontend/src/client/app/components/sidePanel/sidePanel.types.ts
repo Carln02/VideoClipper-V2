@@ -1,4 +1,4 @@
-export interface SidePanelInstance extends TurboElement {
+export interface SidePanelInstance {
     attach(): void;
     detach(): void;
 }

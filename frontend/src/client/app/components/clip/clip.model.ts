@@ -1,11 +1,10 @@
 import {YComponentModel} from "../../../../yManagement/yMvc/yModel/types/yComponentModel";
 import {YArray, YMapEvent} from "../../../../yProxy/yProxy/types/base.types";
 import {SyncedText} from "../textElement/textElement.types";
-import {Clip} from "./clip";
 import {SyncedMedia} from "../../views/camera/manager/captureManager/captureManager.types";
 import {get_video} from "../../../sync/videostore";
 
-export class ClipModel extends YComponentModel<Clip> {
+export class ClipModel extends YComponentModel {
     private _metadata: SyncedMedia;
     private _uri: string;
     private _videoDuration: number = null;
@@ -26,7 +25,7 @@ export class ClipModel extends YComponentModel<Clip> {
                 }
                 if (relevantChanges) break;
             }
-            if (relevantChanges) this.element.reloadThumbnail();
+            if (relevantChanges) this.fireKeyChangedCallback("__reload_thumbnail");
         });
     }
 

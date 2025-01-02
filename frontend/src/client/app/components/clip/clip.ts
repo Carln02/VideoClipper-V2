@@ -1,17 +1,12 @@
 import "./clip.css";
 import {Card} from "../card/card";
-import {
-    Coordinate,
-    define,
-    Point,
-    TurboProperties
-} from "turbodombuilder";
+import {Coordinate, define, Point} from "turbodombuilder";
 import {Timeline} from "../timeline/timeline";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import domToImage from "dom-to-image-more";
 import {TextType} from "../textElement/textElement.types";
 import {TextElement} from "../textElement/textElement";
-import {SyncedClip} from "./clip.types";
+import {ClipProperties, SyncedClip} from "./clip.types";
 import {YComponent} from "../../../../yManagement/yMvc/yComponent";
 import {ClipView} from "./clip.view";
 import {ClipModel} from "./clip.model";
@@ -19,26 +14,24 @@ import {YUtilities} from "../../../../yManagement/yUtilities";
 import {SyncedMedia} from "../../views/camera/manager/captureManager/captureManager.types";
 
 @define("vc-clip")
-export class Clip extends YComponent<ClipView, ClipModel> {
+export class Clip extends YComponent<ClipView, SyncedClip, ClipModel> {
     private static renderer: ClipRenderer;
     private static rendererInitialized = false;
 
     private _timeline: Timeline;
 
-    constructor(timeline: Timeline, data: SyncedClip, properties: TurboProperties = {}) {
+    constructor(properties: ClipProperties) {
         super(properties);
-        this.timeline = timeline;
-
-        this.model = new ClipModel(data, this);
-        this.view = new ClipView(this);
-        this.model.initialize();
+        this.timeline = properties.timeline;
+        this.generateViewAndModel(ClipView, ClipModel, properties.data);
     }
 
     //Getters and setters
 
-    private set timeline(value: Timeline) {
+    protected set timeline(value: Timeline) {
         this._timeline = value;
     }
+
     public get timeline(): Timeline {
         return this._timeline;
     }
@@ -51,6 +44,10 @@ export class Clip extends YComponent<ClipView, ClipModel> {
      * @description Whether the element is selected or not. Setting it will accordingly toggle the "selected" CSS
      * class on the element and update the UI.
      */
+    public get selected(): boolean {
+        return super.selected;
+    }
+
     public set selected(value: boolean) {
         super.selected = value;
         this.view.showHandles(value);
@@ -85,8 +82,11 @@ export class Clip extends YComponent<ClipView, ClipModel> {
      */
     private initializeSnapshotRenderer() {
         if (Clip.rendererInitialized) return;
-        Clip.renderer = new ClipRenderer({parent: document.body, id: "snapshot-renderer"},
-            {muted: true, playsInline: true});
+        Clip.renderer = new ClipRenderer({
+            parent: document.body,
+            id: "snapshot-renderer",
+            videoProperties: {muted: true, playsInline: true}
+        });
         Clip.rendererInitialized = true;
     }
 
@@ -138,7 +138,7 @@ export class Clip extends YComponent<ClipView, ClipModel> {
      * @returns {Clip} - The clone.
      */
     public clone(): Clip {
-        const clone = new Clip(this.timeline, this.model.data);
+        const clone = new Clip({timeline: this.timeline, data: this.data});
         clone.setStyle("width", this.offsetWidth + "px");
         clone.setStyle("height", this.offsetHeight + "px");
         clone.selected = this.selected;
