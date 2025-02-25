@@ -63,7 +63,7 @@ export class FlowSearchHandler extends FlowHandler {
             //If entry is inside the given node --> store it
             if (entry.startNodeId == nodeId && entry.endNodeId == nodeId) {
                 return {
-                    flowId: this.flow.id,
+                    flowId: this.flow.dataId.toString(),
                     branchIndex: branchIndex,
                     entryIndex: entryIndex,
                     lastNodeId: entry.startNodeId
@@ -118,7 +118,7 @@ export class FlowSearchHandler extends FlowHandler {
                 }
 
                 pointData = {
-                    flowId: this.flow.id,
+                    flowId: this.flow.dataId.toString(),
                     branchIndex: branchIndex,
                     entryIndex: entryIndex,
                     lastNodeId: entry.startNodeId,

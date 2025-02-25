@@ -1,5 +1,5 @@
 import {YMap} from "../../../../../../yManagement/yManagement.types";
-import {YComponentModel} from "../../../../../../yManagement/yMvc/yModel/types/yComponentModel";
+import {YComponentModel} from "../../../../../../yManagement/yModel/types/yComponentModel";
 import {SyncedDocument} from "./documentManager.types";
 import {SyncedCard} from "../../../../components/card/card.types";
 import {SyncedFlow} from "../../../../components/flow/flow.types";

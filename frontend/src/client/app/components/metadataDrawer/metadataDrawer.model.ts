@@ -1,5 +1,4 @@
-import {YComponentModel} from "../../../../yManagement/yMvc/yModel/types/yComponentModel";
-import {MetadataDrawer} from "./metadataDrawer";
+import {YComponentModel} from "../../../../yManagement/yModel/types/yComponentModel";
 
 export class MetadataDrawerModel extends YComponentModel {
 

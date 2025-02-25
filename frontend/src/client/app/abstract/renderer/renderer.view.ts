@@ -1,12 +1,11 @@
-import {YView} from "../../../../yManagement/yMvc/yView";
 import {Renderer} from "./renderer";
-import {canvas, Shown, StatefulReifect} from "turbodombuilder";
+import {canvas, Shown, StatefulReifect, TurboView} from "turbodombuilder";
 import {RendererModel} from "./renderer.model";
 
 export class RendererView<
     ComponentType extends Renderer = Renderer,
     ModelType extends RendererModel = RendererModel
-> extends YView<ComponentType, ModelType> {
+> extends TurboView<ComponentType, ModelType> {
     private _video: HTMLVideoElement;
     private _canvas: HTMLCanvasElement;
 

@@ -1,23 +1,18 @@
 import {MetadataDrawerProperties, SyncedCardMetadata} from "./metadataDrawer.types";
 import {define, div, TurboInput} from "turbodombuilder";
 import "./metadataDrawer.css";
-import {PanelThumb} from "../basicComponents/panelThumb/panelThumb";
 import {TabbedMenu} from "../basicComponents/tabbedMenu/tabbedMenu";
 import {
     AnimatedContentSwitchingDiv
 } from "../animationComponents/animatedContentSwitchingDiv/animatedContentSwitchingDiv";
-import {PanelThumbProperties} from "../basicComponents/panelThumb/panelThumb.types";
 import {Card} from "../card/card";
-import {getSize} from "../../../utils/size";
-import {YComponent} from "../../../../yManagement/yMvc/yComponent";
 import {MetadataDrawerView} from "./metadataDrawer.view";
 import {MetadataDrawerModel} from "./metadataDrawer.model";
+import {TurboDrawer} from "../drawer/drawer";
 
 @define()
-export class MetadataDrawer extends YComponent<MetadataDrawerView, SyncedCardMetadata, MetadataDrawerModel> {
+export class MetadataDrawer extends TurboDrawer<MetadataDrawerView, SyncedCardMetadata, MetadataDrawerModel> {
     private readonly _card: Card;
-
-    private thumb: PanelThumb;
 
     private tabbedMenu: TabbedMenu;
     private animationDiv: AnimatedContentSwitchingDiv;
@@ -34,7 +29,7 @@ export class MetadataDrawer extends YComponent<MetadataDrawerView, SyncedCardMet
         this._card = properties.card;
 
         // if (!this.model) this.model = new MetadataDrawerModel(this, properties.card.metadata);
-        if (properties.fitSizeOf) this.elementToFit = properties.fitSizeOf;
+        // if (properties.fitSizeOf) this.elementToFit = properties.fitSizeOf;
         this.initUI(properties);
     }
 
@@ -42,8 +37,8 @@ export class MetadataDrawer extends YComponent<MetadataDrawerView, SyncedCardMet
         return this._card;
     }
 
-    private initUI(properties: PanelThumbProperties) {
-        this.thumb = new PanelThumb({...properties, panel: this, parent: this});
+    private initUI(properties: MetadataDrawerProperties) {
+        // this.thumb = new PanelThumb({...properties, panel: this, parent: this});
 
         this.tabbedMenu = new TabbedMenu({
             values: ["Metadata", "Instructions"],
@@ -105,12 +100,5 @@ export class MetadataDrawer extends YComponent<MetadataDrawerView, SyncedCardMet
     private addInput<InputTag extends "input" | "textarea">(name: string, input: TurboInput<InputTag>) {
         this.metadataInputs[name] = input;
         this.metadataPanel.addChild(input);
-    }
-
-    private refresh() {
-        this.thumb.refresh();
-        this.animationDiv.refresh();
-        if (this.elementToFit) requestAnimationFrame(() =>
-            this.elementToFit.setStyle("width", getSize(this).width + "px"));
     }
 }

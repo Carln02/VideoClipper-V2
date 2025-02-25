@@ -1,9 +1,8 @@
-import {YView} from "../../../../../../yManagement/yMvc/yView";
 import {TextSidePanel} from "./textSidePanel";
 import {TextSidePanelModel} from "./textSidePanel.model";
-import {Coordinate, DefaultEventName, define, flexRow, input, spacer, TurboNumericalInput} from "turbodombuilder";
+import {Coordinate, DefaultEventName, flexRow, input, spacer, TurboNumericalInput, TurboView} from "turbodombuilder";
 
-export class TextSidePanelView extends YView<TextSidePanel, TextSidePanelModel> {
+export class TextSidePanelView extends TurboView<TextSidePanel, TextSidePanelModel> {
     private originXInput: TurboNumericalInput;
     private originYInput: TurboNumericalInput;
 

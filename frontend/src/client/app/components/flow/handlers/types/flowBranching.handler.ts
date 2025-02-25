@@ -279,7 +279,7 @@ export class FlowBranchingHandler extends FlowHandler {
                 if (entryIndex == 0 || entryIndex == branch.flowEntries.length - 1) return;
                 //Split the branch into two at the node entry
                 this.branchAtPoint({
-                    flowId: this.flow.id,
+                    flowId: this.flow.dataId.toString(),
                     branchIndex: branchIndex,
                     entryIndex: entryIndex,
                     lastNodeId: nodeId,

@@ -5,13 +5,12 @@ import {ContextEntry} from "../../../../managers/contextManager/contextManager.t
 import {TextElement} from "../../../textElement/textElement";
 import {SidePanelInstance} from "../../sidePanel.types";
 import {ContextManager} from "../../../../managers/contextManager/contextManager";
-import {YComponent} from "../../../../../../yManagement/yMvc/yComponent";
 import {TextSidePanelModel} from "./textSidePanel.model";
 import {TextSidePanelView} from "./textSidePanel.view";
-import {define} from "turbodombuilder";
+import {define, TurboElement} from "turbodombuilder";
 
 @define()
-export class TextSidePanel extends YComponent<TextSidePanelView, SyncedText, TextSidePanelModel> implements SidePanelInstance {
+export class TextSidePanel extends TurboElement<TextSidePanelView, SyncedText, TextSidePanelModel> implements SidePanelInstance {
     public readonly sidePanel: SidePanel;
 
     constructor(sidePanel: SidePanel) {

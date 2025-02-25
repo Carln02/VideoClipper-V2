@@ -1,20 +1,19 @@
 import "./clip.css";
 import {Card} from "../card/card";
-import {Coordinate, define, Point} from "turbodombuilder";
+import {Coordinate, define, Point, TurboElement} from "turbodombuilder";
 import {Timeline} from "../timeline/timeline";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import domToImage from "dom-to-image-more";
 import {TextType} from "../textElement/textElement.types";
 import {TextElement} from "../textElement/textElement";
 import {ClipProperties, SyncedClip} from "./clip.types";
-import {YComponent} from "../../../../yManagement/yMvc/yComponent";
 import {ClipView} from "./clip.view";
 import {ClipModel} from "./clip.model";
 import {YUtilities} from "../../../../yManagement/yUtilities";
 import {SyncedMedia} from "../../views/camera/manager/captureManager/captureManager.types";
 
 @define("vc-clip")
-export class Clip extends YComponent<ClipView, SyncedClip, ClipModel> {
+export class Clip extends TurboElement<ClipView, SyncedClip, ClipModel> {
     private static renderer: ClipRenderer;
     private static rendererInitialized = false;
 
@@ -23,7 +22,7 @@ export class Clip extends YComponent<ClipView, SyncedClip, ClipModel> {
     constructor(properties: ClipProperties) {
         super(properties);
         this.timeline = properties.timeline;
-        this.generateViewAndModel(ClipView, ClipModel, properties.data);
+        this.generateMvc(ClipView, ClipModel, properties.data);
     }
 
     //Getters and setters

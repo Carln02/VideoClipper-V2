@@ -9,7 +9,7 @@ import {RendererProperties} from "../../abstract/renderer/renderer.types";
 export class CameraRenderer extends Renderer<CameraRendererView, CameraRendererModel> {
     constructor(properties: RendererProperties<CameraRendererView, CameraRendererModel> = {}) {
         super(properties);
-        this.generateViewAndModel(CameraRendererView, CameraRendererModel);
+        this.generateMvc(CameraRendererView, CameraRendererModel);
         this.view.canvas.setProperties(properties.canvasProperties);
         this.view.video?.setProperties(properties.videoProperties);
     }

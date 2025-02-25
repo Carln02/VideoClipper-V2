@@ -1,6 +1,6 @@
 import {
     YMapManagerModel
-} from "../../../../../../yManagement/yMvc/yModel/types/yManagerModel/types/yMapManagerModel";
+} from "../../../../../../yManagement/yModel/types/yManagerModel/types/yMapManagerModel";
 import {YMap} from "../../../../../../yManagement/yManagement.types";
 import {SyncedBranchingNode} from "../../../../components/branchingNode/branchingNode.types";
 import {BranchingNode} from "../../../../components/branchingNode/branchingNode";

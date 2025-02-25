@@ -1,4 +1,4 @@
-import {YComponentModel} from "../../../../../../yManagement/yMvc/yModel/types/yComponentModel";
+import {YComponentModel} from "../../../../../../yManagement/yModel/types/yComponentModel";
 import {Coordinate} from "turbodombuilder";
 
 export class TextSidePanelModel extends YComponentModel {

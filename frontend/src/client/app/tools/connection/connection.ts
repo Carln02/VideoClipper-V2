@@ -33,9 +33,9 @@ export class ConnectionTool extends Tool {
         //If clicking on a node
         if (closestNode) {
             //Set last node ID
-            this.lastNodeId = closestNode.id;
+            this.lastNodeId = closestNode.dataId.toString();
             //Find first flow intersection with this node
-            const intersection = FlowSearchHandler.findNodeEntryInFlows(closestNode.id);
+            const intersection = FlowSearchHandler.findNodeEntryInFlows(closestNode.dataId.toString());
             //If intersection found
             if (intersection && intersection.flowId != undefined) {
                 //Assign flow ID
@@ -65,7 +65,7 @@ export class ConnectionTool extends Tool {
         //Get the closest node to the event's target
         const closestNode = e.closest(BranchingNode);
         //Otherwise --> store last node ID
-        if (closestNode) this.lastNodeId = closestNode.id;
+        if (closestNode) this.lastNodeId = closestNode.dataId.toString();
         //If no current flow --> try to initialize one
         if (!this.currentFlow) return this.initializeFlow(e);
 
@@ -101,14 +101,14 @@ export class ConnectionTool extends Tool {
         //If drawing into a new node --> ignore interval and add a point. This ensures that when a user hits a
         // new node, it is added to the flow
         const isTemporary = Date.now() - this.lastDrawnTime <= this.drawingInterval
-            && closestNode?.id == this.lastNodeId;
+            && closestNode?.dataId.toString() == this.lastNodeId;
         //If the point is permanent --> update last drawn time and last node
         if (!isTemporary) {
             this.lastDrawnTime = Date.now();
-            this.lastNodeId = closestNode?.id;
+            this.lastNodeId = closestNode?.dataId.toString();
         }
         //Add point
-        this.currentFlow.pointHandler.addPoint(e.scaledPositions.first, closestNode?.id, isTemporary);
+        this.currentFlow.pointHandler.addPoint(e.scaledPositions.first, closestNode?.dataId.toString(), isTemporary);
     }
 
     public dragEnd() {

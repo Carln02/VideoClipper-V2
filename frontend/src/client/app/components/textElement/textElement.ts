@@ -1,22 +1,21 @@
 import {SyncedText, TextElementProperties, TextType} from "./textElement.types";
-import {define, Point} from "turbodombuilder";
+import {define, Point, TurboElement} from "turbodombuilder";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import "./textElement.css";
 import {Clip} from "../clip/clip";
 import {Card} from "../card/card";
 import {Camera} from "../../views/camera/camera";
-import {YComponent} from "../../../../yManagement/yMvc/yComponent";
 import {TextElementView} from "./textElement.view";
 import {TextElementModel} from "./textElement.model";
 
 @define("vc-text-entry")
-export class TextElement extends YComponent<TextElementView, SyncedText, TextElementModel> {
+export class TextElement extends TurboElement<TextElementView, SyncedText, TextElementModel> {
     public readonly renderer: ClipRenderer;
 
     constructor(properties: TextElementProperties) {
         super(properties);
         this.renderer = properties.renderer;
-        this.generateViewAndModel(TextElementView, TextElementModel, properties.data);
+        this.generateMvc(TextElementView, TextElementModel, properties.data);
     }
 
     public get clip(): Clip {

@@ -44,10 +44,12 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
 
     protected setupUIElements(): void {
         this.element.metadataDrawer.setProperties({
-            direction: Direction.bottom,
+            side: Direction.bottom,
+            hideOverflow: true,
+            icon: "chevron",
+            attachSideToIconName: true,
             // fitSizeOf: this.metadataDrawerParent,
-            initiallyClosed: true,
-            openOffset: 6,
+            // openOffset: 6,
         });
 
         this.titleElement = new TurboInput({selectTextOnFocus: true});
@@ -57,7 +59,7 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
     protected setupUILayout(): void {
         this.element.addChild([
             this.element.renderer,
-            div({classes: "metadata-drawer-parent", children: this.element.metadataDrawer}),
+            this.element.metadataDrawer,
             div({classes: "timeline-parent", children: this.element.timeline}),
             div({
                 classes: "card-title",

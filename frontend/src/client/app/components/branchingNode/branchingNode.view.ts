@@ -1,13 +1,12 @@
-import {Coordinate} from "turbodombuilder";
+import {Coordinate, TurboView} from "turbodombuilder";
 import {YMap} from "../../../../yProxy/yProxy/types/base.types";
 import {BranchingNode} from "./branchingNode";
 import {BranchingNodeModel} from "./branchingNode.model";
-import {YView} from "../../../../yManagement/yMvc/yView";
 
 export class BranchingNodeView<
     Element extends BranchingNode = BranchingNode<any, any>,
     Model extends BranchingNodeModel = BranchingNodeModel
-> extends YView<Element, Model> {
+> extends TurboView<Element, Model> {
     public constructor(element: Element, model: BranchingNodeModel) {
         super(element, model as Model);
     }

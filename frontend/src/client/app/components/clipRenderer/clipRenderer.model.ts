@@ -3,6 +3,8 @@ import {YMap} from "../../../../yProxy/yProxy/types/base.types";
 import {ClipRendererTextModel} from "./clipRenderer.textModel";
 import {TextElement} from "../textElement/textElement";
 import {SyncedText} from "../textElement/textElement.types";
+import {SyncedClip} from "../clip/clip.types";
+import {SyncedCard} from "../card/card.types";
 
 export class ClipRendererModel extends RendererModel {
     private readonly textModel: ClipRendererTextModel;
@@ -19,17 +21,17 @@ export class ClipRendererModel extends RendererModel {
         return this.getDataBlock("cardData");
     }
 
-    public set cardData(value: YMap) {
-        this.setDataBlock(value, "cardData");
+    public set cardData(value: YMap | SyncedCard) {
+        this.setDataBlock(value as YMap, "cardData");
     }
 
     public get clipData(): YMap {
         return this.getDataBlock("clipData");
     }
 
-    public set clipData(value: YMap) {
-        this.setDataBlock(value, "clipData");
-        this.textModel.data = value.get("content");
+    public set clipData(value: YMap | SyncedClip) {
+        this.setDataBlock(value as YMap, "clipData");
+        this.textModel.data = (value as YMap).get("content");
     }
 
     public get textElements(): TextElement[] {

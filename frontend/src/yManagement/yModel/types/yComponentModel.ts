@@ -1,4 +1,4 @@
-import {YMap, YMapEvent} from "../../../yManagement.types";
+import {YMap, YMapEvent} from "../../yManagement.types";
 import {YModel} from "../yModel";
 
 /**

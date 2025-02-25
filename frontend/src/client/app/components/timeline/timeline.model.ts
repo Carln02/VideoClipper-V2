@@ -1,6 +1,6 @@
-import {YArrayManagerModel} from "../../../../yManagement/yMvc/yModel/types/yManagerModel/types/yArrayManagerModel";
+import {YArrayManagerModel} from "../../../../yManagement/yModel/types/yManagerModel/types/yArrayManagerModel";
 import {Clip} from "../clip/clip";
-import {YComponentModel} from "../../../../yManagement/yMvc/yModel/types/yComponentModel";
+import {YComponentModel} from "../../../../yManagement/yModel/types/yComponentModel";
 import { YArray } from "../../../../yManagement/yManagement.types";
 import {SyncedClip} from "../clip/clip.types";
 

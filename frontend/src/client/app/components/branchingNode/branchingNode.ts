@@ -1,10 +1,8 @@
 import {SyncedBranchingNode} from "./branchingNode.types";
-import {define, Point} from "turbodombuilder";
+import {define, Point, TurboElement, TurboProperties} from "turbodombuilder";
 import "./branchingNode.css";
 import {BranchingNodeModel} from "./branchingNode.model";
 import {BranchingNodeView} from "./branchingNode.view";
-import {YComponent} from "../../../../yManagement/yMvc/yComponent";
-import {MvcTurboProperties} from "../../../../mvc/mvc.types";
 
 /**
  * @class BranchingNode
@@ -18,14 +16,11 @@ export class BranchingNode<
     View extends BranchingNodeView = BranchingNodeView,
     Data extends SyncedBranchingNode = SyncedBranchingNode,
     Model extends BranchingNodeModel = BranchingNodeModel
-> extends YComponent<View, Data, Model> {
-    public constructor(properties: MvcTurboProperties<View, Data, Model> = {}) {
+> extends TurboElement<View, Data, Model> {
+    public constructor(properties: TurboProperties<"div", View, Data, Model> = {}) {
         super(properties);
-        if (properties.data) {
-            console.log("SETTING U{ NODE")
-            this.generateViewAndModel(BranchingNodeView as new () => View,
-                BranchingNodeModel as new () => Model, properties.data);
-        }
+        if (properties.data) this.generateMvc(BranchingNodeView as new () => View,
+            BranchingNodeModel as new () => Model, properties.data);
     }
 
     /**

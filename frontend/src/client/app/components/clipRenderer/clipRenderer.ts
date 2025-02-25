@@ -1,4 +1,4 @@
-import {auto, define, TurboProperties} from "turbodombuilder";
+import {auto, define} from "turbodombuilder";
 import {TextElement} from "../textElement/textElement";
 import {Renderer} from "../../abstract/renderer/renderer";
 import {ClipRendererView} from "./clipRenderer.view";
@@ -11,7 +11,7 @@ import {RendererProperties} from "../../abstract/renderer/renderer.types";
 export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> {
     constructor(properties: RendererProperties<ClipRendererView, ClipRendererModel> = {}) {
         super(properties);
-        this.generateViewAndModel(ClipRendererView, ClipRendererModel, undefined, false);
+        this.generateMvc(ClipRendererView, ClipRendererModel, undefined, false);
 
         this.model.onTextAdded = (syncedText, id) => {
             const text = new TextElement({data: syncedText, renderer: this});
@@ -19,7 +19,7 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
             return text;
         };
 
-        this.initialize();
+        this.initializeMvc();
 
         this.view.canvas.setProperties(properties.canvasProperties);
         this.view.videos.forEach((video: HTMLVideoElement) => video.setProperties(properties.videoProperties));

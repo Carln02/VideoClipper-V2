@@ -1,10 +1,10 @@
-import {YMap, YArray} from "../../../../yManagement.types";
+import {YMap, YArray} from "../../../yManagement.types";
 import {YModel} from "../../yModel";
-import {YComponent} from "../../../yComponent";
+import {TurboElement} from "turbodombuilder";
 
 export abstract class YManagerModel<
     DataType extends object,
-    ComponentType extends YComponent, IdType extends string | number,
+    ComponentType extends TurboElement, IdType extends string | number,
     YType extends YMap | YArray
 > extends YModel<DataType, YType, IdType> {
     protected readonly instancesMap: Map<string, Map<IdType, ComponentType>> = new Map();
@@ -14,7 +14,7 @@ export abstract class YManagerModel<
     public onUpdated: (data: DataType, instance: ComponentType, id: IdType, blockKey: string) => void =
         (data, instance, id) => {
             instance.data = data as object;
-            instance.id = id.toString();
+            instance.dataId = id.toString();
         };
 
     public onDeleted: (data: DataType, instance: ComponentType, id: IdType, blockKey: string) => void =

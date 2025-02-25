@@ -1,11 +1,10 @@
-import {YView} from "../../../../yManagement/yMvc/yView";
 import {ClipModel} from "./clip.model";
 import {Clip} from "./clip";
-import {DefaultEventName, define, div, icon, img, TurboDragEvent} from "turbodombuilder";
+import {DefaultEventName, div, icon, img, TurboDragEvent, TurboView} from "turbodombuilder";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {ContextView} from "../../managers/contextManager/contextManager.types";
 
-export class ClipView extends YView<Clip, ClipModel> {
+export class ClipView extends TurboView<Clip, ClipModel> {
     private clipContent: HTMLDivElement;
     private thumbnailImage: HTMLImageElement;
 

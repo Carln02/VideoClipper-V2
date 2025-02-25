@@ -1,8 +1,7 @@
-import {YView} from "../../../../yManagement/yMvc/yView";
 import {Timeline} from "./timeline";
 import {TimelineModel} from "./timeline.model";
 import {PanelThumbProperties} from "../basicComponents/panelThumb/panelThumb.types";
-import {DefaultEventName, div, flexRowCenter, icon, p, spacer, TurboEvent, TurboIcon} from "turbodombuilder";
+import {DefaultEventName, div, flexRowCenter, icon, p, spacer, TurboEvent, TurboIcon, TurboView} from "turbodombuilder";
 import {Scrubber} from "./components/scrubber/scrubber";
 import {PanelThumb} from "../basicComponents/panelThumb/panelThumb";
 import {ToolManager} from "../../managers/toolManager/toolManager";
@@ -12,7 +11,7 @@ import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {Card} from "../card/card";
 import {ClipTimelineEntry} from "./timeline.types";
 
-export class TimelineView extends YView<Timeline, TimelineModel> {
+export class TimelineView extends TurboView<Timeline, TimelineModel> {
     public readonly clips: Clip[] = [];
 
     public readonly renderer: ClipRenderer;
@@ -74,7 +73,7 @@ export class TimelineView extends YView<Timeline, TimelineModel> {
             }
         });
 
-        this.addChild(flexRowCenter({
+        this.element.addChild(flexRowCenter({
             children: [this.currentTimeText, spacer(), this.playButton, spacer(), this.totalDurationText]
         }));
     }

@@ -1,6 +1,10 @@
-import {TurboProperties} from "turbodombuilder";
+import {TurboCustomProperties, TurboModel, TurboView} from "turbodombuilder";
 
-export type PanelThumbProperties = TurboProperties & {
+export type PanelThumbProperties<
+    ViewType extends TurboView = TurboView,
+    DataType extends object = object,
+    ModelType extends TurboModel = TurboModel,
+> = TurboCustomProperties<ViewType, DataType, ModelType> & {
     direction?: Direction,
     fitSizeOf?: HTMLElement,
     panel?: HTMLElement,

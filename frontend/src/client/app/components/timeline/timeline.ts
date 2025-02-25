@@ -8,7 +8,7 @@ import {
     icon,
     p,
     spacer,
-    trim,
+    trim, TurboElement,
     TurboEvent,
     TurboIcon
 } from "turbodombuilder";
@@ -28,12 +28,12 @@ import {PanelThumb} from "../basicComponents/panelThumb/panelThumb";
 import {Direction, PanelThumbProperties} from "../basicComponents/panelThumb/panelThumb.types";
 import {randomColor} from "../../../utils/random";
 import {YArray} from "../../../../yProxy";
-import {YComponent} from "../../../../yManagement/yMvc/yComponent";
 import {YUtilities} from "../../../../yManagement/yUtilities";
 import {TimelineView} from "./timeline.view";
 import {TimelineModel} from "./timeline.model";
+
 @define("vc-timeline")
-export class Timeline extends YComponent<TimelineView, YArray<SyncedClip>, TimelineModel> {
+export class Timeline extends TurboElement<TimelineView, YArray<SyncedClip>, TimelineModel> {
     public readonly pixelsPerSecondUnit: number = 20 as const;
 
     public readonly clips: Clip[] = [];
@@ -60,7 +60,7 @@ export class Timeline extends YComponent<TimelineView, YArray<SyncedClip>, Timel
         this.renderer = properties.renderer;
         this._card = properties.card;
 
-        this.generateViewAndModel(TimelineView, TimelineModel, properties.data, false);
+        this.generateMvc(TimelineView, TimelineModel, properties.data, false);
 
         this.initUI(properties);
         this.initEvents();
@@ -76,7 +76,7 @@ export class Timeline extends YComponent<TimelineView, YArray<SyncedClip>, Timel
             // this.reloadCurrentClip();
         };
 
-        this.initialize();
+        this.initializeMvc();
     }
 
     private initUI(properties: PanelThumbProperties) {

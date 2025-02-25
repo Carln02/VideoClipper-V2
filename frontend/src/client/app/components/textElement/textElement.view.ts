@@ -1,15 +1,14 @@
-import {YView} from "../../../../yManagement/yMvc/yView";
 import {TextElementModel} from "./textElement.model";
 import {TextElement} from "./textElement";
 import {TextType} from "./textElement.types";
-import {Coordinate, span, TurboEvent, TurboEventName} from "turbodombuilder";
+import {Coordinate, span, TurboEvent, TurboEventName, TurboView} from "turbodombuilder";
 import {Resizer} from "../basicComponents/resizer/resizer";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {ContextView} from "../../managers/contextManager/contextManager.types";
 import {ToolManager} from "../../managers/toolManager/toolManager";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 
-export class TextElementView extends YView<TextElement, TextElementModel> {
+export class TextElementView extends TurboView<TextElement, TextElementModel> {
     private content: HTMLSpanElement;
     private _resizer: Resizer;
 

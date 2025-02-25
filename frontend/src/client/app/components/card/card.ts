@@ -1,4 +1,4 @@
-import {define} from "turbodombuilder";
+import {define, TurboProperties} from "turbodombuilder";
 import "./card.css";
 import {SyncedCard} from "./card.types";
 import {Timeline} from "../timeline/timeline";
@@ -10,7 +10,6 @@ import {CardModel} from "./card.model";
 import {CardView} from "./card.view";
 import {BranchingNode} from "../branchingNode/branchingNode";
 import {SyncedCardMetadata} from "../metadataDrawer/metadataDrawer.types";
-import {MvcTurboProperties} from "../../../../mvc/mvc.types";
 
 /**
  * @description Class representing a card
@@ -21,12 +20,12 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
     private readonly _metadataDrawer: MetadataDrawer;
     private _timeline: Timeline;
 
-    public constructor(properties: MvcTurboProperties<CardView, SyncedCard, CardModel> = {}) {
+    public constructor(properties: TurboProperties<"div", CardView, SyncedCard, CardModel> = {}) {
         super({...properties, data: undefined});
-        this.generateViewAndModel(CardView, CardModel, properties.data, false);
+        this.generateMvc(CardView, CardModel, properties.data, false);
 
         this._renderer = new ClipRenderer();
-        this._metadataDrawer = new MetadataDrawer(this);
+        this._metadataDrawer = new MetadataDrawer({card: this});
 
         // this._timeline = new Timeline(this.model.syncedClips, this.element, this.renderer, {
         //     direction: Direction.right,
@@ -35,7 +34,7 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
         //     openOffset: 16
         // });
 
-        this.initialize();
+        this.initializeMvc();
         this.renderer.card = this;
     }
 

@@ -1,4 +1,4 @@
-import {YComponentModel} from "../../../../yManagement/yMvc/yModel/types/yComponentModel";
+import {YComponentModel} from "../../../../yManagement/yModel/types/yComponentModel";
 import {YArray, YMapEvent} from "../../../../yProxy/yProxy/types/base.types";
 import {SyncedText} from "../textElement/textElement.types";
 import {SyncedMedia} from "../../views/camera/manager/captureManager/captureManager.types";

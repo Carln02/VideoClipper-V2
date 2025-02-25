@@ -1,4 +1,4 @@
-import {DefaultEventName, define, div, iconToggle, TurboElement, TurboIconToggle} from "turbodombuilder";
+import {DefaultEventName, define, div, TurboElement, TurboIconToggle} from "turbodombuilder";
 import "./shootingSidePanel.css";
 import {CaptureModeSlider} from "./components/captureModeSlider/captureModeSlider";
 import {CaptureTimer} from "./components/captureTimer/captureTimer";
@@ -83,31 +83,31 @@ export class ShootingSidePanel extends TurboElement implements SidePanelInstance
             }
         });
 
-        this.ghost = iconToggle({
-            icon: "ghost-on",
-            toggled: true,
-            onToggle: (value, el) => {
-                el.icon = "ghost-" + (value ? "on" : "off");
-                this.camera.ghosting = value;
-            },
-            listeners: {[DefaultEventName.click]: () => this.ghost.toggle()}
-        });
-
-        this.switchCamera = iconToggle({
-            icon: "switch-camera",
-            onToggle: () => this.captureManager.switchCamera(),
-            listeners: {[DefaultEventName.click]: () => this.switchCamera.toggle()}
-        });
-
-        this.microphone = iconToggle({
-            icon: "microphone-on",
-            toggled: true,
-            onToggle: (value, el) => {
-                el.icon = "microphone-" + (value ? "on" : "off");
-                this.captureManager.muteAudio(!value);
-            },
-            listeners: {"vc-click": () => this.microphone.toggle()}
-        });
+        // this.ghost = iconToggle({
+        //     icon: "ghost-on",
+        //     toggled: true,
+        //     onToggle: (value, el) => {
+        //         el.icon = "ghost-" + (value ? "on" : "off");
+        //         this.camera.ghosting = value;
+        //     },
+        //     listeners: {[DefaultEventName.click]: () => this.ghost.toggle()}
+        // });
+        //
+        // this.switchCamera = iconToggle({
+        //     icon: "switch-camera",
+        //     onToggle: () => this.captureManager.switchCamera(),
+        //     listeners: {[DefaultEventName.click]: () => this.switchCamera.toggle()}
+        // });
+        //
+        // this.microphone = iconToggle({
+        //     icon: "microphone-on",
+        //     toggled: true,
+        //     onToggle: (value, el) => {
+        //         el.icon = "microphone-" + (value ? "on" : "off");
+        //         this.captureManager.muteAudio(!value);
+        //     },
+        //     listeners: {"vc-click": () => this.microphone.toggle()}
+        // });
     }
 
     public get mode(): CaptureMode {

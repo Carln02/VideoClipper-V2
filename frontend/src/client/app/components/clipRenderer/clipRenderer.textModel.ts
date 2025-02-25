@@ -1,4 +1,4 @@
-import {YArrayManagerModel} from "../../../../yManagement/yMvc/yModel/types/yManagerModel/types/yArrayManagerModel";
+import {YArrayManagerModel} from "../../../../yManagement/yModel/types/yManagerModel/types/yArrayManagerModel";
 import {SyncedText} from "../textElement/textElement.types";
 import {TextElement} from "../textElement/textElement";
 

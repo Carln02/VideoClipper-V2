@@ -1,6 +1,5 @@
-import {YAbstractType, YMap, YArray, YEvent} from "../../yManagement.types";
-import {Model} from "../../../mvc/model";
-import {auto} from "turbodombuilder";
+import {YAbstractType, YMap, YArray, YEvent} from "../yManagement.types";
+import {auto, TurboModel} from "turbodombuilder";
 
 /**
  * @class YComponent
@@ -14,7 +13,7 @@ export abstract class YModel<
     DataType extends object = any,
     YType extends YMap | YArray = YMap | YArray,
     IdType extends string | number = string | number
-> extends Model<YType, IdType> {
+> extends TurboModel<YType, IdType> {
     protected observerMap: Map<string, (event: YEvent) => void> = new Map();
 
     public constructor(data?: DataType | YType) {
@@ -53,13 +52,13 @@ export abstract class YModel<
         return counter;
     }
 
-    protected setDataBlock(value: YType, blockKey: string = this.defaultBlockKey, initialize: boolean = true) {
+    protected setDataBlock(value: YType, id?: string, blockKey: string = this.defaultBlockKey, initialize: boolean = true) {
         if (this.enabledCallbacks) {
             const block = this.getDataBlock(blockKey);
             const observer = this.observerMap.get(blockKey);
             if (block && observer) block.unobserve(observer);
         }
-        this.clear(blockKey);
+        //TODO FIX --- this.clear(blockKey);
         this.dataMap.set(blockKey, value);
         if (initialize) this.initialize(blockKey);
     }

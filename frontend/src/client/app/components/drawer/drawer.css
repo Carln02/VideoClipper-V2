@@ -1,0 +1,34 @@
+turbo-drawer {
+    display: inline-flex;
+    align-items: center;
+}
+
+turbo-drawer.top-drawer {
+    flex-direction: column;
+}
+
+turbo-drawer.bottom-drawer {
+    flex-direction: column-reverse;
+}
+
+turbo-drawer.left-drawer {
+    flex-direction: row;
+}
+
+turbo-drawer.right-drawer {
+    flex-direction: row-reverse;
+}
+
+turbo-drawer > div:first-child {
+    display: block;
+    background-color: rebeccapurple;
+}
+
+turbo-drawer > div:nth-child(2) {
+    display: block;
+    position: relative;
+}
+turbo-drawer > div:nth-child(2) > :first-child {
+    display: block;
+    background-color: white;
+}
