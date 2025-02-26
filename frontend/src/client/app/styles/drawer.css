@@ -1,0 +1,35 @@
+.turbo-drawer > .turbo-drawer-panel-container > .turbo-drawer-panel {
+    display: block;
+    background-color: white;
+    padding: 1em;
+    border-radius: 6px;
+}
+
+.turbo-drawer > .turbo-drawer-thumb {
+    background-color: white;
+}
+
+.turbo-drawer > .turbo-drawer-thumb > .icon {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.turbo-drawer.top-drawer > .turbo-drawer-thumb {
+    border-radius: 1em 1em 0 0;
+    padding: 0.1em 2em;
+}
+
+.turbo-drawer.bottom-drawer > .turbo-drawer-thumb {
+    border-radius: 0 0 1em 1em;
+    padding: 0.1em 2em;
+}
+
+.turbo-drawer.left-drawer > .turbo-drawer-thumb {
+    border-radius: 1em 0 0 1em;
+    padding: 1.5em 0.2em;
+}
+
+.turbo-drawer.right-drawer > .turbo-drawer-thumb {
+    border-radius: 0 1em 1em 0;
+    padding: 1.5em 0.2em;
+}

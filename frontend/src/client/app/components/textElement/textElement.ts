@@ -23,7 +23,7 @@ export class TextElement extends TurboElement<TextElementView, SyncedText, TextE
     }
 
     public get card(): Card {
-        return this.clip.card;
+        return this.clip?.card;
     }
 
     public get type(): TextType {

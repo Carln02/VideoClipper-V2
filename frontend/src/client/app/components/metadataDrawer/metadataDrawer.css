@@ -1,49 +1,29 @@
 metadata-drawer {
+    position: absolute;
+    top: 100%;
+}
+
+metadata-drawer turbo-select {
     display: flex;
-    flex-direction: column;
-    gap: 1em;
-    align-items: center;
-
-    position: absolute;
-    top: 100%;
-    /*bottom: 0;*/
-    /*left: 0;*/
-
-    padding: 1em;
-    background-color: white;
-    border-radius: 6px;
+    flex-direction: row;
+    gap: 0.5em;
+    padding-bottom: 1em;
 }
 
-metadata-drawer > div:first-child {
-    display: block;
-    background-color: rebeccapurple;
+metadata-drawer turbo-select > turbo-select-entry {
+    font-size: 0.9em;
+    color: #727377;
+    padding: 0.5em 0.8em;
 }
 
-metadata-drawer > div:nth-child(2) {
-    display: block;
-    position: relative;
-}
-metadata-drawer > div:nth-child(2) > :first-child {
-    display: block;
-    background-color: white;
+metadata-drawer turbo-select > turbo-select-entry.selected-tab {
+    color: black;
+    font-size: 1em;
+    background-color: #d4ffff;
+    border-radius: 100px;
 }
 
-.metadata-drawer-parent {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    min-width: 100%;
-    overflow: hidden;
-}
-
-
-metadata-drawer > panel-thumb.bottom-thumb {
-    right: unset;
-    transform: unset;
-    left: 1em;
-}
-
-metadata-drawer > animated-content-switch {
+metadata-drawer animated-content-switch {
     min-width: 100%;
 }
 

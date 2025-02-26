@@ -28,18 +28,24 @@ export class YArrayManagerModel<
 
     protected observeChanges(event: YArrayEvent, blockKey: string = this.defaultBlockKey) {
         let currentIndex = 0;
+        this.fireKeyChangedCallback(currentIndex, blockKey);
 
         for (const delta of event.delta) {
-            if (delta.retain !== undefined) {
-                currentIndex += delta.retain;
-            } else if (delta.insert && Array.isArray(delta.insert)) {
-                delta.insert.forEach((_item: DataType, i: number) => this.fireKeyChangedCallback(currentIndex + i, blockKey));
-                currentIndex += delta.insert.length;
+            if (delta.retain !== undefined) currentIndex += delta.retain;
+            else if (delta.insert) {
+                const insertedItems = Array.isArray(delta.insert) ? delta.insert : [delta.insert];
+                insertedItems.forEach((_item: DataType, i: number) =>
+                    this.fireKeyChangedCallback(currentIndex + i, blockKey));
+                currentIndex += insertedItems.length;
             } else if (delta.delete) {
-                for (let i = 0; i < delta.delete; i++) {
-                    this.onDeleted?.(undefined, this.getInstance(currentIndex, blockKey), currentIndex, blockKey);
-                }
+                for (let i = 0; i < delta.delete; i++) this.onDeleted?.
+                (undefined, this.getInstance(currentIndex, blockKey), currentIndex, blockKey);
             }
         }
+
+        event.target.toArray().forEach((item: DataType, index: number) => {
+            if (event.changes.delta.some(delta =>
+                delta.retain !== undefined && delta.retain > 0)) this.fireKeyChangedCallback(index, blockKey);
+        });
     }
 }

@@ -22,7 +22,7 @@ export class ClipRendererModel extends RendererModel {
     }
 
     public set cardData(value: YMap | SyncedCard) {
-        this.setDataBlock(value as YMap, "cardData");
+        this.setDataBlock(value as YMap, undefined, "cardData");
     }
 
     public get clipData(): YMap {
@@ -30,7 +30,7 @@ export class ClipRendererModel extends RendererModel {
     }
 
     public set clipData(value: YMap | SyncedClip) {
-        this.setDataBlock(value as YMap, "clipData");
+        this.setDataBlock(value as YMap, undefined, "clipData");
         this.textModel.data = (value as YMap).get("content");
     }
 

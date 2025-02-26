@@ -1,21 +1,19 @@
 vc-timeline {
-    position: absolute;
-    min-width: 10em;
-    max-width: 60em;
-    height: 6em;
-
-    display: flex;
-    flex-direction: column;
-    gap: 0.5em;
-
-    padding: 0.5em;
-    background-color: white;
-    border-radius: 0.5em;
-
-    z-index: 2;
+    height: 10em;
 }
 
-vc-timeline > .clips-container {
+vc-timeline .turbo-drawer-panel-container {
+    height: 100%;
+    display: flex;
+    background-color: transparent;
+}
+
+vc-timeline .turbo-drawer-panel {
+    display: flex;
+    align-items: center;
+}
+
+vc-timeline .clips-container {
     position: relative;
     border-radius: 0.35em;
     max-height: calc(6em - 2.4em);
@@ -28,17 +26,16 @@ vc-timeline > .clips-container {
     z-index: 2;
 }
 
-vc-timeline.top-timeline {
+vc-timeline.top-drawer {
     left: 50%;
     bottom: 1em;
     transform: translate(-50%, 0);
 }
 
-vc-timeline.right-timeline {
-    right: 0;
-    top: 50%;
-    bottom: 1em;
-    transform: translate(0, -50%);
+vc-timeline.right-drawer {
+    position: absolute;
+    left: 100%;
+    top:  -22%;
 }
 
 vc-timeline .play-button {

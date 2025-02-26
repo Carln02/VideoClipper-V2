@@ -11,7 +11,6 @@ import {Timeline} from "../../components/timeline/timeline";
 import {MovableComponent} from "../../components/basicComponents/movableComponent/movableComponent";
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {FlowManagementHandler} from "../../components/flow/handlers/types/flowManagement.handler";
-import structuredClone from "@ungap/structured-clone";
 import {DocumentManager} from "../../views/canvas/managers/documentManager/documentManager";
 
 /**

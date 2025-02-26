@@ -10,6 +10,7 @@ import {Clip} from "../clip/clip";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {Card} from "../card/card";
 import {ClipTimelineEntry} from "./timeline.types";
+import {formatMMSS} from "../../../utils/time";
 
 export class TimelineView extends TurboView<Timeline, TimelineModel> {
     public readonly clips: Clip[] = [];
@@ -19,45 +20,18 @@ export class TimelineView extends TurboView<Timeline, TimelineModel> {
     private playTimer: NodeJS.Timeout | null = null;
     private nextTimer: NodeJS.Timeout | null = null;
 
-    private _card: Card;
-    private _currentClip: ClipTimelineEntry;
-
-    private thumb: PanelThumb;
-
     public clipsContainer: HTMLDivElement;
-    private scrubber: Scrubber;
+    public scrubber: Scrubber;
 
     private currentTimeText: HTMLParagraphElement;
     private totalDurationText: HTMLParagraphElement;
     private playButton: TurboIcon;
-
-    protected setupChangedCallbacks() {
-        super.setupChangedCallbacks();
-    }
 
     protected setupUIElements() {
         super.setupUIElements();
 
         this.clipsContainer = div({classes: "clips-container"});
         this.scrubber = new Scrubber(this.element, {parent: this.clipsContainer});
-
-    }
-
-    private initUI(properties: PanelThumbProperties) {
-        this.clipsContainer = div({classes: "clips-container", parent: this});
-        this.scrubber = new Scrubber(this, {parent: this.clipsContainer});
-
-        this.thumb = new PanelThumb({
-            direction: properties.direction,
-            fitSizeOf: properties.fitSizeOf,
-            initiallyClosed: properties.initiallyClosed,
-            closedOffset: properties.closedOffset,
-            openOffset: properties.openOffset,
-            invertOpenAndClosedValues: properties.invertOpenAndClosedValues,
-            panel: this,
-            parent: this
-        });
-        this.direction = properties.direction;
 
         this.currentTimeText = p({style: "min-width: 3em"});
         this.totalDurationText = p({style: "min-width: 3em; text-align: right"});
@@ -68,21 +42,53 @@ export class TimelineView extends TurboView<Timeline, TimelineModel> {
             listeners: {
                 [DefaultEventName.click]: (e: TurboEvent) => {
                     e.stopImmediatePropagation();
-                    this.play();
+                    // this.play();
                 }
             }
         });
-
-        this.element.addChild(flexRowCenter({
-            children: [this.currentTimeText, spacer(), this.playButton, spacer(), this.totalDurationText]
-        }));
     }
 
-    private initEvents() {
+    protected setupUILayout() {
+        super.setupUILayout();
+
+        this.element.addChild([
+            this.clipsContainer,
+            this.scrubber,
+            flexRowCenter({
+                children: [
+                    this.currentTimeText,
+                    spacer(),
+                    this.playButton,
+                    spacer(),
+                    this.totalDurationText
+                ]
+            })
+        ]);
+    }
+
+    protected setupUIListeners() {
+        super.setupUIListeners();
+
         this.clipsContainer.addEventListener(DefaultEventName.click, (e: TurboEvent) => {
-            this.currentTime = this.getTimeFromPosition(e);
-            if (ToolManager.instance.getFiredTool(e).name == ToolType.shoot) this.snapToClosest();
-            this.reloadCurrentClip();
+            // this.currentTime = this.getTimeFromPosition(e);
+            // if (ToolManager.instance.getFiredTool(e).name == ToolType.shoot) this.snapToClosest();
+            // this.reloadCurrentClip();
         });
+    }
+
+    protected setupChangedCallbacks() {
+        super.setupChangedCallbacks();
+    }
+
+    public updateCurrentTime(value: number) {
+        this.currentTimeText.textContent = formatMMSS(value);
+    }
+
+    public updateTotalDuration(value: number) {
+        this.totalDurationText.textContent = formatMMSS(value);
+    }
+
+    public updatePlayButtonIcon(isPlaying: boolean) {
+        this.playButton.icon = isPlaying ? "pause" : "play";
     }
 }

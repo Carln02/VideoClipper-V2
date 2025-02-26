@@ -1,39 +1,22 @@
 import {SyncedClip} from "../clip/clip.types";
-import {
-    auto,
-    DefaultEventName,
-    define,
-    div,
-    flexRowCenter,
-    icon,
-    p,
-    spacer,
-    trim, TurboElement,
-    TurboEvent,
-    TurboIcon
-} from "turbodombuilder";
+import {auto, define, trim, TurboEvent} from "turbodombuilder";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {Clip} from "../clip/clip";
-import {Scrubber} from "./components/scrubber/scrubber";
-import {formatMMSS} from "../../../utils/time";
-import {ToolManager} from "../../managers/toolManager/toolManager";
 import {Canvas} from "../../views/canvas/canvas";
 import "./timeline.css";
-import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {Card} from "../card/card";
 import {ClipRendererVisibility} from "../clipRenderer/clipRenderer.types";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {ClipTimelineEntry, TimelineProperties} from "./timeline.types";
-import {PanelThumb} from "../basicComponents/panelThumb/panelThumb";
-import {Direction, PanelThumbProperties} from "../basicComponents/panelThumb/panelThumb.types";
 import {randomColor} from "../../../utils/random";
 import {YArray} from "../../../../yProxy";
 import {YUtilities} from "../../../../yManagement/yUtilities";
 import {TimelineView} from "./timeline.view";
 import {TimelineModel} from "./timeline.model";
+import {TurboDrawer} from "../drawer/drawer";
 
 @define("vc-timeline")
-export class Timeline extends TurboElement<TimelineView, YArray<SyncedClip>, TimelineModel> {
+export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, TimelineModel> {
     public readonly pixelsPerSecondUnit: number = 20 as const;
 
     public readonly clips: Clip[] = [];
@@ -43,114 +26,52 @@ export class Timeline extends TurboElement<TimelineView, YArray<SyncedClip>, Tim
     private playTimer: NodeJS.Timeout | null = null;
     private nextTimer: NodeJS.Timeout | null = null;
 
-    private _card: Card;
+    private readonly _card: Card;
     private _currentClip: ClipTimelineEntry;
-
-    private thumb: PanelThumb;
-
-    public clipsContainer: HTMLDivElement;
-    private scrubber: Scrubber;
-
-    private currentTimeText: HTMLParagraphElement;
-    private totalDurationText: HTMLParagraphElement;
-    private playButton: TurboIcon;
+    private _currentTime: number = 0;
 
     constructor(properties: TimelineProperties) {
         super(properties);
+
         this.renderer = properties.renderer;
         this._card = properties.card;
 
         this.generateMvc(TimelineView, TimelineModel, properties.data, false);
 
-        this.initUI(properties);
-        this.initEvents();
-
         this.model.onClipAdded = (syncedClip, id) => {
             const clip = new Clip({timeline: this, data: syncedClip});
-            this.clipsContainer.addChild(clip, id);
+            this.view.clipsContainer.addChild(clip, id);
             return clip;
         };
 
-        this.model.onClipChanged = (syncedClip, clip, id, blockKey) => {
-            // this.reloadTime();
-            // this.reloadCurrentClip();
+        this.model.onClipChanged = () => {
+            this.reloadTime();
+            this.reloadCurrentClip();
         };
 
-        this.initializeMvc();
-    }
+        requestAnimationFrame(() => this.initializeMvc())
 
-    private initUI(properties: PanelThumbProperties) {
-        this.clipsContainer = div({classes: "clips-container", parent: this});
-        this.scrubber = new Scrubber(this, {parent: this.clipsContainer});
-
-        this.thumb = new PanelThumb({
-            direction: properties.direction,
-            fitSizeOf: properties.fitSizeOf,
-            initiallyClosed: properties.initiallyClosed,
-            closedOffset: properties.closedOffset,
-            openOffset: properties.openOffset,
-            invertOpenAndClosedValues: properties.invertOpenAndClosedValues,
-            panel: this,
-            parent: this
-        });
-        this.direction = properties.direction;
-
-        this.currentTimeText = p({style: "min-width: 3em"});
-        this.totalDurationText = p({style: "min-width: 3em; text-align: right"});
-
-        this.playButton = icon({
-            icon: "play",
-            classes: "play-button",
-            listeners: {
-                [DefaultEventName.click]: (e: TurboEvent) => {
-                    e.stopImmediatePropagation();
-                    this.play();
-                }
-            }
-        });
-
-        this.addChild(flexRowCenter({
-            children: [this.currentTimeText, spacer(), this.playButton, spacer(), this.totalDurationText]
-        }));
-    }
-
-    private initEvents() {
-        this.clipsContainer.addEventListener(DefaultEventName.click, (e: TurboEvent) => {
-            this.currentTime = this.getTimeFromPosition(e);
-            if (ToolManager.instance.getFiredTool(e).name == ToolType.shoot) this.snapToClosest();
-            this.reloadCurrentClip();
-        });
     }
 
     public get card(): Card {
         return this._card;
     }
 
-    public get direction() {
-        return this.thumb.direction;
+    public get currentTime(): number {
+        return this._currentTime;
     }
 
-    public set direction(value: Direction) {
-        this.thumb.direction = value;
-        this.toggleClass("right-timeline", value == Direction.right);
-        this.toggleClass("top-timeline", value == Direction.top);
-    }
-
-    @auto({
-        callBefore: function (value) {
-            return trim(value, this.totalDuration);
-        }
-    })
     public set currentTime(value: number) {
-        this.currentTimeText.textContent = formatMMSS(value);
-        this.scrubber.translation = value / this.totalDuration * this.width;
+        this._currentTime = trim(value, this.totalDuration);
+        this.view.scrubber.translation = this._currentTime / this.totalDuration * this.width;
         this.currentClip = this.getClipAt();
+        this.view.updateCurrentTime(this._currentTime);
     }
 
     @auto()
     public set totalDuration(value: number) {
-        this.totalDurationText.textContent = formatMMSS(value);
         this.card.duration = value;
+        this.view.updateTotalDuration(value);
     }
 
     public get currentClip() {
@@ -166,9 +87,9 @@ export class Timeline extends TurboElement<TimelineView, YArray<SyncedClip>, Tim
     }
 
     public reloadTime() {
-        this.totalDuration = this.clipsManager.getAllComponents().reduce((sum, clip) => sum + clip.duration, 0);
-        this.currentTime = (this.scrubber.translation / this.width * this.totalDuration) || 0;
-        this.thumb.open = this.thumb.open;
+        this.totalDuration = this.model.getAllClips().reduce((sum, clip) => sum + clip.duration, 0);
+        this.currentTime = (this.view.scrubber.translation / this.width * this.totalDuration) || 0;
+        this.refresh();
     }
 
     public reloadCurrentClip(force: boolean = false) {
@@ -201,7 +122,7 @@ export class Timeline extends TurboElement<TimelineView, YArray<SyncedClip>, Tim
         for (let i = 0; i < index; i++) currentTime += this.getDuration(i);
         this.currentTime = currentTime;
 
-        this.renderer.setFrame(this.clipsManager.getInstance(index <= 0 ? index : (index - 1)));
+        this.renderer.setFrame(this.model.getClipAt(index <= 0 ? index : (index - 1)));
     }
 
     public snapAtEnd() {
@@ -209,7 +130,7 @@ export class Timeline extends TurboElement<TimelineView, YArray<SyncedClip>, Tim
     }
 
     public getTimeFromPosition(e: TurboEvent) {
-        let offsetPosition = e.position.x - this.clipsContainer.getBoundingClientRect().left;
+        let offsetPosition = e.position.x - this.view.clipsContainer.getBoundingClientRect().left;
         if (offsetPosition < 0) offsetPosition = 0;
         if (offsetPosition > this.width) offsetPosition = this.width;
         return offsetPosition / this.width * this.totalDuration;
@@ -229,8 +150,7 @@ export class Timeline extends TurboElement<TimelineView, YArray<SyncedClip>, Tim
             accumulatedTime -= this.getDuration(index);
         }
 
-        console.log(this.clipsManager.data)
-        const clip = this.clipsManager.getInstance(index);
+        const clip = this.model.getClipAt(index);
         const offset = time - accumulatedTime;
         const closestIntersection = accumulatedTime < clip.duration / 2 ? index : (index + 1);
 
@@ -241,23 +161,23 @@ export class Timeline extends TurboElement<TimelineView, YArray<SyncedClip>, Tim
     }
 
     private async playNext(index: number, offset = 0) {
-        if (index >= this.clipsManager.getAllData().length) {
+        if (index >= this.model.getSize()) {
             this.play(false);
             return;
         }
 
-        await this.renderer.setFrame(this.clipsManager.getInstance(index), offset);
+        await this.renderer.setFrame(this.model.getClipAt(index), offset);
         this.renderer.playNext();
 
 
-        this.renderer.loadNext(this.clipsManager.getInstance(index + 1));
+        this.renderer.loadNext(this.model.getClipAt(index + 1));
 
         this.nextTimer = setTimeout(() => this.playNext(index + 1),
             1000 * (this.getDuration(index) - offset));
     }
 
     public async play(play: boolean = !this.isPlaying()) {
-        this.playButton.icon = play ? "pause" : "play";
+        this.view.updatePlayButtonIcon(play);
 
         if (this.nextTimer) clearTimeout(this.nextTimer);
         this.nextTimer = null;
@@ -283,6 +203,6 @@ export class Timeline extends TurboElement<TimelineView, YArray<SyncedClip>, Tim
     }
 
     private getDuration(index: number) {
-        return this.clipsManager.getInstance(index)?.duration || 0;
+        return this.model.getClipAt(index)?.duration || 0;
     }
 }

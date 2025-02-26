@@ -29,7 +29,7 @@ export class TextElementView extends TurboView<TextElement, TextElementModel> {
                     this.textValue = this.element.card.metadata.timestamp;
                     return;
                 case TextType.title:
-                    this.textValue = this.element.card.title;
+                    this.textValue = this.element.card?.title;
                     return;
                 default:
                     this.textValue = this.model.text;

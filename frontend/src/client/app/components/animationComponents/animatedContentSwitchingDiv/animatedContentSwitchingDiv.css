@@ -1,4 +1,5 @@
 animated-content-switch {
+    display: block;
     position: relative;
     height: 100%;
 }

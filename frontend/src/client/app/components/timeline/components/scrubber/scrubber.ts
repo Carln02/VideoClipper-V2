@@ -1,4 +1,5 @@
 import {
+    auto,
     define,
     div,
     icon, TurboDragEvent,
@@ -13,7 +14,7 @@ import {ToolManager} from "../../../../managers/toolManager/toolManager";
 import {Timeline} from "../../timeline";
 import {ToolType} from "../../../../managers/toolManager/toolManager.types";
 import {ScrubberMenu} from "./scrubber.types";
-import {YBoolean} from "../../../../../../yProxy";
+import {Clip} from "../../../clip/clip";
 
 @define("vc-scrubber")
 export class Scrubber extends TurboElement {
@@ -28,8 +29,6 @@ export class Scrubber extends TurboElement {
     //Whether it is currently scrubbing (fired by the user's action)
     private scrubbing: boolean = false;
 
-    private _translation: number = 0;
-
     constructor(timeline: Timeline, properties: TurboProperties = {}) {
         super(properties);
         if (!Scrubber.markingMenu) this.createMarkingMenu();
@@ -40,6 +39,10 @@ export class Scrubber extends TurboElement {
         this.initEvents();
     }
 
+    private get clip(): Clip {
+        return this.timeline.currentClip.clip;
+    }
+
     private createMarkingMenu() {
         const split = new TurboSelectEntry({
             value: ScrubberMenu.split, text: "Split",
@@ -48,7 +51,7 @@ export class Scrubber extends TurboElement {
 
         const mute = new TurboSelectEntry({
             value: ScrubberMenu.mute, text: "Mute",
-            action: () => this.timeline.currentClip.clip.data.muted = !this.timeline.currentClip.clip.data.muted as YBoolean
+            action: () => this.clip.data.muted = !this.timeline.currentClip.clip.data.muted
         });
 
         const insertCard = new TurboSelectEntry({
@@ -58,8 +61,7 @@ export class Scrubber extends TurboElement {
 
         const trimRight = new TurboSelectEntry({
             value: ScrubberMenu.trimRight, text: "Trim Right",
-            action: () => this.timeline.currentClip.clip.endTime -=
-                this.timeline.currentClip.clip.duration - this.timeline.currentClip.offset
+            action: () => this.clip.endTime -= this.clip.duration - this.timeline.currentClip.offset
         });
 
         const deleteRight = new TurboSelectEntry({
@@ -74,7 +76,7 @@ export class Scrubber extends TurboElement {
 
         const trimLeft = new TurboSelectEntry({
              value: ScrubberMenu.trimLeft, text: "Trim Left",
-            action: () => this.timeline.currentClip.clip.startTime += this.timeline.currentClip.offset
+            action: () => this.clip.startTime += this.timeline.currentClip.offset
         });
 
         const deleteLeft = new TurboSelectEntry({
@@ -89,7 +91,7 @@ export class Scrubber extends TurboElement {
 
         const hide = new TurboSelectEntry({
             value: ScrubberMenu.hide, text: "Hide",
-            action: () => this.timeline.currentClip.clip.hidden = !this.timeline.currentClip.clip.hidden
+            action: () => this.clip.hidden = !this.clip.hidden
         });
 
         Scrubber.markingMenu = new TurboMarkingMenu({
@@ -136,12 +138,8 @@ export class Scrubber extends TurboElement {
     /**
      * @description Translation value of the scrubber, in relation to the timeline container's dimensions.
      */
-    public get translation() {
-        return this._translation;
-    }
-
+    @auto()
     public set translation(value: number) {
-        this._translation = value;
         this.style.transform = `translate(calc(${value / Canvas.instance.scale}px - 50%), 0)`;
     }
 

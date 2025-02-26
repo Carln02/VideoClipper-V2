@@ -9,7 +9,7 @@ import {Clip} from "../clip/clip";
 import {TextElement} from "../textElement/textElement";
 
 export class ClipRendererView extends RendererView<ClipRenderer, ClipRendererModel> {
-    private readonly videoManager: ClipRendererVideoManager;
+    public readonly videoManager: ClipRendererVideoManager;
 
     protected textParent: HTMLDivElement;
 

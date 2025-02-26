@@ -9,7 +9,6 @@ import {
     TurboInput,
 } from "turbodombuilder";
 import {formatMmSs} from "../../../utils/time";
-import {Direction} from "../basicComponents/panelThumb/panelThumb.types";
 import {Card} from "./card";
 import {CardModel} from "./card.model";
 
@@ -43,15 +42,6 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
     }
 
     protected setupUIElements(): void {
-        this.element.metadataDrawer.setProperties({
-            side: Direction.bottom,
-            hideOverflow: true,
-            icon: "chevron",
-            attachSideToIconName: true,
-            // fitSizeOf: this.metadataDrawerParent,
-            // openOffset: 6,
-        });
-
         this.titleElement = new TurboInput({selectTextOnFocus: true});
         this.durationElement = div();
     }
@@ -60,7 +50,7 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
         this.element.addChild([
             this.element.renderer,
             this.element.metadataDrawer,
-            div({classes: "timeline-parent", children: this.element.timeline}),
+            this.element.timeline,
             div({
                 classes: "card-title",
                 children: [this.titleElement, this.durationElement]

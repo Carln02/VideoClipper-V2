@@ -10,15 +10,10 @@ vc-card .vc-renderer {
     border: none;
 }
 
-vc-card > .timeline-parent {
-    position: absolute;
-    left: 100%;
-    top: 50%;
-    transform: translateY(-50%);
+vc-card > vc-timeline {
 
-    min-height: 15em; /* TODO CHANGE LATER */
-    width: 40px;
-    overflow: hidden;
+
+    min-height: 15em;
 }
 
 vc-card > .card-title {

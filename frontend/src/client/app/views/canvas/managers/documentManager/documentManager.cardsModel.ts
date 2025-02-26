@@ -11,7 +11,7 @@ export class DocumentManagerCardsModel extends YMapManagerModel<SyncedBranchingN
     }
 
     public set cards(value: YMap) {
-        this.setDataBlock(value, "cards");
+        this.setDataBlock(value, "cards", "cards");
     }
 
     public get branchingNodes(): YMap {
@@ -19,6 +19,6 @@ export class DocumentManagerCardsModel extends YMapManagerModel<SyncedBranchingN
     }
 
     public set branchingNodes(value: YMap) {
-        this.setDataBlock(value, "branchingNodes");
+        this.setDataBlock(value, "branchingNodes", "branchingNodes");
     }
 }

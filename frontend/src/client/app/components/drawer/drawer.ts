@@ -9,9 +9,10 @@ import {
     Open,
     div,
     TurboElement,
-    ValidTag, TurboProperties, TurboIconSwitchProperties, DefaultEventName, TurboEventName, TurboDragEvent, auto, Point
+    TurboIconSwitchProperties, DefaultEventName, TurboEventName, TurboDragEvent, auto
 } from "turbodombuilder";
 import {TurboDrawerProperties} from "./drawer.types";
+import "./drawer.css";
 
 @define("turbo-drawer-2222222222222222222222222")
 class TurboDrawer<
@@ -37,15 +38,10 @@ class TurboDrawer<
 
     constructor(properties: TurboDrawerProperties<ViewType, DataType, ModelType>) {
         super(properties);
-
-        this.side = properties.side || Side.bottom;
-        this.offset = {open: properties.offset?.open || 0, closed: properties.offset?.closed || 0};
-
-        this.hideOverflow = properties.hideOverflow ?? false;
+        this.addClass("turbo-drawer");
 
         this.thumb = properties.thumb instanceof HTMLElement ? properties.thumb : div(properties.thumb);
         this.panelContainer = div();
-        if (this.hideOverflow) this.panelContainer.setStyle("overflow", "hidden");
         this.panel = properties.panel instanceof HTMLElement ? properties.panel : div(properties.panel);
 
         this.thumb.addClass("turbo-drawer-thumb");
@@ -55,6 +51,12 @@ class TurboDrawer<
         this.addChild([this.thumb, this.panelContainer]);
         this.panelContainer.addChild(this.panel);
 
+        this.hideOverflow = properties.hideOverflow ?? false;
+        if (this.hideOverflow) this.panelContainer.setStyle("overflow", "hidden");
+
+        this.side = properties.side || Side.bottom;
+        this.offset = {open: properties.offset?.open || 0, closed: properties.offset?.closed || 0};
+
         this.icon = this.generateIcon(properties);
         this.thumb.addChild(this.icon);
 
@@ -62,24 +64,20 @@ class TurboDrawer<
 
         //Transition
         this.transition = properties.transition ?? new Reifect({
-            transitionProperties: this.isVertical ? "height" : "width",
+            transitionProperties: ["transform", this.isVertical ? "height" : "width"],
             transitionDuration: 0.2,
             transitionTimingFunction: "ease-out",
-            attachedObjects: [this.panelContainer]
+            attachedObjects: [this, this.panelContainer]
         });
 
         this.initState(properties.initiallyOpen || false);
         this.initEvents();
     }
 
-    public setProperties<Tag extends ValidTag>(properties: TurboProperties<Tag>, setOnlyBaseProperties?: boolean): this {
-        return super.setProperties(properties, setOnlyBaseProperties);
-    }
-
     private generateIcon(properties: TurboDrawerProperties<ViewType, DataType, ModelType>) {
         if (properties.icon instanceof Element) return properties.icon;
 
-        const attachSideToIconName = properties.attachSideToIconName ?? typeof properties.icons == "string";
+        const attachSideToIconName = properties.attachSideToIconName ?? typeof properties.icon == "string";
         const rotateIconBasedOnSide = properties.rotateIconBasedOnSide ?? !attachSideToIconName;
 
         const iconProperties: TurboIconSwitchProperties<Side> = typeof properties.icon == "object"
@@ -100,28 +98,29 @@ class TurboDrawer<
                 right: "transform: rotate(270deg)",
             };
         }
+
         return iconElement;
     }
 
     private initEvents() {
-        this.addEventListener(DefaultEventName.click, (e) => {
+        this.thumb.addEventListener(DefaultEventName.click, (e) => {
             e.stopImmediatePropagation();
             this.open = !this.open;
         });
 
-        this.addEventListener(TurboEventName.dragStart, (e: TurboDragEvent) => {
+        this.thumb.addEventListener(TurboEventName.dragStart, (e: TurboDragEvent) => {
             e.stopImmediatePropagation();
             this.dragging = true;
             if (this.animationOn) this.transition.enabled = false;
         });
 
-        this.addEventListener(TurboEventName.drag, (e: TurboDragEvent) => {
+        this.thumb.addEventListener(TurboEventName.drag, (e: TurboDragEvent) => {
             if (!this.dragging) return;
             e.stopImmediatePropagation();
-            this.translateBy(e.scaledDeltaPosition);
+            this.translation += this.isVertical ? e.scaledDeltaPosition.y : e.scaledDeltaPosition.x;
         });
 
-        this.addEventListener(TurboEventName.dragEnd, (e: TurboDragEvent) => {
+        this.thumb.addEventListener(TurboEventName.dragEnd, (e: TurboDragEvent) => {
             if (!this.dragging) return;
             e.stopImmediatePropagation();
             this.dragging = false;
@@ -129,12 +128,12 @@ class TurboDrawer<
 
             switch (this.side) {
                 case Side.top:
-                    if (this.open && delta.y < -100) this.open = false;
-                    else if (!this.open && delta.y > 100) this.open = true;
-                    break;
-                case Side.bottom:
                     if (this.open && delta.y > 100) this.open = false;
                     else if (!this.open && delta.y < -100) this.open = true;
+                    break;
+                case Side.bottom:
+                    if (this.open && delta.y < -100) this.open = false;
+                    else if (!this.open && delta.y > 100) this.open = true;
                     break;
                 case Side.left:
                     if (this.open && delta.x > 100) this.open = false;
@@ -152,23 +151,6 @@ class TurboDrawer<
     private initState(isOpen: boolean) {
         this.open = isOpen;
         this.animationOn = true;
-    }
-
-    @auto()
-    public set side(value: Side) {
-        this.toggleClass("top-drawer", value == Side.top);
-        this.toggleClass("bottom-drawer", value == Side.bottom);
-        this.toggleClass("left-drawer", value == Side.left);
-        this.toggleClass("right-drawer", value == Side.right);
-    }
-
-    public get offset(): PartialRecord<Open, number> {
-        return this._offset;
-    }
-
-    public set offset(value: number | PartialRecord<Open, number>) {
-        if (typeof value == "number") this._offset = {open: value, closed: value};
-        else this._offset = {open: value?.open || 0, closed: value?.closed || 0};
     }
 
     public getOppositeSide(side: Side = this.side): Side {
@@ -197,32 +179,30 @@ class TurboDrawer<
         }
     }
 
+    @auto()
+    public set side(value: Side) {
+        this.toggleClass("top-drawer", value == Side.top);
+        this.toggleClass("bottom-drawer", value == Side.bottom);
+        this.toggleClass("left-drawer", value == Side.left);
+        this.toggleClass("right-drawer", value == Side.right);
+    }
+
+    public get offset(): PartialRecord<Open, number> {
+        return this._offset;
+    }
+
+    public set offset(value: number | PartialRecord<Open, number>) {
+        if (typeof value == "number") this._offset = {open: value, closed: value};
+        else this._offset = {open: value?.open || 0, closed: value?.closed || 0};
+    }
+
     public get isVertical() {
         return this.side == Side.top || this.side == Side.bottom;
     }
 
-    private get isTopOrLeft() {
-        return this.side == Side.top || this.side == Side.left;
-    }
-
     @auto()
     public set open(value: boolean) {
-        if (this.animationOn) {
-            this.transition.enabled = true;
-            this.transition.apply();
-        }
-
-        if (this.hideOverflow) this.panel.setStyle("position", "absolute", true);
-
-        requestAnimationFrame(() => {
-            this.translation = (value && this.hideOverflow)
-            || (!this.hideOverflow && (value && this.isTopOrLeft) || (!value && !this.isTopOrLeft))
-                ? (this.isVertical ? this.panel.offsetHeight : this.panel.offsetWidth) : 0;
-            this.translation += value ? this.offset.open : this.offset.closed;
-            if (this.icon instanceof TurboIconSwitch) this.icon.switchReifect.apply(this.open
-                ? this.getOppositeSide() : this.side);
-            if (this.hideOverflow) this.panel.setStyle("position", "relative", true);
-        });
+        this.refresh();
     }
 
     public get translation(): number {
@@ -231,32 +211,43 @@ class TurboDrawer<
 
     private set translation(value: number) {
         this._translation = value;
+
         switch (this.side) {
             case Side.top:
                 if (this.hideOverflow) this.panelContainer.setStyle("height", value + "px");
-                else this.setStyle("transform", `translate(0, ${-value}px)`);
+                else this.setStyle("transform", `translateY(${-value}px)`);
                 break;
             case Side.bottom:
                 if (this.hideOverflow) this.panelContainer.setStyle("height", value + "px");
-                else this.setStyle("transform", `translate(0, ${-value}px)`);
+                else this.setStyle("transform", `translateY(${-value}px)`);
                 break;
             case Side.left:
                 if (this.hideOverflow) this.panelContainer.setStyle("width", value + "px");
-                else this.setStyle("transform", `translate(${-value}px, 0)`);
+                else this.setStyle("transform", `translateX(${-value}px)`);
                 break;
             case Side.right:
                 if (this.hideOverflow) this.panelContainer.setStyle("width", value + "px");
-                else this.setStyle("transform", `translate(${-value}px, 0)`);
+                else this.setStyle("transform", `translateX(${-value}px)`);
                 break;
         }
     }
 
-    private translateBy(delta: Point) {
-        this.translation += this.isVertical ? delta.y : delta.x;
-    }
-
     public refresh() {
-        this.open = this.open;
+        if (this.animationOn) {
+            this.transition.enabled = true;
+            this.transition.apply();
+        }
+
+        if (this.hideOverflow) this.panel.setStyle("position", "absolute", true);
+
+        requestAnimationFrame(() => {
+            this.translation =  (this.open ? this.offset.open : this.offset.closed)
+                + (this.open ? (this.isVertical ? this.panel.offsetHeight : this.panel.offsetWidth) : 0);
+
+            if (this.icon instanceof TurboIconSwitch)
+                this.icon.switchReifect.apply(this.open ? this.getOppositeSide() : this.side);
+            if (this.hideOverflow) this.panel.setStyle("position", "relative", true);
+        });
     }
 }
 

@@ -23,7 +23,7 @@ export class ClipView extends TurboView<Clip, ClipModel> {
      * @description Reloads the size of the clip element and thus, reloads as well the timeline.
      */
     public reloadSize() {
-        this.element.setStyle("width", this.element.timeline?.pixelsPerSecondUnit * this.model.duration + "px");
+        this.element.setStyle("width", this.element.timeline?.pixelsPerSecondUnit * this.element.duration + "px");
         // this.timeline.reloadTime();
     }
 

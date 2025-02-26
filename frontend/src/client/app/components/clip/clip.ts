@@ -22,6 +22,7 @@ export class Clip extends TurboElement<ClipView, SyncedClip, ClipModel> {
     constructor(properties: ClipProperties) {
         super(properties);
         this.timeline = properties.timeline;
+        console.log(properties.data);
         this.generateMvc(ClipView, ClipModel, properties.data);
     }
 
@@ -70,6 +71,26 @@ export class Clip extends TurboElement<ClipView, SyncedClip, ClipModel> {
 
     public get mediaId(): string {
         return this.model.mediaId;
+    }
+
+    public get startTime(): number {
+        return this.model.startTime;
+    }
+
+    public set startTime(value: number) {
+        this.model.startTime = value;
+    }
+
+    public get endTime(): number {
+        return this.model.endTime;
+    }
+
+    public set endTime(value: number) {
+        this.model.endTime = value;
+    }
+
+    public get duration(): number {
+        return this.endTime - this.startTime;
     }
 
     /**

@@ -44,6 +44,7 @@ export abstract class YModel<
     }
 
     protected abstract getData(key: IdType, blockKey?: string): DataType;
+
     protected abstract setData(key: IdType, value: DataType, blockKey?: string): void;
 
     public getSize(blockKey: string = this.defaultBlockKey): number {
@@ -58,18 +59,24 @@ export abstract class YModel<
             const observer = this.observerMap.get(blockKey);
             if (block && observer) block.unobserve(observer);
         }
-        //TODO FIX --- this.clear(blockKey);
+
+        this.clear(blockKey);
         this.dataMap.set(blockKey, value);
         if (initialize) this.initialize(blockKey);
     }
 
+    protected getDataBlock(blockKey: string = this.defaultBlockKey): YType {
+        return this.dataMap.get(blockKey);
+    }
+
     public initialize(blockKey: string = this.defaultBlockKey) {
-        let block = this.getDataBlock(blockKey);
+        const block = this.getDataBlock(blockKey);
         if (!block) return;
-        if (block instanceof YArray) block = block.toArray() as any;
-        if (this.enabledCallbacks) block?.forEach((_value, key) => this.fireKeyChangedCallback(key, blockKey));
+        if (this.enabledCallbacks) (block instanceof YArray ? block.toArray() : block)
+            ?.forEach((_value, key) => this.fireKeyChangedCallback(key, blockKey));
 
         const observerFunction = (event: YEvent) => this.observeChanges(event, blockKey);
+
         this.observerMap.set(blockKey, observerFunction);
         if (this.enabledCallbacks) block.observe(observerFunction);
     }

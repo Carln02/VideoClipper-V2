@@ -11,6 +11,10 @@ export class ClipModel extends YComponentModel {
 
     public readonly minimumDuration: number = 0.3 as const;
 
+    public get data(): any {
+        return super.data;
+    }
+
     public set data(value: any) {
         super.data = value;
         this.data?.observeDeep(events => {
@@ -66,10 +70,6 @@ export class ClipModel extends YComponentModel {
         if (value < this.startTime + this.minimumDuration) value = this.startTime + this.minimumDuration;
         if (this.videoDuration && value > this.videoDuration) value = this.videoDuration;
         this.setData("endTime", value);
-    }
-
-    public get duration() {
-        return this.endTime - this.startTime;
     }
 
     public normalizeTime() {

@@ -1,4 +1,4 @@
-import {define, TurboProperties} from "turbodombuilder";
+import {define, Open, Side, TurboProperties} from "turbodombuilder";
 import "./card.css";
 import {SyncedCard} from "./card.types";
 import {Timeline} from "../timeline/timeline";
@@ -23,18 +23,22 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
     public constructor(properties: TurboProperties<"div", CardView, SyncedCard, CardModel> = {}) {
         super({...properties, data: undefined});
         this.generateMvc(CardView, CardModel, properties.data, false);
+        this.model.initialize();
 
         this._renderer = new ClipRenderer();
         this._metadataDrawer = new MetadataDrawer({card: this});
 
-        // this._timeline = new Timeline(this.model.syncedClips, this.element, this.renderer, {
-        //     direction: Direction.right,
-        //     // TODO fitSizeOf: this.timelineParent,
-        //     initiallyClosed: true,
-        //     openOffset: 16
-        // });
+        this._timeline = new Timeline({
+            data: this.model.syncedClips,
+            card: this,
+            renderer: this.renderer,
+            icon: "chevron",
+            side: Side.right,
+            hideOverflow: true,
+            offset: {[Open.open]: 16}
+        });
 
-        this.initializeMvc();
+        this.view.initialize();
         this.renderer.card = this;
     }
 

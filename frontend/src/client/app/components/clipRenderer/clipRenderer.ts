@@ -6,6 +6,7 @@ import {ClipRendererModel} from "./clipRenderer.model";
 import {Clip} from "../clip/clip";
 import {Card} from "../card/card";
 import {RendererProperties} from "../../abstract/renderer/renderer.types";
+import {ClipRendererVisibility} from "./clipRenderer.types";
 
 @define("vc-clip-renderer")
 export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> {
@@ -30,6 +31,10 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
         return this.view.currentClip;
     }
 
+    public get visibilityMode(): ClipRendererVisibility {
+        return this.view.visibilityMode;
+    }
+
     @auto()
     public set card(value: Card) {
         this.model.cardData = value.data;
@@ -38,5 +43,21 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
     public async setFrame(clip: Clip = this.view.currentClip, offsetTime: number = 0, force: boolean = false,
                           forceCanvas: boolean = false) {
         await this.view.setFrame(clip, offsetTime, force, forceCanvas);
+    }
+
+    public play() {
+        this.view.videoManager.play();
+    }
+
+    public pause() {
+        this.view.videoManager.pause();
+    }
+
+    public playNext() {
+        this.view.videoManager.playNext();
+    }
+
+    public loadNext(clip: Clip, offset?: number) {
+        this.view.videoManager.loadNext(clip, offset);
     }
 }
