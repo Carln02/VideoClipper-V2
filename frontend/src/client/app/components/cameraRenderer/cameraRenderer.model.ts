@@ -1,4 +1,4 @@
-import {RendererModel} from "../../abstract/renderer/renderer.model";
+import {RendererModel} from "../renderer/renderer.model";
 
 export class CameraRendererModel extends RendererModel {
 }

@@ -1,14 +1,6 @@
 import {Tool} from "../../tools/tool/tool";
 import {ClickMode, Delegate, TurboDragEvent, TurboEvent, TurboEventName, TurboKeyEvent} from "turbodombuilder";
 import {SetToolOptions, ToolType} from "./toolManager.types";
-import {CreateCardTool} from "../../tools/createCard/createCard";
-import {ConnectionTool} from "../../tools/connection/connection";
-import {DeleteTool} from "../../tools/delete/delete";
-import {ShootTool} from "../../tools/shoot/shoot";
-import {NavigatorTool} from "../../tools/navigator/navigator";
-import {SelectionTool} from "../../tools/selection/selection";
-import {TextTool} from "../../tools/text/text";
-import {DocumentManager} from "../../views/canvas/managers/documentManager/documentManager";
 
 //TODO handle key combinations maybe? Also fix the issue with 2-finger navigation on mobile when app starts
 /**

@@ -11,7 +11,7 @@ import {Timeline} from "../../components/timeline/timeline";
 import {MovableComponent} from "../../components/basicComponents/movableComponent/movableComponent";
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {FlowManagementHandler} from "../../components/flow/handlers/types/flowManagement.handler";
-import {DocumentManager} from "../../views/canvas/managers/documentManager/documentManager";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 /**
  * @description Tool that allows user to select elements and move them around

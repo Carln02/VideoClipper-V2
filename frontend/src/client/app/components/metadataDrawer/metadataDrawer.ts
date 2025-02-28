@@ -11,9 +11,6 @@ export class MetadataDrawer extends TurboDrawer<MetadataDrawerView, SyncedCardMe
     private readonly _card: Card;
 
     constructor(properties: MetadataDrawerProperties) {
-        properties.icon = "chevron";
-        properties.hideOverflow = true;
-        properties.offset = {open: 6};
         super(properties);
 
         this._card = properties.card;

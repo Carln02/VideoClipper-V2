@@ -15,6 +15,8 @@ export class MetadataDrawerView extends TurboView<MetadataDrawer, MetadataDrawer
     private instructionsPanel: TurboInput<"textarea">;
 
     protected setupUIElements() {
+        super.setupUIElements();
+
         this.tabbedMenu = new TurboSelect({
             values: ["Metadata", "Instructions"],
             customSelectedEntryClasses: "selected-tab",
@@ -63,6 +65,8 @@ export class MetadataDrawerView extends TurboView<MetadataDrawer, MetadataDrawer
     }
 
     protected setupUILayout() {
+        super.setupUILayout();
+
         this.element.addChild([this.tabbedMenu, this.animationDiv]);
         this.metadataPanel.addChild([
             this.metadataInputs["created"],

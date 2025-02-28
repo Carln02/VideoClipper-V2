@@ -1,4 +1,4 @@
-import {RendererView} from "../../abstract/renderer/renderer.view";
+import {RendererView} from "../renderer/renderer.view";
 import {CameraRenderer} from "./cameraRenderer";
 import {CameraRendererModel} from "./cameraRenderer.model";
 import {div, video} from "turbodombuilder";
@@ -13,7 +13,7 @@ export class CameraRendererView extends RendererView<CameraRenderer, CameraRende
     protected setupUIElements() {
         super.setupUIElements();
         this.video = video();
-        this.snapshotEffectDiv = div({id: "snapshot-effect-div"});
+        this.snapshotEffectDiv = div({classes: "snapshot-effect-div"});
     }
 
     protected setupUILayout() {

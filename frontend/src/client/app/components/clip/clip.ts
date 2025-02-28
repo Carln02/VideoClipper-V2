@@ -4,6 +4,7 @@ import {Coordinate, define, Point, TurboElement} from "turbodombuilder";
 import {Timeline} from "../timeline/timeline";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import domToImage from "dom-to-image-more";
+import html2canvas from "html2canvas";
 import {TextType} from "../textElement/textElement.types";
 import {TextElement} from "../textElement/textElement";
 import {ClipProperties, SyncedClip} from "./clip.types";
@@ -22,7 +23,6 @@ export class Clip extends TurboElement<ClipView, SyncedClip, ClipModel> {
     constructor(properties: ClipProperties) {
         super(properties);
         this.timeline = properties.timeline;
-        console.log(properties.data);
         this.generateMvc(ClipView, ClipModel, properties.data);
     }
 

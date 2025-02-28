@@ -69,7 +69,12 @@ export abstract class YModel<
         return this.dataMap.get(blockKey);
     }
 
-    public initialize(blockKey: string = this.defaultBlockKey) {
+    public initialize(blockKey: string = this.defaultBlockKey, delay: number = 50) {
+        if (delay > 0) setTimeout(() => this._initialize(blockKey), delay);
+        else this._initialize(blockKey);
+    }
+
+    protected _initialize(blockKey: string = this.defaultBlockKey) {
         const block = this.getDataBlock(blockKey);
         if (!block) return;
         if (this.enabledCallbacks) (block instanceof YArray ? block.toArray() : block)

@@ -4,7 +4,7 @@ import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {Clip} from "../../components/clip/clip";
 import {TextElement} from "../../components/textElement/textElement";
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
-import {DocumentManager} from "../../views/canvas/managers/documentManager/documentManager";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 @define("delete-tool")
 export class DeleteTool extends Tool {

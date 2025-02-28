@@ -11,7 +11,6 @@ export abstract class Renderer<
 
     protected constructor(properties: RendererProperties<ViewType, ModelType> = {}) {
         super(properties);
-        if (!properties.canvasProperties) properties.canvasProperties = {id: "card-frame-canvas"};
     }
 
     public get width() {

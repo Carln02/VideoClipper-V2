@@ -1,4 +1,4 @@
-import {RendererModel} from "../../abstract/renderer/renderer.model";
+import {RendererModel} from "../renderer/renderer.model";
 import {YMap} from "../../../../yProxy/yProxy/types/base.types";
 import {ClipRendererTextModel} from "./clipRenderer.textModel";
 import {TextElement} from "../textElement/textElement";

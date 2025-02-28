@@ -1,11 +1,11 @@
 import {Tool} from "../tool/tool";
 import {Canvas} from "../../views/canvas/canvas";
-import {NavigationManager} from "../../views/canvas/managers/navigationManager/navigationManager";
 import {ClickMode, define, TurboDragEvent, TurboEvent} from "turbodombuilder";
 import {Cursor} from "../../managers/cursorManager/cursorManager.types";
 import {CursorManager} from "../../managers/cursorManager/cursorManager";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
-import {DocumentManager} from "../../views/canvas/managers/documentManager/documentManager";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
+import {NavigationManager} from "../../managers/navigationManager/navigationManager";
 
 /**
  * @description Tool that allows the user to pan the canvas

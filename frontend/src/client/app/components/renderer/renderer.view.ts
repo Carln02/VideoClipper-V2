@@ -52,18 +52,21 @@ export class RendererView<
         this._canvas = canvas;
     }
 
-    public resize(aspectRatio: number = 1.33, width: number = this.element.offsetWidth, height: number = this.element.offsetHeight) {
-        if (width / height <= aspectRatio) {
-            this.element.setStyle("width", width + "px");
-            this.element.setStyle("height", width / aspectRatio + "px");
-            this.canvas.width = width;
-            this.canvas.height = width / aspectRatio;
-        } else {
-            this.element.setStyle("width", height * aspectRatio + "px");
-            this.element.setStyle("height", height + "px");
-            this.canvas.width = height * aspectRatio;
-            this.canvas.height = height;
-        }
+    public resize(aspectRatio: number = 1.33, width: number = this.element.offsetWidth,
+                  height: number = this.element.offsetHeight) {
+        requestAnimationFrame(() => {
+            if (width / height <= aspectRatio) {
+                this.element.setStyle("width", width + "px");
+                this.element.setStyle("height", width / aspectRatio + "px");
+                this.canvas.width = width;
+                this.canvas.height = width / aspectRatio;
+            } else {
+                this.element.setStyle("width", height * aspectRatio + "px");
+                this.element.setStyle("height", height + "px");
+                this.canvas.width = height * aspectRatio;
+                this.canvas.height = height;
+            }
+        });
     }
 
     public setCanvas(fill: string | CanvasImageSource = this.model.currentFill) {

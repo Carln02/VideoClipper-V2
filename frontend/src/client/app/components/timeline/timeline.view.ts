@@ -1,25 +1,12 @@
 import {Timeline} from "./timeline";
 import {TimelineModel} from "./timeline.model";
-import {PanelThumbProperties} from "../basicComponents/panelThumb/panelThumb.types";
 import {DefaultEventName, div, flexRowCenter, icon, p, spacer, TurboEvent, TurboIcon, TurboView} from "turbodombuilder";
-import {Scrubber} from "./components/scrubber/scrubber";
-import {PanelThumb} from "../basicComponents/panelThumb/panelThumb";
 import {ToolManager} from "../../managers/toolManager/toolManager";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
-import {Clip} from "../clip/clip";
-import {ClipRenderer} from "../clipRenderer/clipRenderer";
-import {Card} from "../card/card";
-import {ClipTimelineEntry} from "./timeline.types";
 import {formatMMSS} from "../../../utils/time";
+import {Scrubber} from "../scrubber/scrubber";
 
 export class TimelineView extends TurboView<Timeline, TimelineModel> {
-    public readonly clips: Clip[] = [];
-
-    public readonly renderer: ClipRenderer;
-
-    private playTimer: NodeJS.Timeout | null = null;
-    private nextTimer: NodeJS.Timeout | null = null;
-
     public clipsContainer: HTMLDivElement;
     public scrubber: Scrubber;
 
@@ -39,21 +26,15 @@ export class TimelineView extends TurboView<Timeline, TimelineModel> {
         this.playButton = icon({
             icon: "play",
             classes: "play-button",
-            listeners: {
-                [DefaultEventName.click]: (e: TurboEvent) => {
-                    e.stopImmediatePropagation();
-                    // this.play();
-                }
-            }
         });
     }
 
     protected setupUILayout() {
         super.setupUILayout();
 
+        this.clipsContainer.addChild(this.scrubber, 0);
         this.element.addChild([
             this.clipsContainer,
-            this.scrubber,
             flexRowCenter({
                 children: [
                     this.currentTimeText,
@@ -70,9 +51,14 @@ export class TimelineView extends TurboView<Timeline, TimelineModel> {
         super.setupUIListeners();
 
         this.clipsContainer.addEventListener(DefaultEventName.click, (e: TurboEvent) => {
-            // this.currentTime = this.getTimeFromPosition(e);
-            // if (ToolManager.instance.getFiredTool(e).name == ToolType.shoot) this.snapToClosest();
-            // this.reloadCurrentClip();
+            this.element.currentTime = this.element.getTimeFromPosition(e);
+            if (ToolManager.instance.getFiredTool(e).name == ToolType.shoot) this.element.snapToClosest();
+            this.element.reloadCurrentClip();
+        });
+
+        this.playButton.addListener(DefaultEventName.click, (e: TurboEvent) => {
+                e.stopImmediatePropagation();
+                this.element.play();
         });
     }
 

@@ -1,5 +1,5 @@
 import {Coordinate, Point, TurboDragEvent, TurboEventName, TurboWheelEvent} from "turbodombuilder";
-import {Canvas} from "../../canvas";
+import {Canvas} from "../../views/canvas/canvas";
 
 /**
  * @description Manages the navigation (panning and zooming) of a canvas

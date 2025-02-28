@@ -13,9 +13,6 @@ export class ClipView extends TurboView<Clip, ClipModel> {
 
     public constructor(element: Clip, model: ClipModel) {
         super(element, model);
-
-        this.clipContent = div({classes: "vc-clip-content"});
-        this.thumbnailImage = img({src: "", classes: "thumbnail"}).show(false);
     }
 
     /**
@@ -24,7 +21,7 @@ export class ClipView extends TurboView<Clip, ClipModel> {
      */
     public reloadSize() {
         this.element.setStyle("width", this.element.timeline?.pixelsPerSecondUnit * this.element.duration + "px");
-        // this.timeline.reloadTime();
+        this.element.timeline.reloadTime();
     }
 
     protected setupChangedCallbacks() {

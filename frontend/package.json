@@ -26,6 +26,7 @@
     "concurrently": "^8.2.2",
     "d3": "^7.9.0",
     "dom-to-image-more": "^3.3.0",
+    "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
     "paper": "^0.12.17",
     "turbodombuilder": "0.8.32",

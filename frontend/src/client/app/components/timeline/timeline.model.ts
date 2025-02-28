@@ -2,6 +2,8 @@ import {YArrayManagerModel} from "../../../../yManagement/yModel/types/yManagerM
 import {Clip} from "../clip/clip";
 import {YArray} from "../../../../yManagement/yManagement.types";
 import {SyncedClip} from "../clip/clip.types";
+import {randomColor} from "../../../utils/random";
+import {YUtilities} from "../../../../yManagement/yUtilities";
 
 export class TimelineModel extends YArrayManagerModel<SyncedClip, Clip> {
     public readonly pixelsPerSecondUnit: number = 20 as const;
@@ -37,5 +39,16 @@ export class TimelineModel extends YArrayManagerModel<SyncedClip, Clip> {
         if (index < 0) index = 0;
         if (index > this.data.length - 1) index = this.data.length - 1;
         return this.getInstance(index);
+    }
+
+    public async addClip(clip: SyncedClip, index?: number) {
+        if ((!index && index != 0) || index > this.data.length) index = this.data.length;
+        if (!clip.color) clip.color = randomColor();
+        return YUtilities.addInYArray(clip, this.data, index);
+    }
+
+    public removeClip(position: number) {
+        if (!position && position != 0) return;
+        this.data.delete(position);
     }
 }

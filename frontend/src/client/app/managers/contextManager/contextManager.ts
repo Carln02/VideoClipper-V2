@@ -51,6 +51,7 @@ export class ContextManager {
             if (key >= level) this.context.set(key, null);
             value?.forEach(entry => {
                 if ("select" in entry && typeof entry.select == "function") entry.select(false);
+                if ("selected" in entry) entry.selected = false;
                 this.onContextChange.fire({element: entry, level: key, changed: "removed"});
             });
         });
@@ -62,6 +63,8 @@ export class ContextManager {
         if (levelEntry && levelEntry.length == 1 && levelEntry[0] == element) return 0;
         this.clearContext(level);
         this.context.set(level, [element]);
+        if ("select" in element && typeof element.select == "function") element.select(true);
+        if ("selected" in element) element.selected = true;
         this.onContextChange.fire({element: element, level: level, changed: "added"});
         return 0;
     }

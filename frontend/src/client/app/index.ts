@@ -8,12 +8,12 @@ import {FileList} from "./views/filelist/filelist";
 import {ContextManager} from "./managers/contextManager/contextManager";
 import {ContextView} from "./managers/contextManager/contextManager.types";
 import {getDocument} from "../sync/datastore";
-import {DocumentManager} from "./views/canvas/managers/documentManager/documentManager";
 
 import "./main.css";
 import "./styles/input.css";
 import "./styles/markingMenu.css";
 import "./styles/drawer.css";
+import {DocumentManager} from "./managers/documentManager/documentManager";
 
 turbofy();
 

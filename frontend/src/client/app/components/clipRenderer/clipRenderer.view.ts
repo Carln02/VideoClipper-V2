@@ -1,15 +1,15 @@
-import {RendererView} from "../../abstract/renderer/renderer.view";
+import {RendererView} from "../renderer/renderer.view";
 import {ClipRenderer} from "./clipRenderer";
 import {ClipRendererModel} from "./clipRenderer.model";
 import {TextType} from "../textElement/textElement.types";
 import {ClipRendererVisibility} from "./clipRenderer.types";
-import {ClipRendererVideoManager} from "./clipRenderer.videoManager";
+import {ClipRendererVideoHandler} from "./clipRenderer.videoHandler";
 import {auto, div, video} from "turbodombuilder";
 import {Clip} from "../clip/clip";
 import {TextElement} from "../textElement/textElement";
 
 export class ClipRendererView extends RendererView<ClipRenderer, ClipRendererModel> {
-    public readonly videoManager: ClipRendererVideoManager;
+    public readonly videoManager: ClipRendererVideoHandler;
 
     protected textParent: HTMLDivElement;
 
@@ -20,7 +20,7 @@ export class ClipRendererView extends RendererView<ClipRenderer, ClipRendererMod
 
     public constructor(element: ClipRenderer, model: ClipRendererModel) {
         super(element, model);
-        this.videoManager = new ClipRendererVideoManager();
+        this.videoManager = new ClipRendererVideoHandler();
     }
 
     public get video(): HTMLVideoElement {

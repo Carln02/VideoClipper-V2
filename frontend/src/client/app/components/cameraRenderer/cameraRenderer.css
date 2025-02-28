@@ -1,4 +1,4 @@
-vc-camera-renderer > #snapshot-effect-div {
+vc-camera-renderer > .snapshot-effect-div {
     display: none;
 
     background-color: black;

@@ -1,9 +1,9 @@
 import {
     YMapManagerModel
-} from "../../../../../../yManagement/yModel/types/yManagerModel/types/yMapManagerModel";
-import {YMap} from "../../../../../../yManagement/yManagement.types";
-import {SyncedBranchingNode} from "../../../../components/branchingNode/branchingNode.types";
-import {BranchingNode} from "../../../../components/branchingNode/branchingNode";
+} from "../../../../yManagement/yModel/types/yManagerModel/types/yMapManagerModel";
+import {YMap} from "../../../../yManagement/yManagement.types";
+import {SyncedBranchingNode} from "../../components/branchingNode/branchingNode.types";
+import {BranchingNode} from "../../components/branchingNode/branchingNode";
 
 export class DocumentManagerCardsModel extends YMapManagerModel<SyncedBranchingNode, BranchingNode> {
     public get cards(): YMap {

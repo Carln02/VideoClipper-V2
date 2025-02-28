@@ -9,12 +9,12 @@ import {
     TurboProperties, TurboSelectEntry
 } from "turbodombuilder";
 import "./scrubber.css";
-import {Canvas} from "../../../../views/canvas/canvas";
-import {ToolManager} from "../../../../managers/toolManager/toolManager";
-import {Timeline} from "../../timeline";
-import {ToolType} from "../../../../managers/toolManager/toolManager.types";
+import {Canvas} from "../../views/canvas/canvas";
+import {ToolManager} from "../../managers/toolManager/toolManager";
+import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {ScrubberMenu} from "./scrubber.types";
-import {Clip} from "../../../clip/clip";
+import {Clip} from "../clip/clip";
+import {Timeline} from "../timeline/timeline";
 
 @define("vc-scrubber")
 export class Scrubber extends TurboElement {

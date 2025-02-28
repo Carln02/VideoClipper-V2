@@ -2,7 +2,7 @@ import "./tool.css";
 import {ToolView} from "./toolView";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {TurboDragEvent, TurboEvent} from "turbodombuilder";
-import {DocumentManager} from "../../views/canvas/managers/documentManager/documentManager";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 /**
  * @description General Tool class that defines basic behaviors and "abstract" functions tools could use to handle events

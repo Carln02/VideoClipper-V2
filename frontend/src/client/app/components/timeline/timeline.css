@@ -2,21 +2,22 @@ vc-timeline {
     height: 10em;
 }
 
-vc-timeline .turbo-drawer-panel-container {
+vc-timeline.turbo-drawer .turbo-drawer-panel-container {
     height: 100%;
     display: flex;
     background-color: transparent;
 }
 
-vc-timeline .turbo-drawer-panel {
-    display: flex;
-    align-items: center;
+vc-timeline.turbo-drawer .turbo-drawer-panel {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-vc-timeline .clips-container {
+vc-timeline.turbo-drawer .clips-container {
     position: relative;
     border-radius: 0.35em;
-    max-height: calc(6em - 2.4em);
+    height: calc(6em - 2.4em);
 
     display: flex;
     flex-direction: row;

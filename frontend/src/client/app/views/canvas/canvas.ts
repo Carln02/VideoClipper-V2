@@ -1,11 +1,9 @@
 import {auto, ClickMode, css, define, div, Point, TurboElement} from "turbodombuilder";
-import {NavigationManager} from "./managers/navigationManager/navigationManager";
 import "./canvas.css";
 import {Toolbar} from "../../components/toolbar/toolbar";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {ContextView} from "../../managers/contextManager/contextManager.types";
 import {AppBar} from "../../components/appBar/appBar";
-import {DocumentManager} from "./managers/documentManager/documentManager";
 import {SelectionTool} from "../../tools/selection/selection";
 import {NavigatorTool} from "../../tools/navigator/navigator";
 import {CreateCardTool} from "../../tools/createCard/createCard";
@@ -14,6 +12,8 @@ import {TextTool} from "../../tools/text/text";
 import {ShootTool} from "../../tools/shoot/shoot";
 import {DeleteTool} from "../../tools/delete/delete";
 import {ToolManager} from "../../managers/toolManager/toolManager";
+import {NavigationManager} from "../../managers/navigationManager/navigationManager";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 /**
  * @description Class representing a canvas on which the user can add cards, connect them, move them around, etc.

@@ -6,7 +6,7 @@ import {ClipRenderer} from "../../components/clipRenderer/clipRenderer";
 import {Point, TurboEvent} from "turbodombuilder";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {Clip} from "../../components/clip/clip";
-import {DocumentManager} from "../../views/canvas/managers/documentManager/documentManager";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 export class TextTool extends Tool {
     public constructor(documentManager: DocumentManager) {

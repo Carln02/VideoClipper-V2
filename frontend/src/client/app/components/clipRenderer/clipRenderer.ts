@@ -1,18 +1,18 @@
 import {auto, define} from "turbodombuilder";
 import {TextElement} from "../textElement/textElement";
-import {Renderer} from "../../abstract/renderer/renderer";
+import {Renderer} from "../renderer/renderer";
 import {ClipRendererView} from "./clipRenderer.view";
 import {ClipRendererModel} from "./clipRenderer.model";
 import {Clip} from "../clip/clip";
 import {Card} from "../card/card";
-import {RendererProperties} from "../../abstract/renderer/renderer.types";
+import {RendererProperties} from "../renderer/renderer.types";
 import {ClipRendererVisibility} from "./clipRenderer.types";
 
 @define("vc-clip-renderer")
 export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> {
     constructor(properties: RendererProperties<ClipRendererView, ClipRendererModel> = {}) {
         super(properties);
-        this.generateMvc(ClipRendererView, ClipRendererModel, undefined, false);
+        this.generateMvc(ClipRendererView, ClipRendererModel, undefined);
 
         this.model.onTextAdded = (syncedText, id) => {
             const text = new TextElement({data: syncedText, renderer: this});
@@ -20,11 +20,14 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
             return text;
         };
 
-        this.initializeMvc();
-
         this.view.canvas.setProperties(properties.canvasProperties);
         this.view.videos.forEach((video: HTMLVideoElement) => video.setProperties(properties.videoProperties));
-        this.view.resize();
+    }
+
+    public connectedCallback() {
+        console.log("CONNECTED CALLBACK - CLIP RENDERER");
+        console.log(this.view);
+        this.view?.resize();
     }
 
     public get currentClip(): Clip {

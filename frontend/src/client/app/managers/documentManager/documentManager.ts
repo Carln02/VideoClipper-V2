@@ -1,13 +1,13 @@
-import {BranchingNode} from "../../../../components/branchingNode/branchingNode";
-import {Card} from "../../../../components/card/card";
-import {YDoc, YMap} from "../../../../../../yProxy";
-import {SyncedCard} from "../../../../components/card/card.types";
+import {BranchingNode} from "../../components/branchingNode/branchingNode";
+import {Card} from "../../components/card/card";
+import {YDoc, YMap} from "../../../../yProxy";
+import {SyncedCard} from "../../components/card/card.types";
 import {Point} from "turbodombuilder";
-import {SyncedText, TextType} from "../../../../components/textElement/textElement.types";
-import {SyncedClip} from "../../../../components/clip/clip.types";
-import {randomColor} from "../../../../../utils/random";
-import {YDocument} from "../../../../../../yManagement/yDocument";
-import {YUtilities} from "../../../../../../yManagement/yUtilities";
+import {SyncedText, TextType} from "../../components/textElement/textElement.types";
+import {SyncedClip} from "../../components/clip/clip.types";
+import {randomColor} from "../../../utils/random";
+import {YDocument} from "../../../../yManagement/yDocument";
+import {YUtilities} from "../../../../yManagement/yUtilities";
 import {DocumentManagerModel} from "./documentManager.model";
 
 export class DocumentManager extends YDocument {
@@ -21,16 +21,14 @@ export class DocumentManager extends YDocument {
 
     public constructor(document: YDoc, cardsParent: HTMLElement, flowsParent: HTMLElement) {
         super(document);
+        this.documentModel = new DocumentManagerModel(document.getMap("document_content"));
 
         this.cardsParent = cardsParent;
         this.flowsParent = flowsParent;
 
-        this.documentModel = new DocumentManagerModel(document.getMap("document_content"));
-
         this.documentModel.onBranchingNodeAdded = data => new BranchingNode({parent: this.cardsParent, data: data});
         this.documentModel.onCardAdded = data => new Card({parent: this.cardsParent, data: data});
 
-        this.documentModel.initialize();
         // this.flowsManager.onAdded = data => new Flow(data, this.flowsParent);
         // this.flowsManager = new YMapManager<SyncedFlow, Flow>(this.flows);
     }

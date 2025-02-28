@@ -6,6 +6,10 @@ vc-card {
     background-color: antiquewhite;
 }
 
+vc-card.selected {
+    z-index: 2;
+}
+
 vc-card .vc-renderer {
     border: none;
 }

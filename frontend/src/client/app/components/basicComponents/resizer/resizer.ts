@@ -7,11 +7,13 @@ export class Resizer extends TurboElement {
     private readonly content: Element;
     public parent: HTMLElement;
 
-    constructor(content: Element, properties: TurboProperties = {}) {
+    public constructor(content: Element, properties: TurboProperties = {}) {
         super(properties);
-
         this.content = content;
-        this.parent = content.parentElement;
+    }
+
+    public connectedCallback() {
+        this.parent = this.content.parentElement;
 
         this.initUI();
         this.show(false);

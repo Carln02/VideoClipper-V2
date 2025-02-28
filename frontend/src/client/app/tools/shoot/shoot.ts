@@ -5,7 +5,7 @@ import {Camera} from "../../views/camera/camera";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {Clip} from "../../components/clip/clip";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
-import {DocumentManager} from "../../views/canvas/managers/documentManager/documentManager";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 /**
  * @description Tool that allows the user to shoot video clips into a card

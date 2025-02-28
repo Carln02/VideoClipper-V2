@@ -1,12 +1,12 @@
-import {YMap} from "../../../../../../yManagement/yManagement.types";
-import {YComponentModel} from "../../../../../../yManagement/yModel/types/yComponentModel";
+import {YMap} from "../../../../yManagement/yManagement.types";
+import {YComponentModel} from "../../../../yManagement/yModel/types/yComponentModel";
 import {SyncedDocument} from "./documentManager.types";
-import {SyncedCard} from "../../../../components/card/card.types";
-import {SyncedFlow} from "../../../../components/flow/flow.types";
-import {BranchingNodeType, SyncedBranchingNode} from "../../../../components/branchingNode/branchingNode.types";
+import {SyncedCard} from "../../components/card/card.types";
+import {SyncedFlow} from "../../components/flow/flow.types";
+import {BranchingNodeType, SyncedBranchingNode} from "../../components/branchingNode/branchingNode.types";
 import {DocumentManagerCardsModel} from "./documentManager.cardsModel";
-import {BranchingNode} from "../../../../components/branchingNode/branchingNode";
-import {Card} from "../../../../components/card/card";
+import {BranchingNode} from "../../components/branchingNode/branchingNode";
+import {Card} from "../../components/card/card";
 
 export class DocumentManagerModel extends YComponentModel {
     private cardsModel: DocumentManagerCardsModel;
@@ -17,6 +17,7 @@ export class DocumentManagerModel extends YComponentModel {
     public constructor(data: SyncedDocument) {
         super(data);
         this.enabledCallbacks = false;
+        this.initialize();
 
         this.cardsModel = new DocumentManagerCardsModel();
         this.cardsModel.onAdded = (data, id, blockKey) => {
@@ -25,8 +26,8 @@ export class DocumentManagerModel extends YComponentModel {
         };
     }
 
-    public initialize(blockKey: string = this.defaultBlockKey) {
-        super.initialize(blockKey);
+    protected _initialize(blockKey: string = this.defaultBlockKey) {
+        super._initialize(blockKey);
         this.cardsModel.cards = this.cards;
         this.cardsModel.branchingNodes = this.branchingNodes;
     }

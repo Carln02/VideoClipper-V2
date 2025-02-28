@@ -5,7 +5,7 @@ import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {Flow} from "../../components/flow/flow";
 import {FlowIntersectionHandler} from "../../components/flow/handlers/types/flowIntersection.handler";
 import {FlowSearchHandler} from "../../components/flow/handlers/types/flowSearch.handler";
-import {DocumentManager} from "../../views/canvas/managers/documentManager/documentManager";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 /**
  * @description Tool that handles creating flows and connecting nodes

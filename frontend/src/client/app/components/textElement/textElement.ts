@@ -12,7 +12,7 @@ import {TextElementModel} from "./textElement.model";
 export class TextElement extends TurboElement<TextElementView, SyncedText, TextElementModel> {
     public readonly renderer: ClipRenderer;
 
-    constructor(properties: TextElementProperties) {
+    public constructor(properties: TextElementProperties = {}) {
         super(properties);
         this.renderer = properties.renderer;
         this.generateMvc(TextElementView, TextElementModel, properties.data);

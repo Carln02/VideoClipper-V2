@@ -3,7 +3,7 @@ import {define, TurboEvent} from "turbodombuilder";
 import {Card} from "../../components/card/card";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {Timeline} from "../../components/timeline/timeline";
-import {DocumentManager} from "../../views/canvas/managers/documentManager/documentManager";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 /**
  * @description Tool that creates cards

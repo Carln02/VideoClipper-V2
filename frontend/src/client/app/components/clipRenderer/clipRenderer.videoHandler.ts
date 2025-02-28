@@ -1,7 +1,7 @@
 import {ClipRendererVideoInfo} from "./clipRenderer.types";
 import {Clip} from "../clip/clip";
 
-export class ClipRendererVideoManager {
+export class ClipRendererVideoHandler {
     public readonly videos: ClipRendererVideoInfo[] = [];
     private _currentVideoIndex: number = 0;
 

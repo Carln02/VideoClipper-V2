@@ -1,4 +1,4 @@
-import {define, Open, Side, TurboProperties} from "turbodombuilder";
+import {define, TurboProperties} from "turbodombuilder";
 import "./card.css";
 import {SyncedCard} from "./card.types";
 import {Timeline} from "../timeline/timeline";
@@ -16,42 +16,22 @@ import {SyncedCardMetadata} from "../metadataDrawer/metadataDrawer.types";
  */
 @define("vc-card")
 export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
-    private readonly _renderer: ClipRenderer;
-    private readonly _metadataDrawer: MetadataDrawer;
-    private _timeline: Timeline;
-
     public constructor(properties: TurboProperties<"div", CardView, SyncedCard, CardModel> = {}) {
         super({...properties, data: undefined});
-        this.generateMvc(CardView, CardModel, properties.data, false);
-        this.model.initialize();
-
-        this._renderer = new ClipRenderer();
-        this._metadataDrawer = new MetadataDrawer({card: this});
-
-        this._timeline = new Timeline({
-            data: this.model.syncedClips,
-            card: this,
-            renderer: this.renderer,
-            icon: "chevron",
-            side: Side.right,
-            hideOverflow: true,
-            offset: {[Open.open]: 16}
-        });
-
-        this.view.initialize();
+        this.generateMvc(CardView, CardModel, properties.data);
         this.renderer.card = this;
     }
 
     public get renderer(): ClipRenderer {
-        return this._renderer;
+        return this.view.renderer;
     }
 
     public get metadataDrawer(): MetadataDrawer {
-        return this._metadataDrawer;
+        return this.view.metadataDrawer;
     }
 
     public get timeline(): Timeline {
-        return this._timeline;
+        return this.view.timeline;
     }
 
     public get title(): string {
@@ -63,7 +43,19 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
     }
 
     /**
-     * @description The total duration of the card. When set, will update the value of the duration element.
+     * @description Whether the element is selected or not. Setting it will accordingly toggle the "selected" CSS
+     * class on the element and update the UI, as well as bring it the card to the front.
+     */
+    public get selected(): boolean {
+        return super.selected;
+    }
+
+    public set selected(value: boolean) {
+        super.selected = value;
+    }
+
+    /**
+     * @description The total duration of the card. When set, will update the value of the duration UI element.
      */
     public set duration(value: number) {
         this.view.duration = value;
@@ -114,15 +106,6 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
      */
     public removeClipAt(index: number) {
         this.timeline.removeClip(index);
-    }
-
-    /**
-     * @description Whether the element is selected or not. Setting it will accordingly toggle the "selected" CSS
-     * class on the element and update the UI, as well as bring it the card to the front.
-     */
-    public set selected(value: boolean) {
-        super.selected = value;
-        if (value) this.bringToFront();
     }
 
     public delete() {
