@@ -6,13 +6,13 @@ import {CaptureButton} from "./components/captureButton/captureButton";
 import {BackgroundSelector} from "./components/backgroundSelector/backgroundSelector";
 import {SidePanel} from "../../sidePanel";
 import {Camera} from "../../../../views/camera/camera";
-import {CaptureManager} from "../../../../views/camera/manager/captureManager/captureManager";
-import {CaptureMode} from "../../../../views/camera/manager/captureManager/captureManager.types";
 import {
     AnimatedContentSwitchingDiv
 } from "../../../animationComponents/animatedContentSwitchingDiv/animatedContentSwitchingDiv";
 import {ClipRendererVisibility} from "../../../clipRenderer/clipRenderer.types";
 import {SidePanelInstance} from "../../sidePanel.types";
+import {CaptureManager} from "../../../../managers/captureManager/captureManager";
+import {CaptureMode} from "../../../../managers/captureManager/captureManager.types";
 
 @define("shooting-side-panel")
 export class ShootingSidePanel extends TurboElement implements SidePanelInstance {

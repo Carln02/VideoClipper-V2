@@ -6,7 +6,7 @@ import {proxied, YNumber, YRecord} from "../../../../../yProxy";
 import {SyncedCard} from "../../../components/card/card.types";
 import {SyncedBranchingNode} from "../../../components/branchingNode/branchingNode.types";
 import {SyncedFlow} from "../../../components/flow/flow.types";
-import {SyncedMedia} from "../../camera/manager/captureManager/captureManager.types";
+import {SyncedMedia} from "../../../managers/captureManager/captureManager.types";
 
 let popup = null;
 

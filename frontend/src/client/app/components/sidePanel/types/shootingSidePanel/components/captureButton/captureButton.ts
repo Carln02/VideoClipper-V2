@@ -1,6 +1,6 @@
 import {define, div, TurboElement, TurboProperties} from "turbodombuilder";
 import "./captureButton.css";
-import {CaptureMode} from "../../../../../../views/camera/manager/captureManager/captureManager.types";
+import {CaptureMode} from "../../../../../../managers/captureManager/captureManager.types";
 
 @define("vc-capture-button")
 export class CaptureButton extends TurboElement {

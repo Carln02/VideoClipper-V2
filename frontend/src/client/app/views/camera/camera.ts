@@ -1,6 +1,5 @@
 import {auto, define, TurboElement} from "turbodombuilder";
 import "./camera.css";
-import {CaptureManager} from "./manager/captureManager/captureManager";
 import {Toolbar} from "../../components/toolbar/toolbar";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {ContextView} from "../../managers/contextManager/contextManager.types";
@@ -12,8 +11,8 @@ import {CameraRenderer} from "../../components/cameraRenderer/cameraRenderer";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {SidePanel} from "../../components/sidePanel/sidePanel";
 import {ClipRendererVisibility} from "../../components/clipRenderer/clipRenderer.types";
-import {Direction} from "../../components/basicComponents/panelThumb/panelThumb.types";
 import {MetadataDrawer} from "../../components/metadataDrawer/metadataDrawer";
+import {CaptureManager} from "../../managers/captureManager/captureManager";
 
 @define("vc-camera")
 export class Camera extends TurboElement {
@@ -50,9 +49,9 @@ export class Camera extends TurboElement {
 
         this.captureManager = new CaptureManager(this);
 
-        this.cameraRenderer = new CameraRenderer({parent: this},
-            {autoplay: true, muted: true, playsInline: true});
-        this.clipRenderer = new ClipRenderer({parent: this}, {playsInline: true});
+        this.cameraRenderer = new CameraRenderer({parent: this, videoProperties:
+            {autoplay: true, muted: true, playsInline: true}});
+        this.clipRenderer = new ClipRenderer({parent: this, videoProperties: {playsInline: true}});
 
         this.sidePanel = new SidePanel(this, this.captureManager);
 
@@ -158,7 +157,7 @@ export class Camera extends TurboElement {
     }
 
     public set visibilityMode(value: ClipRendererVisibility) {
-        this.clipRenderer.visibilityMode = value;
+        //TODO this.clipRenderer.visibilityMode = value;
     }
 
     public set visible(value: boolean) {

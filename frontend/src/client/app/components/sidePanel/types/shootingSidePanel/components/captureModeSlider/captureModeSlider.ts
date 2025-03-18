@@ -1,8 +1,8 @@
 import {DefaultEventName, define, div, TurboDragEvent, TurboElement, TurboProperties} from "turbodombuilder";
 import "./captureModeSlider.css";
 import {ShootingSidePanel} from "../../shootingSidePanel";
-import {CaptureMode} from "../../../../../../views/camera/manager/captureManager/captureManager.types";
 import {linearInterpolation} from "../../../../../../../utils/interpolation";
+import {CaptureMode} from "../../../../../../managers/captureManager/captureManager.types";
 
 @define("capture-mode-slider")
 export class CaptureModeSlider extends TurboElement {

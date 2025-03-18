@@ -1,8 +1,6 @@
 import {SyncedMediaWithoutId} from "./captureManager.types";
-import {Camera} from "../../camera";
-import {add_video} from "../../../../../sync/videostore";
-import {proxied, YNumber, YProxiedArray} from "../../../../../../yProxy/yProxy/types/proxied.types";
-import {SyncedText} from "../../../../components/textElement/textElement.types";
+import {Camera} from "../../views/camera/camera";
+import {add_video} from "../../../sync/videostore";
 
 export class CaptureManager {
     private readonly camera: Camera;

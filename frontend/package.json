@@ -29,7 +29,7 @@
     "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
     "paper": "^0.12.17",
-    "turbodombuilder": "0.8.32",
+    "turbodombuilder": "0.8.33",
     "y-indexeddb": "^9.0.12",
     "y-webrtc": "^10.3.0",
     "y-websocket": "^2.0.3",

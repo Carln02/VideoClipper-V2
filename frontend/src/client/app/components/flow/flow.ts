@@ -1,7 +1,6 @@
-import {define, Point} from "turbodombuilder";
+import {define, Point, TurboCustomProperties, TurboElement} from "turbodombuilder";
 import "./flow.css";
-import {SyncedComponent} from "../../abstract/syncedComponent/syncedComponent";
-import {SyncedFlow, SyncedFlowBranch, SyncedFlowData} from "./flow.types";
+import {SyncedFlow, SyncedFlowBranch} from "./flow.types";
 import {FlowTag} from "../flowTag/flowTag";
 import {FlowDrawingHandler} from "./handlers/types/flowDrawing.handler";
 import {FlowPointHandler} from "./handlers/types/flowPoint.handler";
@@ -10,17 +9,15 @@ import {FlowUtilities} from "./flow.utilities";
 import {FlowBranchingHandler} from "./handlers/types/flowBranching.handler";
 import {FlowManagementHandler} from "./handlers/types/flowManagement.handler";
 import {FlowIntersectionHandler} from "./handlers/types/flowIntersection.handler";
-import * as d3 from "d3";
 import {YProxiedArray} from "../../../../yProxy";
+import {FlowView} from "./flow.view";
+import {FlowModel} from "./flow.model";
 
 /**
  * @description A reactiveComponent that represents a flow connecting cards
  */
 @define("vc-flow")
-export class Flow extends SyncedComponent<SyncedFlow> {
-    public readonly svg: SVGSVGElement;
-    public readonly svgGroups: Map<number, SVGGElement>;
-
+export class Flow extends TurboElement<FlowView, SyncedFlow, FlowModel> {
     public readonly utilities: FlowUtilities;
 
     public readonly drawingHandler: FlowDrawingHandler;
@@ -38,15 +35,10 @@ export class Flow extends SyncedComponent<SyncedFlow> {
 
     public currentBranchIndex: number = 0;
 
-    constructor(data: SyncedFlow, parent: HTMLElement) {
-        super({parent: parent});
+    public constructor(properties: TurboCustomProperties<FlowView, SyncedFlow, FlowModel>) {
+        super(properties);
+        this.generateMvc(FlowView, FlowModel, properties.data);
 
-        //Create SVG using D3
-        this.svg = d3.select(this).append("svg")
-            .attr("namespace", "http://www.w3.org/2000/svg").node();
-        this.svgGroups = new Map<number, SVGGElement>();
-
-        this.data = data;
 
         this.utilities = new FlowUtilities(this);
 
@@ -59,6 +51,14 @@ export class Flow extends SyncedComponent<SyncedFlow> {
         this.searchHandler = new FlowSearchHandler(this);
 
 
+    }
+
+    public get svg(): SVGSVGElement {
+        return this.view.svg;
+    }
+
+    public get svgGroups(): Map<number, SVGGElement> {
+        return this.view.svgGroups;
     }
 
     public static async create(p: Point, nodeId: string): Promise<Flow> {

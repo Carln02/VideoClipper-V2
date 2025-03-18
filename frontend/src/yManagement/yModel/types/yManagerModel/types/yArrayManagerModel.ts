@@ -1,10 +1,9 @@
 import {YArray, YArrayEvent} from "../../../../yManagement.types";
 import {YManagerModel} from "../yManagerModel";
-import {TurboElement} from "turbodombuilder";
 
 export class YArrayManagerModel<
     DataType extends object,
-    ComponentType extends TurboElement
+    ComponentType extends object
 > extends YManagerModel<DataType, ComponentType,
     number, YArray<DataType>> {
 

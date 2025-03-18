@@ -14,7 +14,7 @@ export abstract class YModel<
     YType extends YMap | YArray = YMap | YArray,
     IdType extends string | number = string | number
 > extends TurboModel<YType, IdType> {
-    protected observerMap: Map<string, (event: YEvent) => void> = new Map();
+    protected readonly observerMap: Map<string, (event: YEvent) => void> = new Map();
 
     public constructor(data?: DataType | YType) {
         super(data as YType);
@@ -35,6 +35,7 @@ export abstract class YModel<
 
     @auto()
     public set enabledCallbacks(value: boolean) {
+        if (!this.observerMap) return;
         this.observerMap.forEach((observer, blockKey) => {
             const block = this.getDataBlock(blockKey);
             if (!block) return;
@@ -54,7 +55,7 @@ export abstract class YModel<
     }
 
     protected setDataBlock(value: YType, id?: string, blockKey: string = this.defaultBlockKey, initialize: boolean = true) {
-        if (this.enabledCallbacks) {
+        if (this.enabledCallbacks && this.observerMap) {
             const block = this.getDataBlock(blockKey);
             const observer = this.observerMap.get(blockKey);
             if (block && observer) block.unobserve(observer);

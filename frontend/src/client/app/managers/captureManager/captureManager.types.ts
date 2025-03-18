@@ -1,5 +1,3 @@
-import {YNumber, YProxied, YString} from "../../../../../../yProxy/yProxy/types/proxied.types";
-
 export enum CaptureMode {
     photo = "PHOTO",
     video = "VIDEO",
@@ -7,19 +5,12 @@ export enum CaptureMode {
     videoShooting = "VIDEO SHOOTING"
 }
 
-export type SyncedMediaData = {
+export type SyncedMedia = {
     type?: "image" | "video",
     timestamp?: number,
     duration?: number,
     media?: string
 };
-
-export type SyncedMedia = YProxied<{
-    type?: YProxied<"image" | "video">,
-    timestamp?: YNumber,
-    duration?: YNumber,
-    media?: YString
-}>;
 
 export type SyncedMediaWithoutId = {
     type?: "image" | "video",

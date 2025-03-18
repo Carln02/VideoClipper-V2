@@ -20,4 +20,16 @@ export abstract class Renderer<
     public get height() {
         return this.view.height;
     }
+
+    public get video() {
+        return this.view.video;
+    }
+
+    public resize(aspectRatio: number = 1.33, width: number = this.offsetWidth, height: number = this.offsetHeight) {
+        this.view.resize(aspectRatio, width, height);
+    }
+
+    public setCanvas(fill: string | CanvasImageSource = this.model.currentFill) {
+        this.view.setCanvas(fill);
+    }
 }

@@ -1,4 +1,4 @@
-import {define, TurboProperties} from "turbodombuilder";
+import {define, TurboCustomProperties, TurboProperties} from "turbodombuilder";
 import "./card.css";
 import {SyncedCard} from "./card.types";
 import {Timeline} from "../timeline/timeline";
@@ -16,7 +16,7 @@ import {SyncedCardMetadata} from "../metadataDrawer/metadataDrawer.types";
  */
 @define("vc-card")
 export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
-    public constructor(properties: TurboProperties<"div", CardView, SyncedCard, CardModel> = {}) {
+    public constructor(properties: TurboCustomProperties<CardView, SyncedCard, CardModel> = {}) {
         super({...properties, data: undefined});
         this.generateMvc(CardView, CardModel, properties.data);
         this.renderer.card = this;

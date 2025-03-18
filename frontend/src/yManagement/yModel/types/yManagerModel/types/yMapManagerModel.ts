@@ -1,10 +1,9 @@
 import {YMap, YMapEvent} from "../../../../yManagement.types";
 import {YManagerModel} from "../yManagerModel";
-import {TurboElement} from "turbodombuilder";
 
 export class YMapManagerModel<
     DataType extends object,
-    ComponentType extends TurboElement
+    ComponentType extends object
 > extends YManagerModel<DataType, ComponentType,
     string, YMap<DataType>> {
 

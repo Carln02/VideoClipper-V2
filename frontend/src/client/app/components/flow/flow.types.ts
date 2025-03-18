@@ -1,99 +1,69 @@
 import {Coordinate} from "turbodombuilder";
-import {YCoordinate, YNumber, YProxied, YProxiedArray, YString} from "../../../../yProxy";
+import {YArray, YMap} from "../../../../yManagement/yManagement.types";
 
 /**
- * @description Datatype of a synced flow. Contains an array of branches
+ * Represents the entire flow document:
+ * - "branches" is an array of linear branches.
+ * - "flowTags" can store roots or additional metadata.
+ * - "defaultName" is optional labeling, same as before.
  */
-export type SyncedFlowData = {
-    flowBranches?: SyncedFlowBranchData[],
-    flowTags?: SyncedFlowTagData[],
-    defaultName?: string,
+export type SyncedFlow = YMap & {
+    branches?: YMap<SyncedFlowBranch>;
+    tags?: YArray<SyncedFlowTag>;
+    defaultName?: string;
 };
 
 /**
- * @description Datatype of a synced flow. Contains an array of branches
+ * A branch is a sequential list of FlowEntries (edges) in the order they were created.
+ * Each branch has a unique "branchId", so you can reference it from named paths.
+ * "connectedBranches" is optional and can store the IDs of branches that split or merge.
  */
-export type SyncedFlow = YProxied<{
-    flowBranches?: YProxiedArray<SyncedFlowBranch, SyncedFlowBranchData>,
-    flowTags?: YProxiedArray<SyncedFlowTag, SyncedFlowTagData>,
-    defaultName?: YString,
-}>;
-
-/**
- * @description A synced flow's branch datatype.
- * @property overwriting - Indicates the index (if any) of the branch it is overwriting
- * @property flowEntries - An array of flow entries constituting this branch. Explained below.
- */
-export type SyncedFlowBranchData = {
-    flowEntries?: SyncedFlowEntryData[],
-    childBranches?: number[],
-    overwriting?: number,
+export type SyncedFlowBranch = YMap & {
+    entries: YArray<SyncedFlowEntry>;
+    connectedBranches?: YArray<string>;
+    overwriting?: boolean;
 };
 
 /**
- * @description A synced flow's branch datatype.
- * @property overwriting - Indicates the index (if any) of the branch it is overwriting
- * @property flowEntries - An array of flow entries constituting this branch. Explained below.
+ * A single node-to-node connection, with user-drawn geometry in "points".
+ * Each entry belongs exactly to one branch.
  */
-export type SyncedFlowBranch = YProxied<{
-    flowEntries?: YProxiedArray<SyncedFlowEntry, SyncedFlowEntryData>,
-    childBranches?: YProxiedArray<YNumber, number>,
-    overwriting?: YNumber
-}>;
-
-/**
- * @description Data representing a flow entry
- * @property startNodeId - The ID of the node where the entry starts
- * @property endNodeId - The ID of the node where the entry ends (can be the same as startNodeId)
- * @property points - An array of x-y coordinates representing points lying between startNode and endNode
- */
-export type SyncedFlowEntryData = {
-    startNodeId?: string,
-    endNodeId?: string,
-    points?: Coordinate[]
+export type SyncedFlowEntry = YMap & {
+    startNodeId?: string;
+    endNodeId?: string;
+    points?: YArray<Coordinate>;
 };
 
 /**
- * @description Data representing a flow entry
- * @property startNodeId - The ID of the node where the entry starts
- * @property endNodeId - The ID of the node where the entry ends (can be the same as startNodeId)
- * @property points - An array of x-y coordinates representing points lying between startNode and endNode
+ * A flow tag might store a "nodeId" (as a root for traversal)
+ * and "namedPaths" referencing branches.
  */
-export type SyncedFlowEntry = YProxied<{
-    startNodeId?: YString,
-    endNodeId?: YString,
-    points?: YProxiedArray<YCoordinate, Coordinate>
-}>;
-
-export type SyncedFlowTagData = {
-    nodeId?: string,
-    namedPaths?: NamedFlowPathData[],
+export type SyncedFlowTag = YMap & {
+    nodeId?: string;
+    paths?: YArray<SyncedFlowPath>;
 };
-
-export type SyncedFlowTag = YProxied<{
-    nodeId?: YString,
-    namedPaths?: YProxiedArray<NamedFlowPath, NamedFlowPathData>,
-}>;
-
-export type NamedFlowPathData = {
-    name?: string,
-    index?: number,
-    branchIndices?: number[]
-};
-
-export type NamedFlowPath = YProxied<{
-    name?: YString,
-    index?: YNumber,
-    branchIndices?: YProxiedArray<YNumber, number>
-}>;
 
 /**
- * @description Data representing information to locate a point inside a synced flow
+ * A named path is now a sequence of branch references, indicating
+ * which branches form a complete user-labeled route.
+ * "branchIds" points to the branches in the order they are traversed.
+ */
+export type SyncedFlowPath = {
+    name?: string;
+    index?: number;
+    branchIds?: YArray<string>;
+};
+
+/**
+ * Optional utility type that lets you reference a specific coordinate inside the flow.
+ * "branchIndex" or "branchId" can locate which branch you're in,
+ * then "entryIndex" locates which entry in that branch,
+ * "pointIndex" locates the exact point in the geometry array.
  */
 export type FlowPoint = {
-    flowId?: string,
-    branchIndex?: number,
-    entryIndex?: number,
-    lastNodeId?: string,
-    pointIndex?: number,
+    flowId?: string;
+    branchIndex?: number; // or branchId?: string if you want IDs instead
+    entryIndex?: number;
+    lastNodeId?: string;
+    pointIndex?: number;
 };

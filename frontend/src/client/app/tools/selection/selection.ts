@@ -10,7 +10,6 @@ import {Canvas} from "../../views/canvas/canvas";
 import {Timeline} from "../../components/timeline/timeline";
 import {MovableComponent} from "../../components/basicComponents/movableComponent/movableComponent";
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
-import {FlowManagementHandler} from "../../components/flow/handlers/types/flowManagement.handler";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 /**
@@ -85,7 +84,7 @@ export class SelectionTool extends Tool {
             this.insertIndicatorAfterClosestClip(e);
         } else if (this.context.view == ContextView.canvas && this.currentTarget instanceof BranchingNode) {
             this.currentTarget.move(e.scaledDeltaPosition);
-            FlowManagementHandler.updateFlowsAfterMovingNode(this.currentTarget.dataId.toString(), e.scaledDeltaPosition);
+            // FlowManagementHandler.updateFlowsAfterMovingNode(this.currentTarget.dataId.toString(), e.scaledDeltaPosition);
         } else if (this.context.view == ContextView.camera && this.currentTarget instanceof TextElement) {
             this.currentTarget.translateBy(e.scaledDeltaPosition);
             // this.context.getAllOfType(TextElement).forEach(entry => {
