@@ -20,8 +20,8 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
 
     public setupChangedCallbacks(): void {
         super.setupChangedCallbacks();
-        this.setChangedCallback("temporaryPoint", () => this.redraw());
-        this.setChangedCallback("__redraw", () => this.redraw());
+        this.emitter.add("temporaryPoint", () => this.redraw());
+        this.emitter.add("__redraw", () => this.redraw());
     }
 
     public redraw(force: boolean = false) {

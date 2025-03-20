@@ -1,5 +1,5 @@
-import {SyncedFlowBranch} from "./flow.types";
 import {YMapManagerModel} from "../../../../yManagement/yModel/types/yManagerModel/types/yMapManagerModel";
+import {SyncedFlowBranch} from "../flowBranch/flowBranch.types";
 
 export class FlowBranchesModel extends YMapManagerModel<SyncedFlowBranch, SVGGElement> {
     public getAllBranches(): SyncedFlowBranch[] {

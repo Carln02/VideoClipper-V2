@@ -1,11 +1,11 @@
 import {Clip} from "../clip/clip";
-import {YArray} from "../../../../yProxy/yProxy/types/base.types";
 import {SyncedClip} from "../clip/clip.types";
 import {Card} from "../card/card";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {TimelineModel} from "./timeline.model";
 import {TimelineView} from "./timeline.view";
 import {TurboDrawerProperties} from "turbodombuilder";
+import { YArray } from "../../../../yManagement/yManagement.types";
 
 export type ClipTimelineEntry = {
     clip?: Clip,

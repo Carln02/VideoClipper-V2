@@ -3,7 +3,8 @@ import {
     ClickMode,
     DefaultEventName,
     div, Open,
-    Point, Side,
+    Point,
+    Side,
     TurboEvent,
     TurboEventName,
     TurboInput,
@@ -22,10 +23,6 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
     private _renderer: ClipRenderer;
     private _metadataDrawer: MetadataDrawer;
     private _timeline: Timeline;
-
-    public constructor(element: Card, model: CardModel) {
-        super(element, model);
-    }
 
     public get renderer(): ClipRenderer {
         return this._renderer;
@@ -97,6 +94,6 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
 
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
-        this.setChangedCallback("title", (value: string) => this.titleElement.value = value);
+        this.emitter.add("title", (value: string) => this.titleElement.value = value);
     }
 }

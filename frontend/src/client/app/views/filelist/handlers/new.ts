@@ -2,11 +2,6 @@ import {Popup} from "../../../components/popup/popup";
 import * as logman from "../../../../sync/logman";
 import * as index from "../../../index";
 import {documentRoot} from "../../../../sync/datastore";
-import {proxied, YNumber, YRecord} from "../../../../../yProxy";
-import {SyncedCard} from "../../../components/card/card.types";
-import {SyncedBranchingNode} from "../../../components/branchingNode/branchingNode.types";
-import {SyncedFlow} from "../../../components/flow/flow.types";
-import {SyncedMedia} from "../../../managers/captureManager/captureManager.types";
 
 let popup = null;
 
@@ -31,11 +26,11 @@ function create(name) {
     logman.connect_project(id);
 
     const document = documentRoot();
-    document.cards = {} as YRecord<string, SyncedCard>;
-    document.branchingNodes = {} as YRecord<string, SyncedBranchingNode>;
-    document.flows = {} as YRecord<string, SyncedFlow>;
-    document.media = {} as YRecord<string, SyncedMedia>;
-    document.counters = proxied({cards: 0 as YNumber, flows: 0 as YNumber});
+    document.cards = {};
+    document.branchingNodes = {};
+    document.flows = {};
+    document.media = {};
+    document.counters = {cards: 0, flows: 0};
 
     index.show_project();
 }

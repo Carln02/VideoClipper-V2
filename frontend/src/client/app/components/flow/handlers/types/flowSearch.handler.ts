@@ -3,6 +3,7 @@ import {FlowPoint, SyncedFlowBranch, SyncedFlowEntry} from "../../flow.types";
 import {Flow} from "../../flow";
 import {Coordinate, Point} from "turbodombuilder";
 
+//DONE
 export class FlowSearchHandler extends FlowHandler {
     /**
      * @function findNodeEntryInFlows

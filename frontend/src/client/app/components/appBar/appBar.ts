@@ -8,6 +8,9 @@ import {AppBarModel} from "./appBar.model";
 export class AppBar extends TurboElement<AppBarView, object, AppBarModel> {
     constructor(properties: TurboCustomProperties<AppBarView, object, AppBarModel> = {}) {
         super(properties);
-        this.generateMvc(AppBarView, AppBarModel);
+        this.mvc.generate({
+            viewConstructor: AppBarView,
+            modelConstructor: AppBarModel
+        });
     }
 }

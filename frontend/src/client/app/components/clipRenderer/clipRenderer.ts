@@ -3,39 +3,56 @@ import {TextElement} from "../textElement/textElement";
 import {Renderer} from "../renderer/renderer";
 import {ClipRendererView} from "./clipRenderer.view";
 import {ClipRendererModel} from "./clipRenderer.model";
-import {Clip} from "../clip/clip";
 import {Card} from "../card/card";
 import {RendererProperties} from "../renderer/renderer.types";
+import {RendererDrawingController} from "../renderer/renderer.drawingController";
+import {ClipRendererVideoController} from "./clipRenderer.videoController";
+import {ClipRendererVisibilityController} from "./clipRenderer.visibilityController";
+import {Clip} from "../clip/clip";
+import {ClipRendererFrameController} from "./clipRenderer.frameController";
+import {RendererCanvasController} from "../renderer/renderer.canvasController";
+import domToImage from "dom-to-image-more";
 import {ClipRendererVisibility} from "./clipRenderer.types";
 
 @define("vc-clip-renderer")
 export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> {
-    constructor(properties: RendererProperties<ClipRendererView, ClipRendererModel> = {}) {
+    public constructor(properties: RendererProperties<ClipRendererView, ClipRendererModel> = {}) {
         super(properties);
-        this.generateMvc(ClipRendererView, ClipRendererModel, undefined);
+        this.mvc.generate({
+            viewConstructor: ClipRendererView,
+            modelConstructor: ClipRendererModel,
+            controllerConstructors: [RendererDrawingController, RendererCanvasController,
+                ClipRendererFrameController, ClipRendererVisibilityController, ClipRendererVideoController],
+        });
+
+        this.view.canvas.setProperties(properties.canvasProperties);
+        this.view.videos.forEach((video: HTMLVideoElement) => video.setProperties(properties.videoProperties));
 
         this.model.onTextAdded = (syncedText, id) => {
             const text = new TextElement({data: syncedText, renderer: this});
             this.view.addTextElement(text, id);
             return text;
         };
+    }
 
-        this.view.canvas.setProperties(properties.canvasProperties);
-        this.view.videos.forEach((video: HTMLVideoElement) => video.setProperties(properties.videoProperties));
+    protected get canvasController(): RendererCanvasController {
+        return this.mvc.getController("canvas") as RendererCanvasController;
+    }
+
+    protected get frameController(): ClipRendererFrameController {
+        return this.mvc.getController("frame") as ClipRendererFrameController;
+    }
+
+    protected get videoController(): ClipRendererVideoController {
+        return this.mvc.getController("video") as ClipRendererVideoController;
     }
 
     public connectedCallback() {
-        console.log("CONNECTED CALLBACK - CLIP RENDERER");
-        console.log(this.view);
-        this.view?.resize();
-    }
-
-    public get currentClip(): Clip {
-        return this.view.currentClip;
+        this.canvasController?.resize();
     }
 
     public get visibilityMode(): ClipRendererVisibility {
-        return this.view.visibilityMode;
+        return this.model.visibilityMode;
     }
 
     @auto()
@@ -43,24 +60,32 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
         this.model.cardData = value.data;
     }
 
-    public async setFrame(clip: Clip = this.view.currentClip, offsetTime: number = 0, force: boolean = false,
-                          forceCanvas: boolean = false) {
-        await this.view.setFrame(clip, offsetTime, force, forceCanvas);
+    public get clip(): Clip {
+        return this.model.currentClip;
+    }
+
+    public async setFrame(clip: Clip = this.model.currentClip, offsetTime: number = 0) {
+        await this.frameController.setFrame(clip, offsetTime);
+    }
+
+    public async drawFrame(offset: number = 0): Promise<string> {
+        await this.frameController.setFrame(this.model.currentClip, offset, true, true);
+        return await domToImage.toJpeg(this, {quality: 0.6});
     }
 
     public play() {
-        this.view.videoManager.play();
+        this.videoController.play();
     }
 
     public pause() {
-        this.view.videoManager.pause();
+        this.videoController.pause();
+    }
+
+    public loadNext(clip: Clip, offset: number = 0) {
+        this.videoController.loadNext(clip, offset);
     }
 
     public playNext() {
-        this.view.videoManager.playNext();
-    }
-
-    public loadNext(clip: Clip, offset?: number) {
-        this.view.videoManager.loadNext(clip, offset);
+        this.videoController.playNext();
     }
 }

@@ -7,8 +7,6 @@ import {
     SyncedFlowTag
 } from "../../flow.types";
 import {FlowHandler} from "../flow.handler";
-import {BranchingNode} from "../../../branchingNode/branchingNode";
-import {YCoordinate, YProxiedArray} from "../../../../../../yProxy";
 
 export class FlowBranchingHandler extends FlowHandler {
     /**

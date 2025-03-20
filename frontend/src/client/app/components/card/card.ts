@@ -1,10 +1,8 @@
-import {define, TurboCustomProperties, TurboProperties} from "turbodombuilder";
+import {define, TurboCustomProperties} from "turbodombuilder";
 import "./card.css";
 import {SyncedCard} from "./card.types";
 import {Timeline} from "../timeline/timeline";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
-import {SyncedClip} from "../clip/clip.types";
-import {Clip} from "../clip/clip";
 import {MetadataDrawer} from "../metadataDrawer/metadataDrawer";
 import {CardModel} from "./card.model";
 import {CardView} from "./card.view";
@@ -18,7 +16,11 @@ import {SyncedCardMetadata} from "../metadataDrawer/metadataDrawer.types";
 export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
     public constructor(properties: TurboCustomProperties<CardView, SyncedCard, CardModel> = {}) {
         super({...properties, data: undefined});
-        this.generateMvc(CardView, CardModel, properties.data);
+        this.mvc.generate({
+            viewConstructor: CardView,
+            modelConstructor: CardModel,
+            data: properties.data
+        });
         this.renderer.card = this;
     }
 
@@ -62,50 +64,11 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
     }
 
     /**
-     * @description Array of clips components in this card's timeline.
-     */
-    public get clips(): Clip[] {
-        return this.timeline.clips;
-    }
-
-    /**
      * @function editTitle
      * @description Focuses the title field of the card.
      */
     public editTitle() {
         this.view.editTitle();
-    }
-
-    /**
-     * @function addClip
-     * @async
-     * @description Adds the provided clip data in the Yjs document at the provided index.
-     * @param {SyncedClip} clip - The data to append.
-     * @param {number} [index] - The index at which to append the data. If not provided, the clip will be pushed at
-     * the end of the card's syncedClips array.
-     */
-    public async addClip(clip: SyncedClip, index?: number) {
-        return await this.timeline.addClip(clip, index);
-    }
-
-    /**
-     * @function removeClip
-     * @description Removes the provided Clip from both the Yjs document and the HTML document.
-     * @param {Clip} clip - The clip to remove.
-     */
-    public removeClip(clip: Clip) {
-        const index = this.clips.indexOf(clip);
-        if (index < 0) return;
-        this.timeline.removeClip(index);
-    }
-
-    /**
-     * @function removeClipAt
-     * @description Removes the clip at the provided index from both the Yjs document and the HTML document.
-     * @param {number} index - The index of the clip to remove.
-     */
-    public removeClipAt(index: number) {
-        this.timeline.removeClip(index);
     }
 
     public delete() {

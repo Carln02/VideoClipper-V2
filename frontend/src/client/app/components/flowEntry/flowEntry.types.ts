@@ -1,4 +1,4 @@
-import { YArray, YMap } from "../../../../yManagement/yManagement.types";
+import {YArray, YMap} from "../../../../yManagement/yManagement.types";
 import {Coordinate} from "turbodombuilder";
 
 /**

@@ -1,9 +1,9 @@
 import {SyncedText} from "../textElement/textElement.types";
-import {YArray} from "../../../../yProxy";
 import {ClipView} from "./clip.view";
 import {ClipModel} from "./clip.model";
 import {Timeline} from "../timeline/timeline";
 import {TurboProperties} from "turbodombuilder";
+import { YArray } from "../../../../yManagement/yManagement.types";
 
 export type SyncedClip = {
     startTime?: number,

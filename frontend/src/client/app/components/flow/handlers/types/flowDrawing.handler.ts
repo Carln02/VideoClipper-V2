@@ -3,8 +3,8 @@ import * as d3 from "d3";
 import {FlowHandler} from "../flow.handler";
 import {Flow} from "../../flow";
 import {SyncedFlowBranch, SyncedFlowBranchData} from "../../flow.types";
-import {YCoordinate, YPath, YProxiedArray, YProxyEventName} from "../../../../../../yProxy";
 
+//DONE - EXCEPT BOUNDING BOX
 export class FlowDrawingHandler extends FlowHandler {
     private _data: YProxiedArray<SyncedFlowBranch>;
 

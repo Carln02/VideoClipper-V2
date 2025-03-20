@@ -1,6 +1,6 @@
 import {YArray} from "../../../../yManagement/yManagement.types";
-import {SyncedFlowEntry} from "../flow/flow.types";
 import {Flow} from "../flow/flow";
+import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 
 /**
  * A branch is a sequential list of FlowEntries (edges) in the order they were created.

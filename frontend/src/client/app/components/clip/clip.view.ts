@@ -11,26 +11,22 @@ export class ClipView extends TurboView<Clip, ClipModel> {
     private leftHandle: HTMLDivElement;
     private rightHandle: HTMLDivElement;
 
-    public constructor(element: Clip, model: ClipModel) {
-        super(element, model);
-    }
-
     /**
      * @function reloadSize
      * @description Reloads the size of the clip element and thus, reloads as well the timeline.
      */
     public reloadSize() {
         this.element.setStyle("width", this.element.timeline?.pixelsPerSecondUnit * this.element.duration + "px");
-        this.element.timeline.reloadTime();
+        this.element.timeline.reloadSize();
     }
 
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
 
-        this.setChangedCallback("color", (value: string) => this.clipContent.setStyle("backgroundColor", value));
-        this.setChangedCallback("startTime", () => this.reloadSize());
-        this.setChangedCallback("endTime", () => this.reloadSize());
-        this.setChangedCallback("mediaId", (value: string) => {
+        this.emitter.add("color", (value: string) => this.clipContent.setStyle("backgroundColor", value));
+        this.emitter.add("startTime", () => this.reloadSize());
+        this.emitter.add("endTime", () => this.reloadSize());
+        this.emitter.add("mediaId", (value: string) => {
             this.model.updateMediaData(value);
 
             //TODO maybe remove this? idk
@@ -39,13 +35,11 @@ export class ClipView extends TurboView<Clip, ClipModel> {
             // }
         });
 
-        this.setChangedCallback("hidden", (value: boolean) => this.element.toggleClass("hidden-clip", value));
-        this.setChangedCallback("thumbnail", (value: string) => {
+        this.emitter.add("hidden", (value: boolean) => this.element.toggleClass("hidden-clip", value));
+        this.emitter.add("thumbnail", (value: string) => {
             this.thumbnailImage.show(true);
             this.thumbnailImage.src = value;
         });
-
-        this.setChangedCallback("__reload_thumbnail", () => this.element.reloadThumbnail());
     }
 
     protected setupUIElements() {

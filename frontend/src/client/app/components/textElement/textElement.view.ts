@@ -23,7 +23,7 @@ export class TextElementView extends TurboView<TextElement, TextElementModel> {
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
 
-        this.setChangedCallback("type", (value: TextType) => {
+        this.emitter.add("type", (value: TextType) => {
             switch (value.valueOf()) {
                 case TextType.timestamp:
                     this.textValue = this.element.card.metadata.timestamp;
@@ -37,19 +37,19 @@ export class TextElementView extends TurboView<TextElement, TextElementModel> {
             }
         });
 
-        this.setChangedCallback("origin", (value: Coordinate) => this.element.setStyle("transform",
+        this.emitter.add("origin", (value: Coordinate) => this.element.setStyle("transform",
             `translate3d(calc(${(value.x * this.element.renderer.width) || 0}px - 50%), 
                         calc(${(value.y * this.element.renderer.height) || 0}px - 50%), 0)`));
 
-        this.setChangedCallback("fontSize", (value: number) => this.content
+        this.emitter.add("fontSize", (value: number) => this.content
             .setStyle("fontSize", value * this.element.renderer.offsetHeight + "px"));
 
-        this.setChangedCallback("text", (value: string) => {
+        this.emitter.add("text", (value: string) => {
             if (this.model.type == TextType.custom) this.content.textContent = value;
         });
 
-        this.setChangedCallback("boxWidth", (value: number) => this.element.setStyle("width", value + "%"));
-        this.setChangedCallback("boxHeight", (value: number) => this.element.setStyle("height", value + "%"));
+        this.emitter.add("boxWidth", (value: number) => this.element.setStyle("width", value + "%"));
+        this.emitter.add("boxHeight", (value: number) => this.element.setStyle("height", value + "%"));
     }
 
     protected setupUIElements() {

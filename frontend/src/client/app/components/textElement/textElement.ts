@@ -12,14 +12,18 @@ import {TextElementModel} from "./textElement.model";
 export class TextElement extends TurboElement<TextElementView, SyncedText, TextElementModel> {
     public readonly renderer: ClipRenderer;
 
-    public constructor(properties: TextElementProperties = {}) {
+    public constructor(properties: TextElementProperties) {
         super(properties);
         this.renderer = properties.renderer;
-        this.generateMvc(TextElementView, TextElementModel, properties.data);
+        this.mvc.generate({
+            viewConstructor: TextElementView,
+            modelConstructor: TextElementModel,
+            data: properties.data
+        });
     }
 
     public get clip(): Clip {
-        return this.renderer.currentClip;
+        return this.renderer.clip;
     }
 
     public get card(): Card {

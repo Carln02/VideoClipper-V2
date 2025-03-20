@@ -14,7 +14,11 @@ export class MetadataDrawer extends TurboDrawer<MetadataDrawerView, SyncedCardMe
         super(properties);
 
         this._card = properties.card;
-        this.generateMvc(MetadataDrawerView, MetadataDrawerModel, properties.card.metadata);
+        this.mvc.generate({
+            viewConstructor: MetadataDrawerView,
+            modelConstructor: MetadataDrawerModel,
+            data: properties.card.metadata
+        });
     }
 
     public get card() {

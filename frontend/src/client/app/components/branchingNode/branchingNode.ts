@@ -6,7 +6,7 @@ import {BranchingNodeView} from "./branchingNode.view";
 
 /**
  * @class BranchingNode
- * @extends SyncedComponent
+ * @extends TurboElement
  * @description Component representing a node where flows start, branch, or end. Can be manipulated and moved on the
  * canvas.
  * @template {SyncedBranchingNode} Type
@@ -19,8 +19,11 @@ export class BranchingNode<
 > extends TurboElement<View, Data, Model> {
     public constructor(properties: TurboProperties<"div", View, Data, Model> = {}) {
         super(properties);
-        if (properties.data) this.generateMvc(BranchingNodeView as new () => View,
-            BranchingNodeModel as new () => Model, properties.data);
+        if (properties.data) this.mvc.generate({
+            viewConstructor: BranchingNodeView as new () => View,
+            modelConstructor: BranchingNodeModel as new () => Model,
+            data: properties.data
+        });
     }
 
     /**

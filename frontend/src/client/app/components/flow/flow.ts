@@ -1,6 +1,6 @@
 import {define, Point, TurboCustomProperties, TurboElement} from "turbodombuilder";
 import "./flow.css";
-import {SyncedFlow, SyncedFlowBranch} from "./flow.types";
+import {SyncedFlow} from "./flow.types";
 import {FlowTag} from "../flowTag/flowTag";
 import {FlowDrawingHandler} from "./handlers/types/flowDrawing.handler";
 import {FlowPointHandler} from "./handlers/types/flowPoint.handler";
@@ -9,9 +9,10 @@ import {FlowUtilities} from "./flow.utilities";
 import {FlowBranchingHandler} from "./handlers/types/flowBranching.handler";
 import {FlowManagementHandler} from "./handlers/types/flowManagement.handler";
 import {FlowIntersectionHandler} from "./handlers/types/flowIntersection.handler";
-import {YProxiedArray} from "../../../../yProxy";
 import {FlowView} from "./flow.view";
 import {FlowModel} from "./flow.model";
+import {SyncedFlowBranch} from "../flowBranch/flowBranch.types";
+import { YArray } from "../../../../yManagement/yManagement.types";
 
 /**
  * @description A reactiveComponent that represents a flow connecting cards
@@ -37,7 +38,7 @@ export class Flow extends TurboElement<FlowView, SyncedFlow, FlowModel> {
 
     public constructor(properties: TurboCustomProperties<FlowView, SyncedFlow, FlowModel>) {
         super(properties);
-        this.generateMvc(FlowView, FlowModel, properties.data);
+        this.mvc.generate(FlowView, FlowModel, properties.data);
 
 
         this.utilities = new FlowUtilities(this);
@@ -118,7 +119,7 @@ export class Flow extends TurboElement<FlowView, SyncedFlow, FlowModel> {
         //     }, this);
     }
 
-    public get flowBranches(): YProxiedArray<SyncedFlowBranch> {
+    public get flowBranches(): YArray<SyncedFlowBranch> {
         return this.data.flowBranches;
     }
 

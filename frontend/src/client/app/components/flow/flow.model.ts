@@ -1,7 +1,9 @@
 import {YArray} from "../../../../yManagement/yManagement.types";
 import {YComponentModel} from "../../../../yManagement/yModel/types/yComponentModel";
-import {SyncedFlow, SyncedFlowBranch, SyncedFlowTag} from "./flow.types";
+import {SyncedFlow} from "./flow.types";
 import {FlowBranchesModel} from "./fow.branchesModel";
+import {SyncedFlowBranch} from "../flowBranch/flowBranch.types";
+import {SyncedFlowTag} from "../flowTag/flowTag.types";
 
 export class FlowModel extends YComponentModel {
     private readonly branchesModel: FlowBranchesModel;

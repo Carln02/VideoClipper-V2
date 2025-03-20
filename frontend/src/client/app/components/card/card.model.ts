@@ -1,7 +1,7 @@
 import {BranchingNodeModel} from "../branchingNode/branchingNode.model";
 import {SyncedCardMetadata} from "../metadataDrawer/metadataDrawer.types";
-import {YArray} from "../../../../yProxy/yProxy/types/base.types";
 import {SyncedClip} from "../clip/clip.types";
+import { YArray } from "../../../../yManagement/yManagement.types";
 
 export class CardModel extends BranchingNodeModel {
     public get title(): string {

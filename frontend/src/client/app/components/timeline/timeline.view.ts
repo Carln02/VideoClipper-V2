@@ -1,8 +1,6 @@
 import {Timeline} from "./timeline";
 import {TimelineModel} from "./timeline.model";
 import {DefaultEventName, div, flexRowCenter, icon, p, spacer, TurboEvent, TurboIcon, TurboView} from "turbodombuilder";
-import {ToolManager} from "../../managers/toolManager/toolManager";
-import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {formatMMSS} from "../../../utils/time";
 import {Scrubber} from "../scrubber/scrubber";
 
@@ -50,28 +48,25 @@ export class TimelineView extends TurboView<Timeline, TimelineModel> {
     protected setupUIListeners() {
         super.setupUIListeners();
 
-        this.clipsContainer.addEventListener(DefaultEventName.click, (e: TurboEvent) => {
-            this.element.currentTime = this.element.getTimeFromPosition(e);
-            if (ToolManager.instance.getFiredTool(e).name == ToolType.shoot) this.element.snapToClosest();
-            this.element.reloadCurrentClip();
-        });
+        this.clipsContainer.addEventListener(DefaultEventName.click, (e: TurboEvent) =>
+            this.emitter.fire("containerClicked", e));
 
         this.playButton.addListener(DefaultEventName.click, (e: TurboEvent) => {
                 e.stopImmediatePropagation();
-                this.element.play();
+                this.emitter.fire("playButtonClicked", e);
         });
     }
 
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
-    }
 
-    public updateCurrentTime(value: number) {
-        this.currentTimeText.textContent = formatMMSS(value);
-    }
+        this.emitter.add("currentTimeChanged", () => {
+            this.currentTimeText.textContent = formatMMSS(this.model.currentTime);
+        });
 
-    public updateTotalDuration(value: number) {
-        this.totalDurationText.textContent = formatMMSS(value);
+        this.emitter.add("totalDurationChanged", () => {
+            this.totalDurationText.textContent = formatMMSS(this.model.totalDuration);
+        });
     }
 
     public updatePlayButtonIcon(isPlaying: boolean) {

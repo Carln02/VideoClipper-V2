@@ -1,6 +1,5 @@
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {Card} from "../../components/card/card";
-import {YDoc, YMap} from "../../../../yProxy";
 import {SyncedCard} from "../../components/card/card.types";
 import {Point} from "turbodombuilder";
 import {SyncedText, TextType} from "../../components/textElement/textElement.types";
@@ -9,6 +8,7 @@ import {randomColor} from "../../../utils/random";
 import {YDocument} from "../../../../yManagement/yDocument";
 import {YUtilities} from "../../../../yManagement/yUtilities";
 import {DocumentManagerModel} from "./documentManager.model";
+import { YDoc, YMap } from "../../../../yManagement/yManagement.types";
 
 export class DocumentManager extends YDocument {
     public readonly documentModel: DocumentManagerModel;

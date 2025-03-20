@@ -1,8 +1,8 @@
 import {YComponentModel} from "../../../../yManagement/yModel/types/yComponentModel";
-import {YArray, YMapEvent} from "../../../../yProxy/yProxy/types/base.types";
 import {SyncedText} from "../textElement/textElement.types";
-import {SyncedMedia} from "../../views/camera/manager/captureManager/captureManager.types";
 import {get_video} from "../../../sync/videostore";
+import {SyncedMedia} from "../../managers/captureManager/captureManager.types";
+import {YArray, YMapEvent } from "../../../../yManagement/yManagement.types";
 
 export class ClipModel extends YComponentModel {
     private _metadata: SyncedMedia;
@@ -29,7 +29,7 @@ export class ClipModel extends YComponentModel {
                 }
                 if (relevantChanges) break;
             }
-            if (relevantChanges) this.fireKeyChangedCallback("__reload_thumbnail");
+            if (relevantChanges) this.fireCallback("__reload_thumbnail");
         });
     }
 

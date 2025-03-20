@@ -1,7 +1,7 @@
 import {Flow} from "../flow";
 import {SyncedFlow, SyncedFlowBranch, SyncedFlowBranchData} from "../flow.types";
 import {FlowUtilities} from "../flow.utilities";
-import {YProxiedArray} from "../../../../../yProxy";
+import {YArray} from "yjs/dist/src/types/YArray";
 
 export class FlowHandler {
     protected readonly flow: Flow;
@@ -14,7 +14,7 @@ export class FlowHandler {
         return this.flow.data;
     }
 
-    public get flowBranches(): YProxiedArray<SyncedFlowBranch, SyncedFlowBranchData> {
+    public get flowBranches(): YArray<SyncedFlowBranch, SyncedFlowBranchData> {
         return this.flow.flowBranches;
     }
 

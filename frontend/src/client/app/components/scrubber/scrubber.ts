@@ -10,11 +10,10 @@ import {
 } from "turbodombuilder";
 import "./scrubber.css";
 import {Canvas} from "../../views/canvas/canvas";
-import {ToolManager} from "../../managers/toolManager/toolManager";
-import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {ScrubberMenu} from "./scrubber.types";
 import {Clip} from "../clip/clip";
 import {Timeline} from "../timeline/timeline";
+import {ClipTimelineEntry} from "../timeline/timeline.types";
 
 @define("vc-scrubber")
 export class Scrubber extends TurboElement {
@@ -29,6 +28,10 @@ export class Scrubber extends TurboElement {
     //Whether it is currently scrubbing (fired by the user's action)
     private scrubbing: boolean = false;
 
+    public onScrubbingStart: (e: TurboDragEvent) => void;
+    public onScrubbing: (e: TurboDragEvent) => void;
+    public onScrubbingEnd: (e: TurboDragEvent) => void;
+
     constructor(timeline: Timeline, properties: TurboProperties = {}) {
         super(properties);
         if (!Scrubber.markingMenu) this.createMarkingMenu();
@@ -39,8 +42,12 @@ export class Scrubber extends TurboElement {
         this.initEvents();
     }
 
+    private get clipEntry(): ClipTimelineEntry {
+        return this.timeline.currentClipInfo;
+    }
+
     private get clip(): Clip {
-        return this.timeline.currentClip.clip;
+        return this.timeline.currentClip;
     }
 
     private createMarkingMenu() {
@@ -51,7 +58,7 @@ export class Scrubber extends TurboElement {
 
         const mute = new TurboSelectEntry({
             value: ScrubberMenu.mute, text: "Mute",
-            action: () => this.clip.data.muted = !this.timeline.currentClip.clip.data.muted
+            action: () => this.clip.data.muted = !this.clip.data.muted
         });
 
         const insertCard = new TurboSelectEntry({
@@ -61,27 +68,27 @@ export class Scrubber extends TurboElement {
 
         const trimRight = new TurboSelectEntry({
             value: ScrubberMenu.trimRight, text: "Trim Right",
-            action: () => this.clip.endTime -= this.clip.duration - this.timeline.currentClip.offset
+            action: () => this.clip.endTime -= this.clip.duration - this.clipEntry.offset
         });
 
         const deleteRight = new TurboSelectEntry({
             value: ScrubberMenu.deleteRight, text: "Delete Right",
-            action: () => this.timeline.card.removeClipAt(this.timeline.currentClip.index + 1)
+            action: () => this.timeline.removeClipAt(this.clipEntry.index + 1)
         });
 
         const deleteEntry = new TurboSelectEntry({
             value: ScrubberMenu.delete, text: "Delete",
-            action: () => this.timeline.card.removeClipAt(this.timeline.currentClip.index)
+            action: () => this.timeline.removeClipAt(this.clipEntry.index)
         });
 
         const trimLeft = new TurboSelectEntry({
              value: ScrubberMenu.trimLeft, text: "Trim Left",
-            action: () => this.clip.startTime += this.timeline.currentClip.offset
+            action: () => this.clip.startTime += this.clipEntry.offset
         });
 
         const deleteLeft = new TurboSelectEntry({
             value: ScrubberMenu.deleteLeft, text: "Delete Left",
-            action: () => this.timeline.card.removeClipAt(this.timeline.currentClip.index - 1)
+            action: () => this.timeline.removeClipAt(this.clipEntry.index - 1)
         });
 
         const reshoot = new TurboSelectEntry({
@@ -107,23 +114,23 @@ export class Scrubber extends TurboElement {
 
     private initEvents() {
         //Drag start --> start scrubbing and stop propagation
-        this.head.addEventListener(TurboEventName.dragStart, () => {
+        this.head.addEventListener(TurboEventName.dragStart, (e: TurboDragEvent) => {
             this.scrubbing = true;
+            if (this.onScrubbingStart) this.onScrubbingStart(e);
         });
 
         //On drag and if scrubbing --> stop propagation and move scrubber by delta position
         document.addEventListener(TurboEventName.drag, (e: TurboDragEvent) => {
             if (!this.scrubbing) return;
             e.stopImmediatePropagation();
-            this.timeline.currentTime += e.deltaPosition.x / this.timeline.width * this.timeline.totalDuration;
-            this.timeline.reloadCurrentClip();
+            if (this.onScrubbing) this.onScrubbing(e);
         });
 
         //Drag end and if scrubbing --> end scrubbing and stop propagation
         document.addEventListener(TurboEventName.dragEnd, (e: TurboDragEvent) => {
             if (!this.scrubbing) return;
             this.scrubbing = false;
-            if (ToolManager.instance.getFiredTool(e).name == ToolType.shoot) this.timeline.snapToClosest();
+            if (this.onScrubbingEnd) this.onScrubbingEnd(e);
         });
 
         Scrubber.markingMenu.attachTo(this.markingMenuHandle, (e: TurboEvent) => {
@@ -159,6 +166,6 @@ export class Scrubber extends TurboElement {
     }
 
     private get isBetweenClips(): boolean {
-        return false;
+        return false; //TODO
     }
 }
