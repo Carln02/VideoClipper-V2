@@ -3,6 +3,7 @@ import {auto, Coordinate, Point} from "turbodombuilder";
 import {YArray, YArrayEvent, YMapEvent} from "../../../../yManagement/yManagement.types";
 import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 import {FlowBranchEntryHandler} from "./flowBranch.entryHandler";
+import {FlowBranchPointHandler} from "./flowBranch.pointHandler";
 
 export class FlowBranchModel extends YComponentModel {
     public lastNode: string = null;
@@ -71,5 +72,9 @@ export class FlowBranchModel extends YComponentModel {
 
     public get entryHandler(): FlowBranchEntryHandler {
         return this.getHandler("entry") as FlowBranchEntryHandler;
+    }
+
+    public get pointHandler(): FlowBranchPointHandler {
+        return this.getHandler("point") as FlowBranchPointHandler;
     }
 }

@@ -44,6 +44,6 @@ export class FlowBranch extends TurboProxiedElement<"g", FlowBranchView, SyncedF
      * @param isTemporary
      */
     public addPoint(p: Point, nodeId?: string, isTemporary: boolean = false) {
-        (this.mvc.getHandler("point") as FlowBranchPointHandler).addPoint(p, nodeId, isTemporary);
+        this.model.pointHandler.addPoint(p, nodeId, isTemporary);
     }
 }

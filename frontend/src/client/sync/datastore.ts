@@ -4,7 +4,6 @@ import { IndexeddbPersistence } from 'y-indexeddb'
 
 import * as crypto from "./crypto"
 import WebsocketProvider from "./websocket_manager"
-import {YProxyFactory} from "../../yProxy";
 import {SyncedDocumentData} from "../app/views/canvas/canvas.types";
 
 
@@ -13,7 +12,7 @@ let y_room;
 
 let document;
 let document_content;
-let factory;
+// let factory;
 
 let persist_provider;
 let ws_provider;
@@ -33,7 +32,7 @@ export function join_room(group_id, room_id) {
 
 	document = new Y.Doc();
 	document_content = document.getMap('document_content');
-	factory = new YProxyFactory(document_content);
+	// factory = new YProxyFactory(document_content);
 
 	persist_provider = new IndexeddbPersistence(y_room, document);
 	ws_provider = new WebsocketProvider(y_room, document);
@@ -50,7 +49,7 @@ export function leave_room() {
 }
 
 export function documentRoot(): SyncedDocumentData {
-	return factory?.root;
+	return null;
 }
 
 export function getDocument(): Y.Doc {
