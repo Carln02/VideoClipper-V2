@@ -8,7 +8,13 @@ import {randomColor} from "../../../utils/random";
 import {YDocument} from "../../../../yManagement/yDocument";
 import {YUtilities} from "../../../../yManagement/yUtilities";
 import {DocumentManagerModel} from "./documentManager.model";
-import { YDoc, YMap } from "../../../../yManagement/yManagement.types";
+import {YArray, YDoc, YMap} from "../../../../yManagement/yManagement.types";
+import {SyncedFlowTag} from "../../components/flowTag/flowTag.types";
+import {SyncedFlowEntry} from "../../components/flowEntry/flowEntry.types";
+import {SyncedFlowBranch} from "../../components/flowBranch/flowBranch.types";
+import {SyncedFlow} from "../../components/flow/flow.types";
+import {Flow} from "../../components/flow/flow";
+import {FlowBranch} from "../../components/flowBranch/flowBranch";
 
 export class DocumentManager extends YDocument {
     public readonly documentModel: DocumentManagerModel;
@@ -21,16 +27,31 @@ export class DocumentManager extends YDocument {
 
     public constructor(document: YDoc, cardsParent: HTMLElement, flowsParent: HTMLElement) {
         super(document);
-        this.documentModel = new DocumentManagerModel(document.getMap("document_content"));
-
         this.cardsParent = cardsParent;
         this.flowsParent = flowsParent;
 
+        this.documentModel = new DocumentManagerModel(document.getMap("document_content"));
+
         this.documentModel.onBranchingNodeAdded = data => new BranchingNode({parent: this.cardsParent, data: data});
         this.documentModel.onCardAdded = data => new Card({parent: this.cardsParent, data: data});
+        this.documentModel.onFlowAdded = data => {
+            console.log(data)
+            return new Flow({parent: this.flowsParent, data: data});
+        }
 
-        // this.flowsManager.onAdded = data => new Flow(data, this.flowsParent);
-        // this.flowsManager = new YMapManager<SyncedFlow, Flow>(this.flows);
+        this.documentModel.initialize();
+    }
+
+    public get flows(): Flow[] {
+        return this.documentModel.flows;
+    }
+
+    public getFlow(id: string): Flow {
+        return this.documentModel.flowsModel.getInstance(id);
+    }
+
+    public forEachBranch(callback: (branch: FlowBranch, flow: Flow) => void) {
+        this.flows.forEach(flow => flow.branches.forEach(branch => callback(branch, flow)));
     }
 
     //CARDS
@@ -62,11 +83,36 @@ export class DocumentManager extends YDocument {
             syncedClips: YUtilities.createYArray([defaultClipMap]),
         });
 
-        return await YUtilities.addInYMap(cardMap, this.documentModel.cards);
+        return await YUtilities.addInYMap(cardMap, this.documentModel.cardsData);
+    }
+
+    public async createNewFlow(position: Point, nodeId: string): Promise<string> {
+        this.documentModel.incrementFlowsCount();
+
+        const firstEntry = YUtilities.createYMap<SyncedFlowEntry>({
+            startNodeId: nodeId,
+            endNodeId: nodeId,
+            points: [position]
+        });
+
+        const branchMap = YUtilities.createYMap<SyncedFlowBranch>({
+            entries: YUtilities.createYArray<SyncedFlowEntry>([firstEntry as SyncedFlowEntry]),
+            connectedBranches: new YArray<string>(),
+            overwriting: "",
+        });
+
+        const tagsArray = new YArray<SyncedFlowTag>();
+
+        const flowMap = YUtilities.createYMap<SyncedFlow>({
+            branches: YUtilities.createYMap({"0": branchMap}) as YMap<SyncedFlowBranch>,
+            tags: tagsArray,
+            defaultName: "Flow " + this.documentModel.flowsCount
+        });
+
+        return await YUtilities.addInYMap(flowMap, this.documentModel.flowsData);
     }
 
     public clear() {
         this.documentModel.clear();
-        // this.flowsManager.clear();
     }
 }

@@ -4,29 +4,22 @@ import * as d3 from "d3";
 import {FlowBranch} from "./flowBranch";
 
 export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
-    private readonly redrawInterval: number = 100 as const;
-    private readonly chevronInterval = 300 as const;
-    private readonly chevronTimeout = 200 as const;
-    private readonly chevronShape = "M 0 -6 L 12 0 L 0 6" as const;
-
     private path: SVGPathElement;
 
-    private lastRedraw: number;
-    private chevronTimer: NodeJS.Timeout;
-
-    protected setupUILayout() {
-        super.setupUILayout();
+    public initialize() {
+        super.initialize();
+        this.redraw();
     }
 
     public setupChangedCallbacks(): void {
         super.setupChangedCallbacks();
-        this.emitter.add("temporaryPoint", () => this.redraw());
-        this.emitter.add("__redraw", () => this.redraw());
+        this.emitter.add("temporaryPoint", () => this.redraw(true));
+        this.emitter.add("__redraw", () => this.redraw(true));
     }
 
     public redraw(force: boolean = false) {
-        if (!force && this.lastRedraw && Date.now() - this.lastRedraw < this.redrawInterval) return;
-        this.lastRedraw = Date.now();
+        if (!force && this.model.lastRedraw && Date.now() - this.model.lastRedraw < this.model.redrawInterval) return;
+        this.model.lastRedraw = Date.now();
         this.drawPath();
         //TODO TRIGGER RECOMPUTING OF BOUNDING BOX
     }
@@ -46,7 +39,7 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
         this.clear();
 
         if (points.length < 2) return;
-        const isTemporary = this.model.overwriting != undefined;
+        const isOverwriting = this.model.isOverwriting;
 
         //Generate the path data
         const lineGenerator = d3.line<Point>()
@@ -60,35 +53,35 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
         this.path = d3.select(group).append("path")
             .attr("class", "flow")
             .attr("d", pathData)
-            .attr("stroke-dasharray", isTemporary ? "5, 5" : null)
-            .attr("opacity", isTemporary ? 0.6 : 1)
+            .attr("stroke-dasharray", isOverwriting ? "5, 5" : null)
+            .attr("opacity", isOverwriting ? 0.6 : 1)
             .node() as SVGPathElement;
 
         this.drawChevronsDelayed();
     }
 
-    private drawChevronsDelayed(delay: number = this.chevronTimeout) {
-        clearTimeout(this.chevronTimer);
-        this.chevronTimer = setTimeout(() => this.drawChevrons(), delay);
+    private drawChevronsDelayed(delay: number = this.model.chevronTimeout) {
+        clearTimeout(this.model.chevronTimer);
+        this.model.chevronTimer = setTimeout(() => this.drawChevrons(), delay);
     }
 
     private drawChevrons() {
-        const isTemporary = this.model.overwriting != undefined;
+        const isOverwriting = this.model.isOverwriting;
         const pathLength = this.path.getTotalLength();
 
-        for (let distance = this.chevronInterval; distance < pathLength; distance += this.chevronInterval) {
+        for (let distance = this.model.chevronInterval; distance < pathLength; distance += this.model.chevronInterval) {
             const point = this.path.getPointAtLength(distance);
             const nextPoint = this.path.getPointAtLength(distance + 1);
             //Compute angle
             const angle = Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * (180 / Math.PI);
             d3.select(this.element.element).append("path")
                 .attr("class", "chevron")
-                .attr("d", this.chevronShape)
+                .attr("d", this.model.chevronShape)
                 .attr("transform", `translate(${point.x}, ${point.y}) rotate(${angle})`)
-                .attr("fill", isTemporary ? "grey" : "black")
+                .attr("fill", isOverwriting ? "grey" : "black")
                 .attr("stroke-linecap", "round")
                 .attr("stroke-linejoin", "round")
-                .attr("opacity", isTemporary ? 0.6 : 1);
+                .attr("opacity", isOverwriting ? 0.6 : 1);
         }
     }
 }

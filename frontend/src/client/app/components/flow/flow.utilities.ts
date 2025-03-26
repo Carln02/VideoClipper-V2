@@ -2,30 +2,6 @@ import {NamedFlowPath, SyncedFlowBranch, SyncedFlowEntry, SyncedFlowTag} from ".
 import {FlowHandler} from "./handlers/flow.handler";
 
 export class FlowUtilities extends FlowHandler {
-    public loopOnFlowEntries(callback: (entry: SyncedFlowEntry, branch: SyncedFlowBranch,
-                                                           entryIndex: number, branchIndex: number) => void) {
-        if (!this.flow) return;
-
-        // Iterate over flowBranches in reverse order (to support deletion of entries)
-        for (let branchIndex = 0; branchIndex < this.flowData.flowBranches.length; branchIndex++) {
-            const branch = this.flowData.flowBranches[branchIndex];
-            // Iterate over flowEntries in reverse order
-            for (let entryIndex = 0; entryIndex < branch.flowEntries.length; entryIndex++) {
-                callback(branch.flowEntries[entryIndex], branch, entryIndex, branchIndex);
-            }
-        }
-    }
-
-    public loopOnBranchEntries(branchIndex: number, callback: (entry: SyncedFlowEntry,
-                                                                                  entryIndex: number) => void) {
-        if (!this.flow) return;
-
-        const branch = this.flowData.flowBranches[branchIndex];
-        for (let entryIndex = 0; entryIndex < branch.flowEntries.length; entryIndex++) {
-            callback(branch.flowEntries[entryIndex], entryIndex);
-        }
-    }
-
     /**
      * @description Takes a flow ID, loops on all its branches' entries and performs on each the provided callback
      * @param callback

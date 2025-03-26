@@ -15,7 +15,7 @@ export class YUtilities {
     }
 
     /**
-     * @function createInObject
+     * @function addInYMap
      * @static
      * @async
      * @description Adds the provided data in the provided parent in the Yjs document, with a unique ID as its field
@@ -33,11 +33,11 @@ export class YUtilities {
     }
 
     /**
-     * @function createInArray
+     * @function addInYArray
      * @static
      * @description Adds the provided data in the provided parent array in the Yjs document.
      * @param {object} data - The data to append to the Yjs document.
-     * @param {YProxiedArray} parentYArray - The pointer to the parent array to which the data should be appended in
+     * @param {YArray} parentYArray - The pointer to the parent array to which the data should be appended in
      * the Yjs document.
      * @param {number} [index] - The index position in the array where the data should be added. By default, the data
      * is pushed at the end of the array.

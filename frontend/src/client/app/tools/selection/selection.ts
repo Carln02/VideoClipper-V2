@@ -83,8 +83,9 @@ export class SelectionTool extends Tool {
             this.clipClone.translateBy(e.scaledDeltaPosition);
             this.insertIndicatorAfterClosestClip(e);
         } else if (this.context.view == ContextView.canvas && this.currentTarget instanceof BranchingNode) {
+            const id = this.currentTarget.dataId;
             this.currentTarget.move(e.scaledDeltaPosition);
-            // FlowManagementHandler.updateFlowsAfterMovingNode(this.currentTarget.dataId.toString(), e.scaledDeltaPosition);
+            this.documentManager.forEachBranch((branch) => branch.updateAfterMovingNode(id, e.scaledDeltaPosition));
         } else if (this.context.view == ContextView.camera && this.currentTarget instanceof TextElement) {
             this.currentTarget.translateBy(e.scaledDeltaPosition);
             // this.context.getAllOfType(TextElement).forEach(entry => {

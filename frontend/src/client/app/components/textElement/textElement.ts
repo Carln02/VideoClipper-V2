@@ -22,6 +22,13 @@ export class TextElement extends TurboElement<TextElementView, SyncedText, TextE
         });
     }
 
+    public connectedCallback() {
+        requestAnimationFrame(() => {
+            this.mvc.emitter.fire("fontSize", this.model.fontSize);
+            this.mvc.emitter.fire("origin", this.model.origin);
+        });
+    }
+
     public get clip(): Clip {
         return this.renderer.clip;
     }

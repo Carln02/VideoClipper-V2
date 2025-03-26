@@ -7,41 +7,61 @@ import {BranchingNodeType, SyncedBranchingNode} from "../../components/branching
 import {DocumentManagerCardsModel} from "./documentManager.cardsModel";
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {Card} from "../../components/card/card";
+import {DocumentManagerFlowsModel} from "./documentManager.flowsModel";
+import {Flow} from "../../components/flow/flow";
 
 export class DocumentManagerModel extends YComponentModel {
-    private cardsModel: DocumentManagerCardsModel;
+    public readonly cardsModel: DocumentManagerCardsModel;
+    public readonly flowsModel: DocumentManagerFlowsModel;
 
     public onCardAdded: (data: SyncedCard, id: string, blockKey: string) => Card;
     public onBranchingNodeAdded: (data: SyncedBranchingNode, id: string, blockKey: string) => BranchingNode;
+    public onFlowAdded: (data: SyncedFlow, id: string, blockKey: string) => Flow;
 
     public constructor(data: SyncedDocument) {
         super(data);
         this.enabledCallbacks = false;
-        this.initialize();
 
         this.cardsModel = new DocumentManagerCardsModel();
         this.cardsModel.onAdded = (data, id, blockKey) => {
             if ((data as YMap).get("type") == BranchingNodeType.node) return this.onBranchingNodeAdded(data, id, blockKey);
             else return this.onCardAdded(data, id, blockKey);
         };
+
+        this.flowsModel = new DocumentManagerFlowsModel();
+        this.flowsModel.onAdded = (data, id, blockKey) => this.onFlowAdded(data, id, blockKey);
     }
 
-    protected _initialize(blockKey: string = this.defaultBlockKey) {
-        super._initialize(blockKey);
-        this.cardsModel.cards = this.cards;
-        this.cardsModel.branchingNodes = this.branchingNodes;
+    public initialize(blockKey: string = this.defaultBlockKey, delay: number = 0) {
+        super.initialize(blockKey, delay);
+
+        this.cardsModel.cards = this.getData("cards");
+        this.cardsModel.branchingNodes = this.getData("branchingNodes");
+        this.flowsModel.data = this.getData("flows");
     }
 
-    public get cards(): YMap<SyncedCard> {
-        return this.getData("cards");
+    public get cards(): Card[] {
+        return this.cardsModel.cardsInstances;
     }
 
-    public get branchingNodes(): YMap<SyncedBranchingNode> {
-        return this.getData("branchingNodes");
+    public get branchingNodes(): BranchingNode[] {
+        return this.cardsModel.branchingNodesInstances;
     }
 
-    public get flows(): YMap<SyncedFlow> {
-        return this.getData("flows");
+    public get flows(): Flow[] {
+        return this.flowsModel.getAllComponents();
+    }
+
+    public get cardsData(): YMap<SyncedCard> {
+        return this.cardsModel.cards;
+    }
+
+    public get branchingNodesData(): YMap<SyncedBranchingNode> {
+        return this.cardsModel.branchingNodes;
+    }
+
+    public get flowsData(): YMap<SyncedFlow> {
+        return this.flowsModel.data;
     }
 
     public get cardsCount(): number {

@@ -31,7 +31,8 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
             modelConstructor: TimelineModel,
             controllerConstructors: [TimelinePlayController, TimelineClipController, TimelineTimeController],
             handlerConstructors: [TimelineClipHandler, TimelineTimeHandler],
-            data: properties.data
+            data: properties.data,
+            initialize: false
         });
 
         this.model.onClipAdded = (syncedClip, id) => {
@@ -44,6 +45,8 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
             this.timeController.reloadTime();
             this.clipController.reloadCurrentClip();
         };
+
+        this.mvc.initialize();
     }
 
     protected get timeController(): TimelineTimeController {

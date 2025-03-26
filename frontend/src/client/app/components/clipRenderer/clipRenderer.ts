@@ -23,16 +23,18 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
             modelConstructor: ClipRendererModel,
             controllerConstructors: [RendererDrawingController, RendererCanvasController,
                 ClipRendererFrameController, ClipRendererVisibilityController, ClipRendererVideoController],
+            initialize: false
         });
-
-        this.view.canvas.setProperties(properties.canvasProperties);
-        this.view.videos.forEach((video: HTMLVideoElement) => video.setProperties(properties.videoProperties));
 
         this.model.onTextAdded = (syncedText, id) => {
             const text = new TextElement({data: syncedText, renderer: this});
             this.view.addTextElement(text, id);
             return text;
         };
+
+        this.mvc.initialize();
+        this.view.canvas.setProperties(properties.canvasProperties);
+        this.view.videos.forEach((video: HTMLVideoElement) => video.setProperties(properties.videoProperties));
     }
 
     protected get canvasController(): RendererCanvasController {
@@ -51,6 +53,10 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
         this.canvasController?.resize();
     }
 
+    public set visibilityMode(value: ClipRendererVisibility) {
+        this.model.visibilityMode = value;
+    }
+    
     public get visibilityMode(): ClipRendererVisibility {
         return this.model.visibilityMode;
     }

@@ -1,101 +1,63 @@
 import {define, Point, TurboCustomProperties, TurboElement} from "turbodombuilder";
 import "./flow.css";
-import {SyncedFlow} from "./flow.types";
-import {FlowTag} from "../flowTag/flowTag";
-import {FlowDrawingHandler} from "./handlers/types/flowDrawing.handler";
-import {FlowPointHandler} from "./handlers/types/flowPoint.handler";
-import {FlowSearchHandler} from "./handlers/types/flowSearch.handler";
-import {FlowUtilities} from "./flow.utilities";
-import {FlowBranchingHandler} from "./handlers/types/flowBranching.handler";
-import {FlowManagementHandler} from "./handlers/types/flowManagement.handler";
-import {FlowIntersectionHandler} from "./handlers/types/flowIntersection.handler";
+import {FlowPoint, SyncedFlow} from "./flow.types";
 import {FlowView} from "./flow.view";
 import {FlowModel} from "./flow.model";
 import {SyncedFlowBranch} from "../flowBranch/flowBranch.types";
-import { YArray } from "../../../../yManagement/yManagement.types";
+import {FlowBranchesHandler} from "./flow.branchesHandler";
+import {FlowSearchHandler} from "./flow.searchHandler";
+import {FlowBranch} from "../flowBranch/flowBranch";
+import {FlowCleaningHandler} from "./flow.cleaningHandler";
 
 /**
  * @description A reactiveComponent that represents a flow connecting cards
  */
 @define("vc-flow")
 export class Flow extends TurboElement<FlowView, SyncedFlow, FlowModel> {
-    public readonly utilities: FlowUtilities;
-
-    public readonly drawingHandler: FlowDrawingHandler;
-    public readonly intersectionHandler: FlowIntersectionHandler;
-
-    public readonly pointHandler: FlowPointHandler;
-    public readonly branchingHandler: FlowBranchingHandler;
-    public readonly managementHandler: FlowManagementHandler;
-    public readonly searchHandler: FlowSearchHandler;
-
-    private flowTagsElements: FlowTag[] = [];
-
-    // The last node attached to this flow
-    public lastNode: string = null;
-
-    public currentBranchIndex: number = 0;
-
     public constructor(properties: TurboCustomProperties<FlowView, SyncedFlow, FlowModel>) {
         super(properties);
-        this.mvc.generate(FlowView, FlowModel, properties.data);
+        this.mvc.generate({
+            viewConstructor: FlowView,
+            modelConstructor: FlowModel,
+            handlerConstructors: [FlowBranchesHandler, FlowSearchHandler, FlowCleaningHandler],
+            data: properties.data,
+            initialize: false
+        });
 
-
-        this.utilities = new FlowUtilities(this);
-
-        this.drawingHandler = new FlowDrawingHandler(this, data.flowBranches);
-        this.intersectionHandler = new FlowIntersectionHandler(this);
-
-        this.pointHandler = new FlowPointHandler(this);
-        this.branchingHandler = new FlowBranchingHandler(this);
-        this.managementHandler = new FlowManagementHandler(this);
-        this.searchHandler = new FlowSearchHandler(this);
-
-
+        this.model.onFlowBranchAdded = (data) => new FlowBranch({flow: this, data: data});
+        this.mvc.initialize();
     }
 
     public get svg(): SVGSVGElement {
         return this.view.svg;
     }
 
-    public get svgGroups(): Map<number, SVGGElement> {
-        return this.view.svgGroups;
-    }
-
-    public static async create(p: Point, nodeId: string): Promise<Flow> {
-        this.root.counters.flows++;
-        const defaultName = "Flow " + this.root.counters.flows;
-        const data: SyncedFlowData = {
-            defaultName: defaultName,
-            flowBranches: [{
-                flowEntries: [{startNodeId: nodeId, endNodeId: nodeId, points: [p.object]}],
-                childBranches: []
-            }],
-            flowTags: [{
-                nodeId: nodeId,
-                namedPaths: [{
-                    name: defaultName,
-                    index: 1,
-                    branchIndices: [0]
-                }]
-            }]
-        };
-
-        const id = await super.createInObject(data, this.root.flows);
-        //TODO MIGHT CAUSE ERROR DEPENDING ON EXEC TIME (IF CALLBACKS FIRED LATER) -- TO CHECK
-        return this.root.flows[id].getBoundObjectOfType(Flow);
-    }
+    // public static async create(p: Point, nodeId: string): Promise<Flow> {
+    //     this.root.counters.flows++;
+    //     const defaultName = "Flow " + this.root.counters.flows;
+    //     const data: SyncedFlowData = {
+    //         defaultName: defaultName,
+    //         flowBranches: [{
+    //             flowEntries: [{startNodeId: nodeId, endNodeId: nodeId, points: [p.object]}],
+    //             childBranches: []
+    //         }],
+    //         flowTags: [{
+    //             nodeId: nodeId,
+    //             namedPaths: [{
+    //                 name: defaultName,
+    //                 index: 1,
+    //                 branchIndices: [0]
+    //             }]
+    //         }]
+    //     };
+    //
+    //     const id = await super.createInObject(data, this.root.flows);
+    //     //TODO MIGHT CAUSE ERROR DEPENDING ON EXEC TIME (IF CALLBACKS FIRED LATER) -- TO CHECK
+    //     return this.root.flows[id].getBoundObjectOfType(Flow);
+    // }
 
     public static getAll(): Flow[] {
         return this.root.flows.getAllChildren().flatMap(flowData => flowData.getBoundObjectsOfType(Flow));
-    }
-
-    public static getDataById(id: string): SyncedFlow {
-        return this.root.flows[id];
-    }
-
-    public static getById(id: string): Flow {
-        return this.getDataById(id).getBoundObjectOfType(Flow);
     }
 
     protected setupCallbacks() {
@@ -119,11 +81,51 @@ export class Flow extends TurboElement<FlowView, SyncedFlow, FlowModel> {
         //     }, this);
     }
 
-    public get flowBranches(): YArray<SyncedFlowBranch> {
-        return this.data.flowBranches;
+    public get branches(): FlowBranch[] {
+        return this.model.branches;
     }
 
     public get currentBranch(): SyncedFlowBranch {
-        return this.data.flowBranches[this.currentBranchIndex];
+        return this.model.currentBranch.data;
+    }
+
+    /**
+     * @description Finds the last flow entry inside the given node's ID
+     * @param nodeId
+     */
+    public findNodeEntry(nodeId: string): FlowPoint {
+        return this.model.searchHandler.findNodeEntry(nodeId);
+    }
+
+    /**
+     * @description Finds the last flow entry inside the given node's ID
+     * @param nodeId
+     */
+    public findNodeEntries(nodeId: string): FlowPoint[] {
+        return this.model.searchHandler.findNodeEntries(nodeId);
+    }
+
+    /**
+     * @description Finds the closest point in the flow to the given point
+     * @param point
+     */
+    public findClosestPoint(point: Point): FlowPoint {
+        return this.model.searchHandler.findClosestPoint(point);
+    }
+
+    /**
+     * @description Adds the provided point to the flow with the given ID. The node ID indicates the ID of the node
+     * the point is in (or null), and isTemporary indicates whether the point is temporarily added to the flow as
+     * part of user feedback (to not add it to the synced data).
+     * @param p
+     * @param nodeId
+     * @param isTemporary
+     */
+    public addPoint(p: Point, nodeId?: string, isTemporary: boolean = false) {
+        this.model.currentBranch.addPoint(p, nodeId, isTemporary);
+    }
+
+    public endFlow() {
+        this.model.cleaningHandler.endFlow();
     }
 }

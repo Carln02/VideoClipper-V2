@@ -4,10 +4,13 @@ import {FlowBranchModel} from "./flowBranch.model";
 import {FlowBranchView} from "./flowBranch.view";
 import {Point, SvgNamespace, TurboProxiedElement} from "turbodombuilder";
 import {YArray} from "../../../../yManagement/yManagement.types";
-import {SyncedFlowEntry, SyncedFlowEntryData} from "../flowEntry/flowEntry.types";
+import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 import {FlowBranchSearchHandler} from "./flowBranch.searchHandler";
 import {FlowBranchUpdateHandler} from "./flowBranch.updateHandler";
+import {FlowPoint} from "../flow/flow.types";
 import {FlowBranchPointHandler} from "./flowBranch.pointHandler";
+import {FlowBranchEntryHandler} from "./flowBranch.entryHandler";
+import {FlowBranchCleaningHandler} from "./flowBranch.cleaningHandler";
 
 export class FlowBranch extends TurboProxiedElement<"g", FlowBranchView, SyncedFlowBranch, FlowBranchModel> {
     public readonly flow: Flow;
@@ -21,18 +24,19 @@ export class FlowBranch extends TurboProxiedElement<"g", FlowBranchView, SyncedF
             viewConstructor: FlowBranchView,
             modelConstructor: FlowBranchModel,
             data: properties.data,
-            handlerConstructors: [FlowBranchSearchHandler, FlowBranchUpdateHandler]
+            handlerConstructors: [FlowBranchSearchHandler, FlowBranchUpdateHandler, FlowBranchPointHandler,
+                FlowBranchEntryHandler, FlowBranchCleaningHandler]
         });
 
         this.model.flowId = this.flow?.dataId;
     }
 
     public get flowEntries(): YArray<SyncedFlowEntry> {
-        return this.model.flowEntries;
+        return this.model.entries;
     }
 
     public get flowEntriesArray(): SyncedFlowEntry[] {
-        return this.model.flowEntriesArray;
+        return this.model.entriesArray;
     }
 
     /**
@@ -45,5 +49,57 @@ export class FlowBranch extends TurboProxiedElement<"g", FlowBranchView, SyncedF
      */
     public addPoint(p: Point, nodeId?: string, isTemporary: boolean = false) {
         this.model.pointHandler.addPoint(p, nodeId, isTemporary);
+    }
+
+    public getMaxPoint(): Point {
+        return this.model.pointHandler.getMaxPoint();
+    }
+
+    /**
+     * @description Finds the last flow entry inside the given node's ID
+     * @param nodeId
+     */
+    public findNodeEntry(nodeId: string): FlowPoint {
+        return this.model.searchHandler.findNodeEntry(nodeId);
+    }
+
+    /**
+     * @description Finds the last flow entry inside the given node's ID
+     * @param nodeId
+     */
+    public findNodeEntries(nodeId: string): FlowPoint[] {
+        return this.model.searchHandler.findNodeEntries(nodeId);
+    }
+
+    /**
+     * @description Finds the closest point in the flow to the given point
+     * @param point
+     */
+    public findClosestPoint(point: Point): FlowPoint {
+        return this.model.searchHandler.findClosestPoint(point);
+    }
+
+    public findPointFromIndex(index: number): FlowPoint {
+        return this.model.searchHandler.findPointFromIndex(index);
+    }
+
+    public checkIfUnnecessary(): boolean {
+        return this.model.cleaningHandler.checkIfUnnecessary();
+    }
+
+    public endBranch() {
+        return this.model.cleaningHandler.endBranch();
+    }
+
+    public updateAfterMovingNode(nodeId: string, deltaPosition: Point) {
+        return this.model.updateHandler.updateAfterMovingNode(nodeId, deltaPosition);
+    }
+
+    public get isOverwriting(): boolean {
+        return this.model.isOverwriting;
+    }
+
+    public get overwriting(): string {
+        return this.model.overwriting;
     }
 }

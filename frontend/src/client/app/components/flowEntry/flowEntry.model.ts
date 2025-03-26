@@ -1,5 +1,4 @@
 import {YComponentModel} from "../../../../yManagement/yModel/types/yComponentModel";
-import {YArray} from "yjs/dist/src/types/YArray";
 import {Coordinate, Point} from "turbodombuilder";
 
 export class FlowEntryModel extends YComponentModel {
@@ -19,20 +18,27 @@ export class FlowEntryModel extends YComponentModel {
         this.setData("endNodeId", value);
     }
 
-    public get points(): YArray<Coordinate> {
+    public get points(): Coordinate[] {
         return this.getData("points");
-    }
-
-    public get pointsArray(): Coordinate[] {
-        return this.points.toArray();
     }
 
     public addPoint(point: Coordinate) {
         if (point instanceof Point) point = point.object;
-        this.points.push([point]);
+        const points = this.points;
+        points.push(point);
+        this.setData("points", points);
     }
 
     public removePoint(index: number) {
-        this.points.delete(index);
+        const points = this.points;
+        points.splice(index, 1);
+        this.setData("points", points);
+    }
+
+    public incrementPoint(index: number, increment: Coordinate) {
+        const points = this.points;
+        points[index].x += increment.x;
+        points[index].y += increment.y;
+        this.setData("points", points);
     }
 }

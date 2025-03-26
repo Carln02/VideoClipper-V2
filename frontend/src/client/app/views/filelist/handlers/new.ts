@@ -1,7 +1,9 @@
 import {Popup} from "../../../components/popup/popup";
 import * as logman from "../../../../sync/logman";
 import * as index from "../../../index";
-import {documentRoot} from "../../../../sync/datastore";
+import {getDocumentContent} from "../../../../sync/datastore";
+import {YUtilities} from "../../../../../yManagement/yUtilities";
+import { YMap } from "../../../../../yManagement/yManagement.types";
 
 let popup = null;
 
@@ -25,12 +27,12 @@ function create(name) {
 
     logman.connect_project(id);
 
-    const document = documentRoot();
-    document.cards = {};
-    document.branchingNodes = {};
-    document.flows = {};
-    document.media = {};
-    document.counters = {cards: 0, flows: 0};
+    const document = getDocumentContent();
+    document.set("cards", new YMap());
+    document.set("branchingNodes", new YMap());
+    document.set("flows", new YMap());
+    document.set("media", new YMap());
+    document.set("counters", YUtilities.createYMap({cards: 0, flows: 0, branchingNodes: 0}));
 
     index.show_project();
 }

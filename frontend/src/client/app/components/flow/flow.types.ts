@@ -8,7 +8,7 @@ import {SyncedFlowTag} from "../flowTag/flowTag.types";
  * - "flowTags" can store roots or additional metadata.
  * - "defaultName" is optional labeling, same as before.
  */
-export type SyncedFlow = YMap & {
+export type SyncedFlow = {
     branches?: YMap<SyncedFlowBranch>;
     tags?: YArray<SyncedFlowTag>;
     defaultName?: string;

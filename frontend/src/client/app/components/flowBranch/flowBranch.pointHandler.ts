@@ -11,7 +11,7 @@ export class FlowBranchPointHandler extends TurboHandler<FlowBranchModel> {
      * @param nodeId
      * @param isTemporary
      */
-    public addPoint(p: Point, nodeId ?: string, isTemporary: boolean = false) {
+    public addPoint(p: Point, nodeId?: string, isTemporary: boolean = false) {
         if (!p) return;
 
         //If isTemporary --> set temporary point and return
@@ -25,7 +25,7 @@ export class FlowBranchPointHandler extends TurboHandler<FlowBranchModel> {
         this.model.lastNode = nodeId;
 
         //Get data and flow entries (for ease of use)
-        const flowEntries = this.model.flowEntriesArray;
+        const flowEntries = this.model.entriesArray;
 
         //Create an entry if none exist
         if (flowEntries.length == 0) {
@@ -55,5 +55,17 @@ export class FlowBranchPointHandler extends TurboHandler<FlowBranchModel> {
             //it the point
             else this.model.entryHandler.addNewEntry({startNodeId: currentEntry.endNodeId, points: [p.object]});
         }
+    }
+
+    public getMaxPoint(): Point {
+        let maxPoint = new Point();
+
+        const points = this.model.points;
+        if (!points || points.length == 0) return maxPoint;
+
+        // Knowing that (0, 0) is at the center of the canvas, some points have negative coordinates,
+        // so I get the max x and y absolute values in all the points to ensure I'm not ignoring negative values
+        points.forEach(p => maxPoint = Point.max(maxPoint, p.abs()));
+        return maxPoint;
     }
 }

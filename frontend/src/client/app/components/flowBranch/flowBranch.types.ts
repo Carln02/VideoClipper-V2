@@ -1,6 +1,7 @@
 import {YArray} from "../../../../yManagement/yManagement.types";
 import {Flow} from "../flow/flow";
 import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
+import {Side} from "turbodombuilder";
 
 /**
  * A branch is a sequential list of FlowEntries (edges) in the order they were created.
@@ -10,11 +11,16 @@ import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 export type SyncedFlowBranch = {
     entries: YArray<SyncedFlowEntry>;
     connectedBranches?: YArray<string>;
-    overwriting?: boolean;
+    overwriting?: string;
 };
 
 export type FlowBranchProperties = {
     flow: Flow;
     data: SyncedFlowBranch;
+}
+
+export type Bounds = Record<Side, number> & {
+    width: number;
+    height: number;
 }
 

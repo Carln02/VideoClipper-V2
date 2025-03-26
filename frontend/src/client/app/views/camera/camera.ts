@@ -6,41 +6,27 @@ import {ContextView} from "../../managers/contextManager/contextManager.types";
 import {ClipRenderer} from "../../components/clipRenderer/clipRenderer";
 import {Card} from "../../components/card/card";
 import {Clip} from "../../components/clip/clip";
-import {Timeline} from "../../components/timeline/timeline";
 import {CameraRenderer} from "../../components/cameraRenderer/cameraRenderer";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {SidePanel} from "../../components/sidePanel/sidePanel";
 import {ClipRendererVisibility} from "../../components/clipRenderer/clipRenderer.types";
-import {MetadataDrawer} from "../../components/metadataDrawer/metadataDrawer";
 import {CaptureManager} from "../../managers/captureManager/captureManager";
+import {CameraView} from "./camera.view";
+import {CameraModel} from "./camera.model";
 
 @define("vc-camera")
-export class Camera extends TurboElement {
+export class Camera extends TurboElement<CameraView, object, CameraModel> {
     private static _instance: Camera = null;
-
-    public readonly aspectRatio = 1.33 as const;
 
     private readonly captureManager: CaptureManager;
 
     private _card: Card;
-    private readonly cameraRenderer: CameraRenderer;
-    private readonly clipRenderer: ClipRenderer;
 
-    private readonly toolbar: Toolbar;
-    readonly sidePanel: SidePanel;
-    private timeline: Timeline;
-    private metadataDrawer: MetadataDrawer;
-
-    private videoStreamOn: boolean = false;
-    private _ghosting: boolean = true;
-
-    constructor() {
+    public constructor() {
         ContextManager.instance.view = ContextView.camera;
         //Cancel construction if exists already
         if (Camera.instance) {
-            if (Camera.instance.parentElement == null) {
-                document.body.addChild(Camera.instance);
-            }
+            if (Camera.instance.parentElement == null) document.body.addChild(Camera.instance);
             return Camera.instance;
         }
 
@@ -157,7 +143,7 @@ export class Camera extends TurboElement {
     }
 
     public set visibilityMode(value: ClipRendererVisibility) {
-        //TODO this.clipRenderer.visibilityMode = value;
+        this.clipRenderer.visibilityMode = value;
     }
 
     public set visible(value: boolean) {

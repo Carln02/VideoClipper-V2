@@ -1,14 +1,24 @@
 import {YComponentModel} from "../../../../yManagement/yModel/types/yComponentModel";
 import {auto, Coordinate, Point} from "turbodombuilder";
-import {YArray, YArrayEvent, YMapEvent} from "../../../../yManagement/yManagement.types";
+import {YArray, YMap} from "../../../../yManagement/yManagement.types";
 import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 import {FlowBranchEntryHandler} from "./flowBranch.entryHandler";
 import {FlowBranchPointHandler} from "./flowBranch.pointHandler";
+import {FlowBranchSearchHandler} from "./flowBranch.searchHandler";
+import {FlowBranchCleaningHandler} from "./flowBranch.cleaningHandler";
+import {FlowBranchUpdateHandler} from "./flowBranch.updateHandler";
 
 export class FlowBranchModel extends YComponentModel {
     public lastNode: string = null;
-
     public flowId: string;
+
+    public readonly redrawInterval: number = 100 as const;
+    public readonly chevronInterval = 300 as const;
+    public readonly chevronTimeout = 200 as const;
+    public readonly chevronShape = "M 0 -6 L 12 0 L 0 6" as const;
+
+    public lastRedraw: number;
+    public chevronTimer: NodeJS.Timeout;
 
     public get data(): any {
         return super.data;
@@ -17,25 +27,21 @@ export class FlowBranchModel extends YComponentModel {
     public set data(value: any) {
         super.data = value;
         this.data?.observeDeep(events => {
-            let relevantChanges = false;
             for (const event of events) {
-                if ((event instanceof YMapEvent && event.changes.keys.has("entries"))
-                    || (event instanceof YArrayEvent && event.target === this.data?.get("entries"))) {
-                    relevantChanges = true;
+                if (event.path.includes("entries")) {
+                    this.fireCallback("__redraw");
                     break;
                 }
             }
-
-            if (relevantChanges) this.fireCallback("__redraw");
         });
     }
 
-    public get flowEntries(): YArray<SyncedFlowEntry> {
-        return this.getData("flowEntries");
+    public get entries(): YArray<SyncedFlowEntry & YMap> {
+        return this.getData("entries");
     }
 
-    public get flowEntriesArray(): SyncedFlowEntry[] {
-        return this.flowEntries.toArray();
+    public get entriesArray(): (SyncedFlowEntry & YMap)[] {
+        return this.entries?.toArray();
     }
 
     public get connectedBranches(): YArray<string> {
@@ -46,18 +52,24 @@ export class FlowBranchModel extends YComponentModel {
         return this.connectedBranches.toArray();
     }
 
-    public get overwriting(): boolean {
+    public get isOverwriting(): boolean {
+        const overwriting = this.overwriting;
+        return overwriting && overwriting.length > 0;
+    }
+
+    public get overwriting(): string {
         return this.getData("overwriting");
     }
 
-    public set overwriting(value: boolean) {
+    public set overwriting(value: string) {
         this.setData("overwriting", value);
     }
 
     public get points(): Point[] {
-        const points = this.flowEntriesArray
-            ?.flatMap(cardWithConnections => cardWithConnections.get("points").toArray())
+        const points = this.entriesArray
+            ?.flatMap(cardWithConnections => cardWithConnections.get("points"))
             .filter((point: Coordinate) => !!point)
+            .map((point: Coordinate) => new Point(point));
         if (this.temporaryPoint) points.push(this.temporaryPoint);
         return points;
     }
@@ -67,7 +79,7 @@ export class FlowBranchModel extends YComponentModel {
      */
     @auto()
     public set temporaryPoint(point: Point) {
-        this.fireCallback("_temporaryPoint");
+        this.fireCallback("temporaryPoint");
     }
 
     public get entryHandler(): FlowBranchEntryHandler {
@@ -76,5 +88,17 @@ export class FlowBranchModel extends YComponentModel {
 
     public get pointHandler(): FlowBranchPointHandler {
         return this.getHandler("point") as FlowBranchPointHandler;
+    }
+
+    public get searchHandler(): FlowBranchSearchHandler {
+        return this.getHandler("search") as FlowBranchSearchHandler;
+    }
+
+    public get cleaningHandler(): FlowBranchCleaningHandler {
+        return this.getHandler("cleaning") as FlowBranchCleaningHandler;
+    }
+
+    public get updateHandler(): FlowBranchUpdateHandler {
+        return this.getHandler("update") as FlowBranchUpdateHandler;
     }
 }

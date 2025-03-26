@@ -21,6 +21,6 @@ export abstract class Renderer<
     }
 
     public get video(): HTMLVideoElement {
-        return this.model.video;
+        return this.view.video;
     }
 }

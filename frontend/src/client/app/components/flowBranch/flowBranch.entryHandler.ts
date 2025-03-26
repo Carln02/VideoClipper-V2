@@ -1,53 +1,52 @@
-import {SyncedFlowEntry, SyncedFlowEntryData} from "../flowEntry/flowEntry.types";
+import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 import {YUtilities} from "../../../../yManagement/yUtilities";
-import {Coordinate, TurboHandler} from "turbodombuilder";
+import {TurboHandler} from "turbodombuilder";
 import {FlowBranchModel} from "./flowBranch.model";
+import { YMap } from "../../../../yManagement/yManagement.types";
 
 export class FlowBranchEntryHandler extends TurboHandler<FlowBranchModel> {
-    public getEntry(index: number): SyncedFlowEntry {
-        const length = this.model.flowEntriesArray.length;
+    public getEntry(index: number): SyncedFlowEntry & YMap {
+        const length = this.model.entriesArray.length;
         if (index === undefined || index === null || index < 0) index = 0;
         if (index > length - 1) index = length - 1;
-        return this.model.flowEntries.get(index);
+        return this.model.entries.get(index);
     }
 
-    public createEntry(data: SyncedFlowEntryData):
-        SyncedFlowEntry {
-        const yPoints = YUtilities.createYArray<Coordinate>(data.points || []);
+    public createEntry(data: SyncedFlowEntry): SyncedFlowEntry & YMap {
         return YUtilities.createYMap<SyncedFlowEntry>({
             startNodeId: data.startNodeId,
             endNodeId: data.endNodeId,
-            points: yPoints
+            points: data.points || []
         } as SyncedFlowEntry);
     }
 
-    public addEntry(entry: SyncedFlowEntry, index ?: number) {
-        if (index === undefined || index === null || index > this.model.flowEntriesArray.length - 1)
-            this.model.flowEntries.push([entry]);
+    public addEntry(entry: SyncedFlowEntry & YMap, index ?: number) {
+        if (index === undefined || index === null || index > this.model.entriesArray.length - 1)
+            this.model.entries.push([entry]);
         else {
             if (index < 0) index = 0;
-            this.model.flowEntries.insert(index, [entry]);
+            this.model.entries.insert(index, [entry]);
         }
     }
 
-    public addNewEntry(data: SyncedFlowEntryData, index ?: number) {
+    public addNewEntry(data: SyncedFlowEntry, index ?: number) {
         this.addEntry(this.createEntry(data), index);
     }
 
     public removeEntryAt(index ?: number) {
-        const length = this.model.flowEntriesArray.length;
+        const length = this.model.entriesArray.length;
         if (index === undefined || index === null || index > length - 1) index = length - 1;
         else if (index < 0) index = 0;
-        this.model.flowEntries.delete(index);
+        this.model.entries.delete(index);
     }
 
-    public removeEntry(entry: SyncedFlowEntry) {
-        const array = this.model.flowEntriesArray;
+    public removeEntry(entry: SyncedFlowEntry & YMap) {
+        const array = this.model.entriesArray;
         if (!array.includes(entry)) return;
         this.removeEntryAt(array.indexOf(entry));
     }
 
-    public setEntry(entry: SyncedFlowEntry, index ?: number) {
+    public setEntry(entry: SyncedFlowEntry & YMap, index ?: number) {
         this.removeEntryAt(index);
         this.addEntry(entry, index);
     }

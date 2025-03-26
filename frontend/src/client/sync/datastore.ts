@@ -5,6 +5,7 @@ import { IndexeddbPersistence } from 'y-indexeddb'
 import * as crypto from "./crypto"
 import WebsocketProvider from "./websocket_manager"
 import {SyncedDocumentData} from "../app/views/canvas/canvas.types";
+import {YMap} from "yjs/dist/src/types/YMap";
 
 
 
@@ -54,6 +55,10 @@ export function documentRoot(): SyncedDocumentData {
 
 export function getDocument(): Y.Doc {
 	return document;
+}
+
+export function getDocumentContent(): YMap {
+	return document_content;
 }
 
 
