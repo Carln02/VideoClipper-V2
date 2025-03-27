@@ -20,10 +20,16 @@ turbofy();
 TurboIcon.config.defaultDirectory = "assets/icons";
 TurboIcon.config.defaultClasses = "icon";
 
+const contextManager = new ContextManager();
+const cursorManager = new CursorManager();
+const toolManager = new ToolManager();
+
 const eventManager = new TurboEventManager({
     authorizeEventScaling: () => ContextManager.instance.view == ContextView.canvas,
     scaleEventPosition: (position: Point) => Canvas.instance.navigationManager.computePositionRelativeToCanvas(position),
 });
+
+
 
 //  Initialize login manager
 

@@ -51,14 +51,15 @@ export class CaptureManager {
             }
 
             this.deviceId = videoDevices[this.deviceIdIndex].deviceId;
-            await this.startStream(initializing);
+            await this.startStream();
+            if (initializing) await this.checkIfCurrentStreamIsLikelyFront();
         } catch (error) {
             console.error("Error enumerating devices.", error);
             alert(`Error enumerating devices: ${error.message}`);
         }
     }
 
-    private async startStream(initializing = false) {
+    private async startStream() {
         this.stopStream();
 
         try {
@@ -85,8 +86,6 @@ export class CaptureManager {
                 alert(`Error accessing media devices: ${error.message}`);
             }
         }
-
-        if (initializing) await this.checkIfCurrentStreamIsLikelyFront();
     }
 
     private async checkIfCurrentStreamIsLikelyFront() {

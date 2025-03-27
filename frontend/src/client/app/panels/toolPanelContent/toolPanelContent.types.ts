@@ -6,5 +6,8 @@ export type ToolPanelContentProperties<
     DataType extends object = object,
     ModelType extends TurboModel = TurboModel
 > = TurboCustomProperties<ViewType, DataType, ModelType> & {
-    toolPanel: ToolPanel
+    toolPanel: ToolPanel,
+    hasSave?: boolean,
+    hasClear?: boolean,
+    hasBack?: boolean,
 };

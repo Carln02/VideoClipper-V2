@@ -1,15 +1,16 @@
-import {TurboElement, TurboModel, TurboView} from "turbodombuilder";
+import {TurboElement, TurboModel} from "turbodombuilder";
 import {ToolPanelContentProperties} from "./toolPanelContent.types";
 import {ToolPanel} from "../toolPanel/toolPanel";
+import {ToolPanelContentView} from "./toolPanelContent.view";
 
 export class ToolPanelContent<
-    ViewType extends TurboView = TurboView,
+    ViewType extends ToolPanelContentView = ToolPanelContentView<any, any>,
     DataType extends object = object,
     ModelType extends TurboModel = TurboModel
 > extends TurboElement<ViewType, DataType, ModelType> {
     public readonly toolPanel: ToolPanel;
 
-    public constructor(properties: ToolPanelContentProperties<ViewType, DataType, ModelType>) {
+    protected constructor(properties: ToolPanelContentProperties<ViewType, DataType, ModelType>) {
         super(properties);
         this.toolPanel = properties.toolPanel;
     }

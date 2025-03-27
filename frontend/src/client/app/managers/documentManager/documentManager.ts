@@ -34,10 +34,7 @@ export class DocumentManager extends YDocument {
 
         this.documentModel.onBranchingNodeAdded = data => new BranchingNode({parent: this.cardsParent, data: data});
         this.documentModel.onCardAdded = data => new Card({parent: this.cardsParent, data: data});
-        this.documentModel.onFlowAdded = data => {
-            console.log(data)
-            return new Flow({parent: this.flowsParent, data: data});
-        }
+        this.documentModel.onFlowAdded = data => new Flow({parent: this.flowsParent, data: data});
 
         this.documentModel.initialize();
     }
