@@ -1,28 +1,22 @@
 import {auto, define, TurboElement} from "turbodombuilder";
 import "./camera.css";
-import {Toolbar} from "../../components/toolbar/toolbar";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {ContextView} from "../../managers/contextManager/contextManager.types";
-import {ClipRenderer} from "../../components/clipRenderer/clipRenderer";
 import {Card} from "../../components/card/card";
-import {Clip} from "../../components/clip/clip";
-import {CameraRenderer} from "../../components/cameraRenderer/cameraRenderer";
-import {ToolType} from "../../managers/toolManager/toolManager.types";
-import {SidePanel} from "../../components/sidePanel/sidePanel";
 import {ClipRendererVisibility} from "../../components/clipRenderer/clipRenderer.types";
-import {CaptureManager} from "../../managers/captureManager/captureManager";
 import {CameraView} from "./camera.view";
 import {CameraModel} from "./camera.model";
+import {CameraRecordingHandler} from "./camera.recordingHandler";
+import {CameraCaptureHandler} from "./camera.captureHandler";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 @define("vc-camera")
 export class Camera extends TurboElement<CameraView, object, CameraModel> {
     private static _instance: Camera = null;
 
-    private readonly captureManager: CaptureManager;
+    public readonly documentManager: DocumentManager;
 
-    private _card: Card;
-
-    public constructor() {
+    public constructor(documentManager: DocumentManager) {
         ContextManager.instance.view = ContextView.camera;
         //Cancel construction if exists already
         if (Camera.instance) {
@@ -32,48 +26,19 @@ export class Camera extends TurboElement<CameraView, object, CameraModel> {
 
         super({parent: document.body});
         Camera.instance = this;
+        this.documentManager = documentManager;
 
-        this.captureManager = new CaptureManager(this);
+        this.mvc.generate({
+            viewConstructor: CameraView,
+            modelConstructor: CameraModel,
+            handlerConstructors: [CameraRecordingHandler, CameraCaptureHandler]
+        });
 
-        this.cameraRenderer = new CameraRenderer({parent: this, videoProperties:
-            {autoplay: true, muted: true, playsInline: true}});
-        this.clipRenderer = new ClipRenderer({parent: this, videoProperties: {playsInline: true}});
+        this.documentManager.toolPanel.addContextCallback(() => {
+            this.documentManager.toolPanel.show(ContextManager.instance.view == ContextView.camera);
+        });
 
-        this.sidePanel = new SidePanel(this, this.captureManager);
-
-        this.toolbar = new Toolbar({parent: this, classes: "left-toolbar"});
-        this.toolbar.populateWith(ToolType.selection, ToolType.shoot, ToolType.text, ToolType.delete);
-
-        this.resize();
-        window.addEventListener("resize", () => this.resize());
-
-        this.ghosting = true;
-    }
-
-    public initialize(card: Card) {
-        this.card = card;
-
-        // if (!this.timeline) this.timeline = new Timeline(card.data.syncedClips, this.clipRenderer, {
-        //     parent: this,
-        //     direction: Direction.top,
-        //     openOffset: -4,
-        //     initiallyClosed: false,
-        //     invertOpenAndClosedValues: true
-        // });
-        // else this.timeline.data = card.data.syncedClips;
-        //
-        // this.metadataDrawer = new MetadataDrawer(card.data.metadata, {
-        //     parent: this,
-        //     direction: Direction.bottom,
-        //     initiallyClosed: false,
-        //     openOffset: 6
-        // });
-
-        const selectedClip = ContextManager.instance.getContext(2);
-        if (selectedClip && selectedClip[0] instanceof Clip) this.timeline.snapToClosest();
-        else this.timeline.snapAtEnd();
-
-        this.timeline.reloadCurrentClip(true);
+        this.model.ghosting = true;
     }
 
     /**
@@ -87,67 +52,72 @@ export class Camera extends TurboElement<CameraView, object, CameraModel> {
         this._instance = value;
     }
 
-    public get card() {
-        return this._card;
-    }
-
-    private set card(value: Card) {
-        this._card = value;
-    }
-
-    public get videoStream() {
-        return this.cameraRenderer.video;
-    }
-
     @auto()
-    public set ghosting(value: boolean) {
-        if (this.videoStreamOn) this.clipRenderer.style.opacity = value ? "0.2" : "0";
-    }
-
-    private resize() {
-        this.cameraRenderer.resize(this.aspectRatio, window.innerWidth, window.innerHeight);
-        this.clipRenderer.resize(this.aspectRatio, window.innerWidth, window.innerHeight);
+    public set card(value: Card) {
+        this.view.timeline.card = value;
+        this.view.metadataDrawer.card = value;
     }
 
     public get frameWidth() {
-        return this.clipRenderer.offsetWidth;
+        return this.view.clipRenderer.offsetWidth;
     }
 
     public get frameHeight() {
-        return this.clipRenderer.offsetHeight;
-    }
-
-    public async drawCurrentVideoFrame(animate = true): Promise<string> {
-        return this.cameraRenderer.drawCurrentVideoFrame(animate);
+        return this.view.clipRenderer.offsetHeight;
     }
 
     public fillCanvas(fill?: string | null) {
-        this.clipRenderer.setCanvas(fill);
+        this.view.clipRenderer.setFill(fill);
+    }
+
+    public get ghosting(): boolean {
+        return this.model.ghosting;
     }
 
     public clear() {
-        this.timeline.data = undefined; //TODO idk if gd idea
+        this.view.timeline.data = undefined; //TODO idk if gd idea
         ContextManager.instance.view = ContextView.canvas;
     }
 
     public startStream() {
-        this.videoStreamOn = true;
-        this.captureManager.initStream();
+        this.model.videoStreamOn = true;
+        this.model.captureHandler.initStream();
         this.visibilityMode = this.ghosting ? ClipRendererVisibility.ghosting : ClipRendererVisibility.hidden;
     }
 
     public stopStream() {
-        this.videoStreamOn = false;
-        this.captureManager.stopStream();
+        this.model.videoStreamOn = false;
+        this.model.captureHandler.stopStream();
         this.visibilityMode = ClipRendererVisibility.shown;
     }
 
+    public async switchCamera() {
+        await this.model.captureHandler.switchCamera();
+    }
+
+    public muteAudio(b: boolean) {
+        this.model.captureHandler.muteAudio(b);
+    }
+
+    public startRecording() {
+        this.model.recordingHandler.startRecording();
+    }
+
+    public stopRecording() {
+        this.model.recordingHandler.stopRecording();
+    }
+
     public set visibilityMode(value: ClipRendererVisibility) {
-        this.clipRenderer.visibilityMode = value;
+        this.view.clipRenderer.visibilityMode = value;
     }
 
     public set visible(value: boolean) {
         this.visibilityMode = value ? ClipRendererVisibility.shown
             : (this.ghosting ? ClipRendererVisibility.ghosting : ClipRendererVisibility.hidden);
+    }
+
+    public snapPicture() {
+        if (!this.model.stream) return;
+        //TODO this.view.cameraRenderer.drawCurrentVideoFrame().then(picture => this.saveMedia("image", picture));
     }
 }

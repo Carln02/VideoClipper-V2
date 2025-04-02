@@ -3,6 +3,8 @@ import {RendererView} from "./renderer.view";
 import {RendererModel} from "./renderer.model";
 import {RendererProperties} from "./renderer.types";
 import {TurboElement} from "turbodombuilder";
+import {RendererCanvasController} from "./renderer.canvasController";
+import {RendererDrawingController} from "./renderer.drawingController";
 
 export abstract class Renderer<
     ViewType extends RendererView = RendererView<any, any>,
@@ -22,5 +24,21 @@ export abstract class Renderer<
 
     public get video(): HTMLVideoElement {
         return this.view.video;
+    }
+
+    protected get canvasController(): RendererCanvasController {
+        return this.mvc.getController("canvas") as RendererCanvasController;
+    }
+
+    protected get drawingController(): RendererDrawingController {
+        return this.mvc.getController("drawing") as RendererDrawingController;
+    }
+
+    public setFill(fill?: string | null) {
+        this.model.currentCanvasFill = fill;
+    }
+
+    public resize(aspectRatio: number = 1.33, width: number = this.offsetWidth, height: number = this.offsetHeight) {
+        this.canvasController.resize(aspectRatio, width, height);
     }
 }

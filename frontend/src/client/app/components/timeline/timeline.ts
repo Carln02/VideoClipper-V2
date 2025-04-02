@@ -1,5 +1,5 @@
 import {SyncedClip} from "../clip/clip.types";
-import {define} from "turbodombuilder";
+import {auto, define} from "turbodombuilder";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {Clip} from "../clip/clip";
 import {Canvas} from "../../views/canvas/canvas";
@@ -19,12 +19,11 @@ import { YArray } from "../../../../yManagement/yManagement.types";
 @define("vc-timeline")
 export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, TimelineModel> {
     public readonly renderer: ClipRenderer;
-    private readonly _card: Card;
 
     public constructor(properties: TimelineProperties) {
         super(properties);
         this.renderer = properties.renderer;
-        this._card = properties.card;
+        this.card = properties.card;
 
         this.mvc.generate({
             viewConstructor: TimelineView,
@@ -57,8 +56,14 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
         return this.mvc.getController("clip") as TimelineClipController;
     }
 
-    public get card(): Card {
-        return this._card;
+    @auto()
+    public set card(card: Card) {
+        if (this.model) this.data = card.syncedClips;
+        //TODO
+        // const selectedClip = ContextManager.instance.getContext(2);
+        // if (selectedClip && selectedClip[0] instanceof Clip) this.snapToClosest();
+        // else this.snapAtEnd();
+        // this.reloadCurrentClip(true);
     }
 
     public get clips(): Clip[] {

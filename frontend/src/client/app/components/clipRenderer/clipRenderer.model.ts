@@ -62,6 +62,7 @@ export class ClipRendererModel extends RendererModel {
 
     @auto({cancelIfUnchanged: true})
     public set visibilityMode(value: ClipRendererVisibility) {
+        console.log(value);
         this.fireCallback("reloadVisibility");
     }
 }

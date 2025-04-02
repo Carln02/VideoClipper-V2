@@ -1,0 +1,6 @@
+tool-panel {
+    position: absolute;
+    height: calc(100% - 4em);
+    right: 0;
+    transition: width 0.3s ease-out;
+}

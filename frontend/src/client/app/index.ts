@@ -20,10 +20,6 @@ turbofy();
 TurboIcon.config.defaultDirectory = "assets/icons";
 TurboIcon.config.defaultClasses = "icon";
 
-const contextManager = new ContextManager();
-const cursorManager = new CursorManager();
-const toolManager = new ToolManager();
-
 const eventManager = new TurboEventManager({
     authorizeEventScaling: () => ContextManager.instance.view == ContextView.canvas,
     scaleEventPosition: (position: Point) => Canvas.instance.navigationManager.computePositionRelativeToCanvas(position),
@@ -70,9 +66,7 @@ export function show_project() {
 
     setTimeout(() => {
         // contents = new Canvas(documentRoot())
-        contents = new Canvas();
-        const documentManager = new DocumentManager(getDocument(), div(), div());
-        (contents as Canvas).documentManager = documentManager;
+        contents = new DocumentManager({document: getDocument(), parent: document.body});
     }, 1000)
 }
 

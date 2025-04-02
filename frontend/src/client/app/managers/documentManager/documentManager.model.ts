@@ -9,6 +9,7 @@ import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {Card} from "../../components/card/card";
 import {DocumentManagerFlowsModel} from "./documentManager.flowsModel";
 import {Flow} from "../../components/flow/flow";
+import {SyncedMedia} from "../captureManager/captureManager.types";
 
 export class DocumentManagerModel extends YComponentModel {
     public readonly cardsModel: DocumentManagerCardsModel;
@@ -32,8 +33,8 @@ export class DocumentManagerModel extends YComponentModel {
         this.flowsModel.onAdded = (data, id, blockKey) => this.onFlowAdded(data, id, blockKey);
     }
 
-    public initialize(blockKey: string = this.defaultBlockKey, delay: number = 0) {
-        super.initialize(blockKey, delay);
+    public initialize(blockKey: string = this.defaultBlockKey) {
+        super.initialize(blockKey);
 
         this.cardsModel.cards = this.getData("cards");
         this.cardsModel.branchingNodes = this.getData("branchingNodes");
@@ -62,6 +63,10 @@ export class DocumentManagerModel extends YComponentModel {
 
     public get flowsData(): YMap<SyncedFlow> {
         return this.flowsModel.data;
+    }
+
+    public get media(): YMap<SyncedMedia> {
+        return this.getData("media");
     }
 
     public get cardsCount(): number {

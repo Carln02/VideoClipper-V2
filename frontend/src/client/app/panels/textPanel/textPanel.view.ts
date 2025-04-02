@@ -1,8 +1,9 @@
 import {TextPanel} from "./textPanel";
 import {TextPanelModel} from "./textPanel.model";
-import {Coordinate, DefaultEventName, flexRow, input, spacer, TurboNumericalInput, TurboView} from "turbodombuilder";
+import {Coordinate, DefaultEventName, flexRow, input, spacer, TurboNumericalInput} from "turbodombuilder";
+import {ToolPanelContentView} from "../toolPanelContent/toolPanelContent.view";
 
-export class TextPanelView extends TurboView<TextPanel, TextPanelModel> {
+export class TextPanelView extends ToolPanelContentView<TextPanel, TextPanelModel> {
     private originXInput: TurboNumericalInput;
     private originYInput: TurboNumericalInput;
 

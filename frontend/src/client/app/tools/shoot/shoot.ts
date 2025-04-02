@@ -6,6 +6,7 @@ import {ContextManager} from "../../managers/contextManager/contextManager";
 import {Clip} from "../../components/clip/clip";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
+import {ContextView} from "../../managers/contextManager/contextManager.types";
 
 /**
  * @description Tool that allows the user to shoot video clips into a card
@@ -20,7 +21,7 @@ export class ShootTool extends Tool {
     }
 
     public activate() {
-        Camera.instance?.startStream();
+        // Camera.instance?.startStream();
     }
 
     public deactivate() {
@@ -38,8 +39,10 @@ export class ShootTool extends Tool {
         if (closestClip) this.contextManager.setContext(closestClip, 2);
         else this.contextManager.setContext(closestCard.timeline.clips[closestCard.timeline.clips.length - 1], 2);
 
-        const camera = new Camera();
-        camera.initialize(closestCard);
+        const camera = new Camera(this.documentManager);
+        camera.card = closestCard;
+        this.documentManager.switchTo(ContextView.camera);
+        this.documentManager.toolPanel.changePanel(ToolType.shoot);
         camera.startStream();
     }
 }

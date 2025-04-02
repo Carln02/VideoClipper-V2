@@ -1,50 +1,61 @@
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {Card} from "../../components/card/card";
 import {SyncedCard} from "../../components/card/card.types";
-import {Point} from "turbodombuilder";
+import {define, Point} from "turbodombuilder";
 import {SyncedText, TextType} from "../../components/textElement/textElement.types";
 import {SyncedClip} from "../../components/clip/clip.types";
 import {randomColor} from "../../../utils/random";
 import {YDocument} from "../../../../yManagement/yDocument";
 import {YUtilities} from "../../../../yManagement/yUtilities";
 import {DocumentManagerModel} from "./documentManager.model";
-import {YArray, YDoc, YMap} from "../../../../yManagement/yManagement.types";
+import {YArray, YDocumentProperties, YMap} from "../../../../yManagement/yManagement.types";
 import {SyncedFlowTag} from "../../components/flowTag/flowTag.types";
 import {SyncedFlowEntry} from "../../components/flowEntry/flowEntry.types";
 import {SyncedFlowBranch} from "../../components/flowBranch/flowBranch.types";
 import {SyncedFlow} from "../../components/flow/flow.types";
 import {Flow} from "../../components/flow/flow";
 import {FlowBranch} from "../../components/flowBranch/flowBranch";
+import {DocumentManagerView} from "./documentManager.view";
+import {SyncedDocument} from "./documentManager.types";
+import {ContextView} from "../contextManager/contextManager.types";
+import {ContextManager} from "../contextManager/contextManager";
+import {ToolPanel} from "../../panels/toolPanel/toolPanel";
+import {ShootingPanel} from "../../panels/shootingPanel/shootingPanel";
+import {ToolType} from "../toolManager/toolManager.types";
+import {TextPanel} from "../../panels/textPanel/textPanel";
 
-export class DocumentManager extends YDocument {
-    public readonly documentModel: DocumentManagerModel;
-    // public readonly flowsModel
+@define()
+export class DocumentManager extends YDocument<DocumentManagerView, SyncedDocument, DocumentManagerModel> {
+    public constructor(properties: YDocumentProperties<DocumentManagerView, SyncedDocument, DocumentManagerModel>) {
+        super(properties);
+        this.mvc.generate({
+            modelConstructor: DocumentManagerModel,
+            viewConstructor: DocumentManagerView,
+            data: this.document.getMap("document_content"),
+            initialize: false
+        });
 
-    //Parents used to segregate different types of elements placed on the canvas
-    //Mainly to make sure that flows are below cards
-    public readonly cardsParent: HTMLElement;
-    public readonly flowsParent: HTMLElement;
+        this.model.onBranchingNodeAdded = data => new BranchingNode({parent: this.view.cardsParent, data: data});
+        this.model.onCardAdded = data => new Card({parent: this.view.cardsParent, data: data});
+        this.model.onFlowAdded = data => new Flow({parent: this.view.flowsParent, data: data});
 
-    public constructor(document: YDoc, cardsParent: HTMLElement, flowsParent: HTMLElement) {
-        super(document);
-        this.cardsParent = cardsParent;
-        this.flowsParent = flowsParent;
+        this.mvc.initialize();
+        this.switchTo(ContextView.canvas);
 
-        this.documentModel = new DocumentManagerModel(document.getMap("document_content"));
+        this.toolPanel.addPanel(new ShootingPanel({toolPanel: this.toolPanel}), ToolType.shoot);
+        this.toolPanel.addPanel(new TextPanel({toolPanel: this.toolPanel}), ToolType.text);
+    }
 
-        this.documentModel.onBranchingNodeAdded = data => new BranchingNode({parent: this.cardsParent, data: data});
-        this.documentModel.onCardAdded = data => new Card({parent: this.cardsParent, data: data});
-        this.documentModel.onFlowAdded = data => new Flow({parent: this.flowsParent, data: data});
-
-        this.documentModel.initialize();
+    public get toolPanel(): ToolPanel {
+        return this.view.toolPanel;
     }
 
     public get flows(): Flow[] {
-        return this.documentModel.flows;
+        return this.model.flows;
     }
 
     public getFlow(id: string): Flow {
-        return this.documentModel.flowsModel.getInstance(id);
+        return this.model.flowsModel.getInstance(id);
     }
 
     public forEachBranch(callback: (branch: FlowBranch, flow: Flow) => void) {
@@ -54,7 +65,7 @@ export class DocumentManager extends YDocument {
     //CARDS
 
     public async createNewCard(position: Point): Promise<string> {
-        this.documentModel.incrementCardsCount();
+        this.model.incrementCardsCount();
 
         const metadataMap = new YMap();
 
@@ -75,16 +86,16 @@ export class DocumentManager extends YDocument {
 
         const cardMap = YUtilities.createYMap<SyncedCard>({
             origin: position.object,
-            title: "Card - " + this.documentModel.cardsCount,
+            title: "Card - " + this.model.cardsCount,
             metadata: metadataMap,
             syncedClips: YUtilities.createYArray([defaultClipMap]),
         });
 
-        return await YUtilities.addInYMap(cardMap, this.documentModel.cardsData);
+        return await YUtilities.addInYMap(cardMap, this.model.cardsData);
     }
 
     public async createNewFlow(position: Point, nodeId: string): Promise<string> {
-        this.documentModel.incrementFlowsCount();
+        this.model.incrementFlowsCount();
 
         const firstEntry = YUtilities.createYMap<SyncedFlowEntry>({
             startNodeId: nodeId,
@@ -103,13 +114,19 @@ export class DocumentManager extends YDocument {
         const flowMap = YUtilities.createYMap<SyncedFlow>({
             branches: YUtilities.createYMap({"0": branchMap}) as YMap<SyncedFlowBranch>,
             tags: tagsArray,
-            defaultName: "Flow " + this.documentModel.flowsCount
+            defaultName: "Flow " + this.model.flowsCount
         });
 
-        return await YUtilities.addInYMap(flowMap, this.documentModel.flowsData);
+        return await YUtilities.addInYMap(flowMap, this.model.flowsData);
     }
 
     public clear() {
-        this.documentModel.clear();
+        this.model.clear();
+    }
+
+    public switchTo(context: ContextView) {
+        this.view.canvas.show(context == ContextView.canvas);
+        this.view.camera.show(context == ContextView.camera);
+        ContextManager.instance.view = context;
     }
 }

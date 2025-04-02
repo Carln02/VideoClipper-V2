@@ -10,6 +10,7 @@ export class CameraRendererView extends RendererView<CameraRenderer, CameraRende
         super.setupUIElements();
         for (let i = 0; i < this.model.videoElementsCount; i++) this.videos.push(video());
         this.snapshotEffectDiv = div({classes: "snapshot-effect-div"});
+        console.log(this.videos);
     }
 
     protected setupUILayout() {

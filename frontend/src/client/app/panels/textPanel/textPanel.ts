@@ -4,7 +4,6 @@ import {TextPanelView} from "./textPanel.view";
 import {ClickMode, define} from "turbodombuilder";
 import {SyncedText} from "../../components/textElement/textElement.types";
 import {ToolPanelContent} from "../toolPanelContent/toolPanelContent";
-import {ToolPanelContentProperties} from "../toolPanelContent/toolPanelContent.types";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {TextElement} from "../../components/textElement/textElement";
 import {ContextEntry} from "../../managers/contextManager/contextManager.types";
@@ -13,10 +12,6 @@ import {ToolManager} from "../../managers/toolManager/toolManager";
 
 @define()
 export class TextPanel extends ToolPanelContent<TextPanelView, SyncedText, TextPanelModel> {
-    constructor(properties: ToolPanelContentProperties<TextPanelView, SyncedText, TextPanelModel>) {
-        super(properties);
-    }
-
     public attach() {
         ContextManager.instance.onContextChange.add(this.updateDataFromContext);
         this.toolPanel.addContextCallback(this.onContextChange);

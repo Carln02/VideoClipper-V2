@@ -1,4 +1,4 @@
-import {auto, ClickMode, css, define, div, Point, TurboElement} from "turbodombuilder";
+import {ClickMode, css, define, div, Point, TurboElement} from "turbodombuilder";
 import "./canvas.css";
 import {Toolbar} from "../../components/toolbar/toolbar";
 import {ContextManager} from "../../managers/contextManager/contextManager";
@@ -31,10 +31,12 @@ export class Canvas extends TurboElement {
     //Canvas's attached navigation manager
     public readonly navigationManager: NavigationManager;
 
+    public readonly documentManager: DocumentManager;
+
     //Main toolbar
     private readonly toolbar: Toolbar;
 
-    constructor() {
+    constructor(documentManager: DocumentManager) {
         ContextManager.instance.view = ContextView.canvas;
 
         //Cancel construction if exists already
@@ -48,6 +50,7 @@ export class Canvas extends TurboElement {
 
         super({parent: document.body});
         Canvas.instance = this;
+        this.documentManager = documentManager;
 
         this.appBar = new AppBar({parent: this});
 
@@ -58,6 +61,8 @@ export class Canvas extends TurboElement {
 
         //Init toolbar
         this.toolbar = new Toolbar({parent: this, classes: "bottom-toolbar"});
+
+        this.initTools();
     }
 
     private initTools() {
@@ -74,12 +79,6 @@ export class Canvas extends TurboElement {
         ToolManager.instance.setTool(ToolManager.instance.getToolByKey("Shift"), ClickMode.left);
         ToolManager.instance.setTool(ToolManager.instance.getToolByKey("Control"), ClickMode.middle, {select: false, activate: false});
         this.toolbar.populateWithAllTools();
-    }
-
-    @auto()
-    public set documentManager(value: DocumentManager) {
-        this.content.addChild([value.flowsParent, value.cardsParent]);
-        this.initTools();
     }
 
     public remove(): this {

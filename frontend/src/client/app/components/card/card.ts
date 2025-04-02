@@ -8,6 +8,8 @@ import {CardModel} from "./card.model";
 import {CardView} from "./card.view";
 import {BranchingNode} from "../branchingNode/branchingNode";
 import {SyncedCardMetadata} from "../metadataDrawer/metadataDrawer.types";
+import { YArray } from "../../../../yManagement/yManagement.types";
+import {SyncedClip} from "../clip/clip.types";
 
 /**
  * @description Class representing a card
@@ -61,6 +63,10 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
      */
     public set duration(value: number) {
         this.view.duration = value;
+    }
+
+    public get syncedClips(): YArray<SyncedClip> {
+        return this.model.syncedClips;
     }
 
     /**

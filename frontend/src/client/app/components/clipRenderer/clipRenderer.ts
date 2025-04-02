@@ -37,10 +37,6 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
         this.view.videos.forEach((video: HTMLVideoElement) => video.setProperties(properties.videoProperties));
     }
 
-    protected get canvasController(): RendererCanvasController {
-        return this.mvc.getController("canvas") as RendererCanvasController;
-    }
-
     protected get frameController(): ClipRendererFrameController {
         return this.mvc.getController("frame") as ClipRendererFrameController;
     }

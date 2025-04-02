@@ -1,12 +1,19 @@
-import {DefaultEventName, define, div, TurboDragEvent, TurboElement, TurboProperties} from "turbodombuilder";
+import {
+    DefaultEventName,
+    define,
+    div,
+    linearInterpolation,
+    TurboDragEvent,
+    TurboElement,
+    TurboProperties
+} from "turbodombuilder";
 import "./captureModeSlider.css";
-import {ShootingSidePanel} from "../../shootingSidePanel";
-import {linearInterpolation} from "../../../../../../../utils/interpolation";
-import {CaptureMode} from "../../../../../../managers/captureManager/captureManager.types";
+import { CaptureMode } from "../../managers/captureManager/captureManager.types";
+import {ShootingPanel} from "../../panels/shootingPanel/shootingPanel";
 
 @define("capture-mode-slider")
 export class CaptureModeSlider extends TurboElement {
-    private readonly shootingSidePanel: ShootingSidePanel;
+    private readonly shootingPanel: ShootingPanel;
 
     private entries: HTMLElement[] = [];
     private _index = 0;
@@ -16,9 +23,9 @@ export class CaptureModeSlider extends TurboElement {
 
     private entryWidth: number;
 
-    constructor(shootingSidePanel: ShootingSidePanel, entries: CaptureMode[], properties: TurboProperties = {}) {
+    constructor(shootingPanel: ShootingPanel, entries: CaptureMode[], properties: TurboProperties = {}) {
         super(properties);
-        this.shootingSidePanel = shootingSidePanel;
+        this.shootingPanel = shootingPanel;
 
         this.entries = entries.map((entry, index) => div({
             text: entry, parent: this, listeners: {
@@ -43,7 +50,7 @@ export class CaptureModeSlider extends TurboElement {
         else if (value < 0) this._index = 0;
         else this._index = value;
 
-        this.shootingSidePanel.mode = this.entries[this._index].innerText;
+        this.shootingPanel.mode = this.entries[this._index].innerText;
 
         this.translation = this._index * this.entryWidth;
 

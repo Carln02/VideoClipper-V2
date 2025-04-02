@@ -3,6 +3,7 @@ import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {ToolPanelContent} from "../toolPanelContent/toolPanelContent";
 import {ToolManager} from "../../managers/toolManager/toolManager";
 import {ContextManager} from "../../managers/contextManager/contextManager";
+import "./toolPanel.css";
 import {ContextEntry} from "../../managers/contextManager/contextManager.types";
 
 @define()
@@ -12,7 +13,7 @@ export class ToolPanel extends TurboElement {
 
     private currentPanel: ToolPanelContent;
 
-    public constructor(properties: TurboCustomProperties) {
+    public constructor(properties: TurboCustomProperties = {}) {
         super(properties);
 
         ToolManager.instance.onToolChange.add((oldTool, newTool, type) => {

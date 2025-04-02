@@ -1,19 +1,23 @@
 import "./backgroundSelector.css";
-import {css, define, div, h3, icon, input,TurboElement, TurboProperties} from "turbodombuilder";
-import {ShootingSidePanel} from "../../shootingSidePanel";
+import {
+    css,
+    define,
+    div,
+    h3,
+    icon,
+    input,
+    TurboSelect,
+    TurboSelectEntry,
+    TurboSelectProperties
+} from "turbodombuilder";
 
 @define("camera-background-selector")
-export class BackgroundSelector extends TurboElement {
+export class BackgroundSelector extends TurboSelect {
     private readonly defaultColors = ["#ffffff", "#000000", "#e36060", "#607fe3", "#d1c948", "color-picker"] as const;
-
-    private readonly selectedClass = "selected" as const;
 
     private readonly shootingSidePanel: ShootingSidePanel;
 
-    private _selected: HTMLElement;
-    private _selectedValue: string;
-
-    constructor(shootingSidePanel: ShootingSidePanel, properties: TurboProperties = {}) {
+    public constructor(properties: TurboSelectProperties = {}) {
         super(properties);
         this.shootingSidePanel = shootingSidePanel;
         this.initUI();
@@ -32,6 +36,17 @@ export class BackgroundSelector extends TurboElement {
         else if (value.classList.contains("image-picker")) {}
         else this.selectedValue = value.style.backgroundColor;
     }
+
+    public select(entry: string | TurboSelectEntry<string, string>): this {
+        super.select(entry);
+
+        if (entry.classList.contains("color-picker")) this.selectedValue = value.style.borderColor;
+        else if (value.classList.contains("image-picker")) {}
+        else this.selectedValue = value.style.backgroundColor;
+
+        return this;
+    }
+
 
     public get selectedValue() {
         return this._selectedValue;

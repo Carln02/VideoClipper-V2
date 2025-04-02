@@ -10,7 +10,7 @@ export class ToolPanelContent<
 > extends TurboElement<ViewType, DataType, ModelType> {
     public readonly toolPanel: ToolPanel;
 
-    protected constructor(properties: ToolPanelContentProperties<ViewType, DataType, ModelType>) {
+    public constructor(properties: ToolPanelContentProperties<ViewType, DataType, ModelType>) {
         super(properties);
         this.toolPanel = properties.toolPanel;
     }

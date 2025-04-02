@@ -21,4 +21,12 @@ export class CameraRenderer extends Renderer<CameraRendererView, CameraRendererM
         this.view.canvas.setProperties(properties.canvasProperties);
         this.view.videos.forEach(video => video.setProperties(properties.videoProperties));
     }
+
+    protected get drawingController(): CameraRendererDrawingController {
+        return this.mvc.getController("drawing") as CameraRendererDrawingController;
+    }
+
+    public async drawCurrentVideoFrame(animate = true): Promise<string> {
+        return await this.drawingController.drawCurrentVideoFrame(animate);
+    }
 }

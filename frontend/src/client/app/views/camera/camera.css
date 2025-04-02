@@ -10,7 +10,6 @@ vc-camera {
     align-items: center;
 
     background-color: black;
-    z-index: 10;
 }
 
 vc-camera > #capture-bar {

@@ -4,7 +4,7 @@ import {auto} from "turbodombuilder";
 export class RendererModel extends YComponentModel {
    public readonly videoElementsCount: number = 1 as const;
 
-    private _currentIndex: number;
+    private _currentIndex: number = 0;
 
     @auto({cancelIfUnchanged: true})
     public set currentCanvasFill(value: string | CanvasImageSource) {
