@@ -1,29 +1,40 @@
-import {ClickMode, define, TurboCustomProperties, TurboElement} from "turbodombuilder";
+import {ClickMode, define} from "turbodombuilder";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {ToolPanelContent} from "../toolPanelContent/toolPanelContent";
-import {ToolManager} from "../../managers/toolManager/toolManager";
-import {ContextManager} from "../../managers/contextManager/contextManager";
 import "./toolPanel.css";
 import {ContextEntry} from "../../managers/contextManager/contextManager.types";
+import {VcComponent} from "../../components/component/component";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
+import {ToolManager} from "../../managers/toolManager/toolManager";
+import {ContextManager} from "../../managers/contextManager/contextManager";
+import {VcComponentProperties} from "../../components/component/component.types";
 
 @define()
-export class ToolPanel extends TurboElement {
+export class ToolPanel extends VcComponent<any, any, any, DocumentManager> {
     private readonly panels: Map<ToolType, ToolPanelContent> = new Map();
     private readonly contextCallbacks: ((entry: ContextEntry) => void)[] = [];
 
     private currentPanel: ToolPanelContent;
 
-    public constructor(properties: TurboCustomProperties = {}) {
+    public constructor(properties: VcComponentProperties<any, any, any, DocumentManager> = {}) {
         super(properties);
 
-        ToolManager.instance.onToolChange.add((oldTool, newTool, type) => {
+        this.toolManager.onToolChange.add((oldTool, newTool, type) => {
             if (type != ClickMode.left) return;
             this.changePanel(newTool.name);
         });
 
-        ContextManager.instance.onContextChange.add((entry: ContextEntry) => {
+        this.contextManager.onContextChange.add((entry: ContextEntry) => {
             this.contextCallbacks.forEach(callback => callback(entry));
         });
+    }
+
+    public get toolManager(): ToolManager {
+        return this.screenManager.toolManager;
+    }
+
+    public get contextManager(): ContextManager {
+        return this.screenManager.contextManager;
     }
 
     public getPanel(tool: ToolType): ToolPanelContent {

@@ -27,7 +27,7 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
         });
 
         this.model.onTextAdded = (syncedText, id) => {
-            const text = new TextElement({data: syncedText, renderer: this});
+            const text = new TextElement({data: syncedText, renderer: this, screenManager: this.screenManager});
             this.view.addTextElement(text, id);
             return text;
         };

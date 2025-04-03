@@ -1,12 +1,9 @@
-import {Canvas} from "./views/canvas/canvas";
 import * as logman from "../sync/logman";
 import {ToolManager} from "./managers/toolManager/toolManager";
 import {CursorManager} from "./managers/cursorManager/cursorManager";
 import {div, Point, TurboEventManager, turbofy, TurboIcon} from "turbodombuilder";
 import {GroupList} from "./views/grouplist/grouplist";
 import {FileList} from "./views/filelist/filelist";
-import {ContextManager} from "./managers/contextManager/contextManager";
-import {ContextView} from "./managers/contextManager/contextManager.types";
 import {getDocument} from "../sync/datastore";
 
 import "./main.css";
@@ -14,16 +11,7 @@ import "./styles/input.css";
 import "./styles/markingMenu.css";
 import "./styles/drawer.css";
 import {DocumentManager} from "./managers/documentManager/documentManager";
-
-turbofy();
-
-TurboIcon.config.defaultDirectory = "assets/icons";
-TurboIcon.config.defaultClasses = "icon";
-
-const eventManager = new TurboEventManager({
-    authorizeEventScaling: () => ContextManager.instance.view == ContextView.canvas,
-    scaleEventPosition: (position: Point) => Canvas.instance.navigationManager.computePositionRelativeToCanvas(position),
-});
+import {AppManager} from "./managers/appManager/appManager";
 
 
 
@@ -40,38 +28,33 @@ async function start() {
 
 let contents: Element;
 
+AppManager.initialize();
+const app = new AppManager({parent: document.body});
+
 export function show_groups() {
     contents?.remove();
     contents = new GroupList();
-    eventManager.defaultState.preventDefaultTouch = false;
-    eventManager.defaultState.preventDefaultMouse = false;
+    app.preventDefaultEvents = false;
 }
 
 export function show_projects() {
     contents?.remove();
     contents = new FileList();
-    eventManager.defaultState.preventDefaultTouch = false;
-    eventManager.defaultState.preventDefaultMouse = false;
+    app.preventDefaultEvents = false;
 }
 
 export function show_project() {
     contents?.remove();
-    eventManager.defaultState.preventDefaultTouch = true;
-    eventManager.defaultState.preventDefaultMouse = true;
-    new ContextManager();
-    new CursorManager();
-    new ToolManager();
+    app.preventDefaultEvents = true;
 
     // contents = new Canvas(getDocument().getMap("document_content"));
 
     setTimeout(() => {
         // contents = new Canvas(documentRoot())
-        contents = new DocumentManager({document: getDocument(), parent: document.body});
+        app.documentManager.document = getDocument();
     }, 1000)
 }
 
 //  Populate page
 
 start();
-
-export {eventManager};

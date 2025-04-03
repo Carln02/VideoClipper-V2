@@ -1,12 +1,10 @@
 import "./timeline.css";
 import {ClipRendererVisibility} from "../clipRenderer/clipRenderer.types";
-import {ContextManager} from "../../managers/contextManager/contextManager";
 import {ClipTimelineEntry} from "./timeline.types";
 import {Timeline} from "./timeline";
 import {TurboController, TurboEvent} from "turbodombuilder";
 import {TimelineView} from "./timeline.view";
 import {TimelineModel} from "./timeline.model";
-import {ToolManager} from "../../managers/toolManager/toolManager";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {TimelineClipHandler} from "./timeline.clipHandler";
 
@@ -15,7 +13,7 @@ export class TimelineClipController extends TurboController<Timeline, TimelineVi
         super.setupChangedCallbacks();
 
         const snapWhenShooting = (e: TurboEvent) => requestAnimationFrame(() => {
-            if (ToolManager.instance.getFiredTool(e).name == ToolType.shoot) this.snapToClosest();
+            if (this.element.screenManager.toolManager.getFiredTool(e).name == ToolType.shoot) this.snapToClosest();
         });
 
         this.view.scrubber.onScrubbingEnd = snapWhenShooting;
@@ -29,7 +27,7 @@ export class TimelineClipController extends TurboController<Timeline, TimelineVi
     public reloadCurrentClip() {
         this.model.currentClipInfo = this.getClipAtTimestamp();
         // this.element.playController.play(false);
-        ContextManager.instance.setContext(this.model.currentClip, 2);
+        this.element.screenManager.contextManager.setContext(this.model.currentClip, 2);
         if (!this.element.renderer || this.element.renderer.visibilityMode == ClipRendererVisibility.ghosting) return;
         this.element.renderer.setFrame(this.model.currentClip, this.model.currentClipInfo?.offset);
     }

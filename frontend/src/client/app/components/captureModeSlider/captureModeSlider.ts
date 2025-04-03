@@ -1,102 +1,38 @@
 import {
-    DefaultEventName,
     define,
-    div,
-    linearInterpolation,
-    TurboDragEvent,
-    TurboElement,
-    TurboProperties
+    Direction,
+    PartialRecord,
+    Point,
+    TurboSelectWheel,
+    TurboSelectWheelStylingProperties
 } from "turbodombuilder";
+import {CaptureModeSliderProperties} from "./captureModeSlider.types";
 import "./captureModeSlider.css";
-import { CaptureMode } from "../../managers/captureManager/captureManager.types";
-import {ShootingPanel} from "../../panels/shootingPanel/shootingPanel";
 
-@define("capture-mode-slider")
-export class CaptureModeSlider extends TurboElement {
-    private readonly shootingPanel: ShootingPanel;
+@define()
+export class CaptureModeSlider extends TurboSelectWheel {
+    public openTimeout: number = -1;
 
-    private entries: HTMLElement[] = [];
-    private _index = 0;
-    private _translation = 0;
-
-    private dragging = false;
-
-    private entryWidth: number;
-
-    constructor(shootingPanel: ShootingPanel, entries: CaptureMode[], properties: TurboProperties = {}) {
-        super(properties);
-        this.shootingPanel = shootingPanel;
-
-        this.entries = entries.map((entry, index) => div({
-            text: entry, parent: this, listeners: {
-                [DefaultEventName.click]: () => {
-                    this.toggleTransitions(true);
-                    requestAnimationFrame(() => this.index = index);
-                }
-            }
-        }));
-
-        requestAnimationFrame(() => this.entryWidth = this.entries[0].offsetWidth);
-
-        this.initEvents();
-    }
-
-    public get index() {
-        return this._index;
-    }
-
-    public set index(value: number) {
-        if (value > this.entries.length - 1) this._index = this.entries.length - 1;
-        else if (value < 0) this._index = 0;
-        else this._index = value;
-
-        this.shootingPanel.mode = this.entries[this._index].innerText;
-
-        this.translation = this._index * this.entryWidth;
-
-        this.entries.forEach((item, index) =>
-            item.classList.toggle("active", index === this._index));
-    }
-
-    private get translation() {
-        return this._translation;
-    }
-
-    private set translation(value: number) {
-        this._translation = value;
-        this.setStyle("transform", `translate(0, ${value}px) rotate(-90deg)`);
-
-        this.entries.forEach((item, index) => {
-            const indexDifference = Math.abs(index - value / this.entryWidth);
-            item.style.opacity = linearInterpolation(indexDifference, 0, 1.5, 1, 0.3).toString();
-            item.style.transform = `scale(${linearInterpolation(indexDifference, 0, 1.5, 1.1, 0.8)})`;
+    public constructor(properties: CaptureModeSliderProperties) {
+        super({
+            ...properties,
+            direction: Direction.horizontal,
+            classes: "capture-mode-slider",
+            opacity: {min: 0.3, max: 1},
+            size: {min: 0.6, max: 1.3},
+            style: "transform: rotate(-90deg)"
         });
+        this.generateCustomStyling = this.customStyling;
     }
 
-    private initEvents() {
-        this.addEventListener("vc-drag-start", (e: TurboDragEvent) => {
-            e.stopImmediatePropagation();
-            this.dragging = true;
-            this.toggleTransitions(false);
-        });
-
-        document.addEventListener("vc-drag", (e: TurboDragEvent) => {
-            if (!this.dragging) return;
-            e.stopImmediatePropagation();
-            this.translation += e.deltaPosition.y;
-        });
-
-        document.addEventListener("vc-drag-end", (e: TurboDragEvent) => {
-            if (!this.dragging) return;
-            e.stopImmediatePropagation();
-            this.dragging = false;
-
-            this.index = Math.round(this.translation / this.entryWidth);
-        });
+    protected computeDragValue(delta: Point): number {
+        return delta.y / 20;
     }
 
-    private toggleTransitions(b: boolean) {
-        this.setStyle("transition", b ? "all 0.2s ease-in-out" : "");
-        this.entries.forEach(entry => entry.style.transition = b ? "all 0.2s ease-in-out" : "");
+    protected customStyling(properties: TurboSelectWheelStylingProperties): PartialRecord<keyof CSSStyleDeclaration, string | number> {
+        const styles = properties.defaultComputedStyles;
+        console.log(properties.opacityValue);
+        console.log(properties.scaleValue);
+        return styles;
     }
 }

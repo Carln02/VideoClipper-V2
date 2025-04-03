@@ -4,23 +4,21 @@ import {TextPanelView} from "./textPanel.view";
 import {ClickMode, define} from "turbodombuilder";
 import {SyncedText} from "../../components/textElement/textElement.types";
 import {ToolPanelContent} from "../toolPanelContent/toolPanelContent";
-import {ContextManager} from "../../managers/contextManager/contextManager";
 import {TextElement} from "../../components/textElement/textElement";
 import {ContextEntry} from "../../managers/contextManager/contextManager.types";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
-import {ToolManager} from "../../managers/toolManager/toolManager";
 
 @define()
 export class TextPanel extends ToolPanelContent<TextPanelView, SyncedText, TextPanelModel> {
     public attach() {
-        ContextManager.instance.onContextChange.add(this.updateDataFromContext);
+        this.contextManager.onContextChange.add(this.updateDataFromContext);
         this.toolPanel.addContextCallback(this.onContextChange);
-        const data = ContextManager.instance.getOfType(TextElement)?.data;
+        const data = this.contextManager.getOfType(TextElement)?.data;
         if (data) this.model.data = data;
     }
 
     public detach() {
-        ContextManager.instance.onContextChange.remove(this.updateDataFromContext);
+        this.contextManager.onContextChange.remove(this.updateDataFromContext);
         this.toolPanel.removeContextCallback(this.onContextChange);
     }
 
@@ -35,7 +33,7 @@ export class TextPanel extends ToolPanelContent<TextPanelView, SyncedText, TextP
     private onContextChange = (entry: ContextEntry) => {
         if (entry.element instanceof TextElement) {
             if (entry.changed == "added") this.toolPanel.changePanel(ToolType.text);
-            else this.toolPanel.changePanel(ToolManager.instance.getTool(ClickMode.left).name);
+            else this.toolPanel.changePanel(this.toolManager.getTool(ClickMode.left).name);
         }
     }
 }

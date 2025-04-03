@@ -2,19 +2,19 @@ import {ToolPanelContentView} from "../toolPanelContent/toolPanelContent.view";
 import {ShootingPanel} from "./shootingPanel";
 import {ShootingPanelModel} from "./shootingPanel.model";
 import {CaptureButton} from "../../components/captureButton/captureButton";
-import {CaptureModeSlider} from "../../components/captureModeSlider/captureModeSlider";
 import {CaptureTimer} from "../../components/captureTimer/captureTimer";
-import {DefaultEventName, div, TurboIconToggle} from "turbodombuilder";
+import {DefaultEventName, Direction, div, TurboIconToggle, TurboSelectWheel} from "turbodombuilder";
 import {BackgroundSelector} from "../../components/backgroundSelector/backgroundSelector";
 import {
     AnimatedContentSwitchingDiv
 } from "../../components/animationComponents/animatedContentSwitchingDiv/animatedContentSwitchingDiv";
 import {CaptureMode} from "../../managers/captureManager/captureManager.types";
 import {ClipRendererVisibility} from "../../components/clipRenderer/clipRenderer.types";
+import {CaptureModeSlider} from "../../components/captureModeSlider/captureModeSlider";
 
 export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, ShootingPanelModel> {
     private captureButton: CaptureButton;
-    private modeSlider: CaptureModeSlider;
+    private modeSlider: TurboSelectWheel;
     captureTimer: CaptureTimer;
 
     private ghost: TurboIconToggle;
@@ -28,7 +28,10 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
     protected setupUIElements() {
         super.setupUIElements();
 
-        this.modeSlider = new CaptureModeSlider(this.element, [CaptureMode.photo, CaptureMode.video, CaptureMode.create]);
+        this.modeSlider = new CaptureModeSlider({
+            classes: "capture-mode-slider",
+            values: [CaptureMode.photo, CaptureMode.video, CaptureMode.create],
+        });
 
         requestAnimationFrame(() => this.modeSlider.index = 1);
 

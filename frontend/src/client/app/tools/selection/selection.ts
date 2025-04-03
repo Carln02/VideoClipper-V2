@@ -3,22 +3,19 @@ import {ClosestOrigin, define, div, TurboDragEvent, TurboEvent} from "turbodombu
 import {Card} from "../../components/card/card";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {TextElement} from "../../components/textElement/textElement";
-import {ContextManager} from "../../managers/contextManager/contextManager";
 import {ContextView} from "../../managers/contextManager/contextManager.types";
 import {Clip} from "../../components/clip/clip";
-import {Canvas} from "../../views/canvas/canvas";
 import {Timeline} from "../../components/timeline/timeline";
 import {MovableComponent} from "../../components/basicComponents/movableComponent/movableComponent";
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
+import {DocumentScreens} from "../../managers/documentManager/documentManager.types";
 
 /**
  * @description Tool that allows user to select elements and move them around
  */
 @define("selection-tool")
 export class SelectionTool extends Tool {
-    private context: ContextManager;
-    
     private clipClone: MovableComponent<Clip> = null;
     private readonly timelineIndicator: HTMLDivElement;
     private timelineIndicatorIndex: number;
@@ -27,7 +24,6 @@ export class SelectionTool extends Tool {
 
     public constructor(documentManager: DocumentManager) {
         super(documentManager, ToolType.selection);
-        this.context = ContextManager.instance;
         this.timelineIndicator = div({style: "background-color: pink; width: 5px; border: 2px solid cyan"});
     }
 
@@ -36,20 +32,20 @@ export class SelectionTool extends Tool {
         const closestClip = e.closest(Clip);
         const closestCard = e.closest(Card);
 
-        if (closestText && this.context.view == ContextView.camera) {
-            this.context.setContext(closestText, 3);
+        if (closestText && this.contextManager.view == ContextView.camera) {
+            this.contextManager.setContext(closestText, 3);
             closestText.select(true);
             this.currentTarget = closestText;
         } else if (closestClip) {
-            this.context.setContext(e.closest(Card, false), 1);
-            this.context.setContext(closestClip, 2);
+            this.contextManager.setContext(e.closest(Card, false), 1);
+            this.contextManager.setContext(closestClip, 2);
             closestClip.selected = true;
             this.currentTarget = closestClip;
         } else if (closestCard) {
-            this.context.setContext(closestCard, 1);
+            this.contextManager.setContext(closestCard, 1);
             this.currentTarget = closestCard;
         } else {
-            this.context.clearContext();
+            this.contextManager.clearContext();
             this.currentTarget = null;
         }
     }
@@ -60,17 +56,17 @@ export class SelectionTool extends Tool {
         const closestNode = e.closest(BranchingNode);
 
         if (closestClip) {
-            this.context.setContext(e.closest(Card, false), 1);
-            this.context.setContext(closestClip, 2);
+            this.contextManager.setContext(e.closest(Card, false), 1);
+            this.contextManager.setContext(closestClip, 2);
             this.currentTarget = closestClip;
             this.cloneClip(e, closestClip);
         }
         //Click start --> save the card that was clicked on (if any)
-        else if (this.context.view == ContextView.canvas && closestNode) {
-            this.context.setContext(closestNode, 1);
+        else if (this.documentManager.currentType == DocumentScreens.canvas && closestNode) {
+            this.contextManager.setContext(closestNode, 1);
             this.currentTarget = closestNode;
-        } else if (this.context.view == ContextView.camera && closestText) {
-            this.context.setContext(closestText, 3);
+        } else if (this.documentManager.currentType == DocumentScreens.camera && closestText) {
+            this.contextManager.setContext(closestText, 3);
             closestText.select(true);
             this.currentTarget = closestText;
         }
@@ -82,11 +78,11 @@ export class SelectionTool extends Tool {
         if (this.clipClone) {
             this.clipClone.translateBy(e.scaledDeltaPosition);
             this.insertIndicatorAfterClosestClip(e);
-        } else if (this.context.view == ContextView.canvas && this.currentTarget instanceof BranchingNode) {
+        } else if (this.documentManager.currentType == DocumentScreens.canvas && this.currentTarget instanceof BranchingNode) {
             const id = this.currentTarget.dataId;
             this.currentTarget.move(e.scaledDeltaPosition);
             this.documentManager.forEachBranch((branch) => branch.updateAfterMovingNode(id, e.scaledDeltaPosition));
-        } else if (this.context.view == ContextView.camera && this.currentTarget instanceof TextElement) {
+        } else if (this.documentManager.currentType == DocumentScreens.camera && this.currentTarget instanceof TextElement) {
             this.currentTarget.translateBy(e.scaledDeltaPosition);
             // this.context.getAllOfType(TextElement).forEach(entry => {
             //     if (!(entry instanceof TextElement)) return;
@@ -110,7 +106,7 @@ export class SelectionTool extends Tool {
     private cloneClip(e: TurboDragEvent, clip: Clip) {
         const clone = clip.clone();
         clip.setStyle("opacity", "0.4");
-        this.clipClone = new MovableComponent(clone, clip, {parent: Canvas.instance.content});
+        this.clipClone = new MovableComponent(clone, clip, {parent: this.documentManager.canvas.content});
         this.clipClone.translation = e.scaledPosition;
     }
 

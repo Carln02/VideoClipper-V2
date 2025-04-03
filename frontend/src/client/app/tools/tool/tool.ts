@@ -1,21 +1,22 @@
 import "./tool.css";
 import {ToolView} from "./toolView";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
-import {TurboDragEvent, TurboEvent} from "turbodombuilder";
+import {auto, TurboDragEvent, TurboEvent} from "turbodombuilder";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
+import {ContextManager} from "../../managers/contextManager/contextManager";
+import {ToolManager} from "../../managers/toolManager/toolManager";
+import {CursorManager} from "../../managers/cursorManager/cursorManager";
 
 /**
  * @description General Tool class that defines basic behaviors and "abstract" functions tools could use to handle events
  */
 export class Tool {
-    protected readonly documentManager: DocumentManager;
+    public readonly documentManager: DocumentManager;
 
     /**
      * @description The name of the tool
      */
     public readonly name: ToolType;
-
-    private _selected: boolean = false;
 
     //DOM elements representing this tool
     private readonly instances: ToolView[] = [];
@@ -23,6 +24,18 @@ export class Tool {
     constructor(documentManager: DocumentManager, name: ToolType) {
         this.name = name;
         this.documentManager = documentManager;
+    }
+
+    public get contextManager(): ContextManager {
+        return this.documentManager.contextManager;
+    }
+
+    public get toolManager(): ToolManager {
+        return this.documentManager.toolManager;
+    }
+
+    public get cursorManager(): CursorManager {
+        return this.documentManager.screenManager.cursorManager;
     }
 
     /**
@@ -89,12 +102,8 @@ export class Tool {
     /**
      * @description Marks whether the tool is selected or not. Accurately reflected on its instances
      */
-    public get selected() {
-        return this._selected;
-    }
-
+    @auto()
     public set selected(value: boolean) {
-        this._selected = value;
         this.instances.forEach(instance => instance.update());
     }
 }

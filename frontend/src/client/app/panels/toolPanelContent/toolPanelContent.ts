@@ -1,18 +1,30 @@
-import {TurboElement, TurboModel} from "turbodombuilder";
+import {TurboModel} from "turbodombuilder";
 import {ToolPanelContentProperties} from "./toolPanelContent.types";
 import {ToolPanel} from "../toolPanel/toolPanel";
 import {ToolPanelContentView} from "./toolPanelContent.view";
+import {ToolManager} from "../../managers/toolManager/toolManager";
+import {ContextManager} from "../../managers/contextManager/contextManager";
+import {VcComponent} from "../../components/component/component";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 export class ToolPanelContent<
     ViewType extends ToolPanelContentView = ToolPanelContentView<any, any>,
     DataType extends object = object,
     ModelType extends TurboModel = TurboModel
-> extends TurboElement<ViewType, DataType, ModelType> {
+> extends VcComponent<ViewType, DataType, ModelType, DocumentManager> {
     public readonly toolPanel: ToolPanel;
 
     public constructor(properties: ToolPanelContentProperties<ViewType, DataType, ModelType>) {
         super(properties);
         this.toolPanel = properties.toolPanel;
+    }
+
+    public get toolManager(): ToolManager {
+        return this.toolPanel.toolManager;
+    }
+
+    public get contextManager(): ContextManager {
+        return this.toolPanel.contextManager;
     }
 
     public attach(): void {}

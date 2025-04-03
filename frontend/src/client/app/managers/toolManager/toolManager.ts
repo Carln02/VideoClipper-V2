@@ -23,7 +23,7 @@ export class ToolManager {
      */
     public readonly onToolChange: Delegate<(oldTool: Tool, newTool: Tool, type: ClickMode) => void>;
 
-    constructor() {
+    public constructor() {
         //Cancel construction if exists already
         if (ToolManager.instance) return ToolManager.instance;
         ToolManager.instance = this;

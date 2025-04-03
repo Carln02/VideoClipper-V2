@@ -1,8 +1,7 @@
 import {ClipModel} from "./clip.model";
 import {Clip} from "./clip";
 import {DefaultEventName, div, icon, img, TurboDragEvent, TurboView} from "turbodombuilder";
-import {ContextManager} from "../../managers/contextManager/contextManager";
-import {ContextView} from "../../managers/contextManager/contextManager.types";
+import {DocumentScreens} from "../../managers/documentManager/documentManager.types";
 
 export class ClipView extends TurboView<Clip, ClipModel> {
     private clipContent: HTMLDivElement;
@@ -69,7 +68,7 @@ export class ClipView extends TurboView<Clip, ClipModel> {
 
     private dragHandle(side: "left" | "right", e: TurboDragEvent) {
         e.stopImmediatePropagation();
-        const delta = (ContextManager.instance.view == ContextView.canvas ? e.scaledDeltaPosition.x
+        const delta = (this.element.screenManager.currentType == DocumentScreens.canvas ? e.scaledDeltaPosition.x
             : e.deltaPosition.x) / this.element.timeline?.pixelsPerSecondUnit;
         if (side == "left") this.model.startTime += delta;
         else this.model.endTime += delta;

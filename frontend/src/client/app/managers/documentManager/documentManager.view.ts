@@ -2,8 +2,9 @@ import {div, TurboView} from "turbodombuilder";
 import {DocumentManager} from "./documentManager";
 import {DocumentManagerModel} from "./documentManager.model";
 import {ToolPanel} from "../../panels/toolPanel/toolPanel";
-import {Canvas} from "../../views/canvas/canvas";
-import {Camera} from "../../views/camera/camera";
+import {Camera} from "../../screens/camera/camera";
+import {DocumentScreens} from "./documentManager.types";
+import {Canvas} from "../../screens/canvas/canvas";
 
 export class DocumentManagerView extends TurboView<DocumentManager, DocumentManagerModel> {
     private screenParent: HTMLElement;
@@ -13,29 +14,32 @@ export class DocumentManagerView extends TurboView<DocumentManager, DocumentMana
     public cardsParent: HTMLElement;
     public flowsParent: HTMLElement;
 
-    public canvas: Canvas;
-    public camera: Camera;
-
     public toolPanel: ToolPanel;
+
+    initialize() {
+        super.initialize();
+        this.element.childHandler = this.screenParent;
+    }
 
     protected setupUIElements() {
         super.setupUIElements();
 
         this.screenParent = div();
+        this.element.screensParent = this.screenParent;
 
         this.cardsParent = div();
         this.flowsParent = div();
 
-        this.toolPanel = new ToolPanel();
-        this.canvas = new Canvas(this.element);
-        this.camera = new Camera(this.element);
+        this.toolPanel = new ToolPanel({screenManager: this.element});
+
+        this.element.addScreen(new Canvas(this.element), DocumentScreens.canvas);
+        this.element.addScreen(new Camera(this.element), DocumentScreens.camera);
     }
 
     protected setupUILayout() {
         super.setupUILayout();
 
         this.element.addChild([this.screenParent, this.toolPanel]);
-        this.screenParent.addChild([this.canvas, this.camera]);
-        this.canvas.content.addChild([this.flowsParent, this.cardsParent]);
+        this.element.canvas.content.addChild([this.flowsParent, this.cardsParent]);
     }
 }

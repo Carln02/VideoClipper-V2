@@ -1,8 +1,5 @@
-capture-mode-slider {
+.capture-mode-slider {
     display: inline-flex;
-    flex-direction: row;
-    align-items: center;
-
     width: 6em;
     padding: 1em;
     margin: 0 -3em 0 -1.5em;
@@ -11,15 +8,13 @@ capture-mode-slider {
     transform-origin: 50% 50%;
 }
 
-capture-mode-slider > div {
-    position: relative;
+.capture-mode-slider > * {
+    padding: 0 1em;
     color: white;
-    min-width: 100%;
-    text-align: center;
     cursor: pointer;
     user-select: none;
 }
 
-capture-mode-slider > div.active {
+.capture-mode-slider > .active {
     font-weight: bold;
 }

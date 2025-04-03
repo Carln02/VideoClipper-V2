@@ -6,6 +6,7 @@ import {TimelineModel} from "./timeline.model";
 import {TimelineView} from "./timeline.view";
 import {TurboDrawerProperties} from "turbodombuilder";
 import { YArray } from "../../../../yManagement/yManagement.types";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 export type ClipTimelineEntry = {
     clip?: Clip,
@@ -16,6 +17,7 @@ export type ClipTimelineEntry = {
 }
 
 export type TimelineProperties = TurboDrawerProperties<TimelineView, YArray<SyncedClip>, TimelineModel> & {
+    screenManager: DocumentManager,
     card: Card,
     renderer: ClipRenderer
 };

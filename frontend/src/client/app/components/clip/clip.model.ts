@@ -1,8 +1,8 @@
 import {YComponentModel} from "../../../../yManagement/yModel/types/yComponentModel";
 import {SyncedText} from "../textElement/textElement.types";
 import {get_video} from "../../../sync/videostore";
-import {SyncedMedia} from "../../managers/captureManager/captureManager.types";
 import {YArray, YMapEvent } from "../../../../yManagement/yManagement.types";
+import {SyncedMedia} from "../../managers/captureManager/captureManager.types";
 
 export class ClipModel extends YComponentModel {
     private _metadata: SyncedMedia;

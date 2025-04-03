@@ -2,7 +2,7 @@ import {SyncedClip} from "../clip/clip.types";
 import {auto, define} from "turbodombuilder";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {Clip} from "../clip/clip";
-import {Canvas} from "../../views/canvas/canvas";
+import {Canvas} from "../../screens/canvas/canvas";
 import "./timeline.css";
 import {Card} from "../card/card";
 import {ClipTimelineEntry, TimelineProperties} from "./timeline.types";
@@ -15,15 +15,18 @@ import {TimelineTimeController} from "./timeline.timeController";
 import {TimelineClipHandler} from "./timeline.clipHandler";
 import {TimelineTimeHandler} from "./timeline.timeHandler";
 import { YArray } from "../../../../yManagement/yManagement.types";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 @define("vc-timeline")
 export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, TimelineModel> {
+    public screenManager: DocumentManager;
     public readonly renderer: ClipRenderer;
 
     public constructor(properties: TimelineProperties) {
         super(properties);
         this.renderer = properties.renderer;
         this.card = properties.card;
+        this.screenManager = properties.screenManager;
 
         this.mvc.generate({
             viewConstructor: TimelineView,
@@ -83,7 +86,7 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
     }
 
     public get width() {
-        return this.model.totalDuration * this.pixelsPerSecondUnit * (Canvas.instance.scale || 1);
+        return this.model.totalDuration * this.pixelsPerSecondUnit * (this.screenManager.canvas.scale || 1);
     }
 
     public removeClipAt(position: number) {

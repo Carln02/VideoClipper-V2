@@ -1,8 +1,6 @@
 import {Tool} from "../tool/tool";
-import {Canvas} from "../../views/canvas/canvas";
 import {ClickMode, define, TurboDragEvent, TurboEvent} from "turbodombuilder";
 import {Cursor} from "../../managers/cursorManager/cursorManager.types";
-import {CursorManager} from "../../managers/cursorManager/cursorManager";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
 import {NavigationManager} from "../../managers/navigationManager/navigationManager";
@@ -17,11 +15,7 @@ export class NavigatorTool extends Tool {
     }
 
     private get navigationManager(): NavigationManager {
-        return Canvas.instance.navigationManager;
-    }
-
-    private get cursorManager(): CursorManager {
-        return CursorManager.instance;
+        return this.documentManager.canvas.navigationManager;
     }
 
     public activate() {

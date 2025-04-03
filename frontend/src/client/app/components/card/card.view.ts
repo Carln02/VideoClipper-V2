@@ -56,7 +56,7 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
         this.titleElement = new TurboInput({selectTextOnFocus: true});
         this.durationElement = div();
 
-        this._renderer = new ClipRenderer();
+        this._renderer = new ClipRenderer({screenManager: this.element.screenManager});
 
         this._metadataDrawer = new MetadataDrawer({
             card: this.element,
@@ -66,6 +66,7 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
         });
 
         this._timeline = new Timeline({
+            screenManager: this.element.screenManager,
             data: this.model.syncedClips,
             card: this.element,
             renderer: this.renderer,

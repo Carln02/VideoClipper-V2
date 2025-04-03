@@ -1,6 +1,6 @@
 import "./clip.css";
 import {Card} from "../card/card";
-import {define, TurboElement} from "turbodombuilder";
+import {define} from "turbodombuilder";
 import {Timeline} from "../timeline/timeline";
 import {ClipProperties, SyncedClip} from "./clip.types";
 import {ClipView} from "./clip.view";
@@ -8,9 +8,11 @@ import {ClipModel} from "./clip.model";
 import {SyncedMedia} from "../../managers/captureManager/captureManager.types";
 import {ClipTextHandler} from "./clip.textHandler";
 import {ClipThumbnailController} from "./clipThumbnailController";
+import {VcComponent} from "../component/component";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 @define("vc-clip")
-export class Clip extends TurboElement<ClipView, SyncedClip, ClipModel> {
+export class Clip extends VcComponent<ClipView, SyncedClip, ClipModel, DocumentManager> {
     public readonly timeline: Timeline;
 
     constructor(properties: ClipProperties) {

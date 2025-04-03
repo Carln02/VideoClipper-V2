@@ -3,21 +3,23 @@ import {
     define,
     div,
     icon, TurboDragEvent,
-    TurboElement, TurboEvent,
+    TurboEvent,
     TurboEventName,
-    TurboIcon, TurboMarkingMenu,
-    TurboProperties, TurboSelectEntry
+    TurboIcon, TurboMarkingMenu, TurboSelectEntry
 } from "turbodombuilder";
 import "./scrubber.css";
-import {Canvas} from "../../views/canvas/canvas";
-import {ScrubberMenu} from "./scrubber.types";
+import {ScrubberMenu, ScrubberProperties} from "./scrubber.types";
 import {Clip} from "../clip/clip";
 import {Timeline} from "../timeline/timeline";
 import {ClipTimelineEntry} from "../timeline/timeline.types";
+import {VcComponent} from "../component/component";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 @define("vc-scrubber")
-export class Scrubber extends TurboElement {
+export class Scrubber extends VcComponent<any, any, any, DocumentManager> {
     private static markingMenu: TurboMarkingMenu;
+
+    public screenManager: DocumentManager;
 
     private readonly head: TurboIcon;
     private readonly markingMenuHandle: HTMLDivElement;
@@ -32,10 +34,10 @@ export class Scrubber extends TurboElement {
     public onScrubbing: (e: TurboDragEvent) => void;
     public onScrubbingEnd: (e: TurboDragEvent) => void;
 
-    constructor(timeline: Timeline, properties: TurboProperties = {}) {
+    public constructor(properties: ScrubberProperties = {}) {
         super(properties);
         if (!Scrubber.markingMenu) this.createMarkingMenu();
-        this.timeline = timeline;
+        this.timeline = properties.timeline;
         this.head = icon({parent: this, icon: "scrubber-head", directory: "assets/misc"});
         this.markingMenuHandle = div({parent: this});
 
@@ -109,7 +111,7 @@ export class Scrubber extends TurboElement {
             values: [split, mute, insertCard, trimRight, deleteRight, deleteEntry, trimLeft, deleteLeft, reshoot, hide],
             onSelect: () => Scrubber.markingMenu.show(false)
         });
-        Canvas.instance.content.addChild(Scrubber.markingMenu);
+        this.screenManager.canvas.content.addChild(Scrubber.markingMenu);
     }
 
     private initEvents() {
@@ -147,7 +149,7 @@ export class Scrubber extends TurboElement {
      */
     @auto()
     public set translation(value: number) {
-        this.style.transform = `translate(calc(${value / Canvas.instance.scale}px - 50%), 0)`;
+        this.style.transform = `translate(calc(${value / this.screenManager.canvas.scale}px - 50%), 0)`;
     }
 
     private initMarkingMenu() {

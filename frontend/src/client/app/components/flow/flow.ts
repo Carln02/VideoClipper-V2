@@ -1,4 +1,4 @@
-import {define, Point, TurboCustomProperties, TurboElement} from "turbodombuilder";
+import {define, Point} from "turbodombuilder";
 import "./flow.css";
 import {FlowPoint, SyncedFlow} from "./flow.types";
 import {FlowView} from "./flow.view";
@@ -8,13 +8,16 @@ import {FlowBranchesHandler} from "./flow.branchesHandler";
 import {FlowSearchHandler} from "./flow.searchHandler";
 import {FlowBranch} from "../flowBranch/flowBranch";
 import {FlowCleaningHandler} from "./flow.cleaningHandler";
+import {VcComponent} from "../component/component";
+import {VcComponentProperties} from "../component/component.types";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 /**
  * @description A reactiveComponent that represents a flow connecting cards
  */
 @define("vc-flow")
-export class Flow extends TurboElement<FlowView, SyncedFlow, FlowModel> {
-    public constructor(properties: TurboCustomProperties<FlowView, SyncedFlow, FlowModel>) {
+export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, DocumentManager> {
+    public constructor(properties: VcComponentProperties<FlowView, SyncedFlow, FlowModel, DocumentManager> = {}) {
         super(properties);
         this.mvc.generate({
             viewConstructor: FlowView,

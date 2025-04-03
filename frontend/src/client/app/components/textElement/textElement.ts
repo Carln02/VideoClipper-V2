@@ -1,15 +1,17 @@
 import {SyncedText, TextElementProperties, TextType} from "./textElement.types";
-import {define, Point, TurboElement} from "turbodombuilder";
+import {define, Point} from "turbodombuilder";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import "./textElement.css";
 import {Clip} from "../clip/clip";
 import {Card} from "../card/card";
-import {Camera} from "../../views/camera/camera";
 import {TextElementView} from "./textElement.view";
 import {TextElementModel} from "./textElement.model";
+import {Camera} from "../../screens/camera/camera";
+import {VcComponent} from "../component/component";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 @define("vc-text-entry")
-export class TextElement extends TurboElement<TextElementView, SyncedText, TextElementModel> {
+export class TextElement extends VcComponent<TextElementView, SyncedText, TextElementModel, DocumentManager> {
     public readonly renderer: ClipRenderer;
 
     public constructor(properties: TextElementProperties) {
@@ -65,7 +67,7 @@ export class TextElement extends TurboElement<TextElementView, SyncedText, TextE
 
     public translateBy(deltaPosition: Point) {
         this.model.origin = deltaPosition
-            .div(Camera.instance.frameWidth, Camera.instance.frameHeight)
+            .div(this.screenManager.camera.frameWidth, this.screenManager.camera.frameHeight)
             .add(this.model.origin)
             .object;
     }

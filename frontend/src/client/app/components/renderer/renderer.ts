@@ -2,14 +2,15 @@ import "./renderer.css";
 import {RendererView} from "./renderer.view";
 import {RendererModel} from "./renderer.model";
 import {RendererProperties} from "./renderer.types";
-import {TurboElement} from "turbodombuilder";
 import {RendererCanvasController} from "./renderer.canvasController";
 import {RendererDrawingController} from "./renderer.drawingController";
+import {VcComponent} from "../component/component";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 export abstract class Renderer<
     ViewType extends RendererView = RendererView<any, any>,
     ModelType extends RendererModel = RendererModel
-> extends TurboElement<ViewType, object, ModelType> {
+> extends VcComponent<ViewType, object, ModelType, DocumentManager> {
     protected constructor(properties: RendererProperties<ViewType, ModelType> = {}) {
         super(properties);
     }

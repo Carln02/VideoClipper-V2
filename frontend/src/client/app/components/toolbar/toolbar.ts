@@ -1,17 +1,21 @@
-import {define, TurboElement, TurboProperties, DefaultEventName, ClickMode} from "turbodombuilder";
+import {define, DefaultEventName, ClickMode} from "turbodombuilder";
 import "./toolbar.css";
-import {ToolManager} from "../../managers/toolManager/toolManager";
 import {ToolView} from "../../tools/tool/toolView";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
+import {VcComponent} from "../component/component";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
+import {VcComponentProperties} from "../component/component.types";
 
 @define("vc-toolbar")
-export class Toolbar extends TurboElement {
-    private toolManager: ToolManager;
+export class Toolbar extends VcComponent {
+    public screenManager: DocumentManager;
 
-    constructor(properties: TurboProperties = {}) {
+    public constructor(properties: VcComponentProperties = {}) {
         super(properties);
+    }
 
-        this.toolManager = ToolManager.instance;
+    public get toolManager() {
+        return this.screenManager.toolManager;
     }
 
     public populateWith(...names: ToolType[]) {
@@ -23,7 +27,7 @@ export class Toolbar extends TurboElement {
     }
 
     private addToolInstance(tool: ToolView) {
-        tool.addEventListener(DefaultEventName.click, (e) => {
+        tool?.addEventListener(DefaultEventName.click, (e) => {
             this.toolManager.setTool(tool.tool, ClickMode.left);
             e.stopImmediatePropagation();
         });

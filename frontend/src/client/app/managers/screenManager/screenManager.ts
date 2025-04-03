@@ -1,0 +1,86 @@
+import {
+    define,
+    Shown,
+    StatefulReifect,
+    StatefulReifectProperties,
+    TurboModel,
+    TurboView
+} from "turbodombuilder";
+import {ScreenManagerProperties} from "./screenManager.types";
+import "./screenManager.css";
+import {VcComponent} from "../../components/component/component";
+
+@define()
+export class ScreenManager<
+    ScreenType extends string | number | symbol = string | number | symbol,
+    ViewType extends TurboView = TurboView<any, any>,
+    DataType extends object = object,
+    ModelType extends TurboModel<DataType> = TurboModel,
+    ManagerType extends ScreenManager = any
+> extends VcComponent<ViewType, DataType, ModelType, ManagerType> {
+    private readonly screens: Map<ScreenType, VcComponent> = new Map();
+
+    public screensParent: Node = this;
+
+    private _currentType: ScreenType;
+    private _showReifect: StatefulReifect<Shown>;
+
+    public constructor(properties: ScreenManagerProperties<ScreenType, ViewType, DataType, ModelType, ManagerType>) {
+        super(properties);
+        this.showReifect = properties.showReifect;
+        if (properties.screensParent) this.screensParent = properties.screensParent;
+        if (properties.screens) Object.entries(properties.screens).forEach(([key, entry]) => {
+            this.addScreen(entry as VcComponent, key as ScreenType);
+        });
+    }
+
+    public get currentType(): ScreenType {
+        return this._currentType;
+    }
+
+    public set currentType(value: ScreenType) {
+        const oldScreen = this.getScreen(this._currentType);
+        this._currentType = value;
+        this.switchScreens(oldScreen, this.getScreen(value));
+    }
+
+    public get currentScreen(): VcComponent {
+        return this.getScreen(this.currentType);
+    }
+
+    public get showReifect(): StatefulReifect<Shown> {
+        return this._showReifect;
+    }
+
+    public set showReifect(value: StatefulReifect<Shown> | StatefulReifectProperties<Shown>) {
+        if (value instanceof StatefulReifect) this._showReifect = value;
+        else if (typeof value === "object") this._showReifect = new StatefulReifect(value);
+        else this._showReifect = new StatefulReifect<Shown>({
+                states: [Shown.visible, Shown.hidden],
+                styles: {
+                    [Shown.visible]: "visibility: visible; pointer-events: all",
+                    [Shown.hidden]: "visibility: hidden; pointer-events: none",
+                }
+            });
+    }
+
+    public addScreen(screen: VcComponent, type: ScreenType) {
+        this.screens.set(type, screen);
+        this.screensParent.addChild(screen);
+        this.showReifect.apply(Shown.hidden, screen);
+    }
+
+    public removeScreen(type: ScreenType) {
+        this.screens.get(type)?.remove();
+        this.screens.delete(type);
+    }
+
+    public getScreen(type: ScreenType): VcComponent {
+        return this.screens.get(type);
+    }
+
+    protected switchScreens(oldScreen: VcComponent, newScreen: VcComponent) {
+        if (oldScreen) this.showReifect.apply(Shown.hidden, oldScreen);
+        if (newScreen) this.showReifect.apply(Shown.visible, newScreen);
+    }
+}

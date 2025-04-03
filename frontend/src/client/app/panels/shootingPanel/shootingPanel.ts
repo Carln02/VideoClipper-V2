@@ -3,20 +3,17 @@ import "./shootingPanel.css";
 import {ToolPanelContent} from "../toolPanelContent/toolPanelContent";
 import {ShootingPanelView} from "./shootingPanel.view";
 import {ShootingPanelModel} from "./shootingPanel.model";
-import {Camera} from "../../views/camera/camera";
+import {Camera} from "../../screens/camera/camera";
 import {CaptureMode} from "../../managers/captureManager/captureManager.types";
 import {ClipRendererVisibility} from "../../components/clipRenderer/clipRenderer.types";
 import {ToolPanelContentProperties} from "../toolPanelContent/toolPanelContent.types";
 
 @define()
 export class ShootingPanel extends ToolPanelContent<ShootingPanelView, object, ShootingPanelModel> {
-    public readonly camera: Camera;
-
     private _mode: CaptureMode;
 
     public constructor(properties: ToolPanelContentProperties<ShootingPanelView, object, ShootingPanelModel>) {
         super(properties);
-        this.camera = Camera.instance;
         this.mvc.generate({
             modelConstructor: ShootingPanelModel,
             viewConstructor: ShootingPanelView
@@ -25,6 +22,10 @@ export class ShootingPanel extends ToolPanelContent<ShootingPanelView, object, S
 
     public attach() {}
     public detach() {}
+
+    public get camera(): Camera {
+        return this.screenManager.camera;
+    }
 
     public get mode(): CaptureMode {
         return this._mode;
@@ -42,7 +43,7 @@ export class ShootingPanel extends ToolPanelContent<ShootingPanelView, object, S
     public updateCamera() {
         if (this.mode == CaptureMode.create) {
             this.camera.visible = true;
-            this.camera.fillCanvas(this.backgroundSelector.selectedValue);
+            // this.camera.fillCanvas(this.backgroundSelector.selectedValue);
         } else if (this.mode == CaptureMode.videoShooting) {
             this.camera.visibilityMode = ClipRendererVisibility.hidden;
         } else {

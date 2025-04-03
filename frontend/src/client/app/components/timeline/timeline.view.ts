@@ -16,7 +16,7 @@ export class TimelineView extends TurboView<Timeline, TimelineModel> {
         super.setupUIElements();
 
         this.clipsContainer = div({classes: "clips-container"});
-        this.scrubber = new Scrubber(this.element, {parent: this.clipsContainer});
+        this.scrubber = new Scrubber({timeline: this.element, parent: this.clipsContainer, screenManager: this.element.screenManager});
 
         this.currentTimeText = p({style: "min-width: 3em"});
         this.totalDurationText = p({style: "min-width: 3em; text-align: right"});

@@ -1,8 +1,11 @@
 import {SyncedBranchingNode} from "./branchingNode.types";
-import {define, Point, TurboElement, TurboProperties} from "turbodombuilder";
+import {define, Point} from "turbodombuilder";
 import "./branchingNode.css";
 import {BranchingNodeModel} from "./branchingNode.model";
 import {BranchingNodeView} from "./branchingNode.view";
+import {VcComponentProperties} from "../component/component.types";
+import {VcComponent} from "../component/component";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 /**
  * @class BranchingNode
@@ -16,8 +19,10 @@ export class BranchingNode<
     View extends BranchingNodeView = BranchingNodeView,
     Data extends SyncedBranchingNode = SyncedBranchingNode,
     Model extends BranchingNodeModel = BranchingNodeModel
-> extends TurboElement<View, Data, Model> {
-    public constructor(properties: TurboProperties<"div", View, Data, Model> = {}) {
+> extends VcComponent<View, Data, Model, DocumentManager> {
+    public screenManager: DocumentManager;
+
+    public constructor(properties: VcComponentProperties<View, Data, Model, DocumentManager> = {}) {
         super(properties);
         if (properties.data) this.mvc.generate({
             viewConstructor: BranchingNodeView as new () => View,

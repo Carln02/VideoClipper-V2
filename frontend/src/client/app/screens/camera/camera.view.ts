@@ -24,15 +24,16 @@ export class CameraView extends TurboView<Camera, CameraModel> {
     protected setupUIElements() {
         super.setupUIElements();
 
-        this.cameraRenderer = new CameraRenderer({videoProperties: {autoplay: true, muted: true, playsInline: true}});
-        this.clipRenderer = new ClipRenderer({videoProperties: {playsInline: true}});
+        this.cameraRenderer = new CameraRenderer({screenManager: this.element.screenManager, videoProperties: {autoplay: true, muted: true, playsInline: true}});
+        this.clipRenderer = new ClipRenderer({screenManager: this.element.screenManager, videoProperties: {playsInline: true}});
 
         //TODO this.sidePanel = new SidePanel(this.element, this.captureManager);
 
-        this.toolbar = new Toolbar({classes: "left-toolbar"});
+        this.toolbar = new Toolbar({classes: "left-toolbar", screenManager: this.element.screenManager});
         this.toolbar.populateWith(ToolType.selection, ToolType.shoot, ToolType.text, ToolType.delete);
 
         this.timeline = new Timeline({
+            screenManager: this.element.screenManager,
             card: this.element.card,
             renderer: this.clipRenderer,
             direction: Side.top,
