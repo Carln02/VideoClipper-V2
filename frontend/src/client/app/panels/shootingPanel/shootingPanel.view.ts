@@ -3,7 +3,7 @@ import {ShootingPanel} from "./shootingPanel";
 import {ShootingPanelModel} from "./shootingPanel.model";
 import {CaptureButton} from "../../components/captureButton/captureButton";
 import {CaptureTimer} from "../../components/captureTimer/captureTimer";
-import {DefaultEventName, Direction, div, TurboIconToggle, TurboSelectWheel} from "turbodombuilder";
+import {DefaultEventName, div, TurboIconToggle, TurboSelectEntry, TurboSelectWheel} from "turbodombuilder";
 import {BackgroundSelector} from "../../components/backgroundSelector/backgroundSelector";
 import {
     AnimatedContentSwitchingDiv
@@ -15,7 +15,7 @@ import {CaptureModeSlider} from "../../components/captureModeSlider/captureModeS
 export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, ShootingPanelModel> {
     private captureButton: CaptureButton;
     private modeSlider: TurboSelectWheel;
-    captureTimer: CaptureTimer;
+    public captureTimer: CaptureTimer;
 
     private ghost: TurboIconToggle;
     private switchCamera: TurboIconToggle;
@@ -23,7 +23,16 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
 
     private backgroundSelector: BackgroundSelector;
 
+    private shootingDiv: TurboSelectEntry;
+    private backgroundColorDiv: TurboSelectEntry;
     private animatedDiv: AnimatedContentSwitchingDiv;
+
+    public initialize() {
+        super.initialize();
+        this.ghost.toggled = true;
+        this.microphone.toggled = true;
+        this.modeSlider.index = 1;
+    }
 
     protected setupUIElements() {
         super.setupUIElements();
@@ -33,34 +42,19 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
             values: [CaptureMode.photo, CaptureMode.video, CaptureMode.create],
         });
 
-        requestAnimationFrame(() => this.modeSlider.index = 1);
-
         this.captureTimer = new CaptureTimer();
         this.captureButton = new CaptureButton();
 
-        this.ghost = new TurboIconToggle({
-            icon: "ghost-on", toggled: true,
-            onToggle: (value, el) => {
-                el.icon = "ghost-" + (value ? "on" : "off");
-                this.element.camera.visibilityMode = value ? ClipRendererVisibility.ghosting : ClipRendererVisibility.hidden;
-            }
-        });
-
-        this.switchCamera = new TurboIconToggle({
-            icon: "switch-camera",
-            onToggle: () => this.element.camera.switchCamera()
-        });
-
-        this.microphone = new TurboIconToggle({
-            icon: "microphone-on", toggled: true,
-            onToggle: (value, el) => {
-                el.icon = "microphone-" + (value ? "on" : "off");
-                this.element.camera.muteAudio(!value);
-            },
-        });
+        this.ghost = new TurboIconToggle({icon: "ghost-on", toggleOnClick: true});
+        this.switchCamera = new TurboIconToggle({icon: "switch-camera", toggleOnClick: true});
+        this.microphone = new TurboIconToggle({icon: "microphone-on", toggleOnClick: true});
 
         // this.backgroundSelector = new BackgroundSelector(this, {style: `margin-top: ${sidePanel.panelMarginTop}px`});
-        this.animatedDiv = new AnimatedContentSwitchingDiv();
+
+        this.shootingDiv = new TurboSelectEntry({value: "shooting", element: div()});
+        this.backgroundColorDiv = new TurboSelectEntry({value: "backgroundColor", element: div()});
+
+        this.animatedDiv = new AnimatedContentSwitchingDiv({values: [this.shootingDiv, this.backgroundColorDiv]});
     }
 
     protected setupUILayout() {
@@ -69,22 +63,19 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
         this.element.addChild([this.modeSlider, this.animatedDiv]);
         this.element.camera.addChild(this.captureTimer);
 
-        this.animatedDiv.addChild([
+        this.shootingDiv.addChild([
             div({
-                children: [
-                    div({
-                        classes: "camera-buttons-div",
-                        children: this.ghost
-                    }),
-                    this.captureButton,
-                    div({
-                        classes: "camera-buttons-div",
-                        children: [this.switchCamera, this.microphone]
-                    })
-                ]
+                classes: "camera-buttons-div",
+                children: this.ghost
             }),
-            // this.backgroundSelector
+            this.captureButton,
+            div({
+                classes: "camera-buttons-div",
+                children: [this.switchCamera, this.microphone]
+            })
         ]);
+
+        // this.backgroundColorDiv.addChild(this.backgroundSelector);
     }
 
     protected setupUIListeners() {
@@ -92,18 +83,49 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
 
         this.captureButton.addListener(DefaultEventName.click, (e: Event) => {
             e.stopImmediatePropagation();
-            if (this.element.mode == CaptureMode.photo) this.element.camera.snapPicture();
-            else if (this.element.mode == CaptureMode.video) this.element.mode = CaptureMode.videoShooting;
-            else if (this.element.mode == CaptureMode.videoShooting) this.element.mode = CaptureMode.video;
+            if (this.model.mode == CaptureMode.photo) this.element.camera.snapPicture();
+            else if (this.model.mode == CaptureMode.video) this.model.mode = CaptureMode.videoShooting;
+            else if (this.model.mode == CaptureMode.videoShooting) this.model.mode = CaptureMode.video;
         });
 
-        this.ghost.addListener(DefaultEventName.click, () => this.ghost.toggle());
-        this.switchCamera.addListener(DefaultEventName.click, () => this.switchCamera.toggle());
-        this.microphone.addListener(DefaultEventName.click, () => this.microphone.toggle());
+        this.ghost.onToggle = (value, el) => {
+            el.icon = "ghost-" + (value ? "on" : "off");
+            this.element.camera.visibilityMode = value ? ClipRendererVisibility.ghosting : ClipRendererVisibility.hidden;
+        };
+
+        this.microphone.onToggle = (value, el) => {
+            el.icon = "microphone-" + (value ? "on" : "off");
+            this.element.camera.muteAudio(!value);
+        };
+
+        this.switchCamera.onToggle = () => this.element.camera.switchCamera();
+
+        this.modeSlider.onSelect = ((b, entry) => {
+            if (b) this.model.mode = entry.value as CaptureMode;
+        });
     }
 
+    protected setupChangedCallbacks() {
+        super.setupChangedCallbacks();
 
-    public refresh(mode: CaptureMode = this.element.mode) {
+        this.emitter.add("stopShooting", () => {
+            this.captureTimer.stop();
+            this.element.camera.stopRecording();
+        });
+
+        this.emitter.add("modeChanged", () => this.refresh());
+    }
+
+    public refresh(mode: CaptureMode = this.model.mode) {
+        if (mode == CaptureMode.create) this.element.camera.visible = true;
+        // this.camera.fillCanvas(this.backgroundSelector.selectedValue);
+        else if (mode == CaptureMode.videoShooting) {
+            this.element.camera.visibilityMode = ClipRendererVisibility.hidden;
+            this.captureTimer.start();
+            this.element.camera.startRecording();
+        }
+        else this.element.camera.visible = false;
+
         this.modeSlider.show(mode != CaptureMode.videoShooting);
         this.captureButton.updateState(mode);
         // this.backgroundSelector.show(this.mode == CaptureMode.create);
@@ -111,7 +133,6 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
         this.ghost.show(mode != CaptureMode.create);
         this.switchCamera.show(mode != CaptureMode.create);
         this.microphone.show(mode == CaptureMode.video || mode == CaptureMode.videoShooting);
-        this.animatedDiv.switchTo(this.animatedDiv.children[mode == CaptureMode.create ? 1 : 0] as HTMLElement);
-
+        this.animatedDiv.select(mode == CaptureMode.create ? this.backgroundColorDiv : this.shootingDiv);
     }
 }

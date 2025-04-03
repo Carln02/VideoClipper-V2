@@ -47,6 +47,7 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
 
     public connectedCallback() {
         this.canvasController?.resize();
+        this.canvasController?.refreshCanvas();
     }
 
     public set visibilityMode(value: ClipRendererVisibility) {

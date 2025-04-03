@@ -12,6 +12,7 @@ import { YArray } from "../../../../yManagement/yManagement.types";
 import {SyncedClip} from "../clip/clip.types";
 import {VcComponentProperties} from "../component/component.types";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
+import {Clip} from "../clip/clip";
 
 /**
  * @description Class representing a card
@@ -82,6 +83,10 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
     public delete() {
         //TODO convert to branching node if on branches
         super.delete();
+    }
+
+    public removeClip(clip: Clip) {
+        return this.timeline.removeClip(clip);
     }
 
     //TODO Move to clipRenderer

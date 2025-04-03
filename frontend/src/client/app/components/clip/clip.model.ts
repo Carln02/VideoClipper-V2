@@ -3,6 +3,7 @@ import {SyncedText} from "../textElement/textElement.types";
 import {get_video} from "../../../sync/videostore";
 import {YArray, YMapEvent } from "../../../../yManagement/yManagement.types";
 import {SyncedMedia} from "../../managers/captureManager/captureManager.types";
+import {ClipTextHandler} from "./clip.textHandler";
 
 export class ClipModel extends YComponentModel {
     private _metadata: SyncedMedia;
@@ -133,5 +134,9 @@ export class ClipModel extends YComponentModel {
 
     public set muted(value: boolean) {
         this.setData("muted", value);
+    }
+
+    public get textHandler(): ClipTextHandler {
+        return this.getHandler("text") as ClipTextHandler;
     }
 }

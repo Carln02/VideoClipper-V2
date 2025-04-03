@@ -25,7 +25,7 @@ export class RendererCanvasController<
         if (typeof fill == "string") {
             if (fill.length < 30) {
                 // Assume it's a color string
-                this.view.canvasContext.fillStyle = fill;
+                this.view.canvasContext.fillStyle = "#FFFFFF";
                 this.view.canvasContext.fillRect(0, 0, this.view.width, this.view.height);
                 return;
             } else {
@@ -51,18 +51,17 @@ export class RendererCanvasController<
 
     public resize(aspectRatio: number = 1.33, width: number = this.element.offsetWidth,
                   height: number = this.element.offsetHeight) {
-        requestAnimationFrame(() => {
-            if (width / height <= aspectRatio) {
-                this.element.setStyle("width", width + "px");
-                this.element.setStyle("height", width / aspectRatio + "px");
-                this.view.canvas.width = width;
-                this.view.canvas.height = width / aspectRatio;
-            } else {
-                this.element.setStyle("width", height * aspectRatio + "px");
-                this.element.setStyle("height", height + "px");
-                this.view.canvas.width = height * aspectRatio;
-                this.view.canvas.height = height;
-            }
-        });
+        if (width / height <= aspectRatio) {
+            this.element.setStyle("width", width + "px");
+            this.element.setStyle("height", width / aspectRatio + "px");
+            this.view.canvas.width = width;
+            this.view.canvas.height = width / aspectRatio;
+        } else {
+            this.element.setStyle("width", height * aspectRatio + "px");
+            this.element.setStyle("height", height + "px");
+            this.view.canvas.width = height * aspectRatio;
+            this.view.canvas.height = height;
+        }
+
     }
 }

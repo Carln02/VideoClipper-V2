@@ -7,11 +7,11 @@ import {RendererDrawingController} from "./renderer.drawingController";
 import {VcComponent} from "../component/component";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
 
-export abstract class Renderer<
+export class Renderer<
     ViewType extends RendererView = RendererView<any, any>,
     ModelType extends RendererModel = RendererModel
 > extends VcComponent<ViewType, object, ModelType, DocumentManager> {
-    protected constructor(properties: RendererProperties<ViewType, ModelType> = {}) {
+    public constructor(properties: RendererProperties<ViewType, ModelType> = {}) {
         super(properties);
     }
 

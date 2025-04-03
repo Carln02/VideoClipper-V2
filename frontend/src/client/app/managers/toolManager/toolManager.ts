@@ -7,9 +7,6 @@ import {SetToolOptions, ToolType} from "./toolManager.types";
  * @description Manages (ideally) all the tools in the application
  */
 export class ToolManager {
-    //Singleton
-    private static _instance: ToolManager | null = null;
-
     //All created tools
     private readonly tools: Map<ToolType, Tool>;
     //Tools mapped to keys
@@ -24,10 +21,6 @@ export class ToolManager {
     public readonly onToolChange: Delegate<(oldTool: Tool, newTool: Tool, type: ClickMode) => void>;
 
     public constructor() {
-        //Cancel construction if exists already
-        if (ToolManager.instance) return ToolManager.instance;
-        ToolManager.instance = this;
-
         //Init all maps
         this.tools = new Map<ToolType, Tool>();
         this.mappedKeysToTool = new Map<string, ToolType>();
@@ -38,17 +31,6 @@ export class ToolManager {
 
         //Initialization
         this.initEvents();
-    }
-
-    /**
-     * @description The singleton instance.
-     */
-    public static get instance() {
-        return this._instance;
-    }
-
-    private static set instance(value: ToolManager) {
-        this._instance = value;
     }
 
     //Utility callback to get the current tool based on the fired event's information

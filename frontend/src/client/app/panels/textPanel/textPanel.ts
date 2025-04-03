@@ -7,9 +7,18 @@ import {ToolPanelContent} from "../toolPanelContent/toolPanelContent";
 import {TextElement} from "../../components/textElement/textElement";
 import {ContextEntry} from "../../managers/contextManager/contextManager.types";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
+import {ToolPanelContentProperties} from "../toolPanelContent/toolPanelContent.types";
 
 @define()
 export class TextPanel extends ToolPanelContent<TextPanelView, SyncedText, TextPanelModel> {
+    public constructor(properties: ToolPanelContentProperties<TextPanelView, SyncedText, TextPanelModel>) {
+        super(properties);
+        this.mvc.generate({
+            viewConstructor: TextPanelView,
+            modelConstructor: TextPanelModel,
+        });
+    }
+
     public attach() {
         this.contextManager.onContextChange.add(this.updateDataFromContext);
         this.toolPanel.addContextCallback(this.onContextChange);

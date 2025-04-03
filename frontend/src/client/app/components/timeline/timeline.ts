@@ -1,14 +1,12 @@
 import {SyncedClip} from "../clip/clip.types";
-import {auto, define} from "turbodombuilder";
+import {auto, define, TurboDrawer} from "turbodombuilder";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {Clip} from "../clip/clip";
-import {Canvas} from "../../screens/canvas/canvas";
 import "./timeline.css";
 import {Card} from "../card/card";
 import {ClipTimelineEntry, TimelineProperties} from "./timeline.types";
 import {TimelineView} from "./timeline.view";
 import {TimelineModel} from "./timeline.model";
-import {TurboDrawer} from "../drawer/drawer";
 import {TimelinePlayController} from "./timeline.playController";
 import {TimelineClipController} from "./timeline.clipController";
 import {TimelineTimeController} from "./timeline.timeController";
@@ -87,6 +85,10 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
 
     public get width() {
         return this.model.totalDuration * this.pixelsPerSecondUnit * (this.screenManager.canvas.scale || 1);
+    }
+
+    public removeClip(clip: Clip) {
+        return this.model.clipHandler.removeClip(clip)
     }
 
     public removeClipAt(position: number) {

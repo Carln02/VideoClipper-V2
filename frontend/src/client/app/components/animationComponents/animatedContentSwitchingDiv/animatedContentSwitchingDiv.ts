@@ -1,74 +1,138 @@
-import {define, TurboElement, TurboProperties} from "turbodombuilder";
+import {
+    auto,
+    define, Reifect,
+    Shown,
+    StatefulReifect,
+    StatefulReifectProperties, StatelessReifectProperties,
+    TurboModel,
+    TurboSelect,
+    TurboSelectEntry,
+    TurboSelectProperties,
+    TurboView
+} from "turbodombuilder";
 import "./animatedContentSwitchingDiv.css";
 import {getSize} from "../../../../utils/size";
 
 @define("animated-content-switch")
-export class AnimatedContentSwitchingDiv extends TurboElement {
-    private _currentChild: HTMLElement | null = null;
+export class AnimatedContentSwitchingDiv<
+    ValueType = string,
+    SecondaryValueType = string,
+    EntryType extends TurboSelectEntry<ValueType, SecondaryValueType> = TurboSelectEntry<ValueType, SecondaryValueType>,
+    ViewType extends TurboView = TurboView<any, any>,
+    DataType extends object = object,
+    ModelType extends TurboModel<DataType> = TurboModel<any>
+> extends TurboSelect<ValueType, SecondaryValueType, EntryType, ViewType, DataType, ModelType> {
+    private _transitionReifect: StatefulReifect<Shown>;
+    private _sizeReifect: Reifect;
+    private _positionReifect: StatefulReifect<Shown>;
 
-    constructor(properties: TurboProperties = {}) {
+    public constructor(properties: TurboSelectProperties<ValueType, SecondaryValueType,
+        EntryType, ViewType, DataType, ModelType> = {}) {
         super(properties);
-        this.init();
+
+        this.transitionDuration = 0.3;
+        this.transitionReifect = undefined;
+        this.positionReifect = undefined;
+        this.sizeReifect = undefined;
     }
 
-    public get currentChild() {
-        return this._currentChild;
+
+    @auto()
+    public set transitionDuration(value: number) {
+        if (this.transitionReifect) this.transitionReifect.transitionDuration = value;
+        if (this.sizeReifect) this.sizeReifect.transitionDuration = value;
     }
 
-    private set currentChild(value: HTMLElement | null) {
-        this._currentChild = value;
+    public get transitionReifect(): StatefulReifect<Shown> {
+        return this._transitionReifect;
     }
 
-    public init() {
-        requestAnimationFrame(() => {
-            if (this.children.length > 0) {
-                this.switchTo(this.children[0] as HTMLElement);
-            } else setTimeout(() => this.init(), 100);
-        });
-    }
-
-    public switchTo(el: HTMLElement | number) {
-        if (typeof el == "number") {
-            if (this.children.length <= el) return;
-            el = this.children[el] as HTMLElement;
+    public set transitionReifect(value: StatefulReifect<Shown> | StatefulReifectProperties<Shown>) {
+        if (value instanceof StatefulReifect) this._transitionReifect = value;
+        else if (typeof value === "object") this._transitionReifect = new StatefulReifect<Shown>(value);
+        else {
+            this._transitionReifect = new StatefulReifect<Shown>({
+                states: [Shown.visible, Shown.hidden],
+                transitionProperties: ["transform", "opacity"],
+                transitionDuration: this.transitionDuration ?? 0,
+                transitionTimingFunction: "ease-out",
+                styles: {
+                    [Shown.visible]: {
+                        opacity: 1,
+                        transform: "translateX(0)",
+                        pointerEvents: "all",
+                    },
+                    [Shown.hidden]: {
+                        opacity: 0,
+                        transform: "translateX(100%)",
+                        pointerEvents: "none",
+                    }
+                }
+            });
         }
-        else if (!Array.from(this.children).includes(el)) return;
+    }
 
-        const oldChild = this.currentChild;
-        const newChild = el;
+    public get positionReifect(): StatefulReifect<Shown> {
+        return this._positionReifect;
+    }
 
-        const newChildSize = getSize(newChild);
-        this.animateSize(newChildSize.width, newChildSize.height);
+    public set positionReifect(value: StatefulReifect<Shown> | StatefulReifectProperties<Shown>) {
+        if (value instanceof StatefulReifect) this._positionReifect = value;
+        else if (typeof value === "object") this._positionReifect = new StatefulReifect<Shown>(value);
+        else {
+            this._positionReifect = new StatefulReifect<Shown>({
+                states: [Shown.visible, Shown.hidden],
+                transitionProperties: ["position"],
+                transitionDelay: {
+                    [Shown.visible]: this.transitionDuration ?? 0,
+                    [Shown.hidden]: 0
+                },
+                styles: {
+                    [Shown.visible]: "position: relative",
+                    [Shown.hidden]: "position: absolute"
+                }
+            });
+        }
+    }
 
-        if (oldChild) {
-            oldChild.style.opacity = "0";
-            oldChild.style.transform = "translateX(100%)";
-            oldChild.style.pointerEvents = "none";
+    public get sizeReifect(): Reifect {
+        return this._sizeReifect;
+    }
+
+    public set sizeReifect(value: Reifect | StatelessReifectProperties) {
+        if (this._sizeReifect) this._sizeReifect.detach(this);
+
+        if (value instanceof Reifect) this._sizeReifect = value;
+        else if (typeof value === "object") this._sizeReifect = new Reifect(value);
+        else {
+            this._sizeReifect = new Reifect({
+                transitionProperties: ["width", "height"],
+                transitionDuration: this.transitionDuration ?? 0,
+                transitionTimingFunction: "ease-out"
+            });
         }
 
-        newChild.style.opacity = "1";
-        newChild.style.transform = "translateX(0)";
-        newChild.style.pointerEvents = "all";
-
-        this.currentChild = newChild;
+        this._sizeReifect.attach(this);
     }
 
-    private animateSize(newWidth: number, newHeight: number) {
-        const oldWidth = this.offsetWidth;
-        const oldHeight = this.offsetHeight;
+    public select(entry: ValueType | EntryType): this {
+        super.select(entry);
+        this.entries.forEach(entry => {
+            // entry.reifects.attach(this.transitionReifect, this.positionReifect);
+            this.transitionReifect?.apply(entry == this.selectedEntry ? Shown.visible : Shown.hidden, entry);
+            // this.positionReifect?.apply(entry == this.selectedEntry ? Shown.visible : Shown.hidden, entry);
 
-        this.style.width = `${oldWidth}px`;
-        this.style.height = `${oldHeight}px`;
-
-        requestAnimationFrame(() => {
-            this.style.transition = "width 0.3s ease-out; height 0.3s ease-out";
-            this.style.width = `${newWidth}px`;
-            this.style.height = `${newHeight}px`;
+            entry.setStyle("position", "absolute", true);
         });
+        this.refreshSize();
+        return this;
     }
 
-    public refresh() {
-        const newChildSize = getSize(this.currentChild);
-        this.animateSize(newChildSize.width, newChildSize.height);
+    public refreshSize() {
+        this.setStyles({transition: "", width: `${this.offsetWidth}px`, height: `${this.offsetHeight}px`}, true);
+
+        this.sizeReifect?.apply();
+        const entrySize = getSize(this.selectedEntry);
+        this.setStyles({width: `${entrySize.width}px`, height: `${entrySize.height}px`});
     }
 }

@@ -58,8 +58,8 @@ export class ScreenManager<
         else this._showReifect = new StatefulReifect<Shown>({
                 states: [Shown.visible, Shown.hidden],
                 styles: {
-                    [Shown.visible]: "visibility: visible; pointer-events: all",
-                    [Shown.hidden]: "visibility: hidden; pointer-events: none",
+                    [Shown.visible]: "opacity: 1; pointer-events: all",
+                    [Shown.hidden]: "opacity: 0; pointer-events: none",
                 }
             });
     }

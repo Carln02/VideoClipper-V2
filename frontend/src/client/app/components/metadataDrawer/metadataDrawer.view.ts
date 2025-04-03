@@ -21,7 +21,7 @@ export class MetadataDrawerView extends TurboView<MetadataDrawer, MetadataDrawer
             values: ["Metadata", "Instructions"],
             customSelectedEntryClasses: "selected-tab",
             onSelect: (_value, _entry, index) => {
-                this.animationDiv.switchTo(index);
+                // this.animationDiv.switchTo(index);
                 this.element.refresh();
             }
         });

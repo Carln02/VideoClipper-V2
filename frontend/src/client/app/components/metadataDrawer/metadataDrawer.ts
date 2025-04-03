@@ -1,10 +1,9 @@
 import {MetadataDrawerProperties, SyncedCardMetadata} from "./metadataDrawer.types";
-import {auto, define} from "turbodombuilder";
+import {auto, define, TurboDrawer} from "turbodombuilder";
 import "./metadataDrawer.css";
 import {Card} from "../card/card";
 import {MetadataDrawerView} from "./metadataDrawer.view";
 import {MetadataDrawerModel} from "./metadataDrawer.model";
-import {TurboDrawer} from "../drawer/drawer";
 
 @define()
 export class MetadataDrawer extends TurboDrawer<MetadataDrawerView, SyncedCardMetadata, MetadataDrawerModel> {

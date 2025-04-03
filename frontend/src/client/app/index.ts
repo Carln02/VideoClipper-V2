@@ -1,7 +1,4 @@
 import * as logman from "../sync/logman";
-import {ToolManager} from "./managers/toolManager/toolManager";
-import {CursorManager} from "./managers/cursorManager/cursorManager";
-import {div, Point, TurboEventManager, turbofy, TurboIcon} from "turbodombuilder";
 import {GroupList} from "./views/grouplist/grouplist";
 import {FileList} from "./views/filelist/filelist";
 import {getDocument} from "../sync/datastore";
@@ -10,9 +7,8 @@ import "./main.css";
 import "./styles/input.css";
 import "./styles/markingMenu.css";
 import "./styles/drawer.css";
-import {DocumentManager} from "./managers/documentManager/documentManager";
 import {AppManager} from "./managers/appManager/appManager";
-
+import {AppScreens} from "./managers/appManager/appManager.types";
 
 
 //  Initialize login manager
@@ -46,12 +42,9 @@ export function show_projects() {
 export function show_project() {
     contents?.remove();
     app.preventDefaultEvents = true;
-
-    // contents = new Canvas(getDocument().getMap("document_content"));
-
     setTimeout(() => {
-        // contents = new Canvas(documentRoot())
         app.documentManager.document = getDocument();
+        app.currentType = AppScreens.document;
     }, 1000)
 }
 

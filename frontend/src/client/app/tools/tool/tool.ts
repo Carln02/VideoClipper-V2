@@ -24,6 +24,7 @@ export class Tool {
     constructor(documentManager: DocumentManager, name: ToolType) {
         this.name = name;
         this.documentManager = documentManager;
+        this.selected = false;
     }
 
     public get contextManager(): ContextManager {

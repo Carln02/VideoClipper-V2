@@ -1,6 +1,6 @@
 import "./clip.css";
 import {Card} from "../card/card";
-import {define} from "turbodombuilder";
+import {Coordinate, define} from "turbodombuilder";
 import {Timeline} from "../timeline/timeline";
 import {ClipProperties, SyncedClip} from "./clip.types";
 import {ClipView} from "./clip.view";
@@ -10,6 +10,7 @@ import {ClipTextHandler} from "./clip.textHandler";
 import {ClipThumbnailController} from "./clipThumbnailController";
 import {VcComponent} from "../component/component";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
+import {TextElement} from "../textElement/textElement";
 
 @define("vc-clip")
 export class Clip extends VcComponent<ClipView, SyncedClip, ClipModel, DocumentManager> {
@@ -84,6 +85,14 @@ export class Clip extends VcComponent<ClipView, SyncedClip, ClipModel, DocumentM
 
     public get duration(): number {
         return this.endTime - this.startTime;
+    }
+
+    public addText(position: Coordinate) {
+        return this.model.textHandler.addText(position);
+    }
+
+    public removeText(entry: TextElement) {
+        this.model.textHandler.removeText(entry);
     }
 
     /**
