@@ -4,10 +4,12 @@ import "./metadataDrawer.css";
 import {Card} from "../card/card";
 import {MetadataDrawerView} from "./metadataDrawer.view";
 import {MetadataDrawerModel} from "./metadataDrawer.model";
+import {YMap} from "../../../../yManagement/yManagement.types";
+import {YUtilities} from "../../../../yManagement/yUtilities";
 
 @define()
 export class MetadataDrawer extends TurboDrawer<MetadataDrawerView, SyncedCardMetadata, MetadataDrawerModel> {
-    constructor(properties: MetadataDrawerProperties) {
+    public constructor(properties: MetadataDrawerProperties) {
         super(properties);
 
         this.card = properties.card;
@@ -16,6 +18,10 @@ export class MetadataDrawer extends TurboDrawer<MetadataDrawerView, SyncedCardMe
             modelConstructor: MetadataDrawerModel,
             data: properties.card ? properties.card.metadata : undefined
         });
+    }
+
+    public static createData(data?: SyncedCardMetadata): SyncedCardMetadata & YMap {
+        return YUtilities.createYMap({});
     }
 
     @auto()

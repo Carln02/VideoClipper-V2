@@ -26,7 +26,7 @@ export class ToolPanelContentView<
 
         this.element.addChild(
             div({
-                classes: "side-panel-buttons-div",
+                classes: "main-buttons-div",
                 children: [this.cancelButton, this.saveButton, this.backButton]
             })
         );

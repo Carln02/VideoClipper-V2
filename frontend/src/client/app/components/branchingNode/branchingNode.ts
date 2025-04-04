@@ -46,6 +46,7 @@ export class BranchingNode<
      * amd updates the attached flows accordingly.
      */
     public delete() {
+        this.screenManager.delete(this);
         // FlowManagementHandler.updateFlowsOnDetachingCard(this.id);
     }
 }

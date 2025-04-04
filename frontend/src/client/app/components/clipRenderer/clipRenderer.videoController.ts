@@ -13,6 +13,7 @@ export class ClipRendererVideoController extends RendererVideoController<ClipRen
     public loadNext(clip: Clip, offset: number = 0) {
         if (!clip || !clip.uri || !clip.metadata) return;
 
+
         this.videos[this.model.nextIndex].src = clip.uri;
         this.model.videoClips[this.model.nextIndex] = clip;
         this.videos[this.model.nextIndex].currentTime = offset;

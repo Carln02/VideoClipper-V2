@@ -11,6 +11,10 @@ import {ClipThumbnailController} from "./clipThumbnailController";
 import {VcComponent} from "../component/component";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
 import {TextElement} from "../textElement/textElement";
+import { YMap } from "../../../../yManagement/yManagement.types";
+import {YUtilities} from "../../../../yManagement/yUtilities";
+import {randomColor} from "../../../utils/random";
+import {SyncedText} from "../textElement/textElement.types";
 
 @define("vc-clip")
 export class Clip extends VcComponent<ClipView, SyncedClip, ClipModel, DocumentManager> {
@@ -26,6 +30,20 @@ export class Clip extends VcComponent<ClipView, SyncedClip, ClipModel, DocumentM
             handlerConstructors: [ClipTextHandler],
             controllerConstructors: [ClipThumbnailController]
         });
+    }
+
+    public static createData(data?: SyncedClip): YMap & SyncedClip {
+        if (!data) data = {content: [undefined]};
+        if (!data.startTime) data.startTime = 0;
+        if (!data.endTime) data.endTime = 5;
+        if (!data.backgroundFill && !data.mediaId) data.backgroundFill = "#FFFFFF";
+        if (!data.color) data.color = randomColor();
+
+        const contentArray =YUtilities.createYArray([]);
+        data.content?.forEach((content: SyncedText) => contentArray.push([TextElement.createData(content)]));
+        data.content = contentArray;
+
+        return YUtilities.createYMap<SyncedClip>(data);
     }
 
     //Getters and setters

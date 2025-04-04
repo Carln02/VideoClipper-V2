@@ -2,32 +2,14 @@ import {ContextEntry, ContextView} from "./contextManager.types";
 import {Delegate} from "turbodombuilder";
 
 export class ContextManager {
-    //Singleton
-    private static _instance: ContextManager | null = null;
-
     private _view: ContextView = ContextView.home;
     private _context: Map<number, Element[]>;
 
     public readonly onContextChange: Delegate<(entry: ContextEntry) => void>;
 
-    constructor() {
-        //Cancel construction if exists already
-        if (ContextManager.instance) return ContextManager.instance;
-        ContextManager.instance = this;
-
+    public constructor() {
         this.context = new Map<number, Element[]>();
         this.onContextChange = new Delegate<(entry: ContextEntry) => void>();
-    }
-
-    /**
-     * @description The singleton instance.
-     */
-    public static get instance() {
-        return this._instance;
-    }
-
-    private static set instance(value: ContextManager) {
-        this._instance = value;
     }
 
     public get view() {
@@ -57,25 +39,37 @@ export class ContextManager {
         });
     }
 
-    public setContext(element: Element, level: number = 1): number {
+    public setContext(element: Element, level: number = 1, select: boolean = false): number {
         if (!element) return -1;
         const levelEntry = this.context.get(level);
         if (levelEntry && levelEntry.length == 1 && levelEntry[0] == element) return 0;
+
         this.clearContext(level);
         this.context.set(level, [element]);
-        if ("select" in element && typeof element.select == "function") element.select(true);
-        if ("selected" in element) element.selected = true;
+
+        if (select) {
+            if ("select" in element && typeof element.select == "function") element.select(true);
+            if ("selected" in element) element.selected = true;
+        }
+
         this.onContextChange.fire({element: element, level: level, changed: "added"});
         return 0;
     }
 
-    public addContext(element: Element, level: number = 1): number {
+    public addContext(element: Element, level: number = 1, select: boolean = false): number {
         if (!element) return -1;
         const levelEntry = this.context.get(level);
+
         if (!levelEntry) this.context.set(level, [element]);
         else if (levelEntry.includes(element)) return levelEntry.indexOf(element);
         else levelEntry.push(element);
+
         this.clearContext(level + 1);
+        if (select) {
+            if ("select" in element && typeof element.select == "function") element.select(true);
+            if ("selected" in element) element.selected = true;
+        }
+
         this.onContextChange.fire({element: element, level: level, changed: "added"});
         return levelEntry.length - 1;
     }

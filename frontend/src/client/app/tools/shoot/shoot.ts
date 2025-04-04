@@ -1,7 +1,6 @@
 import {Tool} from "../tool/tool";
 import {define, TurboEvent} from "turbodombuilder";
 import {Card} from "../../components/card/card";
-import {Camera} from "../../screens/camera/camera";
 import {Clip} from "../../components/clip/clip";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
@@ -33,14 +32,12 @@ export class ShootTool extends Tool {
         if (!closestCard) return;
 
         this.contextManager.setContext(closestCard, 1);
-        if (closestClip) this.contextManager.setContext(closestClip, 2);
-        else this.contextManager.setContext(closestCard.timeline.clips[closestCard.timeline.clips.length - 1], 2);
+        if (closestClip) this.contextManager.setContext(closestClip, 2, true);
+        // else this.contextManager.setContext(closestCard.timeline.clips[closestCard.timeline.clips.length - 1], 2);
 
         this.documentManager.currentType = DocumentScreens.camera;
-        const camera = this.documentManager.camera;
-
-        camera.card = closestCard;
+        this.documentManager.camera.card = closestCard;
         this.documentManager.toolPanel.changePanel(ToolType.shoot);
-        camera.startStream();
+        this.documentManager.camera.startStream();
     }
 }

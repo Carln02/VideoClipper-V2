@@ -1,4 +1,4 @@
-import {ClickMode, define} from "turbodombuilder";
+import {ClickMode, define, Shown, StatefulReifect} from "turbodombuilder";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {ToolPanelContent} from "../toolPanelContent/toolPanelContent";
 import "./toolPanel.css";
@@ -8,10 +8,11 @@ import {DocumentManager} from "../../managers/documentManager/documentManager";
 import {ToolManager} from "../../managers/toolManager/toolManager";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {VcComponentProperties} from "../../components/component/component.types";
+import {DocumentScreens} from "../../managers/documentManager/documentManager.types";
 
 @define()
 export class ToolPanel extends VcComponent<any, any, any, DocumentManager> {
-    private readonly panels: Map<ToolType, ToolPanelContent> = new Map();
+    private readonly panels: Map<ToolType, Map<DocumentScreens, ToolPanelContent>> = new Map();
     private readonly contextCallbacks: ((entry: ContextEntry) => void)[] = [];
 
     private currentPanel: ToolPanelContent;
@@ -19,9 +20,18 @@ export class ToolPanel extends VcComponent<any, any, any, DocumentManager> {
     public constructor(properties: VcComponentProperties<any, any, any, DocumentManager> = {}) {
         super(properties);
 
-        this.toolManager.onToolChange.add((oldTool, newTool, type) => {
+        this.showTransition = new StatefulReifect<Shown>({
+            states: [Shown.visible, Shown.hidden],
+            styles: {[Shown.hidden]: "opacity: 0", [Shown.visible]: "opacity: 1"}
+        });
+
+        this.toolManager.onToolChange.add((_, newTool, type) => {
             if (type != ClickMode.left) return;
             this.changePanel(newTool.name);
+        });
+
+        this.screenManager.onScreenChange.add(() => {
+            this.changePanel();
         });
 
         this.contextManager.onContextChange.add((entry: ContextEntry) => {
@@ -37,12 +47,16 @@ export class ToolPanel extends VcComponent<any, any, any, DocumentManager> {
         return this.screenManager.contextManager;
     }
 
-    public getPanel(tool: ToolType): ToolPanelContent {
-        return this.panels.get(tool);
+    public getPanel(tool: ToolType, context: DocumentScreens = this.screenManager.currentType): ToolPanelContent {
+        return this.panels.get(tool)?.get(context);
     }
 
-    public addPanel(panel: ToolPanelContent, tool: ToolType) {
-        this.panels.set(tool, panel);
+    public addPanel(panel: ToolPanelContent, tool: ToolType, context?: DocumentScreens) {
+        if (!this.panels.has(tool)) this.panels.set(tool, new Map<DocumentScreens, ToolPanelContent>());
+        const contextMap = this.panels.get(tool);
+
+        if (context) contextMap.set(context, panel);
+        else Object.values(DocumentScreens).forEach(context => contextMap.set(context, panel))
     }
 
     public addContextCallback(callback: (entry: ContextEntry) => void) {
@@ -54,11 +68,12 @@ export class ToolPanel extends VcComponent<any, any, any, DocumentManager> {
         if (index >= 0) this.contextCallbacks.splice(index, 1);
     }
 
-    public changePanel(toolName: ToolType) {
+    public changePanel(toolName: ToolType = this.toolManager.getTool(ClickMode.left).name,
+                       context: DocumentScreens = this.screenManager.currentType) {
         this.currentPanel?.detach();
         this.removeChild(this.currentPanel);
 
-        this.currentPanel = this.panels.get(toolName);
+        this.currentPanel = this.getPanel(toolName, context);
         if (!this.currentPanel) return;
 
         this.addChild(this.currentPanel);

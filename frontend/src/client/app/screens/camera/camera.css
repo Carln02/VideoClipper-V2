@@ -12,6 +12,11 @@ vc-camera {
     background-color: black;
 }
 
+vc-camera vc-timeline {
+    position: absolute;
+    top: calc(100% - 3em);
+}
+
 vc-camera > #capture-bar {
     position: absolute;
     height: 100%;

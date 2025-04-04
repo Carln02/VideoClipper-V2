@@ -6,13 +6,7 @@ export enum CaptureMode {
 }
 
 export type SyncedMedia = {
-    type?: "image" | "video",
-    timestamp?: number,
-    duration?: number,
-    media?: string
-};
-
-export type SyncedMediaWithoutId = {
+    id?: string,
     type?: "image" | "video",
     timestamp?: number,
     duration?: number,

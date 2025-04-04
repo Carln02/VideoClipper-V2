@@ -33,16 +33,14 @@ export class SelectionTool extends Tool {
         const closestCard = e.closest(Card);
 
         if (closestText && this.contextManager.view == ContextView.camera) {
-            this.contextManager.setContext(closestText, 3);
-            closestText.select(true);
+            this.contextManager.setContext(closestText, 3, true);
             this.currentTarget = closestText;
         } else if (closestClip) {
             this.contextManager.setContext(e.closest(Card, false), 1);
-            this.contextManager.setContext(closestClip, 2);
-            closestClip.selected = true;
+            this.contextManager.setContext(closestClip, 2, true);
             this.currentTarget = closestClip;
         } else if (closestCard) {
-            this.contextManager.setContext(closestCard, 1);
+            this.contextManager.setContext(closestCard, 1, true);
             this.currentTarget = closestCard;
         } else {
             this.contextManager.clearContext();
@@ -57,7 +55,7 @@ export class SelectionTool extends Tool {
 
         if (closestClip) {
             this.contextManager.setContext(e.closest(Card, false), 1);
-            this.contextManager.setContext(closestClip, 2);
+            this.contextManager.setContext(closestClip, 2, true);
             this.currentTarget = closestClip;
             this.cloneClip(e, closestClip);
         }

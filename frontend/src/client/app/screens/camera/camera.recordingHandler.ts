@@ -1,6 +1,6 @@
 import {TurboHandler} from "turbodombuilder";
 import {CameraModel} from "./camera.model";
-import {SyncedMediaWithoutId} from "../../managers/captureManager/captureManager.types";
+import {SyncedMedia} from "../../managers/captureManager/captureManager.types";
 import {add_video} from "../../../sync/videostore";
 
 export class CameraRecordingHandler extends TurboHandler<CameraModel> {
@@ -42,21 +42,14 @@ export class CameraRecordingHandler extends TurboHandler<CameraModel> {
         const reader = new FileReader();
 
         reader.onloadend = async ()  => {
-            const media: SyncedMediaWithoutId = {
+            const media: SyncedMedia = {
                 type: "video",
                 timestamp: Date.now(),
                 duration: (Date.now() - this.model.lastRecorderTimestamp) / 1000
             };
 
-            const mediaId = add_video(reader.result as string, media);
-
-            // await this.camera.card.addClip(proxied({
-            //     startTime: 0 as YNumber,
-            //     endTime: (this.lastMedia.duration ? this.lastMedia.duration : 5) as YNumber,
-            //     mediaId: mediaId,
-            //     content: [] as YProxiedArray<SyncedText>
-            // }), this.camera.card.timeline.currentClip.index);
-
+            media.id = await add_video(reader.result as string, media) as string;
+            this.model.lastSavedMedia = media;
             this.model.recordedChunks = [];
         }
         reader.readAsDataURL(blob);

@@ -6,6 +6,7 @@ import {ToolManager} from "../../managers/toolManager/toolManager";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {VcComponent} from "../../components/component/component";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
+import "./toolPanelContent.css";
 
 export class ToolPanelContent<
     ViewType extends ToolPanelContentView = ToolPanelContentView<any, any>,
@@ -17,6 +18,7 @@ export class ToolPanelContent<
     public constructor(properties: ToolPanelContentProperties<ViewType, DataType, ModelType>) {
         super(properties);
         this.toolPanel = properties.toolPanel;
+        this.addClass("tool-panel-content");
     }
 
     public get toolManager(): ToolManager {

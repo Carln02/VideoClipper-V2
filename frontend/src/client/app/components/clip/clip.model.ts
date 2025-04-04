@@ -46,8 +46,8 @@ export class ClipModel extends YComponentModel {
         return this._videoDuration;
     }
 
-    public updateMediaData(mediaId: string) {
-        const media = get_video(mediaId);
+    public async updateMediaData(mediaId: string) {
+        const media = await get_video(mediaId);
         this._metadata = media?.metadata ?? null;
         this._uri = media?.uri ?? null;
         this._videoDuration = media?.metadata?.type == "video" ? media.metadata.duration : null;

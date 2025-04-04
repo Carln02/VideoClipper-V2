@@ -26,6 +26,8 @@ import {ToolManager} from "../toolManager/toolManager";
 import {Canvas} from "../../screens/canvas/canvas";
 import {Camera} from "../../screens/camera/camera";
 import {AppManager} from "../appManager/appManager";
+import {VcComponent} from "../../components/component/component";
+import {TextElement} from "../../components/textElement/textElement";
 
 @define()
 export class DocumentManager extends ScreenManager<DocumentScreens, DocumentManagerView, SyncedDocument,
@@ -68,8 +70,8 @@ export class DocumentManager extends ScreenManager<DocumentScreens, DocumentMana
         this.mvc.initialize();
         this.currentType = DocumentScreens.canvas;
 
-        this.toolPanel.addPanel(new ShootingPanel({toolPanel: this.toolPanel, screenManager: this}), ToolType.shoot);
-        this.toolPanel.addPanel(new TextPanel({toolPanel: this.toolPanel, screenManager: this}), ToolType.text);
+        this.toolPanel.addPanel(new ShootingPanel({toolPanel: this.toolPanel, screenManager: this}), ToolType.shoot, DocumentScreens.camera);
+        this.toolPanel.addPanel(new TextPanel({toolPanel: this.toolPanel, screenManager: this}), ToolType.text, DocumentScreens.camera);
 
         this.screenManager.eventManager.authorizeEventScaling = () => this.currentType == DocumentScreens.canvas;
         this.screenManager.eventManager.scaleEventPosition = (position: Point) =>
@@ -109,32 +111,10 @@ export class DocumentManager extends ScreenManager<DocumentScreens, DocumentMana
 
     public async createNewCard(position: Point): Promise<string> {
         this.model.incrementCardsCount();
-
-        const metadataMap = new YMap();
-
-        const textTitleMap = YUtilities.createYMap<SyncedText>({
-            type: TextType.title,
-            fontSize: 0.1,
-            origin: {x: 0.5, y: 0.5}
-        });
-
-        const defaultClipMap = YUtilities.createYMap<SyncedClip>({
-            startTime: 0,
-            endTime: 5,
-            backgroundFill: "#FFFFFF",
-            color: randomColor(),
-            content: YUtilities.createYArray([textTitleMap]),
-            mediaId: undefined
-        });
-
-        const cardMap = YUtilities.createYMap<SyncedCard>({
+        return await YUtilities.addInYMap(Card.createData({
             origin: position.object,
-            title: "Card - " + this.model.cardsCount,
-            metadata: metadataMap,
-            syncedClips: YUtilities.createYArray([defaultClipMap]),
-        });
-
-        return await YUtilities.addInYMap(cardMap, this.model.cardsData);
+            title: "Card - " + this.model.cardsCount
+        }), this.model.cardsData);
     }
 
     public async createNewFlow(position: Point, nodeId: string): Promise<string> {
@@ -173,5 +153,11 @@ export class DocumentManager extends ScreenManager<DocumentScreens, DocumentMana
 
     public get camera(): Camera {
         return this.getScreen(DocumentScreens.camera) as Camera;
+    }
+
+    public delete(element: VcComponent) {
+        if (element instanceof Card) this.model.cardsData.delete(element.dataId);
+        else if (element instanceof BranchingNode) this.model.branchingNodesData.delete(element.dataId);
+        else if (element instanceof Flow) this.model.flowsData.delete(element.dataId);
     }
 }

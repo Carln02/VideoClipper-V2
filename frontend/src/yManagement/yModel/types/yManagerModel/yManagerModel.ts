@@ -1,8 +1,6 @@
 import {YMap, YArray} from "../../../yManagement.types";
 import {YModel} from "../../yModel";
 import {TurboElement, TurboProxiedElement} from "turbodombuilder";
-import {FlowBranch} from "../../../../client/app/components/flowBranch/flowBranch";
-import {Flow} from "../../../../client/app/components/flow/flow";
 
 export abstract class YManagerModel<
     DataType extends object,
@@ -68,17 +66,16 @@ export abstract class YManagerModel<
         }
     }
 
-    protected fireKeyChangedCallback(key: IdType, blockKey?: string) {
+    protected fireKeyChangedCallback(key: IdType, blockKey: string = this.defaultBlockKey, deleted: boolean = false) {
+        if (!this.getAllKeys(blockKey).includes(key)) return super.fireKeyChangedCallback(key, blockKey, deleted);
         if (!this.onAdded) return;
 
         const data = this.getData(key, blockKey) as DataType;
         const instance = this.onAdded(data, key, blockKey);
-        if (data && (instance instanceof TurboElement || instance instanceof TurboProxiedElement)) {
-            instance.dataId = key.toString();
-        }
-
-        if (!instance) return;
         this.instancesMap.get(blockKey).set(key, instance);
+
+        if ("data" in instance) instance.data = data;
+        if ("dataId" in instance) instance.dataId = key.toString();
         this.onUpdated?.(data, instance, key, blockKey);
     }
 

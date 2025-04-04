@@ -5,6 +5,6 @@ import { YArray } from "../../../../yManagement/yManagement.types";
 
 export type SyncedCard = SyncedBranchingNode & {
     title?: string,
-    syncedClips?: YArray<SyncedClip>,
+    syncedClips?: YArray<SyncedClip> | SyncedClip[],
     metadata?: SyncedCardMetadata
 };

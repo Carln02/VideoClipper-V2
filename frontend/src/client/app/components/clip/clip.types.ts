@@ -2,10 +2,9 @@ import {SyncedText} from "../textElement/textElement.types";
 import {ClipView} from "./clip.view";
 import {ClipModel} from "./clip.model";
 import {Timeline} from "../timeline/timeline";
-import {TurboProperties} from "turbodombuilder";
-import { YArray } from "../../../../yManagement/yManagement.types";
 import {VcComponentProperties} from "../component/component.types";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
+import {YArray} from "yjs/dist/src/types/YArray";
 
 export type SyncedClip = {
     startTime?: number,
@@ -15,7 +14,7 @@ export type SyncedClip = {
     mediaId?: string,
     thumbnail?: string,
 
-    content?: YArray<SyncedText>,
+    content?: SyncedText[] | YArray<SyncedText>,
     color?: string,
 
     hidden?: boolean,

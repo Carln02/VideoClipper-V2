@@ -9,6 +9,7 @@ import {CameraCaptureHandler} from "./camera.captureHandler";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
 import {DocumentScreens} from "../../managers/documentManager/documentManager.types";
 import {VcComponent} from "../../components/component/component";
+import {Clip} from "../../components/clip/clip";
 
 @define("vc-camera")
 export class Camera extends VcComponent<CameraView, object, CameraModel, DocumentManager> {
@@ -21,11 +22,14 @@ export class Camera extends VcComponent<CameraView, object, CameraModel, Documen
             handlerConstructors: [CameraRecordingHandler, CameraCaptureHandler]
         });
 
-        this.screenManager.toolPanel.addContextCallback(() => {
-            this.screenManager.toolPanel.show(this.screenManager.currentType == DocumentScreens.camera);
-        });
-
         this.model.ghosting = true;
+
+        this.mvc.emitter.add("savedMedia", async () => {
+            await this.card.addClip(Clip.createData({
+                endTime: (this.model.lastSavedMedia?.duration ? this.model.lastSavedMedia.duration : 5),
+                mediaId: this.model.lastSavedMedia.id,
+            }), this.card.timeline.currentClipInfo.index);
+        });
     }
 
     @auto()

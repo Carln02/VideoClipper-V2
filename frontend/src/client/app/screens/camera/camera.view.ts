@@ -36,15 +36,17 @@ export class CameraView extends TurboView<Camera, CameraModel> {
             screenManager: this.element.screenManager,
             card: this.element.card,
             renderer: this.clipRenderer,
-            direction: Side.top,
+            side: Side.top,
+            icon: "chevron",
             offset: {[Open.open]: -4},
             initiallyOpen: true
         });
 
         this.metadataDrawer = new MetadataDrawer({
             card: this.element.card,
-            direction: Side.bottom,
-            initiallyOpen: true,
+            side: Side.bottom,
+            icon: "chevron",
+            initiallyOpen: false,
             offset: {[Open.open]: 6}
         });
     }

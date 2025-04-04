@@ -27,24 +27,49 @@ export class YArrayManagerModel<
 
     protected observeChanges(event: YArrayEvent, blockKey: string = this.defaultBlockKey) {
         let currentIndex = 0;
-        this.fireKeyChangedCallback(currentIndex, blockKey);
-
         for (const delta of event.delta) {
             if (delta.retain !== undefined) currentIndex += delta.retain;
             else if (delta.insert) {
                 const insertedItems = Array.isArray(delta.insert) ? delta.insert : [delta.insert];
-                insertedItems.forEach((_item: DataType, i: number) =>
-                    this.fireKeyChangedCallback(currentIndex + i, blockKey));
-                currentIndex += insertedItems.length;
+                const count = insertedItems.length;
+                this.shiftIndices(currentIndex, count, blockKey);
+                for (let i = 0; i < count; i++) this.fireKeyChangedCallback(currentIndex + i, blockKey);
+                currentIndex += count;
             } else if (delta.delete) {
-                for (let i = 0; i < delta.delete; i++) this.onDeleted?.
-                (undefined, this.getInstance(currentIndex, blockKey), currentIndex, blockKey);
+                const count = delta.delete;
+                for (let i = 0; i < count; i++) {
+                    this.onDeleted?.(undefined, this.getInstance(currentIndex + i, blockKey), currentIndex + i, blockKey);
+                }
+                this.shiftIndices(currentIndex + count, -count, blockKey);
             }
         }
+    }
 
-        event.target.toArray().forEach((item: DataType, index: number) => {
-            if (event.changes.delta.some(delta =>
-                delta.retain !== undefined && delta.retain > 0)) this.fireKeyChangedCallback(index, blockKey);
-        });
+    private shiftIndices(fromIndex: number, offset: number, blockKey: string = this.defaultBlockKey) {
+        const block = this.instancesMap.get(blockKey);
+        if (!block) return;
+
+        const itemsToShift: [number, ComponentType][] = [];
+        for (const [oldIndex, instance] of block.entries()) {
+            if (oldIndex >= fromIndex) itemsToShift.push([oldIndex, instance]);
+        }
+
+        itemsToShift.sort((a, b) => a[0] - b[0]);
+        for (const [oldIndex] of itemsToShift) block.delete(oldIndex);
+        for (const [oldIndex, instance] of itemsToShift) {
+            const newIndex = oldIndex + offset;
+            if ("dataId" in instance) instance.dataId = newIndex;
+            block.set(oldIndex + offset, instance);
+        }
+    }
+
+    public getAllComponents(blockKey: string = this.defaultBlockKey): ComponentType[] {
+        const block = this.instancesMap.get(blockKey);
+        if (!block) return;
+
+        const instances: [number, ComponentType][] = [];
+        for (const [index, instance] of block.entries()) instances.push([index, instance]);
+        instances.sort((a, b) => a[0] - b[0]);
+        return instances.map(([, instance]) => instance);
     }
 }

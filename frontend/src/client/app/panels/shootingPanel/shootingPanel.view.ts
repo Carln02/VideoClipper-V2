@@ -11,6 +11,7 @@ import {
 import {CaptureMode} from "../../managers/captureManager/captureManager.types";
 import {ClipRendererVisibility} from "../../components/clipRenderer/clipRenderer.types";
 import {CaptureModeSlider} from "../../components/captureModeSlider/captureModeSlider";
+import {DocumentScreens} from "../../managers/documentManager/documentManager.types";
 
 export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, ShootingPanelModel> {
     private captureButton: CaptureButton;
@@ -48,11 +49,14 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
         this.ghost = new TurboIconToggle({icon: "ghost-on", toggleOnClick: true});
         this.switchCamera = new TurboIconToggle({icon: "switch-camera", toggleOnClick: true});
         this.microphone = new TurboIconToggle({icon: "microphone-on", toggleOnClick: true});
+        this.ghost.toggleOnClick = true;
+        this.switchCamera.toggleOnClick = true;
+        this.microphone.toggleOnClick = true;
 
         // this.backgroundSelector = new BackgroundSelector(this, {style: `margin-top: ${sidePanel.panelMarginTop}px`});
 
-        this.shootingDiv = new TurboSelectEntry({value: "shooting", element: div()});
-        this.backgroundColorDiv = new TurboSelectEntry({value: "backgroundColor", element: div()});
+        this.shootingDiv = new TurboSelectEntry({value: "shooting", element: div(), reflectValueOn: div()});
+        this.backgroundColorDiv = new TurboSelectEntry({value: "backgroundColor", element: div(), reflectValueOn: div()});
 
         this.animatedDiv = new AnimatedContentSwitchingDiv({values: [this.shootingDiv, this.backgroundColorDiv]});
     }
@@ -63,14 +67,15 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
         this.element.addChild([this.modeSlider, this.animatedDiv]);
         this.element.camera.addChild(this.captureTimer);
 
+        this.shootingDiv.addClass("camera-buttons");
         this.shootingDiv.addChild([
             div({
-                classes: "camera-buttons-div",
+                classes: "camera-buttons-child",
                 children: this.ghost
             }),
             this.captureButton,
             div({
-                classes: "camera-buttons-div",
+                classes: "camera-buttons-child",
                 children: [this.switchCamera, this.microphone]
             })
         ]);
@@ -103,6 +108,8 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
         this.modeSlider.onSelect = ((b, entry) => {
             if (b) this.model.mode = entry.value as CaptureMode;
         });
+
+        this.backButton.addListener(DefaultEventName.click, () => this.element.screenManager.currentType = DocumentScreens.canvas);
     }
 
     protected setupChangedCallbacks() {

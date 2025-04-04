@@ -6,9 +6,10 @@ import {Clip} from "../clip/clip";
 import {Card} from "../card/card";
 import {TextElementView} from "./textElement.view";
 import {TextElementModel} from "./textElement.model";
-import {Camera} from "../../screens/camera/camera";
 import {VcComponent} from "../component/component";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
+import {YUtilities} from "../../../../yManagement/yUtilities";
+import {YMap} from "../../../../yManagement/yManagement.types";
 
 @define("vc-text-entry")
 export class TextElement extends VcComponent<TextElementView, SyncedText, TextElementModel, DocumentManager> {
@@ -22,6 +23,14 @@ export class TextElement extends VcComponent<TextElementView, SyncedText, TextEl
             modelConstructor: TextElementModel,
             data: properties.data
         });
+    }
+
+    public static createData(data?: SyncedText): YMap & SyncedText {
+        if (!data) data = {type: TextType.title};
+        if (!data.fontSize) data.fontSize = 0.1;
+        if (!data.origin) data.origin = {x: 0.5, y: 0.5};
+        if (!data.type) data.type = TextType.custom;
+        return YUtilities.createYMap<SyncedText>(data);
     }
 
     public connectedCallback() {

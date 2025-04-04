@@ -30,13 +30,13 @@ export class TimelineModel extends YArrayManagerModel<SyncedClip, Clip> {
         const oldUpdated = this.onUpdated;
         this.onUpdated = (syncedClip, clip, id, blockKey) => {
             oldUpdated(syncedClip, clip, id, blockKey);
-            this.onClipChanged(syncedClip, clip, id, blockKey);
+            return this.onClipChanged(syncedClip, clip, id, blockKey);
         };
 
         const oldDeleted = this.onDeleted;
         this.onDeleted = (syncedClip, clip, id, blockKey) => {
             oldDeleted(syncedClip, clip, id, blockKey);
-            this.onClipChanged(syncedClip, clip, id, blockKey);
+            return this.onClipChanged(syncedClip, clip, id, blockKey);
         };
     }
 
@@ -45,7 +45,7 @@ export class TimelineModel extends YArrayManagerModel<SyncedClip, Clip> {
     }
 
     public get timeHandler(): TimelineTimeHandler {
-        return this.getHandler("timeHandler") as TimelineTimeHandler;
+        return this.getHandler("time") as TimelineTimeHandler;
     }
 
     @auto()

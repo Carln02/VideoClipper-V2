@@ -1,6 +1,7 @@
 import {auto, TurboModel} from "turbodombuilder";
 import {CameraCaptureHandler} from "./camera.captureHandler";
 import {CameraRecordingHandler} from "./camera.recordingHandler";
+import {SyncedMedia} from "../../managers/captureManager/captureManager.types";
 
 export class CameraModel extends TurboModel {
     public readonly aspectRatio = 1.33 as const;
@@ -20,6 +21,11 @@ export class CameraModel extends TurboModel {
     public set stream(value: MediaStream) {
         this.fireCallback("stream", value);
         this.recordingHandler.setupMediaRecorder();
+    }
+
+    @auto()
+    public set lastSavedMedia(value: SyncedMedia) {
+        this.fireCallback("savedMedia", value);
     }
 
     @auto()

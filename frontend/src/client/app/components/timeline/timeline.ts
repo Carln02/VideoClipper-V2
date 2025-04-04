@@ -12,7 +12,7 @@ import {TimelineClipController} from "./timeline.clipController";
 import {TimelineTimeController} from "./timeline.timeController";
 import {TimelineClipHandler} from "./timeline.clipHandler";
 import {TimelineTimeHandler} from "./timeline.timeHandler";
-import { YArray } from "../../../../yManagement/yManagement.types";
+import { YArray, YMap } from "../../../../yManagement/yManagement.types";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 @define("vc-timeline")
@@ -22,9 +22,9 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
 
     public constructor(properties: TimelineProperties) {
         super(properties);
+        this.screenManager = properties.screenManager;
         this.renderer = properties.renderer;
         this.card = properties.card;
-        this.screenManager = properties.screenManager;
 
         this.mvc.generate({
             viewConstructor: TimelineView,
@@ -59,12 +59,13 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
 
     @auto()
     public set card(card: Card) {
-        if (this.model) this.data = card.syncedClips;
-        //TODO
-        // const selectedClip = ContextManager.instance.getContext(2);
-        // if (selectedClip && selectedClip[0] instanceof Clip) this.snapToClosest();
-        // else this.snapAtEnd();
-        // this.reloadCurrentClip(true);
+        if (!this.model) return;
+        this.data = card.syncedClips;
+        const selectedClip = this.screenManager.contextManager.getContext(2);
+
+        if (selectedClip && selectedClip[0] instanceof Clip) this.clipController.snapToClosest();
+        else this.clipController.snapAtEnd();
+        this.clipController.reloadCurrentClip();
     }
 
     public get clips(): Clip[] {
@@ -85,6 +86,10 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
 
     public get width() {
         return this.model.totalDuration * this.pixelsPerSecondUnit * (this.screenManager.canvas.scale || 1);
+    }
+
+    public addClip(clip: SyncedClip & YMap, index?: number) {
+        return this.model.clipHandler.addClip(clip, index);
     }
 
     public removeClip(clip: Clip) {

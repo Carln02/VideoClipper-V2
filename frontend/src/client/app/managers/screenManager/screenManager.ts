@@ -1,5 +1,6 @@
 import {
-    define,
+    ClickMode,
+    define, Delegate,
     Shown,
     StatefulReifect,
     StatefulReifectProperties,
@@ -9,6 +10,7 @@ import {
 import {ScreenManagerProperties} from "./screenManager.types";
 import "./screenManager.css";
 import {VcComponent} from "../../components/component/component";
+import {Tool} from "../../tools/tool/tool";
 
 @define()
 export class ScreenManager<
@@ -25,8 +27,15 @@ export class ScreenManager<
     private _currentType: ScreenType;
     private _showReifect: StatefulReifect<Shown>;
 
+    /**
+     * @description Delegate fired when a tool is changed on a certain click button/mode
+     */
+    public readonly onScreenChange: Delegate<(oldScreen: VcComponent, newScreen: VcComponent, type: ScreenType) => void>;
+
+
     public constructor(properties: ScreenManagerProperties<ScreenType, ViewType, DataType, ModelType, ManagerType>) {
         super(properties);
+        this.onScreenChange = new Delegate<(oldScreen: VcComponent, newScreen: VcComponent, type: ScreenType) => void>();
         this.showReifect = properties.showReifect;
         if (properties.screensParent) this.screensParent = properties.screensParent;
         if (properties.screens) Object.entries(properties.screens).forEach(([key, entry]) => {
@@ -40,8 +49,11 @@ export class ScreenManager<
 
     public set currentType(value: ScreenType) {
         const oldScreen = this.getScreen(this._currentType);
+        const newScreen = this.getScreen(value);
+
         this._currentType = value;
-        this.switchScreens(oldScreen, this.getScreen(value));
+        this.switchScreens(oldScreen, newScreen);
+        this.onScreenChange.fire(oldScreen, newScreen, value);
     }
 
     public get currentScreen(): VcComponent {

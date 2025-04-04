@@ -10,6 +10,7 @@ import {ClipRendererVisibility} from "./clipRenderer.types";
 import { YMap } from "../../../../yManagement/yManagement.types";
 
 export class ClipRendererModel extends RendererModel {
+    public readonly videoElementsCount: number = 2 as const;
     public readonly videoClips: Clip[] = [];
 
     private readonly textModel: ClipRendererTextModel;
