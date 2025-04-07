@@ -1,4 +1,4 @@
-import {YMap, YArray} from "../../../yManagement.types";
+import {YMap, YArray, YAbstractType} from "../../../yManagement.types";
 import {YModel} from "../../yModel";
 import {TurboElement, TurboProxiedElement} from "turbodombuilder";
 
@@ -27,6 +27,15 @@ export abstract class YManagerModel<
 
     protected constructor(data?: YType) {
         super(data);
+    }
+
+    public get data(): DataType & YType {
+        return super.data as DataType & YType;
+    }
+
+    public set data(value: DataType | YType) {
+        if (!(value instanceof YAbstractType)) return;
+        super.data = value;
     }
 
     public initialize(blockKey: string = this.defaultBlockKey) {

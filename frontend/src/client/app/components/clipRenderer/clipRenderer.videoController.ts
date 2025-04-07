@@ -7,16 +7,23 @@ import {ClipRendererView} from "./clipRenderer.view";
 export class ClipRendererVideoController extends RendererVideoController<ClipRenderer, ClipRendererView, ClipRendererModel> {
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
-        this.emitter.add("canvasFillChanged", () => this.setVideoFrame(this.model.currentFrameOffset));
+
+        this.emitter.add("frameChanged", async () => {
+            if (this.model.isPlaying) return;
+            const uri = this.model.currentClip.uri;
+            if (!uri) return;
+
+            if (this.video.src != uri) this.video.src = uri;
+            await RendererVideoController.waitForVideoLoad(this.video, this.model.currentFrameOffset);
+        });
     }
 
-    public loadNext(clip: Clip, offset: number = 0) {
+    public async loadNext(clip: Clip, offset: number = 0) {
         if (!clip || !clip.uri || !clip.metadata) return;
-
 
         this.videos[this.model.nextIndex].src = clip.uri;
         this.model.videoClips[this.model.nextIndex] = clip;
-        this.videos[this.model.nextIndex].currentTime = offset;
+        await RendererVideoController.waitForVideoLoad(this.videos[this.model.nextIndex], offset);
     }
 
     public playNext() {
@@ -33,11 +40,6 @@ export class ClipRendererVideoController extends RendererVideoController<ClipRen
     }
 
     public play() {
-        if (this.model.currentClip?.metadata?.type == "video") this.video.play();
-    }
-
-    public setVideoFrame(offsetTime: number = 0) {
-        if (this.video.src != this.model.currentClip.uri) this.video.src = this.model.currentClip.uri;
-        this.video.currentTime = offsetTime;
+        if (this.model.currentClip?.metadata?.type == "video") super.play();
     }
 }

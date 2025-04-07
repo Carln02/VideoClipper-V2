@@ -75,7 +75,7 @@ export abstract class YModel<
         if (!block) return;
 
         if (this.enabledCallbacks) (block instanceof YArray ? block.toArray() : block)
-            ?.forEach((_value, key) => this.fireKeyChangedCallback(key, blockKey));
+            ?.forEach((_, key) => this.fireKeyChangedCallback(key, blockKey));
 
         const observerFunction = (event: YEvent) => this.observeChanges(event, blockKey);
 

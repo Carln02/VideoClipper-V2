@@ -4,6 +4,8 @@ import {auto} from "turbodombuilder";
 export class RendererModel extends YComponentModel {
    public readonly videoElementsCount: number = 1 as const;
 
+   public isPlaying: boolean = false;
+   
     private _currentIndex: number = 0;
 
     @auto({cancelIfUnchanged: true})

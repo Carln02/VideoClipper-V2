@@ -62,6 +62,7 @@ export class TimelineView extends TurboView<Timeline, TimelineModel> {
 
         this.emitter.add("currentTimeChanged", () => {
             this.currentTimeText.textContent = formatMMSS(this.model.currentTime);
+            this.scrubber.translation = this.model.currentTime / this.model.totalDuration * this.element.width;
         });
 
         this.emitter.add("totalDurationChanged", () => {

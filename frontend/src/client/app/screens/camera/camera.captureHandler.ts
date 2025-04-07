@@ -2,12 +2,12 @@ import {TurboHandler} from "turbodombuilder";
 import {CameraModel} from "./camera.model";
 
 export class CameraCaptureHandler extends TurboHandler<CameraModel> {
-    public initStream() {
+    public async initStream() {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             alert("Camera not supported.");
             return;
         }
-        this.switchCamera(true);
+        return await this.switchCamera(true);
     }
 
     public stopStream() {

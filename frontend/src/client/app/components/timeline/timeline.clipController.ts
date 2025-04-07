@@ -12,6 +12,8 @@ export class TimelineClipController extends TurboController<Timeline, TimelineVi
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
 
+        this.emitter.add("currentTimeChanged", () => this.reloadCurrentClip());
+
         const snapWhenShooting = (e: TurboEvent) => requestAnimationFrame(() => {
             if (this.element.screenManager.toolManager.getFiredTool(e).name == ToolType.shoot) this.snapToClosest();
         });
@@ -27,7 +29,9 @@ export class TimelineClipController extends TurboController<Timeline, TimelineVi
     public reloadCurrentClip() {
         this.model.currentClipInfo = this.getClipAtTimestamp();
         // this.element.playController.play(false);
-        // this.element.screenManager.contextManager.setContext(this.model.currentClip, 2);
+        this.element.screenManager.contextManager.setContext(this.model.currentClip, 2);
+        if (this.element.renderer.isPlaying) return;
+
         if (!this.element.renderer || this.element.renderer.visibilityMode == ClipRendererVisibility.ghosting) return;
         this.element.renderer.setFrame(this.model.currentClip, this.model.currentClipInfo?.offset);
     }

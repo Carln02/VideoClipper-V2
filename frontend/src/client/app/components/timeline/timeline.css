@@ -28,9 +28,7 @@ vc-timeline.turbo-drawer .clips-container {
 }
 
 vc-timeline.top-drawer {
-    left: 50%;
     bottom: 1em;
-    transform: translate(-50%, 0);
 }
 
 vc-timeline.right-drawer {

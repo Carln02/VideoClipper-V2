@@ -11,7 +11,6 @@ import {DocumentScreens} from "../../managers/documentManager/documentManager.ty
  */
 @define("shoot-tool")
 export class ShootTool extends Tool {
-
     public constructor(documentManager: DocumentManager) {
         super(documentManager, ToolType.shoot);
     }

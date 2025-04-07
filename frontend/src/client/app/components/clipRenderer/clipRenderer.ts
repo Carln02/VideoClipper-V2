@@ -32,6 +32,10 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
             return text;
         };
 
+        this.model.keyChangedCallback = (keyName: string, blockKey: string, ...args: any[]) => {
+            return this.mvc.emitter.fireWithBlock(keyName, blockKey, ...args);
+        }
+
         this.mvc.initialize();
         this.view.canvas.setProperties(properties.canvasProperties);
         this.view.videos.forEach((video: HTMLVideoElement) => video.setProperties(properties.videoProperties));
@@ -84,8 +88,8 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
         this.videoController.pause();
     }
 
-    public loadNext(clip: Clip, offset: number = 0) {
-        this.videoController.loadNext(clip, offset);
+    public async loadNext(clip: Clip, offset: number = 0) {
+        await this.videoController.loadNext(clip, offset);
     }
 
     public playNext() {

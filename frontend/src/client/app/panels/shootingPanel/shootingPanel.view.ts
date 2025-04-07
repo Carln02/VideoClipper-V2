@@ -49,9 +49,6 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
         this.ghost = new TurboIconToggle({icon: "ghost-on", toggleOnClick: true});
         this.switchCamera = new TurboIconToggle({icon: "switch-camera", toggleOnClick: true});
         this.microphone = new TurboIconToggle({icon: "microphone-on", toggleOnClick: true});
-        this.ghost.toggleOnClick = true;
-        this.switchCamera.toggleOnClick = true;
-        this.microphone.toggleOnClick = true;
 
         // this.backgroundSelector = new BackgroundSelector(this, {style: `margin-top: ${sidePanel.panelMarginTop}px`});
 

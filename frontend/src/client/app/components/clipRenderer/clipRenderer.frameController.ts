@@ -11,13 +11,12 @@ export class ClipRendererFrameController extends TurboController<ClipRenderer, C
         if (!force && Date.now() - this.model.lastFrameUpdate < this.model.frameUpdateFrequency) return;
         this.model.lastFrameUpdate = Date.now();
 
-        if (clip != this.model.currentClip) {
-            //TODO this.videoHandler.pause();
-            this.model.currentClip = clip;
-        }
+        // if (clip != this.model.currentClip) {
+        //     //TODO this.videoHandler.pause();
+        //     this.model.currentClip = clip;
+        // }
 
-        this.model.currentFrameOffset = offsetTime;
-        this.model.currentClip = clip;
+        this.model.setCurrentClipWithOffset(clip, offsetTime);
 
         await this.setCurrentClipBackground(clip, forceCanvas);
     }

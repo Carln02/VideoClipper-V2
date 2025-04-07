@@ -13,11 +13,13 @@ export class FlowBranchUpdateHandler extends TurboHandler<FlowBranchModel> {
         if (!nodeId) return;
 
         const flowEntries = this.model.entriesArray;
-        for (let i = flowEntries.length - 1; i >= 0; i--) {
+
+        for (let i = 0; i < flowEntries.length; i++) {
             const entry = new FlowEntryModel(flowEntries[i]);
             const points = entry.points;
 
-            if (entry.startNodeId != nodeId && entry.endNodeId != nodeId) return;
+            if (entry.startNodeId != nodeId && entry.endNodeId != nodeId) continue;
+
             //If the flow entry represents points inside the node that has moved --> increment all points' coordinates
             // by deltaPosition
             if (entry.startNodeId == nodeId && entry.endNodeId == nodeId) {

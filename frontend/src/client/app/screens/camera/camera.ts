@@ -59,9 +59,9 @@ export class Camera extends VcComponent<CameraView, object, CameraModel, Documen
         this.screenManager.currentType = DocumentScreens.canvas;
     }
 
-    public startStream() {
+    public async startStream() {
         this.model.videoStreamOn = true;
-        this.model.captureHandler.initStream();
+        await this.model.captureHandler.initStream();
         this.visibilityMode = this.ghosting ? ClipRendererVisibility.ghosting : ClipRendererVisibility.hidden;
     }
 

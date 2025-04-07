@@ -15,6 +15,10 @@ export class Renderer<
         super(properties);
     }
 
+    public get isPlaying(): boolean {
+        return this.model.isPlaying;
+    }
+
     public get width() {
         return this.view.width;
     }

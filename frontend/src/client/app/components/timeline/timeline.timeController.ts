@@ -7,10 +7,6 @@ export class TimelineTimeController extends TurboController<Timeline, TimelineVi
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
 
-        this.emitter.add("currentTimeChanged", () => {
-            this.view.scrubber.translation = this.model.currentTime / this.model.totalDuration * this.element.width;
-        });
-
         this.emitter.add("totalDurationChanged", () => {
             this.element.card.duration = this.model.totalDuration;
         });
@@ -23,7 +19,6 @@ export class TimelineTimeController extends TurboController<Timeline, TimelineVi
     }
 
     public reloadTime() {
-        console.log(this.element.clips);
         this.model.totalDuration = this.element.clips.reduce((sum, clip) => sum + clip.duration, 0);
         this.model.currentTime = (this.view.scrubber.translation / this.element.width * this.model.totalDuration) || 0;
         this.element.refresh();

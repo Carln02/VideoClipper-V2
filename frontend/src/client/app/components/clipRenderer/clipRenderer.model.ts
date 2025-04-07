@@ -10,12 +10,13 @@ import {ClipRendererVisibility} from "./clipRenderer.types";
 import { YMap } from "../../../../yManagement/yManagement.types";
 
 export class ClipRendererModel extends RendererModel {
+    private _currentFrameOffset: number;
+
     public readonly videoElementsCount: number = 2 as const;
     public readonly videoClips: Clip[] = [];
 
     private readonly textModel: ClipRendererTextModel;
 
-    public currentFrameOffset: number;
     public readonly frameUpdateFrequency: number = 100 as const;
     public lastFrameUpdate: number = 0;
 
@@ -56,13 +57,27 @@ export class ClipRendererModel extends RendererModel {
         return this.videoClips[this.currentIndex];
     }
 
-    public set currentClip(value: Clip) {
+    private set currentClip(value: Clip) {
         this.videoClips[this.currentIndex] = value;
         this.clipData = value.data;
+    }
+
+    public get currentFrameOffset(): number {
+        return this._currentFrameOffset;
+    }
+
+    private set currentFrameOffset(value: number) {
+        this._currentFrameOffset = value;
     }
 
     @auto({cancelIfUnchanged: true})
     public set visibilityMode(value: ClipRendererVisibility) {
         this.fireCallback("reloadVisibility");
+    }
+
+    public setCurrentClipWithOffset(clip: Clip, offset: number = this.currentFrameOffset) {
+        if (clip != this.currentClip) this.currentClip = clip;
+        if (this.currentFrameOffset != offset) this.currentFrameOffset = offset;
+        this.fireCallback("frameChanged");
     }
 }

@@ -36,8 +36,9 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
         });
 
         this.model.onClipAdded = (syncedClip, id) => {
-            const clip = new Clip({timeline: this, data: syncedClip});
+            const clip = new Clip({timeline: this});
             this.view.clipsContainer.addChild(clip, id + 1);
+            requestAnimationFrame(() => clip.data = syncedClip);
             return clip;
         };
 
@@ -61,6 +62,7 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
     public set card(card: Card) {
         if (!this.model) return;
         this.data = card.syncedClips;
+
         const selectedClip = this.screenManager.contextManager.getContext(2);
 
         if (selectedClip && selectedClip[0] instanceof Clip) this.clipController.snapToClosest();

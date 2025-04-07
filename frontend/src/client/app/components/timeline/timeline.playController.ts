@@ -34,7 +34,7 @@ export class TimelinePlayController extends TurboController<Timeline, TimelineVi
         await this.renderer.setFrame(this.clipHandler.getClipAt(index), offset);
         this.renderer.playNext();
 
-        this.renderer.loadNext(this.clipHandler.getClipAt(index + 1));
+        await this.renderer.loadNext(this.clipHandler.getClipAt(index + 1));
 
         this.model.nextTimer = setTimeout(() => this.playNext(index + 1),
             1000 * ((this.clipHandler.getClipAt(index)?.duration || 0) - offset)
@@ -55,14 +55,12 @@ export class TimelinePlayController extends TurboController<Timeline, TimelineVi
         }
 
         this.timeHandler.resetTimeIfOutsideBounds();
+        await this.renderer.loadNext(this.model.currentClip, this.model.currentClipInfo.offset);
+        await this.playNext(this.model.currentClipInfo.index, this.model.currentClipInfo.offset);
 
         this.model.playTimer = setInterval(() => {
             this.timeHandler.incrementTime();
             if (this.timeHandler.isCurrentTimeOutsideBounds()) clearInterval(this.model.playTimer);
         }, this.model.timeIncrementMs);
-
-        this.renderer.loadNext(this.model.currentClip, this.model.currentClipInfo.offset);
-
-        return this.playNext(this.model.currentClipInfo.index, this.model.currentClipInfo.offset);
     }
 }

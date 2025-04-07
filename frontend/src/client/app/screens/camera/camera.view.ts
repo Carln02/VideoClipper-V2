@@ -61,7 +61,7 @@ export class CameraView extends TurboView<Camera, CameraModel> {
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
 
-        this.emitter.add("stream", (value: MediaStream) => this.cameraRenderer.video.srcObject = value);
+        this.emitter.add("stream", () => this.cameraRenderer.video.srcObject = this.model.stream);
         this.emitter.add("ghosting", (value: boolean) => {
             if (this.model.videoStreamOn) this.clipRenderer.setStyle("opacity", value ? "0.2" : "0");
         });

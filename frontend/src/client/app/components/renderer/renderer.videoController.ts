@@ -17,33 +17,46 @@ export class RendererVideoController<
     }
 
     public play() {
-        this.video.play();
+        this.video.play().then(() => this.model.isPlaying = true);
     }
 
     public pause() {
         if (!this.video.paused) this.video.pause();
+        this.model.isPlaying = false;
     }
 
-    public static waitForVideoLoad(video: HTMLVideoElement, delay: number = 300): Promise<void> {
+    public static waitForVideoLoad(video: HTMLVideoElement, seekTime: number = 0, delay: number = 300): Promise<void> {
         return new Promise((resolve, reject) => {
-            if (video.readyState >= 2) {
-                setTimeout(resolve, delay);
-            } else {
-                const onCanPlay = () => {
-                    video.removeEventListener("canplay", onCanPlay);
-                    video.removeEventListener("canplaythrough", onCanPlay);
-                    setTimeout(resolve, delay);
-                };
+            const done = () => setTimeout(resolve, delay);
 
-                const onError = (err: unknown) => {
-                    video.removeEventListener("error", onError);
-                    reject(err);
-                };
+            const initialLoad = async () => {
+                if (video.readyState >= 2) await handleSeek();
+                else video.addEventListener("canplay", loadListener);
+            };
 
-                video.addEventListener("canplaythrough", onCanPlay);
-                video.addEventListener("canplay", onCanPlay);
-                video.addEventListener("error", onError);
-            }
+            const loadListener = async () => {
+                video.removeEventListener("canplay", loadListener);
+                await handleSeek();
+            };
+
+            const handleSeek = async () => {
+                video.currentTime = seekTime;
+                if (video.readyState >= 3) done();
+                else video.addEventListener("seeked", seekListener);
+            };
+
+            const seekListener = () => {
+                video.removeEventListener("seeked", seekListener);
+                done();
+            };
+
+            const onError = (err: unknown) => {
+                video.removeEventListener("error", onError);
+                reject(err);
+            };
+
+            video.addEventListener("error", onError);
+            initialLoad();
         });
     }
 }
