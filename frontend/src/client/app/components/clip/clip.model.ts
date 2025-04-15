@@ -1,9 +1,8 @@
 import {YComponentModel} from "../../../../yManagement/yModel/types/yComponentModel";
 import {SyncedText} from "../textElement/textElement.types";
-import {get_video} from "../../../sync/videostore";
 import {YArray, YMapEvent } from "../../../../yManagement/yManagement.types";
-import {SyncedMedia} from "../../managers/captureManager/captureManager.types";
 import {ClipTextHandler} from "./clip.textHandler";
+import {SyncedMedia} from "../../managers/mediaManager/mediaManager.types";
 
 export class ClipModel extends YComponentModel {
     private _metadata: SyncedMedia;
@@ -30,7 +29,7 @@ export class ClipModel extends YComponentModel {
                 }
                 if (relevantChanges) break;
             }
-            if (relevantChanges) this.fireCallback("__reload_thumbnail");
+            if (relevantChanges) this.fireCallback("reload_thumbnail");
         });
     }
 
@@ -46,11 +45,12 @@ export class ClipModel extends YComponentModel {
         return this._videoDuration;
     }
 
-    public async updateMediaData(mediaId: string) {
-        const media = await get_video(mediaId);
-        this._metadata = media?.metadata ?? null;
-        this._uri = media?.uri ?? null;
-        this._videoDuration = media?.metadata?.type == "video" ? media.metadata.duration : null;
+    public async updateMediaData(media: SyncedMedia) {
+        console.log(media);
+        this._metadata = media;
+        this._uri = URL.createObjectURL(media?.blob ?? null);
+        this._videoDuration = media?.type == "video" ? media?.duration : null;
+        this.fireCallback("mediaDataChanged");
     }
 
     public get startTime(): number {

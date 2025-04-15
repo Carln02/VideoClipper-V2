@@ -1,5 +1,5 @@
 export enum ClipRendererVisibility {
-    shown,
-    ghosting,
-    hidden
+    shown = "shown",
+    ghosting = "ghosting",
+    hidden = "hidden",
 }

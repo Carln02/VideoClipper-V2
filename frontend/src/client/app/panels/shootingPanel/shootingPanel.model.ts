@@ -1,5 +1,5 @@
 import {TurboModel} from "turbodombuilder";
-import {CaptureMode} from "../../managers/captureManager/captureManager.types";
+import {CaptureMode} from "./shootingPanel.types";
 
 export class ShootingPanelModel extends TurboModel {
     private _mode: CaptureMode;

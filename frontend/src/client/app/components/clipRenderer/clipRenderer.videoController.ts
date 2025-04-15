@@ -8,38 +8,42 @@ export class ClipRendererVideoController extends RendererVideoController<ClipRen
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
 
-        this.emitter.add("frameChanged", async () => {
-            if (this.model.isPlaying) return;
-            const uri = this.model.currentClip.uri;
-            if (!uri) return;
+        this.emitter.add("clipChanged", async (index: number) => {
+            const clip = this.model.getClip(index);
+            const offset = this.model.getOffset(index);
+            const video = this.videos[index];
+            if (!clip || !video) return;
 
-            if (this.video.src != uri) this.video.src = uri;
-            await RendererVideoController.waitForVideoLoad(this.video, this.model.currentFrameOffset);
+            if (clip.uri) {
+                video.src = clip.uri;
+                await RendererVideoController.waitForVideoLoad(video, offset);
+            } else {
+                video.removeAttribute("src");
+                video.load();
+            }
         });
     }
 
     public async loadNext(clip: Clip, offset: number = 0) {
-        if (!clip || !clip.uri || !clip.metadata) return;
-
-        this.videos[this.model.nextIndex].src = clip.uri;
-        this.model.videoClips[this.model.nextIndex] = clip;
-        await RendererVideoController.waitForVideoLoad(this.videos[this.model.nextIndex], offset);
+        if (!clip) return;
+        this.model.setClipWithOffset(clip, offset, this.model.nextIndex);
     }
 
-    public playNext() {
-        if (this.model.videoClips[this.model.nextIndex]?.metadata?.type != "video") return;
-
-        this.video.setStyle("display", "none");
+    public async playNext() {
         this.model.currentIndex++;
-        this.play();
+        const clip = this.model.getClip();
+        if (!clip) return;
 
-        requestAnimationFrame(() => {
-            this.video.parentElement.addChildBefore(this.videos[this.model.previousIndex], this.video);
-            this.videos[this.model.previousIndex].setStyle("display", "");
-        });
+        if (clip.metadata?.type == "video") {
+            this.view.showCurrentVideo();
+            await this.play();
+        } else {
+            await this.element.setFrame(clip, 0);
+            this.model.isPlaying = true;
+        }
     }
 
-    public play() {
-        if (this.model.currentClip?.metadata?.type == "video") super.play();
+    public async play() {
+        if (this.model.getClip()?.metadata?.type == "video") await super.play();
     }
 }

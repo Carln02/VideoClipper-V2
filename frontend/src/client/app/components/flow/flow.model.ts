@@ -9,6 +9,7 @@ import {Point} from "turbodombuilder";
 import {FlowSearchHandler} from "./flow.searchHandler";
 import {FlowBranchesHandler} from "./flow.branchesHandler";
 import {FlowCleaningHandler} from "./flow.cleaningHandler";
+import {FlowIntersectionHandler} from "./flow.intersectionHandler";
 
 export class FlowModel extends YComponentModel {
     public currentBranchId: string = "0";
@@ -28,7 +29,7 @@ export class FlowModel extends YComponentModel {
     public constructor(data: SyncedFlow) {
         super(data);
         this.branchesModel = new FlowBranchesModel();
-        this.branchesModel.onAdded = (data) => this.onFlowBranchAdded(data);
+
     }
 
     public get data(): any {
@@ -38,6 +39,7 @@ export class FlowModel extends YComponentModel {
     public set data(value: any) {
         super.data = value;
         this.branchesModel.data = this.getData("branches");
+        this.branchesModel.onAdded = (data, key) => this.onFlowBranchAdded(data);
 
         this.data?.observeDeep(events => {
             for (const event of events) {
@@ -59,6 +61,10 @@ export class FlowModel extends YComponentModel {
 
     public get cleaningHandler(): FlowCleaningHandler {
         return this.getHandler("cleaning") as FlowCleaningHandler;
+    }
+
+    public get intersectionHandler(): FlowIntersectionHandler {
+        return this.getHandler("intersection") as FlowIntersectionHandler;
     }
 
     public get tags(): YArray<SyncedFlowTag> {

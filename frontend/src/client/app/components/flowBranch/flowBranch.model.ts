@@ -7,8 +7,14 @@ import {FlowBranchPointHandler} from "./flowBranch.pointHandler";
 import {FlowBranchSearchHandler} from "./flowBranch.searchHandler";
 import {FlowBranchCleaningHandler} from "./flowBranch.cleaningHandler";
 import {FlowBranchUpdateHandler} from "./flowBranch.updateHandler";
+import {FlowBranchIntersectionHandler} from "./flowBranch.intersectionHandler";
+import {Flow} from "../flow/flow";
+import {FlowBranchConnectionHandler} from "./flowBranch.connectionHandler";
 
 export class FlowBranchModel extends YComponentModel {
+    public flow: Flow;
+    public pathSelection: d3.Selection<SVGPathElement, unknown, null, undefined>;
+
     public lastNode: string = null;
     public flowId: string;
 
@@ -34,6 +40,10 @@ export class FlowBranchModel extends YComponentModel {
                 }
             }
         });
+    }
+
+    public get path(): SVGPathElement {
+        return this.pathSelection.node() as SVGPathElement;
     }
 
     public get entries(): YArray<SyncedFlowEntry & YMap> {
@@ -100,5 +110,13 @@ export class FlowBranchModel extends YComponentModel {
 
     public get updateHandler(): FlowBranchUpdateHandler {
         return this.getHandler("update") as FlowBranchUpdateHandler;
+    }
+
+    public get intersectionHandler(): FlowBranchIntersectionHandler {
+        return this.getHandler("intersection") as FlowBranchIntersectionHandler;
+    }
+
+    public get connectionHandler(): FlowBranchConnectionHandler {
+        return this.getHandler("connection") as FlowBranchConnectionHandler;
     }
 }

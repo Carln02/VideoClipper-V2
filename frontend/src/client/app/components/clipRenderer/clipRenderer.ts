@@ -17,6 +17,7 @@ import {ClipRendererVisibility} from "./clipRenderer.types";
 @define("vc-clip-renderer")
 export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> {
     public constructor(properties: RendererProperties<ClipRendererView, ClipRendererModel> = {}) {
+        properties.generate = false;
         super(properties);
         this.mvc.generate({
             viewConstructor: ClipRendererView,
@@ -31,10 +32,6 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
             this.view.addTextElement(text, id);
             return text;
         };
-
-        this.model.keyChangedCallback = (keyName: string, blockKey: string, ...args: any[]) => {
-            return this.mvc.emitter.fireWithBlock(keyName, blockKey, ...args);
-        }
 
         this.mvc.initialize();
         this.view.canvas.setProperties(properties.canvasProperties);
@@ -68,15 +65,16 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
     }
 
     public get clip(): Clip {
-        return this.model.currentClip;
+        return this.model.getClip();
     }
 
-    public async setFrame(clip: Clip = this.model.currentClip, offsetTime: number = 0) {
-        await this.frameController.setFrame(clip, offsetTime);
+    public async setFrame(clip: Clip = this.model.getClip(), offsetTime: number = 0) {
+        if (clip) await this.frameController.setFrame(clip, offsetTime);
     }
 
-    public async drawFrame(offset: number = 0): Promise<string> {
-        await this.frameController.setFrame(this.model.currentClip, offset, true, true);
+    public async drawFrame(clip: Clip = this.model.getClip(), offset: number = 0): Promise<string> {
+        await this.frameController.setFrame(clip, offset, true, true);
+        await new Promise((resolve) => setTimeout(() => resolve(null), 500));
         return await domToImage.toJpeg(this, {quality: 0.6});
     }
 
@@ -92,7 +90,7 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
         await this.videoController.loadNext(clip, offset);
     }
 
-    public playNext() {
-        this.videoController.playNext();
+    public async playNext() {
+        await this.videoController.playNext();
     }
 }

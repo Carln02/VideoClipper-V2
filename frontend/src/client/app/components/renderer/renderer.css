@@ -16,3 +16,8 @@
 .vc-renderer > video {
     object-fit: contain;
 }
+
+.vc-renderer > .snapshot-effect-div {
+    opacity: 0;
+    background-color: black;
+}

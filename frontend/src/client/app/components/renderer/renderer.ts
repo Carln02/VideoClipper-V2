@@ -6,13 +6,26 @@ import {RendererCanvasController} from "./renderer.canvasController";
 import {RendererDrawingController} from "./renderer.drawingController";
 import {VcComponent} from "../component/component";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
+import {RendererVideoController} from "./renderer.videoController";
+import {define} from "turbodombuilder";
 
+@define("vc-renderer")
 export class Renderer<
     ViewType extends RendererView = RendererView<any, any>,
     ModelType extends RendererModel = RendererModel
 > extends VcComponent<ViewType, object, ModelType, DocumentManager> {
     public constructor(properties: RendererProperties<ViewType, ModelType> = {}) {
         super(properties);
+        if (properties.generate == false) return;
+
+        this.mvc.generate({
+            viewConstructor: RendererView as any,
+            modelConstructor: RendererModel as any,
+            controllerConstructors: [RendererDrawingController, RendererCanvasController, RendererVideoController],
+        });
+
+        this.view.canvas.setProperties(properties.canvasProperties);
+        this.view.videos.forEach(video => video.setProperties(properties.videoProperties));
     }
 
     public get isPlaying(): boolean {
@@ -37,6 +50,10 @@ export class Renderer<
 
     protected get drawingController(): RendererDrawingController {
         return this.mvc.getController("drawing") as RendererDrawingController;
+    }
+
+    public async drawVideoFrame(video: HTMLVideoElement = this.view.video, animate = true): Promise<string> {
+        return await this.drawingController.drawVideoFrame(video, animate);
     }
 
     public setFill(fill?: string | null) {

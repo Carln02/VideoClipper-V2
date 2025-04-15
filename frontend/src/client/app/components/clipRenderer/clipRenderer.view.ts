@@ -2,7 +2,7 @@ import {RendererView} from "../renderer/renderer.view";
 import {ClipRenderer} from "./clipRenderer";
 import {ClipRendererModel} from "./clipRenderer.model";
 import {TextType} from "../textElement/textElement.types";
-import {div, video} from "turbodombuilder";
+import {div} from "turbodombuilder";
 import {TextElement} from "../textElement/textElement";
 
 export class ClipRendererView extends RendererView<ClipRenderer, ClipRendererModel> {
@@ -21,16 +21,18 @@ export class ClipRendererView extends RendererView<ClipRenderer, ClipRendererMod
     protected setupUIElements() {
         super.setupUIElements();
         this.textParent = div();
-        for (let i = 0; i < this.model.videoElementsCount; i++) this.videos.push(video());
     }
 
     protected setupUILayout() {
         super.setupUILayout();
-        this.element.addChild(this.videos);
-        this.element.addChild([this.canvas, this.textParent]);
+        this.element.addChild(this.textParent);
     }
 
     public addTextElement(element: TextElement, id?: number) {
         this.textParent.addChild(element, id);
+    }
+
+    public showCurrentVideo() {
+        this.videos.forEach((video: HTMLVideoElement, index: number) => video.show(index == this.model.currentIndex));
     }
 }

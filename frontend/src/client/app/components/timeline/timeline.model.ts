@@ -12,6 +12,8 @@ export class TimelineModel extends YArrayManagerModel<SyncedClip, Clip> {
     public readonly timeIncrementMs = 10 as const;
     public readonly timeIncrementS = 0.01 as const;
 
+    public currentClipInfo: ClipTimelineEntry;
+
     public playTimer: NodeJS.Timeout | null = null;
     public nextTimer: NodeJS.Timeout | null = null;
 
@@ -25,7 +27,7 @@ export class TimelineModel extends YArrayManagerModel<SyncedClip, Clip> {
 
         this.onAdded = (syncedClip, id, blockKey) => {
             return this.onClipAdded(syncedClip, id, blockKey);
-        }
+        };
 
         const oldUpdated = this.onUpdated;
         this.onUpdated = (syncedClip, clip, id, blockKey) => {
@@ -46,11 +48,6 @@ export class TimelineModel extends YArrayManagerModel<SyncedClip, Clip> {
 
     public get timeHandler(): TimelineTimeHandler {
         return this.getHandler("time") as TimelineTimeHandler;
-    }
-
-    @auto()
-    public set currentClipInfo(value: ClipTimelineEntry) {
-        this.fireCallback("clipChanged");
     }
 
     public get currentClip() {

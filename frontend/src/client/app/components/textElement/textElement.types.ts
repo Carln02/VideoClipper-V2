@@ -21,5 +21,5 @@ export type SyncedText = SyncedResizableType & {
 };
 
 export type TextElementProperties = VcComponentProperties<TextElementView, SyncedText, TextElementModel, DocumentManager> & {
-    renderer: ClipRenderer
+    renderer?: ClipRenderer
 }

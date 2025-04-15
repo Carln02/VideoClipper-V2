@@ -30,7 +30,7 @@
     "idb": "^8.0.2",
     "lodash": "^4.17.21",
     "paper": "^0.12.17",
-    "turbodombuilder": "0.8.50",
+    "turbodombuilder": "0.8.52",
     "y-indexeddb": "^9.0.12",
     "y-webrtc": "^10.3.0",
     "y-websocket": "^2.0.3",

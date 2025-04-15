@@ -1,5 +1,5 @@
 import { openDB, IDBPDatabase } from 'idb';
-import {SyncedMedia} from "../app/managers/captureManager/captureManager.types";
+import {SyncedMedia} from "../app/managers/mediaManager/mediaManager.types";
 
 let dbPromise: Promise<IDBPDatabase>;
 

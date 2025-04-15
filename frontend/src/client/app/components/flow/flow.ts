@@ -1,4 +1,4 @@
-import {define, Point} from "turbodombuilder";
+import {Coordinate, define, Point} from "turbodombuilder";
 import "./flow.css";
 import {FlowPoint, SyncedFlow} from "./flow.types";
 import {FlowView} from "./flow.view";
@@ -11,6 +11,7 @@ import {FlowCleaningHandler} from "./flow.cleaningHandler";
 import {VcComponent} from "../component/component";
 import {VcComponentProperties} from "../component/component.types";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
+import {FlowIntersectionHandler} from "./flow.intersectionHandler";
 
 /**
  * @description A reactiveComponent that represents a flow connecting cards
@@ -22,7 +23,7 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, DocumentM
         this.mvc.generate({
             viewConstructor: FlowView,
             modelConstructor: FlowModel,
-            handlerConstructors: [FlowBranchesHandler, FlowSearchHandler, FlowCleaningHandler],
+            handlerConstructors: [FlowBranchesHandler, FlowSearchHandler, FlowCleaningHandler, FlowIntersectionHandler],
             data: properties.data,
             initialize: false
         });
@@ -59,10 +60,6 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, DocumentM
     //     return this.root.flows[id].getBoundObjectOfType(Flow);
     // }
 
-    public static getAll(): Flow[] {
-        return this.root.flows.getAllChildren().flatMap(flowData => flowData.getBoundObjectsOfType(Flow));
-    }
-
     protected setupCallbacks() {
         // this.data.flowTags.bind(YProxyEventName.entryChanged,
         //     (newValue: SyncedFlowTag, oldValue: SyncedFlowTag, _isLocal, path: YPath) => {
@@ -88,8 +85,12 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, DocumentM
         return this.model.branches;
     }
 
-    public get currentBranch(): SyncedFlowBranch {
-        return this.model.currentBranch.data;
+    public get currentBranch(): FlowBranch {
+        return this.model.currentBranch;
+    }
+
+    public get currentBranchData(): SyncedFlowBranch {
+        return this.currentBranch.data;
     }
 
     /**
@@ -125,10 +126,21 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, DocumentM
      * @param isTemporary
      */
     public addPoint(p: Point, nodeId?: string, isTemporary: boolean = false) {
-        this.model.currentBranch.addPoint(p, nodeId, isTemporary);
+        this.model.currentBranch?.addPoint(p, nodeId, isTemporary);
+        this.mvc.emitter.fire("__redraw");
+    }
+
+    public async branchAtPoint(p: FlowPoint, branchPosition?: Point, nodeId?: string,
+                         createThirdBranch: boolean = true, isOverwritingSibling: boolean = false) {
+        return await this.model.branchHandler.branchAtPoint(p, branchPosition, nodeId, createThirdBranch, isOverwritingSibling);
     }
 
     public endFlow() {
         this.model.cleaningHandler.endFlow();
+    }
+
+    public updateOnDetachingNode(nodeId: string) {
+        this.model.branches.forEach(branch => branch.updateOnDetachingNode(nodeId));
+        this.model.cleaningHandler.removeUnnecessaryBranchesOrFlow();
     }
 }

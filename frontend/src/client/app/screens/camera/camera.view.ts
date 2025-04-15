@@ -1,15 +1,15 @@
 import {Open, Side, TurboView} from "turbodombuilder";
 import {Camera} from "./camera";
 import {CameraModel} from "./camera.model";
-import {CameraRenderer} from "../../components/cameraRenderer/cameraRenderer";
 import {ClipRenderer} from "../../components/clipRenderer/clipRenderer";
 import {Toolbar} from "../../components/toolbar/toolbar";
 import {Timeline} from "../../components/timeline/timeline";
 import {MetadataDrawer} from "../../components/metadataDrawer/metadataDrawer";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
+import {Renderer} from "../../components/renderer/renderer";
 
 export class CameraView extends TurboView<Camera, CameraModel> {
-    public cameraRenderer: CameraRenderer;
+    public cameraRenderer: Renderer;
     public clipRenderer: ClipRenderer;
 
     public toolbar: Toolbar;
@@ -24,7 +24,8 @@ export class CameraView extends TurboView<Camera, CameraModel> {
     protected setupUIElements() {
         super.setupUIElements();
 
-        this.cameraRenderer = new CameraRenderer({screenManager: this.element.screenManager, videoProperties: {autoplay: true, muted: true, playsInline: true}});
+        this.cameraRenderer = new Renderer({screenManager: this.element.screenManager,
+            videoProperties: {autoplay: true, muted: true, playsInline: true}});
         this.clipRenderer = new ClipRenderer({screenManager: this.element.screenManager, videoProperties: {playsInline: true}});
 
         //TODO this.sidePanel = new SidePanel(this.element, this.captureManager);

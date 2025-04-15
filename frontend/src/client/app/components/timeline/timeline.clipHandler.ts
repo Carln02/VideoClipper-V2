@@ -13,16 +13,16 @@ export class TimelineClipHandler extends TurboHandler<TimelineModel> {
         return this.model.getInstance(index);
     }
 
-    public async addClip(clip: SyncedClip & YMap, index?: number) {
+    public async addClip(clip: SyncedClip & YMap, index?: number): Promise<number> {
         if ((!index && index != 0) || index > this.model.data.length) index = this.model.data.length;
-        if (!clip.color) clip.color = randomColor();
+        if (!clip.get("color")) clip.set("color", randomColor());
         return YUtilities.addInYArray(clip, this.model.data, index);
     }
 
     public removeClip(clip: Clip) {
         const index = this.model.getAllComponents().indexOf(clip);
         if (index < 0) return;
-        this.model.data.delete(index);
+        this.model.data.delete(index, 1);
     }
 
     public removeClipAt(position: number) {

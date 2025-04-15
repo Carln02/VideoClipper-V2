@@ -1,6 +1,7 @@
 import {Point, TurboHandler} from "turbodombuilder";
 import {FlowPoint} from "./flow.types";
 import {FlowModel} from "./flow.model";
+import {FlowEntryModel} from "../flowEntry/flowEntry.model";
 
 //DONE
 export class FlowSearchHandler extends TurboHandler<FlowModel> {

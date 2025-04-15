@@ -1,105 +1,54 @@
 import "./backgroundSelector.css";
 import {
-    css,
     define,
     div,
-    h3,
-    icon,
-    input,
     TurboSelect,
-    TurboSelectEntry,
+    TurboSelectEntry, TurboSelectEntryProperties,
     TurboSelectProperties
 } from "turbodombuilder";
+import {BackgroundSelectorView} from "./backgroundSelector.view";
 
 @define("camera-background-selector")
-export class BackgroundSelector extends TurboSelect {
-    private readonly defaultColors = ["#ffffff", "#000000", "#e36060", "#607fe3", "#d1c948", "color-picker"] as const;
-
-    private readonly shootingSidePanel: ShootingSidePanel;
-
-    public constructor(properties: TurboSelectProperties = {}) {
+export class BackgroundSelector extends TurboSelect<string, string, TurboSelectEntry, BackgroundSelectorView, object> {
+    public constructor(properties: TurboSelectProperties<string, string, TurboSelectEntry, BackgroundSelectorView> = {}) {
+        properties.values = [];
         super(properties);
-        this.shootingSidePanel = shootingSidePanel;
-        this.initUI();
+        this.mvc.generate({
+            viewConstructor: BackgroundSelectorView,
+        });
+        ["#ffffff", "#000000", "#e36060", "#607fe3", "#d1c948", "color-picker"].forEach(color => this.addEntry(color))
     }
-
-    public get selected() {
-        return this._selected;
-    }
-
-    private set selected(value: HTMLElement) {
-        this.selected?.toggleClass(this.selectedClass, false);
-        this._selected = value;
-        value?.toggleClass(this.selectedClass, true);
-
-        if (value.classList.contains("color-picker")) this.selectedValue = value.style.borderColor;
-        else if (value.classList.contains("image-picker")) {}
-        else this.selectedValue = value.style.backgroundColor;
-    }
-
-    public select(entry: string | TurboSelectEntry<string, string>): this {
-        super.select(entry);
-
-        if (entry.classList.contains("color-picker")) this.selectedValue = value.style.borderColor;
-        else if (value.classList.contains("image-picker")) {}
-        else this.selectedValue = value.style.backgroundColor;
-
-        return this;
-    }
-
 
     public get selectedValue() {
-        return this._selectedValue;
+        if (super.selectedValue === "color-picker") return this.selectedEntry.element.style.borderColor;
+        return super.selectedValue;
     }
 
-    private set selectedValue(value: string) {
-        this._selectedValue = value;
-        this.shootingSidePanel.updateCamera();
+    protected addEntry(entry: TurboSelectEntryProperties | string | TurboSelectEntry): TurboSelectEntry {
+        if (typeof entry === "string") {
+            if (entry === "color-picker") entry = super.addEntry({
+                value: entry,
+                element: this.createColorPickerEntryElement()
+            });
+
+            else entry = super.addEntry({
+                value: entry,
+                element: div({style: "background-color: " + entry})
+            });
+
+            entry.element.addClass("color-palette-entry");
+            return entry;
+        }
+        return super.addEntry(entry);
     }
 
-    private initUI() {
-        h3({text: "Background", parent: this});
-        div({
-            classes: "color-palette",
-            children: this.defaultColors.map(entry => this.createColorSelector(entry)),
-            parent: this
+    private createColorPickerEntryElement(): HTMLDivElement {
+        const element = this.view.generateColorPickerButton();
+        this.view.colorPicker.addListener("input", (e) => {
+            if (this.selectedEntry.element != element) return;
+            element.setStyle("borderColor", e.target.value);
+            this.onSelect(true, this.selectedEntry, this.getIndex(this.selectedEntry));
         });
-    }
-
-    private createColorSelector(color: string) {
-        let el: HTMLElement;
-        if (color == "color-picker") el = this.createColorPickerButton();
-        else el = div({classes: "color-palette-entry", style: "background-color: " + color});
-
-        if (!this.selected) this.selected = el;
-        el.addEventListener("vc-click", () => this.selected = el);
-        return el;
-    }
-
-    private createColorPickerButton() {
-        const colorPicker = input({
-            type: "color",
-            parent: this,
-            value: "#FFFFFF",
-            style: css`visibility: hidden; height: 0; width: 0`,
-            listeners: {
-                "input": e => {
-                    if (this.selected != el) return;
-                    el.style.borderColor = e.target.value;
-                    this.selectedValue = e.target.value;
-                },
-            }
-        });
-
-        const el = div({
-            classes: "color-palette-entry color-picker",
-            children: [icon({icon: "pen", iconColor: "white"}), colorPicker],
-            style: "border-color: #FFFFFF",
-            listeners: {
-                "vc-click": () => colorPicker.click()
-            }
-        });
-
-        return el;
+        return element;
     }
 }

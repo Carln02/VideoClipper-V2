@@ -16,8 +16,9 @@ export class RendererVideoController<
         return this.view.video;
     }
 
-    public play() {
-        this.video.play().then(() => this.model.isPlaying = true);
+    public async play() {
+        await this.video.play();
+        this.model.isPlaying = true;
     }
 
     public pause() {
@@ -25,24 +26,24 @@ export class RendererVideoController<
         this.model.isPlaying = false;
     }
 
-    public static waitForVideoLoad(video: HTMLVideoElement, seekTime: number = 0, delay: number = 300): Promise<void> {
+    public static waitForVideoLoad(video: HTMLVideoElement, seekTime: number = 0, delay: number = 60): Promise<void> {
         return new Promise((resolve, reject) => {
             const done = () => setTimeout(resolve, delay);
 
-            const initialLoad = async () => {
-                if (video.readyState >= 2) await handleSeek();
+            const initialLoad = () => {
+                if (video.readyState >= 2) handleSeek();
                 else video.addEventListener("canplay", loadListener);
             };
 
-            const loadListener = async () => {
+            const loadListener = () => {
                 video.removeEventListener("canplay", loadListener);
-                await handleSeek();
+                handleSeek();
             };
 
-            const handleSeek = async () => {
-                video.currentTime = seekTime;
-                if (video.readyState >= 3) done();
-                else video.addEventListener("seeked", seekListener);
+            const handleSeek = () => {
+                video.addEventListener("seeked", seekListener);
+                //TODO SEEK IS NOT WORKINGGGGGG
+                setTimeout(() => video.currentTime = Math.round(seekTime * 100) / 100, delay);
             };
 
             const seekListener = () => {

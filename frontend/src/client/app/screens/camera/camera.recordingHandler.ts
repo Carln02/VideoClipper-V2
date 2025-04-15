@@ -1,7 +1,7 @@
 import {TurboHandler} from "turbodombuilder";
 import {CameraModel} from "./camera.model";
-import {SyncedMedia} from "../../managers/captureManager/captureManager.types";
 import {add_video} from "../../../sync/videostore";
+import {SyncedMedia} from "../../managers/mediaManager/mediaManager.types";
 
 export class CameraRecordingHandler extends TurboHandler<CameraModel> {
     public setupMediaRecorder() {
@@ -38,20 +38,23 @@ export class CameraRecordingHandler extends TurboHandler<CameraModel> {
 
     private async saveRecording() {
         if (this.model.recordedChunks.length == 0) return;
-        const blob = new Blob(this.model.recordedChunks, {type: "video/webm"});
-        const reader = new FileReader();
+        this.model.lastRecordedMedia = {
+            type: "video",
+            timestamp: Date.now(),
+            duration: (Date.now() - this.model.lastRecorderTimestamp) / 1000,
+            blob: new Blob(this.model.recordedChunks, {type: "video/webm"})
+        };
+        this.model.recordedChunks = [];
 
-        reader.onloadend = async ()  => {
-            const media: SyncedMedia = {
-                type: "video",
-                timestamp: Date.now(),
-                duration: (Date.now() - this.model.lastRecorderTimestamp) / 1000
-            };
 
-            media.id = await add_video(reader.result as string, media) as string;
-            this.model.lastSavedMedia = media;
-            this.model.recordedChunks = [];
-        }
-        reader.readAsDataURL(blob);
+        //TODO
+        // const reader = new FileReader();
+        //
+        // reader.onloadend = async ()  => {
+        //     media.id = await add_video(reader.result as string, media) as string;
+        //     this.model.lastSavedMedia = media;
+        //     this.model.recordedChunks = [];
+        // }
+        // reader.readAsDataURL(blob);
     }
 }

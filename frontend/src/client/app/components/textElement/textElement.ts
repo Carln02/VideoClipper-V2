@@ -15,7 +15,7 @@ import {YMap} from "../../../../yManagement/yManagement.types";
 export class TextElement extends VcComponent<TextElementView, SyncedText, TextElementModel, DocumentManager> {
     public readonly renderer: ClipRenderer;
 
-    public constructor(properties: TextElementProperties) {
+    public constructor(properties: TextElementProperties = {}) {
         super(properties);
         this.renderer = properties.renderer;
         this.mvc.generate({
@@ -41,7 +41,7 @@ export class TextElement extends VcComponent<TextElementView, SyncedText, TextEl
     }
 
     public get clip(): Clip {
-        return this.renderer.clip;
+        return this.renderer?.clip;
     }
 
     public get card(): Card {

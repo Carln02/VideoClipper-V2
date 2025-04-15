@@ -4,10 +4,9 @@ import * as d3 from "d3";
 import {FlowBranch} from "./flowBranch";
 
 export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
-    private path: SVGPathElement;
-
     public initialize() {
         super.initialize();
+        this.model.pathSelection = d3.select(this.element.element).append("path");
         this.redraw();
     }
 
@@ -25,7 +24,7 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
     }
 
     public clear(): void {
-        d3.select(this.element.element).selectAll("*").remove();
+        d3.select(this.element.element).selectAll(".chevron").remove();
     }
 
     /**
@@ -34,8 +33,6 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
      */
     private drawPath() {
         const points = this.model.points;
-        const group = this.element.element;
-
         this.clear();
 
         if (points.length < 2) return;
@@ -47,15 +44,14 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
             .y(d => d.y)
             .curve(d3.curveNatural);
 
-        const pathData = lineGenerator(points);
+        const pathData = lineGenerator(points.filter(p => !isNaN(p.x) && !isNaN(p.y)));
 
         //Append the path to the group
-        this.path = d3.select(group).append("path")
+        this.model.pathSelection
             .attr("class", "flow")
             .attr("d", pathData)
             .attr("stroke-dasharray", isOverwriting ? "5, 5" : null)
-            .attr("opacity", isOverwriting ? 0.6 : 1)
-            .node() as SVGPathElement;
+            .attr("opacity", isOverwriting ? 0.6 : 1);
 
         this.drawChevronsDelayed();
     }
@@ -67,11 +63,11 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
 
     private drawChevrons() {
         const isOverwriting = this.model.isOverwriting;
-        const pathLength = this.path.getTotalLength();
+        const pathLength = this.model.path.getTotalLength();
 
         for (let distance = this.model.chevronInterval; distance < pathLength; distance += this.model.chevronInterval) {
-            const point = this.path.getPointAtLength(distance);
-            const nextPoint = this.path.getPointAtLength(distance + 1);
+            const point = this.model.path.getPointAtLength(distance);
+            const nextPoint = this.model.path.getPointAtLength(distance + 1);
             //Compute angle
             const angle = Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * (180 / Math.PI);
             d3.select(this.element.element).append("path")

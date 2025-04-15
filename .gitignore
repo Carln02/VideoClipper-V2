@@ -1,3 +1,4 @@
+
 # Logs
 logs
 *.log
@@ -135,3 +136,4 @@ package-lock.json
 /public/build/bundle.js
 
 persist/
+/backend-v2/media_storage

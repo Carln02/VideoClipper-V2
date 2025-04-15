@@ -9,7 +9,7 @@ import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {Card} from "../../components/card/card";
 import {DocumentManagerFlowsModel} from "./documentManager.flowsModel";
 import {Flow} from "../../components/flow/flow";
-import {SyncedMedia} from "../captureManager/captureManager.types";
+import {SyncedMedia} from "../mediaManager/mediaManager.types";
 
 export class DocumentManagerModel extends YComponentModel {
     public readonly cardsModel: DocumentManagerCardsModel;

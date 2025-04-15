@@ -43,7 +43,7 @@ export class ConnectionTool extends Tool {
         //Reset drawing time
         this.lastDrawnTime = Date.now();
         //Save closest node
-        const closestNode: BranchingNode = e.closest(BranchingNode);
+        const closestNode: BranchingNode = e.closest(BranchingNode, true, ClosestOrigin.position);
         //If clicking on a node
         if (closestNode) {
             //Set last node ID
@@ -57,15 +57,17 @@ export class ConnectionTool extends Tool {
 
             //If intersection found
             if (intersection && intersection.flowId != undefined) {
-                // //Assign flow ID
-                // this.currentFlow = Flow.getById(intersection.flowId);
-                // //Create a new branch at this node
-                // return this.currentFlow.branchingHandler.branchAtPoint(intersection, undefined, this.lastNodeId);
+                //Assign flow ID
+                this.currentFlowId = intersection.flowId;
+                //Create a new branch at this node
+                return await this.currentFlow.branchAtPoint(intersection, e.scaledPosition, this.lastNodeId);
             }
+
             //Otherwise --> create a new flow
             this.currentFlowId = await this.documentManager.createNewFlow(e.scaledPosition, this.lastNodeId);
             return;
         }
+
         //Otherwise --> get the point data (if any) that the user initiated the drag from
         // const closestPoint = FlowIntersectionHandler.flowIntersectingWithPoint(e.scaledPosition);
         // //Return if null
@@ -100,13 +102,13 @@ export class ConnectionTool extends Tool {
     }
 
     public moveAction(e: TurboDragEvent) {
-        // this.currentFlow?.addPoint(e.scaledPosition, null, true);
+        this.currentFlow?.addPoint(e.scaledPosition, null, true);
     }
 
     //On drag --> draw flow
     public dragAction(e: TurboDragEvent) {
         //Return if no current flow
-        if (!this.currentFlow) return;
+        if (!this.currentFlow || !this.currentFlow.currentBranch) return;
         //Get the closest node
         const closestNode = e.closest(BranchingNode, true, ClosestOrigin.position);
         //Check if drawing a temporary or permanent point
@@ -121,7 +123,6 @@ export class ConnectionTool extends Tool {
         }
         //Add point
         this.currentFlow?.addPoint(e.scaledPosition, closestNode?.dataId, isTemporary);
-        // this.currentFlow.pointHandler.addPoint(e.scaledPositions.first, closestNode?.dataId.toString(), isTemporary);
 
     }
 

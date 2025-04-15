@@ -10,10 +10,9 @@ import {ClipRendererVisibility} from "./clipRenderer.types";
 import { YMap } from "../../../../yManagement/yManagement.types";
 
 export class ClipRendererModel extends RendererModel {
-    private _currentFrameOffset: number;
-
     public readonly videoElementsCount: number = 2 as const;
     public readonly videoClips: Clip[] = [];
+    public readonly offsets: number[] = [];
 
     private readonly textModel: ClipRendererTextModel;
 
@@ -42,7 +41,8 @@ export class ClipRendererModel extends RendererModel {
 
     public set clipData(value: YMap | SyncedClip) {
         this.setDataBlock(value as YMap, undefined, "clipData");
-        this.textModel.data = (value as YMap).get("content");
+        this.textModel.clear();
+        this.textModel.data = (value as YMap)?.get("content");
     }
 
     public get textElements(): TextElement[] {
@@ -53,31 +53,36 @@ export class ClipRendererModel extends RendererModel {
         return this.cardData.get("title");
     }
 
-    public get currentClip(): Clip {
-        return this.videoClips[this.currentIndex];
+    public get currentIndex(): number {
+        return super.currentIndex;
     }
 
-    private set currentClip(value: Clip) {
-        this.videoClips[this.currentIndex] = value;
-        this.clipData = value.data;
+    public set currentIndex(value: number) {
+        super.currentIndex = value;
+        this.clipData = this.getClip()?.data;
     }
 
-    public get currentFrameOffset(): number {
-        return this._currentFrameOffset;
+    public getClip(index: number = this.currentIndex): Clip {
+        return this.videoClips[index];
     }
 
-    private set currentFrameOffset(value: number) {
-        this._currentFrameOffset = value;
+    public getOffset(index: number = this.currentIndex): number {
+        return this.offsets[index];
     }
 
     @auto({cancelIfUnchanged: true})
     public set visibilityMode(value: ClipRendererVisibility) {
-        this.fireCallback("reloadVisibility");
+        this.fireCallback("reloadVisibility", value);
     }
 
-    public setCurrentClipWithOffset(clip: Clip, offset: number = this.currentFrameOffset) {
-        if (clip != this.currentClip) this.currentClip = clip;
-        if (this.currentFrameOffset != offset) this.currentFrameOffset = offset;
-        this.fireCallback("frameChanged");
+    public setClipWithOffset(clip: Clip, offset: number = 0, index: number = this.currentIndex) {
+        const prevClip = this.videoClips[index];
+        if (clip != prevClip) this.videoClips[index] = clip;
+
+        const prevOffset = this.offsets[index];
+        if (offset != prevOffset) this.offsets[index] = offset;
+
+        if (index == this.currentIndex) this.currentIndex = index;
+        this.fireCallback("clipChanged", index);
     }
 }

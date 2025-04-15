@@ -5,10 +5,10 @@ import {CaptureButton} from "../../components/captureButton/captureButton";
 import {CaptureTimer} from "../../components/captureTimer/captureTimer";
 import {DefaultEventName, div, TurboIconToggle, TurboSelectEntry, TurboSelectWheel} from "turbodombuilder";
 import {BackgroundSelector} from "../../components/backgroundSelector/backgroundSelector";
+import {CaptureMode} from "./shootingPanel.types";
 import {
     AnimatedContentSwitchingDiv
 } from "../../components/animationComponents/animatedContentSwitchingDiv/animatedContentSwitchingDiv";
-import {CaptureMode} from "../../managers/captureManager/captureManager.types";
 import {ClipRendererVisibility} from "../../components/clipRenderer/clipRenderer.types";
 import {CaptureModeSlider} from "../../components/captureModeSlider/captureModeSlider";
 import {DocumentScreens} from "../../managers/documentManager/documentManager.types";
@@ -50,7 +50,7 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
         this.switchCamera = new TurboIconToggle({icon: "switch-camera", toggleOnClick: true});
         this.microphone = new TurboIconToggle({icon: "microphone-on", toggleOnClick: true});
 
-        // this.backgroundSelector = new BackgroundSelector(this, {style: `margin-top: ${sidePanel.panelMarginTop}px`});
+        this.backgroundSelector = new BackgroundSelector();
 
         this.shootingDiv = new TurboSelectEntry({value: "shooting", element: div(), reflectValueOn: div()});
         this.backgroundColorDiv = new TurboSelectEntry({value: "backgroundColor", element: div(), reflectValueOn: div()});
@@ -77,7 +77,7 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
             })
         ]);
 
-        // this.backgroundColorDiv.addChild(this.backgroundSelector);
+        this.backgroundColorDiv.addChild(this.backgroundSelector);
     }
 
     protected setupUIListeners() {
@@ -101,6 +101,7 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
         };
 
         this.switchCamera.onToggle = () => this.element.camera.switchCamera();
+        this.backgroundSelector.onSelect = () => this.element.camera.fillCanvas(this.backgroundSelector.selectedValue);
 
         this.modeSlider.onSelect = ((b, entry) => {
             if (b) this.model.mode = entry.value as CaptureMode;

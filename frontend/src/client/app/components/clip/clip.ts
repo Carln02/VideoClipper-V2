@@ -1,26 +1,29 @@
 import "./clip.css";
 import {Card} from "../card/card";
-import {Coordinate, define} from "turbodombuilder";
+import {Coordinate, define, TurboDragEvent} from "turbodombuilder";
 import {Timeline} from "../timeline/timeline";
 import {ClipProperties, SyncedClip} from "./clip.types";
 import {ClipView} from "./clip.view";
 import {ClipModel} from "./clip.model";
-import {SyncedMedia} from "../../managers/captureManager/captureManager.types";
 import {ClipTextHandler} from "./clip.textHandler";
 import {ClipThumbnailController} from "./clipThumbnailController";
 import {VcComponent} from "../component/component";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
 import {TextElement} from "../textElement/textElement";
-import { YMap } from "../../../../yManagement/yManagement.types";
+import {YMap} from "../../../../yManagement/yManagement.types";
 import {YUtilities} from "../../../../yManagement/yUtilities";
 import {randomColor} from "../../../utils/random";
 import {SyncedText} from "../textElement/textElement.types";
+import {MovableComponent} from "../basicComponents/movableComponent/movableComponent";
+import {SyncedMedia} from "../../managers/mediaManager/mediaManager.types";
 
 @define("vc-clip")
 export class Clip extends VcComponent<ClipView, SyncedClip, ClipModel, DocumentManager> {
     public readonly timeline: Timeline;
 
-    constructor(properties: ClipProperties) {
+    public onMediaDataChanged: (clip: this) => void = () => {};
+
+    public constructor(properties: ClipProperties) {
         super(properties);
         this.timeline = properties.timeline;
         this.mvc.generate({
@@ -30,6 +33,8 @@ export class Clip extends VcComponent<ClipView, SyncedClip, ClipModel, DocumentM
             handlerConstructors: [ClipTextHandler],
             controllerConstructors: [ClipThumbnailController]
         });
+
+        this.mvc.emitter.add("mediaDataChanged", () => this.onMediaDataChanged(this));
     }
 
     public static createData(data?: SyncedClip): YMap & SyncedClip {
@@ -39,7 +44,7 @@ export class Clip extends VcComponent<ClipView, SyncedClip, ClipModel, DocumentM
         if (!data.backgroundFill && !data.mediaId) data.backgroundFill = "#FFFFFF";
         if (!data.color) data.color = randomColor();
 
-        const contentArray =YUtilities.createYArray([]);
+        const contentArray = YUtilities.createYArray([]);
         data.content?.forEach((content: SyncedText) => contentArray.push([TextElement.createData(content)]));
         data.content = contentArray;
 
@@ -119,10 +124,19 @@ export class Clip extends VcComponent<ClipView, SyncedClip, ClipModel, DocumentM
      * @returns {Clip} - The clone.
      */
     public clone(): Clip {
-        const clone = new Clip({timeline: this.timeline, data: this.data});
+        const clone = new Clip({timeline: this.timeline, data: this.data, screenManager: this.screenManager});
         clone.setStyle("width", this.offsetWidth + "px");
         clone.setStyle("height", this.offsetHeight + "px");
         clone.selected = this.selected;
         return clone;
+    }
+
+    public cloneAndMove(e: TurboDragEvent) {
+        const clone = this.clone();
+        this.setStyle("opacity", "0.4");
+
+        const moveableClone = new MovableComponent(clone, this, {parent: this.screenManager.canvas.content});
+        moveableClone.translation = e.scaledPosition;
+        return moveableClone;
     }
 }

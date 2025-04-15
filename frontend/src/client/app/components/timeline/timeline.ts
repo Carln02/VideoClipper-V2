@@ -1,5 +1,5 @@
 import {SyncedClip} from "../clip/clip.types";
-import {auto, define, TurboDrawer} from "turbodombuilder";
+import {auto, define, TurboDrawer, TurboEvent} from "turbodombuilder";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {Clip} from "../clip/clip";
 import "./timeline.css";
@@ -12,7 +12,7 @@ import {TimelineClipController} from "./timeline.clipController";
 import {TimelineTimeController} from "./timeline.timeController";
 import {TimelineClipHandler} from "./timeline.clipHandler";
 import {TimelineTimeHandler} from "./timeline.timeHandler";
-import { YArray, YMap } from "../../../../yManagement/yManagement.types";
+import {YArray, YMap} from "../../../../yManagement/yManagement.types";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 @define("vc-timeline")
@@ -36,8 +36,13 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
         });
 
         this.model.onClipAdded = (syncedClip, id) => {
-            const clip = new Clip({timeline: this});
+            const clip = new Clip({timeline: this, screenManager: this.screenManager});
             this.view.clipsContainer.addChild(clip, id + 1);
+
+            clip.onMediaDataChanged = (clip: Clip) => {
+                if (clip != this.model.currentClip) return;
+                this.renderer.setFrame(clip, this.model.currentClipInfo?.offset);
+            }
             requestAnimationFrame(() => clip.data = syncedClip);
             return clip;
         };
@@ -68,6 +73,7 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
         if (selectedClip && selectedClip[0] instanceof Clip) this.clipController.snapToClosest();
         else this.clipController.snapAtEnd();
         this.clipController.reloadCurrentClip();
+        this.card.duration = this.model.totalDuration;
     }
 
     public get clips(): Clip[] {
@@ -86,11 +92,15 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
         return this.model.pixelsPerSecondUnit;
     }
 
+    public get isPlaying(): boolean {
+        return this.renderer.isPlaying;
+    }
+
     public get width() {
         return this.model.totalDuration * this.pixelsPerSecondUnit * (this.screenManager.canvas.scale || 1);
     }
 
-    public addClip(clip: SyncedClip & YMap, index?: number) {
+    public async addClip(clip: SyncedClip & YMap, index?: number): Promise<number> {
         return this.model.clipHandler.addClip(clip, index);
     }
 
@@ -104,5 +114,13 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
 
     public reloadSize() {
         this.timeController.reloadTime();
+    }
+
+    public getClipFromPosition(e: TurboEvent) {
+       return this.clipController.getClipAtTimestamp(this.timeController.getTimeFromPosition(e));
+    }
+
+    public addIndicatorAt(indicator: Element, index: number) {
+        this.view.clipsContainer.addChild(indicator, index);
     }
 }

@@ -3,13 +3,16 @@ import {TimelineView} from "./timeline.view";
 import {TurboController} from "turbodombuilder";
 import {TimelineModel} from "./timeline.model";
 import {TimelineClipHandler} from "./timeline.clipHandler";
-import {TimelineTimeHandler} from "./timeline.timeHandler";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 
 export class TimelinePlayController extends TurboController<Timeline, TimelineView, TimelineModel> {
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
+
         this.emitter.add("playButtonClicked", () => this.play());
+        this.emitter.add("containerClicked", () => {
+            if (this.element.isPlaying) this.play(true);
+        });
     }
 
     protected get renderer(): ClipRenderer {
@@ -20,47 +23,40 @@ export class TimelinePlayController extends TurboController<Timeline, TimelineVi
         return this.model.clipHandler;
     }
 
-    protected get timeHandler(): TimelineTimeHandler {
-        return this.model.timeHandler;
+    private initializePlayTimer(): void {
+        this.model.playTimer = setInterval(() => {
+            this.model.timeHandler.incrementTime();
+            if (this.model.timeHandler.isCurrentTimeOutsideBounds()) {
+                this.model.timeHandler.resetTimeIfOutsideBounds();
+                clearInterval(this.model.playTimer);
+            }
+        }, this.model.timeIncrementMs);
     }
 
-    public isPlaying(): boolean {
-        return this.model.playTimer != null;
-    }
-
-    private async playNext(index: number, offset = 0) {
+    private async playRecur(index: number, offset = 0) {
         if (index >= this.element.dataSize) return this.play(false);
+        if (this.model.playTimer) clearInterval(this.model.playTimer);
 
-        await this.renderer.setFrame(this.clipHandler.getClipAt(index), offset);
-        this.renderer.playNext();
-
+        await this.renderer.playNext();
         await this.renderer.loadNext(this.clipHandler.getClipAt(index + 1));
+        this.initializePlayTimer();
 
-        this.model.nextTimer = setTimeout(() => this.playNext(index + 1),
-            1000 * ((this.clipHandler.getClipAt(index)?.duration || 0) - offset)
-        );
+        const timeoutDuration = 1000 * ((this.clipHandler.getClipAt(index)?.duration || 0) - offset);
+        this.model.nextTimer = setTimeout(() => this.playRecur(index + 1), timeoutDuration);
     }
 
-    public async play(play: boolean = !this.isPlaying()) {
+    public async play(play: boolean = !this.renderer.isPlaying) {
         this.view.updatePlayButtonIcon(play);
         if (this.model.nextTimer) clearTimeout(this.model.nextTimer);
-        this.model.nextTimer = null;
-
         if (this.model.playTimer) clearInterval(this.model.playTimer);
-        this.model.playTimer = null;
 
         if (!play) {
             this.renderer.pause();
             return;
         }
 
-        this.timeHandler.resetTimeIfOutsideBounds();
+        this.model.timeHandler.resetTimeIfOutsideBounds();
         await this.renderer.loadNext(this.model.currentClip, this.model.currentClipInfo.offset);
-        await this.playNext(this.model.currentClipInfo.index, this.model.currentClipInfo.offset);
-
-        this.model.playTimer = setInterval(() => {
-            this.timeHandler.incrementTime();
-            if (this.timeHandler.isCurrentTimeOutsideBounds()) clearInterval(this.model.playTimer);
-        }, this.model.timeIncrementMs);
+        await this.playRecur(this.model.currentClipInfo.index, this.model.currentClipInfo.offset);
     }
 }

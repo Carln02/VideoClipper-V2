@@ -27,3 +27,10 @@ export type FlowPoint = {
     lastNodeId?: string;
     pointIndex?: number;
 };
+
+export type FlowIntersection = {
+    distance: number,
+    branchId?: string,
+    previousDefinedPointIndex: number,
+    point: DOMPoint
+};

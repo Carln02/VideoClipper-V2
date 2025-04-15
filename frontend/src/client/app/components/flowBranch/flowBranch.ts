@@ -3,40 +3,82 @@ import {FlowBranchProperties, SyncedFlowBranch} from "./flowBranch.types";
 import {FlowBranchModel} from "./flowBranch.model";
 import {FlowBranchView} from "./flowBranch.view";
 import {Point, SvgNamespace, TurboProxiedElement} from "turbodombuilder";
-import {YArray} from "../../../../yManagement/yManagement.types";
+import {YArray, YMap} from "../../../../yManagement/yManagement.types";
 import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 import {FlowBranchSearchHandler} from "./flowBranch.searchHandler";
 import {FlowBranchUpdateHandler} from "./flowBranch.updateHandler";
-import {FlowPoint} from "../flow/flow.types";
+import {FlowIntersection, FlowPoint} from "../flow/flow.types";
 import {FlowBranchPointHandler} from "./flowBranch.pointHandler";
 import {FlowBranchEntryHandler} from "./flowBranch.entryHandler";
 import {FlowBranchCleaningHandler} from "./flowBranch.cleaningHandler";
+import {FlowBranchIntersectionHandler} from "./flowBranch.intersectionHandler";
+import {YUtilities} from "../../../../yManagement/yUtilities";
+import {FlowEntry} from "../flowEntry/flowEntry";
 
 export class FlowBranch extends TurboProxiedElement<"g", FlowBranchView, SyncedFlowBranch, FlowBranchModel> {
-    public readonly flow: Flow;
-
     public constructor(properties: FlowBranchProperties) {
         super({tag: "g", namespace: SvgNamespace});
-        this.flow = properties.flow;
-        this.flow?.svg.addChild(this.element);
-
         this.mvc.generate({
             viewConstructor: FlowBranchView,
             modelConstructor: FlowBranchModel,
             data: properties.data,
             handlerConstructors: [FlowBranchSearchHandler, FlowBranchUpdateHandler, FlowBranchPointHandler,
-                FlowBranchEntryHandler, FlowBranchCleaningHandler]
+                FlowBranchEntryHandler, FlowBranchCleaningHandler, FlowBranchIntersectionHandler],
+            initialize: false
         });
 
-        this.model.flowId = this.flow?.dataId;
+        this.model.flow = properties.flow;
+        this.model.flow?.svg.addChild(this.element);
+        this.model.flowId = this.model.flow?.dataId;
+        this.mvc.initialize();
     }
 
-    public get flowEntries(): YArray<SyncedFlowEntry> {
+    public static createData(data?: SyncedFlowBranch): YMap & SyncedFlowBranch {
+        if (!data) data = {};
+        if (!data.entries) data.entries = [];
+        if (!data.connectedBranches) data.connectedBranches = [];
+        if (!data.overwriting) data.overwriting = "";
+
+        data.entries = YUtilities.createYArray(data.entries.map(entry => FlowEntry.createData(entry)));
+        data.connectedBranches = YUtilities.createYArray(data.connectedBranches as string[]);
+
+        return YUtilities.createYMap(data) as YMap & SyncedFlowBranch;
+    }
+
+    public get flow(): Flow {
+        return this.model.flow;
+    }
+
+    public get entries(): YArray<SyncedFlowEntry> {
         return this.model.entries;
     }
 
-    public get flowEntriesArray(): SyncedFlowEntry[] {
+    public get entriesArray(): SyncedFlowEntry[] {
         return this.model.entriesArray;
+    }
+
+    public get connectedBranches(): YArray<string> {
+        return this.model.connectedBranches;
+    }
+
+    public get isOverwriting(): boolean {
+        return this.model.isOverwriting;
+    }
+
+    public get overwriting(): string {
+        return this.model.overwriting;
+    }
+
+    public redraw(force: boolean = false) {
+        return this.view.redraw(force);
+    }
+
+    public getEntry(index: number): SyncedFlowEntry & YMap {
+        return this.model.entryHandler.getEntry(index);
+    }
+
+    public spliceEntries(start: number, deleteCount?: number, ...entries: SyncedFlowEntry[]) {
+        return this.model.entryHandler.spliceEntries(start, deleteCount, ...entries);
     }
 
     /**
@@ -95,11 +137,27 @@ export class FlowBranch extends TurboProxiedElement<"g", FlowBranchView, SyncedF
         return this.model.updateHandler.updateAfterMovingNode(nodeId, deltaPosition);
     }
 
-    public get isOverwriting(): boolean {
-        return this.model.isOverwriting;
+    public updateOnDetachingNode(nodeId: string) {
+        return this.model.updateHandler.updateOnDetachingNode(nodeId);
     }
 
-    public get overwriting(): string {
-        return this.model.overwriting;
+    public intersectsPoint(point: Point, errorMargin: number = 50, incrementValue: number = 1): boolean {
+        return this.model.intersectionHandler.intersectsPoint(point, errorMargin, incrementValue);
+    }
+
+    public intersectsArea(topLeft: Point, size: Point): boolean {
+        return this.model.intersectionHandler.intersectsArea(topLeft, size);
+    }
+
+    public closestPointOnPath(p: Point, closestPoint: FlowIntersection, errorMargin: number = 50, incrementValue: number = 10): FlowIntersection {
+        return this.model.intersectionHandler.closestPointOnPath(p, closestPoint, errorMargin, incrementValue);
+    }
+
+    public setConnectedBranches(branches: string[] | YArray<string>) {
+        return this.model.connectionHandler.setConnectedBranches(branches);
+    }
+
+    public addConnectedBranch(...branches: string[]) {
+        return this.model.connectionHandler.addConnectedBranch(...branches);
     }
 }

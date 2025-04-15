@@ -10,7 +10,7 @@ export class VcComponent<
 > extends TurboElement<ViewType, DataType, ModelType> {
     public screenManager: ManagerType;
 
-    public constructor(properties: VcComponentProperties<ViewType, DataType, ModelType, ManagerType>) {
+    public constructor(properties: VcComponentProperties<ViewType, DataType, ModelType, ManagerType> = {}) {
         super(properties);
         this.screenManager = properties.screenManager;
     }

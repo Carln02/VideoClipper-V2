@@ -9,3 +9,9 @@ export type SyncedFlowEntry = {
     endNodeId?: string;
     points?: Coordinate[];
 };
+
+export type SplitEntryData = {
+    beforeSplit: SyncedFlowEntry,
+    splitEntry: SyncedFlowEntry,
+    afterSplit: SyncedFlowEntry
+};

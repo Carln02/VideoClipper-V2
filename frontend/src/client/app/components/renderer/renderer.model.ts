@@ -8,7 +8,7 @@ export class RendererModel extends YComponentModel {
    
     private _currentIndex: number = 0;
 
-    @auto({cancelIfUnchanged: true})
+    @auto({cancelIfUnchanged: false})
     public set currentCanvasFill(value: string | CanvasImageSource) {
         this.fireCallback("canvasFillChanged");
     }

@@ -30,7 +30,7 @@ export class FlowBranchEntryHandler extends TurboHandler<FlowBranchModel> {
     }
 
     public addNewEntry(data: SyncedFlowEntry, index ?: number) {
-        this.addEntry(this.createEntry(data), index);
+        this.addEntry(data instanceof YMap ? data : this.createEntry(data), index);
     }
 
     public removeEntryAt(index ?: number) {
@@ -49,5 +49,11 @@ export class FlowBranchEntryHandler extends TurboHandler<FlowBranchModel> {
     public setEntry(entry: SyncedFlowEntry & YMap, index ?: number) {
         this.removeEntryAt(index);
         this.addEntry(entry, index);
+    }
+
+    public spliceEntries(start: number, deleteCount?: number, ...entries: SyncedFlowEntry[]) {
+        if (deleteCount == undefined) deleteCount = this.model.entries.length - start;
+        for (let i = start + deleteCount - 1; i > start; i--) this.removeEntryAt(i);
+        entries?.forEach(entry => this.addNewEntry(entry), start);
     }
 }

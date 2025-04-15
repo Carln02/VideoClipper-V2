@@ -28,12 +28,10 @@ export class TimelineClipController extends TurboController<Timeline, TimelineVi
 
     public reloadCurrentClip() {
         this.model.currentClipInfo = this.getClipAtTimestamp();
-        // this.element.playController.play(false);
         this.element.screenManager.contextManager.setContext(this.model.currentClip, 2);
         if (this.element.renderer.isPlaying) return;
-
-        if (!this.element.renderer || this.element.renderer.visibilityMode == ClipRendererVisibility.ghosting) return;
-        this.element.renderer.setFrame(this.model.currentClip, this.model.currentClipInfo?.offset);
+        this.element.renderer.setFrame(this.element.renderer.visibilityMode == ClipRendererVisibility.ghosting
+            ? this.model.currentClipInfo?.ghostingClip : this.model.currentClip, this.model.currentClipInfo?.offset);
     }
 
     public snapToClosest(entry: number | ClipTimelineEntry = this.model.currentClipInfo) {
@@ -43,8 +41,6 @@ export class TimelineClipController extends TurboController<Timeline, TimelineVi
         let currentTime = 0;
         for (let i = 0; i < index; i++) currentTime += this.getDuration(i);
         this.model.currentTime = currentTime;
-
-        this.element.renderer.setFrame(this.clipHandler.getClipAt(index <= 0 ? index : (index - 1)));
     }
 
     public snapAtEnd() {
@@ -67,11 +63,14 @@ export class TimelineClipController extends TurboController<Timeline, TimelineVi
 
         const clip = this.clipHandler.getClipAt(index);
         const offset = time - accumulatedTime;
-        const closestIntersection = accumulatedTime < clip.duration / 2 ? index : (index + 1);
+        const closestToNext = offset > this.getDuration(index) / 2;
+
+        const ghostingClip = index == 0 && !closestToNext ? null : this.clipHandler.getClipAt(closestToNext ? index : index - 1);
+        const closestIntersection = closestToNext ? (index + 1) : index;
 
         return {
-            clip: clip, offset: offset, index: index, closestIntersection: closestIntersection,
-            distanceFromClosestIntersection: closestIntersection == index ? offset : clip.duration - offset
+            clip: clip, ghostingClip: ghostingClip, offset: offset, index: index, closestIntersection: closestIntersection,
+            distanceFromClosestIntersection: closestIntersection == index ? (clip?.duration - offset) : offset
         };
     }
 

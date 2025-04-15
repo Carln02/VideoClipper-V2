@@ -25,7 +25,7 @@ export class RendererCanvasController<
         if (typeof fill == "string") {
             if (fill.length < 30) {
                 // Assume it's a color string
-                this.view.canvasContext.fillStyle = "#FFFFFF";
+                this.view.canvasContext.fillStyle = fill;
                 this.view.canvasContext.fillRect(0, 0, this.view.width, this.view.height);
                 return;
             } else {

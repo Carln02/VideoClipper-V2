@@ -10,6 +10,7 @@ import {MovableComponent} from "../../components/basicComponents/movableComponen
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
 import {DocumentScreens} from "../../managers/documentManager/documentManager.types";
+import { YMap } from "../../../../yManagement/yManagement.types";
 
 /**
  * @description Tool that allows user to select elements and move them around
@@ -57,7 +58,7 @@ export class SelectionTool extends Tool {
             this.contextManager.setContext(e.closest(Card, false), 1);
             this.contextManager.setContext(closestClip, 2, true);
             this.currentTarget = closestClip;
-            this.cloneClip(e, closestClip);
+            this.clipClone = closestClip.cloneAndMove(e);
         }
         //Click start --> save the card that was clicked on (if any)
         else if (this.documentManager.currentType == DocumentScreens.canvas && closestNode) {
@@ -82,30 +83,23 @@ export class SelectionTool extends Tool {
             this.documentManager.forEachBranch((branch) => branch.updateAfterMovingNode(id, e.scaledDeltaPosition));
         } else if (this.documentManager.currentType == DocumentScreens.camera && this.currentTarget instanceof TextElement) {
             this.currentTarget.translateBy(e.scaledDeltaPosition);
-            // this.context.getAllOfType(TextElement).forEach(entry => {
-            //     if (!(entry instanceof TextElement)) return;
-            //     entry.translateBy(e.scaledDeltaPosition);
-            // });
+            this.contextManager.getAllOfType(TextElement).forEach(entry => {
+                if (!(entry instanceof TextElement)) return;
+                entry.translateBy(e.scaledDeltaPosition);
+            });
         }
     }
 
     public dragEnd(e: TurboDragEvent) {
+        this.currentTarget = null;
         if (this.clipClone) {
             this.moveClip(e);
         }
-        this.currentTarget = null;
-        // else if (this.context.view == ContextView.canvas) {
-        //     if (e.closest(Card)) this.context.removeContext(e.closest(Card));
-        // } else if (this.context.view == ContextView.camera && this.context.getOfType(TextElement)) {
-        //     this.context.removeContext(e.closest(TextElement), 3);
-        // }
-    }
-
-    private cloneClip(e: TurboDragEvent, clip: Clip) {
-        const clone = clip.clone();
-        clip.setStyle("opacity", "0.4");
-        this.clipClone = new MovableComponent(clone, clip, {parent: this.documentManager.canvas.content});
-        this.clipClone.translation = e.scaledPosition;
+        else if (this.documentManager.currentType == DocumentScreens.canvas) {
+            if (e.closest(Card)) this.contextManager.removeContext(e.closest(Card));
+        } else if (this.documentManager.currentType == DocumentScreens.camera && this.contextManager.getOfType(TextElement)) {
+            this.contextManager.removeContext(e.closest(TextElement), 3);
+        }
     }
 
     private insertIndicatorAfterClosestClip(e: TurboDragEvent) {
@@ -115,15 +109,15 @@ export class SelectionTool extends Tool {
             return;
         }
 
-        this.timelineIndicatorIndex = closestTimeline.getClipAt(closestTimeline.getTimeFromPosition(e)).closestIntersection;
-        const siblingAfter = closestTimeline.clips[this.timelineIndicatorIndex];
-        const siblingBefore = closestTimeline.clips[this.timelineIndicatorIndex - 1];
+        this.timelineIndicatorIndex = closestTimeline.getClipFromPosition(e).closestIntersection;
 
-        if (siblingAfter == this.clipClone.originElement || siblingBefore == this.clipClone.originElement) {
+        if ( closestTimeline.clips[this.timelineIndicatorIndex] == this.clipClone.originElement
+            || closestTimeline.clips[this.timelineIndicatorIndex - 1] == this.clipClone.originElement) {
             this.removeTimelineIndicator();
             return;
         }
-        closestTimeline.clipsContainer.addChildBefore(this.timelineIndicator, siblingAfter);
+
+        closestTimeline.addIndicatorAt(this.timelineIndicator, this.timelineIndicatorIndex);
     }
 
     private moveClip(e: TurboDragEvent) {
@@ -131,25 +125,24 @@ export class SelectionTool extends Tool {
         const newCard = e.closest(Card, false, ClosestOrigin.position);
 
         if (closestTimeline && this.timelineIndicatorIndex != -1) {
-            const clipData = this.clipClone.originElement.data;
-            // const clipIndex = clipData.index;
-            // const cardId = clipData.parent.parent.id;
-            //
-            // this.context.clearContext();
-            //
-            // if (newCard.id == cardId && this.timelineIndicatorIndex >= clipIndex) this.timelineIndicatorIndex--;
-            //
-            // newCard.addClip(structuredClone(clipData), this.timelineIndicatorIndex).then(() => {
-            //     const newClip = newCard.clips[this.timelineIndicatorIndex];
-            //     this.context.setContext(newCard, 1);
-            //     this.context.setContext(newClip, 2);
-            //     newClip.selected = true;
+            this.contextManager.clearContext();
+
+            if (newCard == this.clipClone.originElement.card
+                && this.timelineIndicatorIndex >= this.clipClone.originElement.dataIndex)
+                this.timelineIndicatorIndex--;
+
+            this.clipClone.originElement.card.removeClip(this.clipClone.originElement);
+            //TODO FIX THIS IDK -- maybe create a copy and then attach that. better way ig
+            // newCard.addClip(this.clipClone.originElement.data as YMap, this.timelineIndicatorIndex).then((index) => {
+            //     setTimeout(() => {
+            //         console.log(index);
+            //         this.contextManager.setContext(newCard, 1);
+            //         this.contextManager.setContext(newCard.timeline.clips[index], 2, true);
+            //     }, 600)
             // });
-            //
-            // this.clipClone.originElement.card.removeClip(this.clipClone.originElement);
         }
 
-        this.clipClone.originElement.setStyle("opacity", "1");
+        this.clipClone.originElement?.setStyle("opacity", "1");
         this.removeTimelineIndicator();
         this.clipClone.remove();
         this.clipClone = null;

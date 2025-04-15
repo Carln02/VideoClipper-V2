@@ -41,14 +41,14 @@ export class FlowBranchUpdateHandler extends TurboHandler<FlowBranchModel> {
         }
     }
 
-    public updateOnDetachingCard(cardId: string): boolean {
-        if (!cardId) return;
+    public updateOnDetachingNode(nodeId: string): boolean {
+        if (!nodeId) return;
 
         const flowEntries = this.model.entriesArray;
         for (let i = flowEntries.length - 1; i >= 0; i--) {
             const entry = new FlowEntryModel(flowEntries[i]);
             // If the entry is not connected to the card on any end --> skip it
-            if (entry.startNodeId != cardId && entry.endNodeId != cardId) continue;
+            if (entry.startNodeId != nodeId && entry.endNodeId != nodeId) continue;
             //Otherwise --> delete entry
             this.model.entryHandler.removeEntryAt(i);
             return true;

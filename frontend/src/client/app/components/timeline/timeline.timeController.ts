@@ -11,11 +11,10 @@ export class TimelineTimeController extends TurboController<Timeline, TimelineVi
             this.element.card.duration = this.model.totalDuration;
         });
 
+        this.view.scrubber.onScrubbing = (e: TurboDragEvent) => this.emitter.fire("containerClicked", e);
         this.emitter.add("containerClicked", (e: TurboEvent) => {
             this.model.currentTime = this.getTimeFromPosition(e);
         });
-
-        this.view.scrubber.onScrubbing = (e: TurboDragEvent) => this.increaseTimeByDistance(e.deltaPosition.x);
     }
 
     public reloadTime() {
@@ -29,9 +28,5 @@ export class TimelineTimeController extends TurboController<Timeline, TimelineVi
         if (offsetPosition < 0) offsetPosition = 0;
         if (offsetPosition > this.element.width) offsetPosition = this.element.width;
         return offsetPosition / this.element.width * this.model.totalDuration;
-    }
-
-    public increaseTimeByDistance(distance: number) {
-        this.model.currentTime += distance / this.element.width * this.model.totalDuration;
     }
 }

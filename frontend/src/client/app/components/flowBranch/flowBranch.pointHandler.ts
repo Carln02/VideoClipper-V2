@@ -65,7 +65,12 @@ export class FlowBranchPointHandler extends TurboHandler<FlowBranchModel> {
 
         // Knowing that (0, 0) is at the center of the canvas, some points have negative coordinates,
         // so I get the max x and y absolute values in all the points to ensure I'm not ignoring negative values
-        points.forEach(p => maxPoint = Point.max(maxPoint, p.abs()));
+        points.forEach(p => {
+            if (!p || p.x == undefined || p.y == undefined) return;
+            const max = Point.max(maxPoint, p.abs());
+            if (isNaN(max.x) || isNaN(max.y)) return;
+            maxPoint = max;
+        });
         return maxPoint;
     }
 }

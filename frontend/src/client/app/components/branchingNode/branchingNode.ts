@@ -1,4 +1,4 @@
-import {SyncedBranchingNode} from "./branchingNode.types";
+import {BranchingNodeType, SyncedBranchingNode} from "./branchingNode.types";
 import {define, Point} from "turbodombuilder";
 import "./branchingNode.css";
 import {BranchingNodeModel} from "./branchingNode.model";
@@ -6,6 +6,8 @@ import {BranchingNodeView} from "./branchingNode.view";
 import {VcComponentProperties} from "../component/component.types";
 import {VcComponent} from "../component/component";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
+import {YUtilities} from "../../../../yManagement/yUtilities";
+import { YMap } from "../../../../yManagement/yManagement.types";
 
 /**
  * @class BranchingNode
@@ -31,6 +33,13 @@ export class BranchingNode<
         });
     }
 
+    public static createData(data?: SyncedBranchingNode): YMap & SyncedBranchingNode {
+        if (!data) data = {};
+        if (!data.origin) data.origin = {x: 0, y: 0};
+        data.type = BranchingNodeType.node;
+        return YUtilities.createYMap(data);
+    }
+
     /**
      * @function move
      * @description Moves the branching node by the given values.
@@ -46,7 +55,7 @@ export class BranchingNode<
      * amd updates the attached flows accordingly.
      */
     public delete() {
+        this.screenManager.flows.forEach(flow => flow.updateOnDetachingNode(this.dataId));
         this.screenManager.delete(this);
-        // FlowManagementHandler.updateFlowsOnDetachingCard(this.id);
     }
 }

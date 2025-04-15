@@ -10,6 +10,7 @@ import {DocumentManager} from "../../managers/documentManager/documentManager";
 import {DocumentScreens} from "../../managers/documentManager/documentManager.types";
 import {VcComponent} from "../../components/component/component";
 import {Clip} from "../../components/clip/clip";
+import {SyncedMedia} from "../../managers/mediaManager/mediaManager.types";
 
 @define("vc-camera")
 export class Camera extends VcComponent<CameraView, object, CameraModel, DocumentManager> {
@@ -24,11 +25,11 @@ export class Camera extends VcComponent<CameraView, object, CameraModel, Documen
 
         this.model.ghosting = true;
 
-        this.mvc.emitter.add("savedMedia", async () => {
-            await this.card.addClip(Clip.createData({
-                endTime: (this.model.lastSavedMedia?.duration ? this.model.lastSavedMedia.duration : 5),
-                mediaId: this.model.lastSavedMedia.id,
-            }), this.card.timeline.currentClipInfo.index);
+        this.mvc.emitter.add("recordedMedia", async (media: SyncedMedia) => {
+            media.id = await this.screenManager.MediaManager.saveMedia(media);
+            // this.model.lastSavedMedia = {...this.model.lastRecordedMedia, blob: undefined};
+            await this.card.addClip(Clip.createData({endTime: (media?.duration ?? 5), mediaId: media.id,}),
+                this.view.timeline.currentClipInfo.closestIntersection);
         });
     }
 
@@ -98,6 +99,6 @@ export class Camera extends VcComponent<CameraView, object, CameraModel, Documen
 
     public snapPicture() {
         if (!this.model.stream) return;
-        //TODO this.view.cameraRenderer.drawCurrentVideoFrame().then(picture => this.saveMedia("image", picture));
+        //TODO this.view.cameraRenderer.drawVideoFrame().then(picture => this.saveMedia("image", picture));
     }
 }

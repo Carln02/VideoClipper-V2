@@ -1,10 +1,6 @@
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {Card} from "../../components/card/card";
-import {SyncedCard} from "../../components/card/card.types";
-import {auto, define, Point} from "turbodombuilder";
-import {SyncedText, TextType} from "../../components/textElement/textElement.types";
-import {SyncedClip} from "../../components/clip/clip.types";
-import {randomColor} from "../../../utils/random";
+import {auto, Coordinate, define, Point} from "turbodombuilder";
 import {YUtilities} from "../../../../yManagement/yUtilities";
 import {DocumentManagerModel} from "./documentManager.model";
 import {YArray, YDoc, YMap} from "../../../../yManagement/yManagement.types";
@@ -27,11 +23,13 @@ import {Canvas} from "../../screens/canvas/canvas";
 import {Camera} from "../../screens/camera/camera";
 import {AppManager} from "../appManager/appManager";
 import {VcComponent} from "../../components/component/component";
-import {TextElement} from "../../components/textElement/textElement";
+import {MediaManager} from "../mediaManager/mediaManager";
+import {SyncedMedia} from "../mediaManager/mediaManager.types";
 
 @define()
 export class DocumentManager extends ScreenManager<DocumentScreens, DocumentManagerView, SyncedDocument,
     DocumentManagerModel, AppManager> {
+    private readonly _mediaManager: MediaManager;
     private readonly _contextManager: ContextManager;
     private readonly _toolManager: ToolManager;
 
@@ -39,6 +37,7 @@ export class DocumentManager extends ScreenManager<DocumentScreens, DocumentMana
         super(properties);
         if (properties.document) this.document = properties.document;
 
+        this._mediaManager = new MediaManager(this);
         this._contextManager = new ContextManager();
         this._toolManager = new ToolManager();
 
@@ -78,6 +77,10 @@ export class DocumentManager extends ScreenManager<DocumentScreens, DocumentMana
            this.canvas.navigationManager.computePositionRelativeToCanvas(position);
     }
 
+    public get MediaManager(): MediaManager {
+        return this._mediaManager;
+    }
+
     public get contextManager(): ContextManager {
         return this._contextManager;
     }
@@ -103,11 +106,26 @@ export class DocumentManager extends ScreenManager<DocumentScreens, DocumentMana
         return this.model.flowsModel.getInstance(id);
     }
 
+    public getMedia(id: string): SyncedMedia {
+        return this.model.media.get(id);
+    }
+
+    public setMedia(id: string, media: SyncedMedia)  {
+        this.model.media.set(id, media);
+    }
+
     public forEachBranch(callback: (branch: FlowBranch, flow: Flow) => void) {
         this.flows.forEach(flow => flow.branches.forEach(branch => callback(branch, flow)));
     }
 
     //CARDS
+
+    public async createNewNode(position: Coordinate, id?: string): Promise<string> {
+        if (position instanceof Point) position = position.object;
+        if (!id) return await YUtilities.addInYMap(BranchingNode.createData({origin: position}), this.model.branchingNodesData);
+        this.model.branchingNodesData.set(id, BranchingNode.createData({origin: position}));
+        return id;
+    }
 
     public async createNewCard(position: Point): Promise<string> {
         this.model.incrementCardsCount();

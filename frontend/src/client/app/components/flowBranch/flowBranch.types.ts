@@ -9,8 +9,8 @@ import {Side} from "turbodombuilder";
  * "connectedBranches" is optional and can store the IDs of branches that split or merge.
  */
 export type SyncedFlowBranch = {
-    entries: YArray<SyncedFlowEntry>;
-    connectedBranches?: YArray<string>;
+    entries?: SyncedFlowEntry[] | YArray<SyncedFlowEntry>;
+    connectedBranches?: string[] | YArray<string>;
     overwriting?: string;
 };
 

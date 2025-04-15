@@ -95,12 +95,17 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
         this.view.editTitle();
     }
 
-    public delete() {
-        //TODO convert to branching node if on branches
-        super.delete();
+    /**
+     * @function delete
+     * @description Deletes the node data from the Yjs document, destroys all its attached components (including this),
+     * amd updates the attached flows accordingly.
+     */
+    public async delete() {
+        await this.screenManager.createNewNode(this.model.origin, this.dataId);
+        this.screenManager.delete(this);
     }
 
-    public addClip(clip: SyncedClip & YMap, index?: number) {
+    public async addClip(clip: SyncedClip & YMap, index?: number): Promise<number> {
         return this.timeline.addClip(clip, index);
     }
 

@@ -1,6 +1,6 @@
 import {DefaultEventName, define, div, TurboElement, TurboProperties} from "turbodombuilder";
 import "./captureButton.css";
-import {CaptureMode} from "../../managers/captureManager/captureManager.types";
+import {CaptureMode} from "../../panels/shootingPanel/shootingPanel.types";
 
 @define()
 export class CaptureButton extends TurboElement {

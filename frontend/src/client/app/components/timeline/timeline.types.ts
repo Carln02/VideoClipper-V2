@@ -10,6 +10,7 @@ import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 export type ClipTimelineEntry = {
     clip?: Clip,
+    ghostingClip?: Clip,
     index?: number,
     offset?: number,
     closestIntersection?: number,
