@@ -37,10 +37,7 @@ export class ClipRendererVideoController extends RendererVideoController<ClipRen
         if (clip.metadata?.type == "video") {
             this.view.showCurrentVideo();
             await this.play();
-        } else {
-            await this.element.setFrame(clip, 0);
-            this.model.isPlaying = true;
-        }
+        } else this.model.isPlaying = true;
     }
 
     public async play() {

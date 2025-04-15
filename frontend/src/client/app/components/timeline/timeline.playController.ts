@@ -37,11 +37,15 @@ export class TimelinePlayController extends TurboController<Timeline, TimelineVi
         if (index >= this.element.dataSize) return this.play(false);
         if (this.model.playTimer) clearInterval(this.model.playTimer);
 
+        const curClip = this.clipHandler.getClipAt(index);
+        const nextClip = this.clipHandler.getClipAt(index + 1);
+
+        await this.renderer.setFrame(curClip, offset);
         await this.renderer.playNext();
-        await this.renderer.loadNext(this.clipHandler.getClipAt(index + 1));
+        await this.renderer.loadNext(nextClip);
         this.initializePlayTimer();
 
-        const timeoutDuration = 1000 * ((this.clipHandler.getClipAt(index)?.duration || 0) - offset);
+        const timeoutDuration = 1000 * ((curClip?.duration || 0) - offset);
         this.model.nextTimer = setTimeout(() => this.playRecur(index + 1), timeoutDuration);
     }
 

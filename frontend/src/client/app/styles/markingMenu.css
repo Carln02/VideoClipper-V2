@@ -1,4 +1,4 @@
-turbo-marking-menu > turbo-select-entry {
+.turbo-marking-menu > turbo-select-entry {
     position: absolute;
     height: 1.5rem;
     opacity: 0;
@@ -19,16 +19,16 @@ turbo-marking-menu > turbo-select-entry {
     /*box-shadow: var(--default-shadow);*/
 }
 
-turbo-marking-menu > turbo-select-entry:hover {
+.turbo-marking-menu > turbo-select-entry:hover {
     scale: 1.1;
 }
 
-turbo-marking-menu > turbo-select-entry img {
+.turbo-marking-menu > turbo-select-entry img {
     height: 80%;
     aspect-ratio: 1;
 }
 
-turbo-marking-menu > turbo-select-entry p {
+.turbo-marking-menu > turbo-select-entry p {
     margin: 0 0 0 6px;
     display: inline-block;
     flex-grow: 1;

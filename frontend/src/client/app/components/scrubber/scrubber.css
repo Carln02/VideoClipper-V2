@@ -41,9 +41,3 @@ vc-scrubber > div:last-child {
     border-radius: 2em;
     background-color: pink;
 }
-
-turbo-marking-menu {
-    position: absolute;
-    transform: translate3d(50%, 50%, 0);
-    z-index: 4;
-}

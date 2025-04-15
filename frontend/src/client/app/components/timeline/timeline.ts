@@ -43,7 +43,10 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
                 if (clip != this.model.currentClip) return;
                 this.renderer.setFrame(clip, this.model.currentClipInfo?.offset);
             }
-            requestAnimationFrame(() => clip.data = syncedClip);
+            requestAnimationFrame(() => {
+                clip.data = syncedClip;
+                if (clip != this.model.currentClip) this.renderer.setFrame(clip, this.model.currentClipInfo?.offset);
+            });
             return clip;
         };
 
@@ -121,6 +124,7 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
     }
 
     public addIndicatorAt(indicator: Element, index: number) {
+        indicator.remove();
         this.view.clipsContainer.addChild(indicator, index);
     }
 }

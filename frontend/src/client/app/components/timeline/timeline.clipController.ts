@@ -63,14 +63,14 @@ export class TimelineClipController extends TurboController<Timeline, TimelineVi
 
         const clip = this.clipHandler.getClipAt(index);
         const offset = time - accumulatedTime;
-        const closestToNext = offset > this.getDuration(index) / 2;
-
+        const offsetToNext = clip?.duration - offset;
+        const closestToNext = offsetToNext < offset;
         const ghostingClip = index == 0 && !closestToNext ? null : this.clipHandler.getClipAt(closestToNext ? index : index - 1);
-        const closestIntersection = closestToNext ? (index + 1) : index;
 
         return {
-            clip: clip, ghostingClip: ghostingClip, offset: offset, index: index, closestIntersection: closestIntersection,
-            distanceFromClosestIntersection: closestIntersection == index ? (clip?.duration - offset) : offset
+            clip: clip, ghostingClip: ghostingClip, offset: offset, index: index,
+            closestIntersection: closestToNext ? (index + 1) : index,
+            distanceFromClosestIntersection: closestToNext ? offsetToNext : offset
         };
     }
 

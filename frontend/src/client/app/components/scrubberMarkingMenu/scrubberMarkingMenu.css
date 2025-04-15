@@ -1,0 +1,5 @@
+scrubber-marking-menu {
+    position: absolute;
+    transform: translate3d(50%, 50%, 0);
+    z-index: 4;
+}

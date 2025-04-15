@@ -1,7 +1,6 @@
 import {TimelineModel} from "./timeline.model";
 import {Clip} from "../clip/clip";
 import {SyncedClip} from "../clip/clip.types";
-import {randomColor} from "../../../utils/random";
 import {YUtilities} from "../../../../yManagement/yUtilities";
 import {TurboHandler} from "turbodombuilder";
 import {YMap} from "yjs/dist/src/types/YMap";
@@ -15,7 +14,6 @@ export class TimelineClipHandler extends TurboHandler<TimelineModel> {
 
     public async addClip(clip: SyncedClip & YMap, index?: number): Promise<number> {
         if ((!index && index != 0) || index > this.model.data.length) index = this.model.data.length;
-        if (!clip.get("color")) clip.set("color", randomColor());
         return YUtilities.addInYArray(clip, this.model.data, index);
     }
 

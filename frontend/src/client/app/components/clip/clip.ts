@@ -42,7 +42,11 @@ export class Clip extends VcComponent<ClipView, SyncedClip, ClipModel, DocumentM
         if (!data.startTime) data.startTime = 0;
         if (!data.endTime) data.endTime = 5;
         if (!data.backgroundFill && !data.mediaId) data.backgroundFill = "#FFFFFF";
-        if (!data.color) data.color = randomColor();
+        if (!data.color) {
+            console.log(data.color);
+            console.log("UPDATING COLOR");
+            data.color = randomColor();
+        }
 
         const contentArray = YUtilities.createYArray([]);
         data.content?.forEach((content: SyncedText) => contentArray.push([TextElement.createData(content)]));
@@ -108,6 +112,22 @@ export class Clip extends VcComponent<ClipView, SyncedClip, ClipModel, DocumentM
 
     public get duration(): number {
         return this.endTime - this.startTime;
+    }
+
+    public get muted(): boolean {
+        return this.model.muted;
+    }
+
+    public set muted(value: boolean) {
+        this.model.muted = value;
+    }
+
+    public get hidden(): boolean {
+        return this.model.hidden;
+    }
+
+    public set hidden(value: boolean) {
+        this.model.hidden = value;
     }
 
     public addText(position: Coordinate) {

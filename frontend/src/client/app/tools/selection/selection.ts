@@ -111,13 +111,13 @@ export class SelectionTool extends Tool {
 
         this.timelineIndicatorIndex = closestTimeline.getClipFromPosition(e).closestIntersection;
 
-        if ( closestTimeline.clips[this.timelineIndicatorIndex] == this.clipClone.originElement
+        if (closestTimeline.clips[this.timelineIndicatorIndex] == this.clipClone.originElement
             || closestTimeline.clips[this.timelineIndicatorIndex - 1] == this.clipClone.originElement) {
             this.removeTimelineIndicator();
             return;
         }
 
-        closestTimeline.addIndicatorAt(this.timelineIndicator, this.timelineIndicatorIndex);
+        closestTimeline.addIndicatorAt(this.timelineIndicator, this.timelineIndicatorIndex + 1);
     }
 
     private moveClip(e: TurboDragEvent) {
@@ -131,15 +131,12 @@ export class SelectionTool extends Tool {
                 && this.timelineIndicatorIndex >= this.clipClone.originElement.dataIndex)
                 this.timelineIndicatorIndex--;
 
+            const clipDataCopy = (this.clipClone.originElement.data as YMap).toJSON();
             this.clipClone.originElement.card.removeClip(this.clipClone.originElement);
-            //TODO FIX THIS IDK -- maybe create a copy and then attach that. better way ig
-            // newCard.addClip(this.clipClone.originElement.data as YMap, this.timelineIndicatorIndex).then((index) => {
-            //     setTimeout(() => {
-            //         console.log(index);
-            //         this.contextManager.setContext(newCard, 1);
-            //         this.contextManager.setContext(newCard.timeline.clips[index], 2, true);
-            //     }, 600)
-            // });
+            newCard.addClip(Clip.createData(clipDataCopy), this.timelineIndicatorIndex).then(index => {
+                this.contextManager.setContext(newCard, 1);
+                this.contextManager.setContext(newCard.timeline.clips[index], 2, true);
+            });
         }
 
         this.clipClone.originElement?.setStyle("opacity", "1");
