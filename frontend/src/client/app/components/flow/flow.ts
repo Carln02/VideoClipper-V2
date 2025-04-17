@@ -1,4 +1,4 @@
-import {Coordinate, define, Point} from "turbodombuilder";
+import {define, Point} from "turbodombuilder";
 import "./flow.css";
 import {FlowPoint, SyncedFlow} from "./flow.types";
 import {FlowView} from "./flow.view";
@@ -12,6 +12,9 @@ import {VcComponent} from "../component/component";
 import {VcComponentProperties} from "../component/component.types";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
 import {FlowIntersectionHandler} from "./flow.intersectionHandler";
+import {YMap} from "../../../../yManagement/yManagement.types";
+import {YUtilities} from "../../../../yManagement/yUtilities";
+import {FlowTag} from "../flowTag/flowTag";
 
 /**
  * @description A reactiveComponent that represents a flow connecting cards
@@ -29,7 +32,21 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, DocumentM
         });
 
         this.model.onFlowBranchAdded = (data) => new FlowBranch({flow: this, data: data});
+        this.model.onFlowTagAdded = (data) => new FlowTag({flow: this, data: data, screenManager: this.screenManager});
         this.mvc.initialize();
+    }
+
+    public static createData(data?: SyncedFlow): YMap & SyncedFlow {
+        if (!data) data = {};
+        if (!data.branches) data.branches = {"0": undefined};
+        if (!data.tags) data.tags = [undefined];
+        if (!data.defaultName) data.defaultName = "Flow";
+
+        Object.entries(data.branches).forEach(([key, branch]) => data.branches[key] = FlowBranch.createData(branch));
+        data.branches = YUtilities.createYMap(data.branches);
+        data.tags = YUtilities.createYArray(data.tags.map(tag => FlowTag.createData(tag)));
+
+        return YUtilities.createYMap(data);
     }
 
     public get svg(): SVGSVGElement {
@@ -142,5 +159,9 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, DocumentM
     public updateOnDetachingNode(nodeId: string) {
         this.model.branches.forEach(branch => branch.updateOnDetachingNode(nodeId));
         this.model.cleaningHandler.removeUnnecessaryBranchesOrFlow();
+    }
+
+    public getPathsFromNode(nodeId: string): string[][] {
+        return this.model.branchHandler.getPathsFromNode(nodeId);
     }
 }

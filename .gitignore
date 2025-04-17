@@ -135,5 +135,6 @@ package-lock.json
 
 /public/build/bundle.js
 
+data/
 persist/
-/backend-v2/media_storage
+/backend-v2/data

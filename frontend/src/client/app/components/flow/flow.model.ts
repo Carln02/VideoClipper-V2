@@ -1,4 +1,4 @@
-import {YArray} from "../../../../yManagement/yManagement.types";
+import {YArray, YMap} from "../../../../yManagement/yManagement.types";
 import {YComponentModel} from "../../../../yManagement/yModel/types/yComponentModel";
 import {SyncedFlow} from "./flow.types";
 import {FlowBranchesModel} from "./flow.branchesModel";
@@ -10,11 +10,14 @@ import {FlowSearchHandler} from "./flow.searchHandler";
 import {FlowBranchesHandler} from "./flow.branchesHandler";
 import {FlowCleaningHandler} from "./flow.cleaningHandler";
 import {FlowIntersectionHandler} from "./flow.intersectionHandler";
+import {FlowTagsModel} from "./flow.tagsModel";
+import {FlowTag} from "../flowTag/flowTag";
 
 export class FlowModel extends YComponentModel {
     public currentBranchId: string = "0";
 
     public readonly branchesModel: FlowBranchesModel;
+    public readonly tagsModel: FlowTagsModel;
 
     // Added margin to the computed viewBox
     public readonly viewBoxPadding = 200 as const;
@@ -25,10 +28,12 @@ export class FlowModel extends YComponentModel {
     public lastViewBoxValues: Point = new Point();
 
     public onFlowBranchAdded: (data: SyncedFlowBranch) => FlowBranch;
+    public onFlowTagAdded: (data: SyncedFlowTag) => FlowTag;
 
     public constructor(data: SyncedFlow) {
         super(data);
         this.branchesModel = new FlowBranchesModel();
+        this.tagsModel = new FlowTagsModel();
 
     }
 
@@ -38,8 +43,12 @@ export class FlowModel extends YComponentModel {
 
     public set data(value: any) {
         super.data = value;
+
         this.branchesModel.data = this.getData("branches");
-        this.branchesModel.onAdded = (data, key) => this.onFlowBranchAdded(data);
+        this.branchesModel.onAdded = (data) => this.onFlowBranchAdded(data);
+
+        this.tagsModel.data = this.tagsData;
+        this.tagsModel.onAdded = (data) => this.onFlowTagAdded(data);
 
         this.data?.observeDeep(events => {
             for (const event of events) {
@@ -67,12 +76,20 @@ export class FlowModel extends YComponentModel {
         return this.getHandler("intersection") as FlowIntersectionHandler;
     }
 
-    public get tags(): YArray<SyncedFlowTag> {
+    public get branchesData(): YMap<SyncedFlowBranch> {
+        return this.getData("branchesData") as YMap<SyncedFlowBranch>;
+    }
+
+    public get branchesDataArray(): SyncedFlowBranch[] {
+        return this.branchesModel.getAllData() as SyncedFlowBranch[];
+    }
+
+    public get tagsData(): YArray<SyncedFlowTag> {
         return this.getData("tags");
     }
 
-    public get tagsArray(): SyncedFlowTag[] {
-        return this.tags.toArray();
+    public get tagsDataArray(): SyncedFlowTag[] {
+        return this.tagsData.toArray();
     }
 
     public get defaultName(): string {
@@ -83,8 +100,8 @@ export class FlowModel extends YComponentModel {
         return this.branchesModel.getAllComponents();
     }
 
-    public get branchesData(): SyncedFlowBranch[] {
-        return this.branchesModel.getAllData() as SyncedFlowBranch[];
+    public get tags(): FlowTag[] {
+        return this.tagsModel.getAllComponents();
     }
 
     public get currentBranch(): FlowBranch {

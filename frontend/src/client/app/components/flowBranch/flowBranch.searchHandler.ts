@@ -35,7 +35,7 @@ export class FlowBranchSearchHandler extends TurboHandler<FlowBranchModel> {
      */
     public findNodeEntries(nodeId: string): FlowPoint[] {
         const flowEntries = this.model.entriesArray;
-        if (!flowEntries) return null;
+        if (!flowEntries) return [];
 
         const results = [];
 

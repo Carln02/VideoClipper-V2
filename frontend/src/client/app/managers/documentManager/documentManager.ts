@@ -25,6 +25,7 @@ import {AppManager} from "../appManager/appManager";
 import {VcComponent} from "../../components/component/component";
 import {MediaManager} from "../mediaManager/mediaManager";
 import {SyncedMedia} from "../mediaManager/mediaManager.types";
+import {SyncedFlowPath} from "../../components/flowPath/flowPath.types";
 
 @define()
 export class DocumentManager extends ScreenManager<DocumentScreens, DocumentManagerView, SyncedDocument,
@@ -69,12 +70,18 @@ export class DocumentManager extends ScreenManager<DocumentScreens, DocumentMana
         this.mvc.initialize();
         this.currentType = DocumentScreens.canvas;
 
-        this.toolPanel.addPanel(new ShootingPanel({toolPanel: this.toolPanel, screenManager: this}), ToolType.shoot, DocumentScreens.camera);
-        this.toolPanel.addPanel(new TextPanel({toolPanel: this.toolPanel, screenManager: this}), ToolType.text, DocumentScreens.camera);
+        this.toolPanel.addPanel(new ShootingPanel({
+            toolPanel: this.toolPanel,
+            screenManager: this
+        }), ToolType.shoot, DocumentScreens.camera);
+        this.toolPanel.addPanel(new TextPanel({
+            toolPanel: this.toolPanel,
+            screenManager: this
+        }), ToolType.text, DocumentScreens.camera);
 
         this.screenManager.eventManager.authorizeEventScaling = () => this.currentType == DocumentScreens.canvas;
         this.screenManager.eventManager.scaleEventPosition = (position: Point) =>
-           this.canvas.navigationManager.computePositionRelativeToCanvas(position);
+            this.canvas.navigationManager.computePositionRelativeToCanvas(position);
     }
 
     public get MediaManager(): MediaManager {
@@ -106,11 +113,15 @@ export class DocumentManager extends ScreenManager<DocumentScreens, DocumentMana
         return this.model.flowsModel.getInstance(id);
     }
 
+    public getNode(id: string): BranchingNode {
+        return this.model.cardsModel.getInstance(id);
+    }
+
     public getMedia(id: string): SyncedMedia {
         return this.model.media.get(id);
     }
 
-    public setMedia(id: string, media: SyncedMedia)  {
+    public setMedia(id: string, media: SyncedMedia) {
         this.model.media.set(id, media);
     }
 
@@ -137,28 +148,26 @@ export class DocumentManager extends ScreenManager<DocumentScreens, DocumentMana
 
     public async createNewFlow(position: Point, nodeId: string): Promise<string> {
         this.model.incrementFlowsCount();
-
-        const firstEntry = YUtilities.createYMap<SyncedFlowEntry>({
-            startNodeId: nodeId,
-            endNodeId: nodeId,
-            points: [position]
-        });
-
-        const branchMap = YUtilities.createYMap<SyncedFlowBranch>({
-            entries: YUtilities.createYArray<SyncedFlowEntry>([firstEntry as SyncedFlowEntry]),
-            connectedBranches: new YArray<string>(),
-            overwriting: "",
-        });
-
-        const tagsArray = new YArray<SyncedFlowTag>();
-
-        const flowMap = YUtilities.createYMap<SyncedFlow>({
-            branches: YUtilities.createYMap({"0": branchMap}) as YMap<SyncedFlowBranch>,
-            tags: tagsArray,
-            defaultName: "Flow " + this.model.flowsCount
-        });
-
-        return await YUtilities.addInYMap(flowMap, this.model.flowsData);
+        const defaultName = "Flow " + this.model.flowsCount;
+        return await YUtilities.addInYMap(Flow.createData({
+            branches: {
+                "0": {
+                    entries: [{
+                        startNodeId: nodeId,
+                        endNodeId: nodeId,
+                        points: [position]
+                    }],
+                }
+            },
+            tags: [{
+                nodeId: nodeId,
+                paths: [{
+                    name: defaultName + " - 1",
+                    branchIds: ["0"]
+                }]
+            }],
+            defaultName: defaultName
+        }), this.model.flowsData);
     }
 
     public clear() {

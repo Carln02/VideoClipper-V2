@@ -1,12 +1,14 @@
 import {
     auto,
-    define, Reifect,
+    define,
+    OnOff,
     Shown,
     StatefulReifect,
-    StatefulReifectProperties, StatelessReifectProperties,
+    StatefulReifectProperties,
     TurboModel,
     TurboSelect,
     TurboSelectEntry,
+    TurboSelectEntryProperties,
     TurboSelectProperties,
     TurboView
 } from "turbodombuilder";
@@ -20,10 +22,10 @@ export class AnimatedContentSwitchingDiv<
     EntryType extends TurboSelectEntry<ValueType, SecondaryValueType> = TurboSelectEntry<ValueType, SecondaryValueType>,
     ViewType extends TurboView = TurboView<any, any>,
     DataType extends object = object,
-    ModelType extends TurboModel<DataType> = TurboModel<any>
+    ModelType extends TurboModel<DataType> = TurboModel
 > extends TurboSelect<ValueType, SecondaryValueType, EntryType, ViewType, DataType, ModelType> {
     private _transitionReifect: StatefulReifect<Shown>;
-    private _sizeReifect: Reifect;
+    private _sizeReifect: StatefulReifect<OnOff>;
     private _positionReifect: StatefulReifect<Shown>;
 
     public constructor(properties: TurboSelectProperties<ValueType, SecondaryValueType,
@@ -70,6 +72,8 @@ export class AnimatedContentSwitchingDiv<
                 }
             });
         }
+
+        this.transitionReifect.attachAll(...this.entries);
     }
 
     public get positionReifect(): StatefulReifect<Shown> {
@@ -93,47 +97,65 @@ export class AnimatedContentSwitchingDiv<
                 }
             });
         }
+
+        this.positionReifect.attachAll(...this.entries);
     }
 
-    public get sizeReifect(): Reifect {
+    public get sizeReifect(): StatefulReifect<OnOff> {
         return this._sizeReifect;
     }
 
-    public set sizeReifect(value: Reifect | StatelessReifectProperties) {
+    public set sizeReifect(value: StatefulReifect<OnOff> | StatefulReifectProperties<OnOff>) {
         if (this._sizeReifect) this._sizeReifect.detach(this);
 
-        if (value instanceof Reifect) this._sizeReifect = value;
-        else if (typeof value === "object") this._sizeReifect = new Reifect(value);
+        if (value instanceof StatefulReifect) this._sizeReifect = value;
+        else if (typeof value === "object") this._sizeReifect = new StatefulReifect(value);
         else {
-            this._sizeReifect = new Reifect({
+            this._sizeReifect = new StatefulReifect<OnOff>({
+                states: [OnOff.on, OnOff.off],
                 transitionProperties: ["width", "height"],
-                transitionDuration: this.transitionDuration ?? 0,
-                transitionTimingFunction: "ease-out"
+                transitionDuration: {
+                    [OnOff.on]: this.transitionDuration ?? 0,
+                    [OnOff.off]: 0
+                },
+                transitionTimingFunction: "ease-out",
+                styles: {
+                    [OnOff.on]: {width: "", height: ""},
+                    [OnOff.off]: {width: `${this.offsetWidth}px`, height: `${this.offsetHeight}px`}
+                }
             });
         }
 
-        this._sizeReifect.attach(this);
+        this.sizeReifect.attach(this);
+    }
+
+    public addEntry(entry: TurboSelectEntryProperties<ValueType, SecondaryValueType> | ValueType | EntryType): EntryType {
+        entry = super.addEntry(entry);
+        this.transitionReifect?.attach(entry);
+        this.positionReifect?.attach(entry);
+        return entry;
     }
 
     public select(entry: ValueType | EntryType): this {
         super.select(entry);
+        //TODO StatefulReifect --> add option to set styles instantly
         this.entries.forEach(entry => {
-            // entry.reifects.attach(this.transitionReifect, this.positionReifect);
             this.transitionReifect?.apply(entry == this.selectedEntry ? Shown.visible : Shown.hidden, entry);
-            // this.positionReifect?.apply(entry == this.selectedEntry ? Shown.visible : Shown.hidden, entry);
-
-            entry.setStyle("position", "absolute", true);
+            this.positionReifect?.apply(entry == this.selectedEntry ? Shown.visible : Shown.hidden, entry);
         });
-        this.refreshSize();
+        requestAnimationFrame(() => this.refreshSize());
         return this;
     }
 
     public refreshSize() {
         this.setStyles({transition: "", width: `${this.offsetWidth}px`, height: `${this.offsetHeight}px`}, true);
 
-        this.sizeReifect?.apply();
         if (!this.selectedEntry) return;
+        this.sizeReifect?.apply(OnOff.on);
+
         const entrySize = getSize(this.selectedEntry);
         this.setStyles({width: `${entrySize.width}px`, height: `${entrySize.height}px`});
+
+        setTimeout(() => this.sizeReifect.apply(OnOff.off), this.transitionDuration);
     }
 }

@@ -24,11 +24,9 @@ export class FlowSearchHandler extends TurboHandler<FlowModel> {
      * @param nodeId
      */
     public findNodeEntries(nodeId: string): FlowPoint[] {
-        for (const branch of this.model.branches) {
-            const nodeEntry = branch.findNodeEntries(nodeId);
-            if (nodeEntry) return nodeEntry;
-        }
-        return null;
+        const entries = [];
+        for (const branch of this.model.branches) entries.push(...branch.findNodeEntries(nodeId));
+        return entries;
     }
 
     /**

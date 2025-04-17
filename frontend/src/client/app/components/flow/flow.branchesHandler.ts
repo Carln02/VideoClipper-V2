@@ -7,6 +7,7 @@ import {FlowEntryModel} from "../flowEntry/flowEntry.model";
 import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 import {YUtilities} from "../../../../yManagement/yUtilities";
 import structuredClone from "@ungap/structured-clone";
+import {FlowPathModel} from "../flowPath/flowPath.model";
 
 export class FlowBranchesHandler extends TurboHandler<FlowModel> {
     public getBranchById(id: string): FlowBranch {
@@ -52,6 +53,7 @@ export class FlowBranchesHandler extends TurboHandler<FlowModel> {
     ) {
         if (!this.model.data || !p || p.branchId == undefined || p.entryIndex == undefined) return;
 
+        //TODO HANDLE CASE WHERE ALRDY BRANCHED/FROM THE BEGINNING OF FLOW
         const parentBranchId = p.branchId!;
         const entryIndex = p.entryIndex!;
         const parentBranch = this.model.branchHandler.getBranchById(parentBranchId);
@@ -113,5 +115,43 @@ export class FlowBranchesHandler extends TurboHandler<FlowModel> {
         //     });
         // });
         // newNamedPaths.forEach((paths, tag) => tag.namedPaths.push(...paths));
+    }
+
+    public updateConnectionsAfterBranching(parentBranchId: string, firstChildBranchId: string, secondChildBranchId?: string) {
+        const parentBranch = this.getBranchById(parentBranchId);
+
+        this.getBranchById(firstChildBranchId).setConnectedBranches(parentBranch.connectedBranches);
+        parentBranch.setConnectedBranches([firstChildBranchId]);
+        if (secondChildBranchId) parentBranch.addConnectedBranch(secondChildBranchId);
+
+        this.model.tags.forEach(tag => {
+            tag.pathsArray.forEach((pathData, index) => {
+                const path = new FlowPathModel(pathData);
+                const parentBranchIndex = path.branchIdsArray.indexOf(parentBranchId);
+                if (parentBranchIndex < 0) return;
+                path.insertBranchAt(firstChildBranchId, parentBranchIndex + 1);
+                if (secondChildBranchId) tag.insertPath({
+                    branchIds: [...path.branchIdsArray.slice(0, parentBranchIndex), secondChildBranchId],
+                    name: path.name
+                }, index + 1);
+            });
+        })
+    }
+
+    public getPathsFromNode(nodeId: string): string[][] {
+        const entries: FlowPoint[] = this.model.searchHandler.findNodeEntries(nodeId);
+        const paths: string[][] = [];
+
+        const recurGetPath = (path: string[]): void => {
+            const childIndices = this.model.branches[path.length - 1]?.connectedBranchesArray || [];
+            if (childIndices.length == 0) {
+                if (path.length > 0) paths.push([...path]);
+                return;
+            }
+            for (const id of childIndices) recurGetPath([...path, id]);
+        }
+
+        entries.forEach(entry => recurGetPath([entry.branchId]));
+        return paths;
     }
 }

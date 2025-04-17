@@ -43,14 +43,14 @@ export abstract class YManagerModel<
         super.initialize(blockKey);
     }
 
-    public getInstance(key: IdType, blockKey: string = this.defaultBlockKey): ComponentType {
-        if (blockKey) return this.instancesMap.get(blockKey).get(key);
+    public getInstance(key: IdType, blockKey: string = this.defaultComputationBlockKey): ComponentType {
+        if (blockKey) return this.instancesMap.get(blockKey)?.get(key);
         for (const block of this.instancesMap.values()) {
             if (block.has(key)) return block.get(key);
         }
     }
 
-    public getAllComponents(blockKey: string = this.defaultBlockKey): ComponentType[] {
+    public getAllComponents(blockKey: string = this.defaultComputationBlockKey): ComponentType[] {
         if (blockKey) {
             const block = this.instancesMap.get(blockKey);
             if (!block) return [];
@@ -61,7 +61,7 @@ export abstract class YManagerModel<
         return output;
     }
 
-    public clear(blockKey: string = this.defaultBlockKey) {
+    public clear(blockKey: string = this.defaultComputationBlockKey) {
         super.clear(blockKey);
         if (!this.instancesMap) return;
         if (blockKey) {

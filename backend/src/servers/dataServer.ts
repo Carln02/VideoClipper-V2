@@ -1,19 +1,18 @@
 import express, {Express} from "express";
-import path from "path";
 import {MediaController} from "../media/media.controller";
 import {MulterConfig} from "../config/config.multer";
 
-export class Server {
+export class DataServer {
     private app: Express;
     private readonly port: number;
-    private readonly mediaStoragePath: string;
+    private readonly storagePath: string;
     private readonly multerConfig: MulterConfig;
 
-    public constructor(port: number, mediaStoragePath?: string) {
+    public constructor(port: number, mediaStoragePath: string) {
         this.port = port;
-        this.mediaStoragePath = mediaStoragePath || path.join(__dirname, "../../media_storage");
+        this.storagePath = mediaStoragePath;
         this.app = express();
-        this.multerConfig = new MulterConfig(this.mediaStoragePath);
+        this.multerConfig = new MulterConfig(this.storagePath);
     }
 
     public async init(): Promise<void> {
@@ -35,7 +34,7 @@ export class Server {
     }
 
     private registerControllers() {
-        const mediaController = new MediaController(this.mediaStoragePath, this.multerConfig);
+        const mediaController = new MediaController(this.storagePath, this.multerConfig);
 
         // Register their routes
         this.app.use("/", mediaController.router);
@@ -46,7 +45,7 @@ export class Server {
     public start(): void {
         this.app.listen(this.port, () => {
             console.log(`Server running on port ${this.port}`);
-            console.log(`Media storage path: ${this.mediaStoragePath}`);
+            console.log(`Media storage path: ${this.storagePath}`);
         });
     }
 }

@@ -32,15 +32,15 @@ export class MediaController {
 
     private async uploadMedia(req: Request, res: Response) {
         try {
-            if (!req.file) return res.status(400).json({error: 'No file uploaded'});
+            if (!req.file) return res.status(400).json({error: "No file uploaded"});
             res.status(201).json({
-                message: 'Media uploaded successfully',
+                message: "Media uploaded successfully",
                 id: req.params.id,
                 filename: req.file.filename
             });
         } catch (err: any) {
             console.error(`Error uploading media: ${err.message}`);
-            res.status(500).json({error: 'Internal server error'});
+            res.status(500).json({error: "Internal server error"});
         }
     }
 }

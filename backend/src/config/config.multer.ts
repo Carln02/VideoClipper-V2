@@ -3,19 +3,19 @@ import path from 'path';
 import fs from 'fs';
 
 export class MulterConfig {
-    private readonly mediaStoragePath: string;
+    private readonly storagePath: string;
     private storage?: StorageEngine;
 
-    public constructor(mediaStoragePath: string) {
-        this.mediaStoragePath = mediaStoragePath;
+    public constructor(storagePath: string) {
+        this.storagePath = storagePath;
         this.init();
     }
 
     private init() {
-        if (!fs.existsSync(this.mediaStoragePath)) fs.mkdirSync(this.mediaStoragePath, {recursive: true});
+        if (!fs.existsSync(this.storagePath)) fs.mkdirSync(this.storagePath, {recursive: true});
         this.storage = multer.diskStorage({
             destination: (_req, _file, cb) => {
-                cb(null, this.mediaStoragePath);
+                cb(null, this.storagePath);
             },
             filename: (req, file, cb) => {
                 const id = req.params.id;
@@ -32,8 +32,8 @@ export class MulterConfig {
             limits: {fileSize: 100 * 1024 * 1024}, // 100MB
             fileFilter: (_req, file, cb) => {
                 // only accept images/videos
-                if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) cb(null, true);
-                else cb(new Error('Only image and video files are allowed'));
+                if (file.mimetype.startsWith("image/") || file.mimetype.startsWith("video/")) cb(null, true);
+                else cb(new Error("Only image and video files are allowed"));
             }
         });
     }

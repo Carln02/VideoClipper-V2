@@ -24,7 +24,7 @@ export class BackgroundSelector extends TurboSelect<string, string, TurboSelectE
         return super.selectedValue;
     }
 
-    protected addEntry(entry: TurboSelectEntryProperties | string | TurboSelectEntry): TurboSelectEntry {
+    public addEntry(entry: TurboSelectEntryProperties | string | TurboSelectEntry): TurboSelectEntry {
         if (typeof entry === "string") {
             if (entry === "color-picker") entry = super.addEntry({
                 value: entry,

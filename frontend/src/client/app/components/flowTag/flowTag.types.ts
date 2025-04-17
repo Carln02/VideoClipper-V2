@@ -1,21 +1,20 @@
-import {YArray, YMap} from "../../../../yManagement/yManagement.types";
+import {YArray} from "../../../../yManagement/yManagement.types";
+import {VcComponentProperties} from "../component/component.types";
+import {FlowTagView} from "./flowTag.view";
+import {FlowTagModel} from "./flowTag.model";
+import {Flow} from "../flow/flow";
+import {DocumentManager} from "../../managers/documentManager/documentManager";
+import {SyncedFlowPath} from "../flowPath/flowPath.types";
 
 /**
  * A flow tag might store a "nodeId" (as a root for traversal)
  * and "namedPaths" referencing branches.
  */
-export type SyncedFlowTag = YMap & {
+export type SyncedFlowTag = {
     nodeId?: string;
-    paths?: YArray<SyncedFlowPath>;
+    paths?: YArray<SyncedFlowPath> | SyncedFlowPath[];
 };
 
-/**
- * A named path is now a sequence of branch references, indicating
- * which branches form a complete user-labeled route.
- * "branchIds" points to the branches in the order they are traversed.
- */
-export type SyncedFlowPath = {
-    name?: string;
-    index?: number;
-    branchIds?: YArray<string>;
+export type FlowTagProperties = VcComponentProperties<FlowTagView, SyncedFlowTag, FlowTagModel, DocumentManager> & {
+    flow: Flow,
 };

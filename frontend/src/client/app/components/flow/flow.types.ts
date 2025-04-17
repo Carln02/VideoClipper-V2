@@ -9,8 +9,8 @@ import {SyncedFlowTag} from "../flowTag/flowTag.types";
  * - "defaultName" is optional labeling, same as before.
  */
 export type SyncedFlow = {
-    branches?: YMap<SyncedFlowBranch>;
-    tags?: YArray<SyncedFlowTag>;
+    branches?: YMap<SyncedFlowBranch> | Record<string, SyncedFlowBranch>;
+    tags?: YArray<SyncedFlowTag> | SyncedFlowTag[];
     defaultName?: string;
 };
 

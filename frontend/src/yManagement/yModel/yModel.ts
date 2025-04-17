@@ -85,7 +85,7 @@ export abstract class YModel<
 
     protected abstract observeChanges(event: YEvent, blockKey?: string): void;
 
-    public getAllKeys(blockKey: string = this.defaultBlockKey): IdType[] {
+    public getAllKeys(blockKey: string = this.defaultComputationBlockKey): IdType[] {
         const output = [];
         if (blockKey) {
             const block = this.dataMap.get(blockKey);

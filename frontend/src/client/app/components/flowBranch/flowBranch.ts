@@ -14,6 +14,7 @@ import {FlowBranchCleaningHandler} from "./flowBranch.cleaningHandler";
 import {FlowBranchIntersectionHandler} from "./flowBranch.intersectionHandler";
 import {YUtilities} from "../../../../yManagement/yUtilities";
 import {FlowEntry} from "../flowEntry/flowEntry";
+import {FlowBranchConnectionHandler} from "./flowBranch.connectionHandler";
 
 export class FlowBranch extends TurboProxiedElement<"g", FlowBranchView, SyncedFlowBranch, FlowBranchModel> {
     public constructor(properties: FlowBranchProperties) {
@@ -23,7 +24,8 @@ export class FlowBranch extends TurboProxiedElement<"g", FlowBranchView, SyncedF
             modelConstructor: FlowBranchModel,
             data: properties.data,
             handlerConstructors: [FlowBranchSearchHandler, FlowBranchUpdateHandler, FlowBranchPointHandler,
-                FlowBranchEntryHandler, FlowBranchCleaningHandler, FlowBranchIntersectionHandler],
+                FlowBranchEntryHandler, FlowBranchCleaningHandler, FlowBranchIntersectionHandler,
+                FlowBranchConnectionHandler],
             initialize: false
         });
 
@@ -59,6 +61,10 @@ export class FlowBranch extends TurboProxiedElement<"g", FlowBranchView, SyncedF
 
     public get connectedBranches(): YArray<string> {
         return this.model.connectedBranches;
+    }
+
+    public get connectedBranchesArray(): string[] {
+        return this.model.connectedBranchesArray;
     }
 
     public get isOverwriting(): boolean {
