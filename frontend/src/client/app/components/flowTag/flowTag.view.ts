@@ -9,9 +9,7 @@ export class FlowTagView extends TurboView<FlowTag, FlowTagModel> {
     protected setupUIElements() {
         super.setupUIElements();
 
-        this.wheel = new TurboSelectWheel({direction: Direction.vertical}).setStyle("margin", 0);
-        // this.regeneratePaths(false);
-        // values: this.generateWheelEntries(),
+        this.wheel = new TurboSelectWheel({direction: Direction.vertical, values: ["hi"]}).setStyle("margin", 0);
     }
 
     protected setupUILayout() {
@@ -23,28 +21,22 @@ export class FlowTagView extends TurboView<FlowTag, FlowTagModel> {
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
 
-        this.emitter.add("nodeId", () => {
-            // console.log(this.element);
-            // console.log(this.element.attachedNode);
-            this.regenerateWheelEntries();
-            // this.wheel.select(this.wheel.entries[0])
-            // this.wheel.reset();
-            this.element.attachedNode.addChild(this.element)
-        });
+        this.emitter.add("pathsChanged", () => this.regenerateWheelEntries());
+        this.emitter.add("nodeId", () => requestAnimationFrame(() => this.element.attachedNode.addChild(this.element)));
         this.emitter.add("paths", () => this.regenerateWheelEntries());
      }
 
     private regenerateWheelEntries() {
+        this.wheel.reifect.detach(...this.wheel.entries); //TODO MOVE TO TURBODOMBUILDER
         this.wheel.values = this.model.pathsArray.map(pathData => {
             const path = new FlowPathModel(pathData);
-            return new TurboSelectEntry({
-                value: path.name + (path.index < 2 ? "" : " - " + path.index),
-                style: "padding: 6px; white-space: nowrap;",
+            return new TurboSelectEntry({value: path.name,
                 onSelected: (b: boolean) => {
                     if (!b) return;
+                    console.log(path.data);
                     //TODO this.flow.drawingHandler.highlightBranches(path.branchIndices);
                 }
-            });
+            }).setStyle("padding", "6px").setStyle("whiteSpace", "nowrap");
         });
     }
 }

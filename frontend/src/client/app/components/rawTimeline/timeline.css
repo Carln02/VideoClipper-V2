@@ -1,0 +1,59 @@
+vc-timeline {
+    height: 10em;
+}
+
+vc-timeline.turbo-drawer .turbo-drawer-panel-container {
+    height: 100%;
+    display: flex;
+    background-color: transparent;
+}
+
+vc-timeline.turbo-drawer .turbo-drawer-panel {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+vc-timeline.turbo-drawer .clips-container {
+    position: relative;
+    border-radius: 0.35em;
+    height: calc(6em - 2.4em);
+
+    display: flex;
+    flex-direction: row;
+
+    flex-grow: 1;
+
+    z-index: 2;
+}
+
+vc-timeline.top-drawer {
+    bottom: 1em;
+}
+
+vc-timeline.right-drawer {
+    position: absolute;
+    left: 100%;
+    top:  -22%;
+}
+
+vc-timeline .play-button {
+    height: 1.5em;
+    padding: 0.2em;
+}
+
+vc-timeline vc-clip .vc-clip-content {
+    border-radius: 0;
+}
+
+vc-timeline vc-clip:nth-child(2) .vc-clip-content {
+    border-radius: 0.35em 0 0 0.35em;
+}
+
+vc-timeline vc-clip:last-child .vc-clip-content {
+    border-radius:  0 0.35em 0.35em 0;
+}
+
+vc-timeline vc-clip:last-child:nth-child(2) .vc-clip-content {
+    border-radius:  0.35em;
+}

@@ -151,7 +151,7 @@ export class AnimatedContentSwitchingDiv<
         this.setStyles({transition: "", width: `${this.offsetWidth}px`, height: `${this.offsetHeight}px`}, true);
 
         if (!this.selectedEntry) return;
-        this.sizeReifect?.apply(OnOff.on);
+        this.sizeReifect?.apply(OnOff.on, undefined, {applyStylesInstantly: true});
 
         const entrySize = getSize(this.selectedEntry);
         this.setStyles({width: `${entrySize.width}px`, height: `${entrySize.height}px`});

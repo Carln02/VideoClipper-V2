@@ -73,16 +73,18 @@ export class FlowBranchesHandler extends TurboHandler<FlowModel> {
         }), this.model.branchesModel.data);
         if (this.model.currentBranchId == parentBranchId) this.model.currentBranchId = newChildId;
 
-        this.getBranchById(newChildId).setConnectedBranches(parentBranch.connectedBranches);
-        parentBranch.setConnectedBranches([newChildId]);
+        // this.getBranchById(newChildId).setConnectedBranches(parentBranch.connectedBranches);
+        // parentBranch.setConnectedBranches([newChildId]);
 
         if (createThirdBranch) {
             this.model.currentBranchId = await YUtilities.addInYMap(FlowBranch.createData({
                 entries: [structuredClone(splitEntry)],
                 overwriting: isOverwritingSibling ? newChildId : undefined,
             }), this.model.branchesModel.data);
-            parentBranch.addConnectedBranch(this.model.currentBranchId);
+            // parentBranch.addConnectedBranch(this.model.currentBranchId);
         }
+
+        this.updateConnectionsAfterBranching(parentBranchId, newChildId, createThirdBranch ? this.model.currentBranchId : undefined);
 
         // const branchOnNode = nodeId != undefined
         //     || (!branchPosition && parentBranch.getEntry(entryIndex).startNodeId
@@ -132,11 +134,13 @@ export class FlowBranchesHandler extends TurboHandler<FlowModel> {
                 path.insertBranchAt(firstChildBranchId, parentBranchIndex + 1);
                 if (secondChildBranchId) tag.insertPath({
                     branchIds: [...path.branchIdsArray.slice(0, parentBranchIndex), secondChildBranchId],
-                    name: path.name
+                    name: this.model.defaultName + " - " + (tag.pathsArray.length + 1),
                 }, index + 1);
             });
         })
     }
+
+    public generateName
 
     public getPathsFromNode(nodeId: string): string[][] {
         const entries: FlowPoint[] = this.model.searchHandler.findNodeEntries(nodeId);

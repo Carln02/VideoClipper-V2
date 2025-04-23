@@ -23,6 +23,6 @@ export class CaptureModeSlider extends TurboSelectWheel {
     }
 
     protected computeDragValue(delta: Point): number {
-        return delta.y / 20;
+        return delta.y;
     }
 }
