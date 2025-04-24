@@ -28,19 +28,19 @@ export class ClipRendererModel extends RendererModel {
     }
 
     public get cardData(): YMap {
-        return this.getDataBlock("cardData");
+        return this.getBlockData("cardData");
     }
 
     public set cardData(value: YMap | SyncedCard) {
-        this.setDataBlock(value as YMap, undefined, "cardData");
+        this.setBlock(value as YMap, undefined, "cardData");
     }
 
     public get clipData(): YMap {
-        return this.getDataBlock("clipData");
+        return this.getBlockData("clipData");
     }
 
     public set clipData(value: YMap | SyncedClip) {
-        this.setDataBlock(value as YMap, undefined, "clipData");
+        this.setBlock(value as YMap, undefined, "clipData");
         this.textModel.clear();
         this.textModel.data = (value as YMap)?.get("content");
     }

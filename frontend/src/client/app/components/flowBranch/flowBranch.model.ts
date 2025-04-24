@@ -35,6 +35,7 @@ export class FlowBranchModel extends YComponentModel {
         this.data?.observeDeep(events => {
             for (const event of events) {
                 if (event.path.includes("entries")) {
+                    console.log("FIRE REDRAWWWWWWWW FROM FLOW BRANCHHHHH")
                     this.fireCallback("__redraw");
                     break;
                 }

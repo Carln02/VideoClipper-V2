@@ -1,29 +1,34 @@
-import {YArrayManagerModel} from "../../../../yManagement/yModel/types/yManagerModel/types/yArrayManagerModel";
 import {Clip} from "../clip/clip";
-import {YArray} from "../../../../yManagement/yManagement.types";
+import {YArray, YMap} from "../../../../yManagement/yManagement.types";
 import {SyncedClip} from "../clip/clip.types";
-import {ClipTimelineEntry} from "./timeline.types";
-import {auto, trim} from "turbodombuilder";
+import {TimelineIndexInfo} from "./timeline.types";
+import {trim} from "turbodombuilder";
 import {TimelineClipHandler} from "./timeline.clipHandler";
 import {TimelineTimeHandler} from "./timeline.timeHandler";
+import {YManagerModel} from "../../../../yManagement/yModel/types/yManagerModel";
+import {SyncedCard} from "../card/card.types";
 
-export class TimelineModel extends YArrayManagerModel<SyncedClip, Clip> {
+export class TimelineModel extends YManagerModel<SyncedClip, Clip, number, YArray, string, "array"> {
     public readonly pixelsPerSecondUnit: number = 20 as const;
     public readonly timeIncrementMs = 10 as const;
     public readonly timeIncrementS = 0.01 as const;
 
-    public currentClipInfo: ClipTimelineEntry;
+    //TODO PATH DATA FROM FLOW TAG --> OBSERVE AND UPDATE CLIP LISTS ON CHANGE
+    // public readonly path: YArray<string>;
+
+    public indexInfo: TimelineIndexInfo;
 
     public playTimer: NodeJS.Timeout | null = null;
     public nextTimer: NodeJS.Timeout | null = null;
 
+    private _storedTotalDuration: number = 0;
     private _currentTime: number = 0;
 
-    public onClipAdded: (syncedClip: SyncedClip, id: number, blockKey: string) => Clip = () => undefined;
-    public onClipChanged: (syncedClip: SyncedClip, clip: Clip, id: number, blockKey: string) => void = () => {};
+    public onClipAdded: (syncedClip: SyncedClip, id: number, blockKey: number) => Clip = () => undefined;
+    public onClipChanged: (syncedClip: SyncedClip, clip: Clip, id: number, blockKey: number) => void = () => {};
 
     public constructor(data?: YArray<SyncedClip>) {
-        super(data);
+        super(data, "array");
 
         this.onAdded = (syncedClip, id, blockKey) => {
             return this.onClipAdded(syncedClip, id, blockKey);
@@ -42,6 +47,30 @@ export class TimelineModel extends YArrayManagerModel<SyncedClip, Clip> {
         };
     }
 
+    public setCardsData(data: (SyncedCard & YMap)[], initialize: boolean = true) {
+        this.clear();
+        this.dataBlocks.length = 0;
+        data.forEach((card, index) => this.addBlock(card.get("syncedClips"), undefined, index, initialize));
+    }
+
+    public getClipsAt(index: number): YArray<SyncedClip> {
+        return this.getBlockData(index);
+    }
+
+    public get totalDuration(): number {
+        const newTotalDuration = this.getAllBlocks().flatMap(block => block.data.toJSON())
+            .map((entry: SyncedClip) => entry.endTime - entry.startTime)
+            .reduce((acc, cur) => acc + cur, 0);
+        if (newTotalDuration == this._storedTotalDuration) return this._storedTotalDuration;
+        this._storedTotalDuration = newTotalDuration;
+        this.fireCallback("totalDurationChanged");
+    }
+
+    public get totalClipsCount(): number {
+        return this.getAllBlocks().flatMap(block => block.data.toJSON())
+            .reduce((acc) => acc + 1, 0);
+    }
+
     public get clipHandler(): TimelineClipHandler {
         return this.getHandler("clip") as TimelineClipHandler;
     }
@@ -50,8 +79,12 @@ export class TimelineModel extends YArrayManagerModel<SyncedClip, Clip> {
         return this.getHandler("time") as TimelineTimeHandler;
     }
 
+    public get currentGhostingClip() {
+        return this.clipHandler?.getClipAt(this.indexInfo?.ghostingIndex);
+    }
+
     public get currentClip() {
-        return this.currentClipInfo?.clip;
+        return this.clipHandler?.getClipAt(this.indexInfo?.clipIndex);
     }
 
     public get currentTime(): number {
@@ -61,10 +94,5 @@ export class TimelineModel extends YArrayManagerModel<SyncedClip, Clip> {
     public set currentTime(value: number) {
         this._currentTime = trim(value, this.totalDuration);
         this.fireCallback("currentTimeChanged");
-    }
-
-    @auto()
-    public set totalDuration(value: number) {
-        this.fireCallback("totalDurationChanged");
     }
 }

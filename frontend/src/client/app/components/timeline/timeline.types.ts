@@ -1,4 +1,3 @@
-import {Clip} from "../clip/clip";
 import {SyncedClip} from "../clip/clip.types";
 import {Card} from "../card/card";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
@@ -8,10 +7,9 @@ import {TurboDrawerProperties} from "turbodombuilder";
 import { YArray } from "../../../../yManagement/yManagement.types";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
 
-export type ClipTimelineEntry = {
-    clip?: Clip,
-    ghostingClip?: Clip,
-    index?: number,
+export type TimelineIndexInfo = {
+    clipIndex?: number,
+    ghostingIndex?: number,
     offset?: number,
     closestIntersection?: number,
     distanceFromClosestIntersection?: number,

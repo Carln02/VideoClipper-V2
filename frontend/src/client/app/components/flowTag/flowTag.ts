@@ -35,7 +35,6 @@ export class FlowTag extends VcComponent<FlowTagView, SyncedFlowTag, FlowTagMode
     }
 
     public get attachedNode(): BranchingNode {
-        console.log(this.model.nodeId);
         return this.screenManager.getNode(this.model.nodeId);
     }
 

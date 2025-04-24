@@ -1,6 +1,7 @@
 import {SyncedFlowTag} from "../flowTag/flowTag.types";
 import {FlowTag} from "../flowTag/flowTag";
-import {YArrayManagerModel} from "../../../../yManagement/yModel/types/yManagerModel/types/yArrayManagerModel";
+import {YArray} from "../../../../yManagement/yManagement.types";
+import {YManagerModel} from "../../../../yManagement/yModel/types/yManagerModel";
 
-export class FlowTagsModel extends YArrayManagerModel<SyncedFlowTag, FlowTag> {
+export class FlowTagsModel extends YManagerModel<SyncedFlowTag, FlowTag, number, YArray> {
 }

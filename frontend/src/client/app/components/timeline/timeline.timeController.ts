@@ -18,7 +18,6 @@ export class TimelineTimeController extends TurboController<Timeline, TimelineVi
     }
 
     public reloadTime() {
-        this.model.totalDuration = this.element.clips.reduce((sum, clip) => sum + clip.duration, 0);
         this.model.currentTime = (this.view.scrubber.translation / this.element.width * this.model.totalDuration) || 0;
         this.element.refresh();
     }

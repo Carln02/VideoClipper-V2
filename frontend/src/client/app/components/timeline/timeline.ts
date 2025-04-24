@@ -4,7 +4,7 @@ import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {Clip} from "../clip/clip";
 import "./timeline.css";
 import {Card} from "../card/card";
-import {ClipTimelineEntry, TimelineProperties} from "./timeline.types";
+import {TimelineIndexInfo, TimelineProperties} from "./timeline.types";
 import {TimelineView} from "./timeline.view";
 import {TimelineModel} from "./timeline.model";
 import {TimelinePlayController} from "./timeline.playController";
@@ -24,7 +24,6 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
         super(properties);
         this.screenManager = properties.screenManager;
         this.renderer = properties.renderer;
-        this.card = properties.card;
 
         this.mvc.generate({
             viewConstructor: TimelineView,
@@ -41,11 +40,11 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
 
             clip.onMediaDataChanged = (clip: Clip) => {
                 if (clip != this.model.currentClip) return;
-                this.renderer.setFrame(clip, this.model.currentClipInfo?.offset);
+                this.renderer.setFrame(clip, this.model.indexInfo?.offset);
             }
             requestAnimationFrame(() => {
                 clip.data = syncedClip;
-                if (clip != this.model.currentClip) this.renderer.setFrame(clip, this.model.currentClipInfo?.offset);
+                if (clip != this.model.currentClip) this.renderer.setFrame(clip, this.model.indexInfo?.offset);
             });
             return clip;
         };
@@ -55,6 +54,7 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
             this.clipController.reloadCurrentClip();
         };
 
+        this.card = properties.card;
         this.mvc.initialize();
     }
 
@@ -69,12 +69,12 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
     @auto()
     public set card(card: Card) {
         if (!this.model) return;
-        this.data = card.syncedClips;
+        this.model.setCardsData([card.data as YMap], false);
 
         const selectedClip = this.screenManager.contextManager.getContext(2);
 
-        if (selectedClip && selectedClip[0] instanceof Clip) this.clipController.snapToClosest();
-        else this.clipController.snapAtEnd();
+        // if (selectedClip && selectedClip[0] instanceof Clip) this.clipController.snapToClosest();
+        // else this.clipController.snapAtEnd();
         this.clipController.reloadCurrentClip();
         this.card.duration = this.model.totalDuration;
     }
@@ -83,8 +83,8 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
         return this.model.getAllComponents();
     }
 
-    public get currentClipInfo(): ClipTimelineEntry {
-        return this.model.currentClipInfo;
+    public get currentClipInfo(): TimelineIndexInfo {
+        return this.model.indexInfo;
     }
 
     public get currentClip(): Clip {
@@ -120,7 +120,7 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
     }
 
     public getClipFromPosition(e: TurboEvent) {
-       return this.clipController.getClipAtTimestamp(this.timeController.getTimeFromPosition(e));
+       return this.model.clipHandler.getClipIndexAtTimestamp(this.timeController.getTimeFromPosition(e));
     }
 
     public addIndicatorAt(indicator: Element, index: number) {

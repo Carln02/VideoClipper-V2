@@ -34,7 +34,7 @@ export class TimelinePlayController extends TurboController<Timeline, TimelineVi
     }
 
     private async playRecur(index: number, offset = 0) {
-        if (index >= this.element.dataSize) return this.play(false);
+        if (index >= this.model.totalClipsCount) return this.play(false);
         if (this.model.playTimer) clearInterval(this.model.playTimer);
 
         const curClip = this.clipHandler.getClipAt(index);
@@ -60,7 +60,7 @@ export class TimelinePlayController extends TurboController<Timeline, TimelineVi
         }
 
         this.model.timeHandler.resetTimeIfOutsideBounds();
-        await this.renderer.loadNext(this.model.currentClip, this.model.currentClipInfo.offset);
-        await this.playRecur(this.model.currentClipInfo.index, this.model.currentClipInfo.offset);
+        await this.renderer.loadNext(this.model.currentClip, this.model.indexInfo.offset);
+        await this.playRecur(this.model.indexInfo.clipIndex, this.model.indexInfo.offset);
     }
 }

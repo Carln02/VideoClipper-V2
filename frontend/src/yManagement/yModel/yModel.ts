@@ -1,5 +1,5 @@
-import {YAbstractType, YMap, YArray, YEvent} from "../yManagement.types";
-import {auto, TurboModel} from "turbodombuilder";
+import {YAbstractType, YMap, YArray, YEvent, YDataBlock} from "../yManagement.types";
+import {auto, MvcBlockKeyType, TurboModel} from "turbodombuilder";
 
 /**
  * @class YComponent
@@ -12,15 +12,11 @@ import {auto, TurboModel} from "turbodombuilder";
 export abstract class YModel<
     DataType extends object = any,
     YType extends YMap | YArray = YMap | YArray,
-    IdType extends string | number = string | number
-> extends TurboModel<YType, IdType> {
-    protected readonly observerMap: Map<string, (event: YEvent) => void> = new Map();
-
-    public constructor(data?: DataType | YType) {
-        super(data as YType);
-        this.enabledCallbacks = true;
-    }
-
+    KeyType extends string | number = string | number,
+    IdType extends string | number = string,
+    BlocksType extends "array" | "map" = "map",
+    BlockType extends YDataBlock<YType, IdType> = YDataBlock<YType, IdType>,
+> extends TurboModel<YType, KeyType, IdType, BlocksType, BlockType> {
     /**
      * @description The observed data. When it is set, this component will set again all the defined setters.
      */
@@ -33,68 +29,83 @@ export abstract class YModel<
         super.data = value;
     }
 
+    public constructor(data?: YType, dataBlocksType?: BlocksType) {
+        super(data, dataBlocksType);
+    }
+
     @auto()
     public set enabledCallbacks(value: boolean) {
-        if (!this.observerMap) return;
-        this.observerMap.forEach((observer, blockKey) => {
-            const block = this.getDataBlock(blockKey);
-            if (!block) return;
-            if (value) block.observe(observer);
-            else block.unobserve(observer);
+        this.getAllBlocks().forEach(block => {
+            if (!block.observer || !block.data) return;
+            if (value) block.data.observe(block.observer);
+            else block.data.unobserve(block.observer);
         });
     }
 
-    protected abstract getData(key: IdType, blockKey?: string): DataType;
-
-    protected abstract setData(key: IdType, value: DataType, blockKey?: string): void;
-
-    public getSize(blockKey: string = this.defaultBlockKey): number {
-        let counter = 0;
-        this.dataMap.get(blockKey)?.forEach(() => counter++);
-        return counter;
-    }
-
-    protected setDataBlock(value: YType, id?: string, blockKey: string = this.defaultBlockKey, initialize: boolean = true) {
-        if (this.enabledCallbacks && this.observerMap) {
-            const block = this.getDataBlock(blockKey);
-            const observer = this.observerMap.get(blockKey);
-            if (block && observer) block.unobserve(observer);
+    protected getData(key: KeyType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey): any {
+        const data = this.getBlockData(blockKey);
+        if (data instanceof YMap) return data.get(key.toString());
+        if (data instanceof YArray) {
+            const index = Number(key);
+            if (index >= 0 && index < data.length) return data.get(index);
         }
+        return null;
+    }
 
+    protected setData(key: KeyType, value: unknown, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey) {
+        const data = this.getBlockData(blockKey);
+        if (data instanceof YMap) data.set(key.toString(), value);
+        else if (data instanceof YArray) {
+            const index = Number(key);
+            if (index < 0) return;
+            if (index < data.length) data.delete(index, 1);
+            data.insert(index, [value]);
+        }
+    }
+
+    public getSize(blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey): number {
+        const data = this.getBlockData(blockKey);
+        if (data instanceof YMap || data instanceof YArray) return (data instanceof YArray) ? data.length : data.size;
+        return 0;
+    }
+
+    protected createBlock(value: YType, id?: IdType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey): BlockType {
+        return {
+            ...super.createBlock(value, id),
+            observer: (event: YEvent) => this.observeChanges(event, blockKey)
+        } as BlockType;
+    }
+
+    protected setBlock(value: YType, id?: IdType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey, initialize: boolean = true) {
+        if (this.enabledCallbacks) {
+            const block = this.getBlock(blockKey);
+            if (block && block.data && block.observer) block.data.unobserve(block.observer);
+        }
         this.clear(blockKey);
-        this.dataMap.set(blockKey, value);
-        if (initialize) this.initialize(blockKey);
+        super.setBlock(value, id, blockKey, initialize);
     }
 
-    protected getDataBlock(blockKey: string = this.defaultBlockKey): YType {
-        return this.dataMap.get(blockKey);
+    public initialize(blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey) {
+        super.initialize(blockKey);
+        const block = this.getBlock(blockKey);
+        block?.data?.observe(block?.observer);
     }
 
-    public initialize(blockKey: string = this.defaultBlockKey) {
-        const block = this.getDataBlock(blockKey);
-        if (!block) return;
+    protected abstract observeChanges(event: YEvent, blockKey?: MvcBlockKeyType<BlocksType>): void;
 
-        if (this.enabledCallbacks) (block instanceof YArray ? block.toArray() : block)
-            ?.forEach((_, key) => this.fireKeyChangedCallback(key, blockKey));
-
-        const observerFunction = (event: YEvent) => this.observeChanges(event, blockKey);
-
-        this.observerMap.set(blockKey, observerFunction);
-        if (this.enabledCallbacks) block.observe(observerFunction);
-    }
-
-    protected abstract observeChanges(event: YEvent, blockKey?: string): void;
-
-    public getAllKeys(blockKey: string = this.defaultComputationBlockKey): IdType[] {
-        const output = [];
-        if (blockKey) {
-            const block = this.dataMap.get(blockKey);
-            block?.forEach((_value, key) => output.push(key));
-        } else {
-            for (const block of this.dataMap.values()) {
-                block?.forEach((_value, key) => output.push(key));
+    public getAllKeys(blockKey: MvcBlockKeyType<BlocksType> = this.defaultComputationBlockKey): KeyType[] {
+        const output: KeyType[] = [];
+        for (const block of this.getAllBlocks(blockKey)) {
+            const data = block.data;
+            if (data instanceof YMap) output.push(...Array.from(data.keys()) as KeyType[]);
+            else if (data instanceof YArray) {
+                for (let i = 0; i < data.length; i++) output.push(i as KeyType);
             }
         }
         return output;
+    }
+
+    protected getAllObservers(blockKey: MvcBlockKeyType<BlocksType> = this.defaultComputationBlockKey): ((event: YEvent) => void)[] {
+        return this.getAllBlocks(blockKey).map(block => block.observer);
     }
 }

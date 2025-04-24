@@ -46,7 +46,6 @@ export class ClipModel extends YComponentModel {
     }
 
     public async updateMediaData(media: SyncedMedia) {
-        console.log(media);
         this._metadata = media;
         this._uri = URL.createObjectURL(media?.blob ?? null);
         this._videoDuration = media?.type == "video" ? media?.duration : null;

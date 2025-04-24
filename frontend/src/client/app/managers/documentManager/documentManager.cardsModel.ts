@@ -1,18 +1,16 @@
-import {
-    YMapManagerModel
-} from "../../../../yManagement/yModel/types/yManagerModel/types/yMapManagerModel";
 import {YMap} from "../../../../yManagement/yManagement.types";
 import {SyncedBranchingNode} from "../../components/branchingNode/branchingNode.types";
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {Card} from "../../components/card/card";
+import {YManagerModel} from "../../../../yManagement/yModel/types/yManagerModel";
 
-export class DocumentManagerCardsModel extends YMapManagerModel<SyncedBranchingNode, BranchingNode> {
+export class DocumentManagerCardsModel extends YManagerModel<SyncedBranchingNode, BranchingNode, string, YMap> {
     public get cards(): YMap {
-        return this.getDataBlock("cards");
+        return this.getBlockData("cards");
     }
 
     public set cards(value: YMap) {
-        this.setDataBlock(value, "cards", "cards");
+        this.setBlock(value, "cards", "cards");
     }
 
     public get cardsInstances(): Card[] {
@@ -20,11 +18,11 @@ export class DocumentManagerCardsModel extends YMapManagerModel<SyncedBranchingN
     }
 
     public get branchingNodes(): YMap {
-        return this.getDataBlock("branchingNodes");
+        return this.getBlockData("branchingNodes");
     }
 
     public set branchingNodes(value: YMap) {
-        this.setDataBlock(value, "branchingNodes", "branchingNodes");
+        this.setBlock(value, "branchingNodes", "branchingNodes");
     }
 
     public get branchingNodesInstances(): BranchingNode[] {

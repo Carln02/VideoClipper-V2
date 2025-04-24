@@ -3,11 +3,7 @@ import {Card} from "../../components/card/card";
 import {auto, Coordinate, define, Point} from "turbodombuilder";
 import {YUtilities} from "../../../../yManagement/yUtilities";
 import {DocumentManagerModel} from "./documentManager.model";
-import {YArray, YDoc, YMap} from "../../../../yManagement/yManagement.types";
-import {SyncedFlowTag} from "../../components/flowTag/flowTag.types";
-import {SyncedFlowEntry} from "../../components/flowEntry/flowEntry.types";
-import {SyncedFlowBranch} from "../../components/flowBranch/flowBranch.types";
-import {SyncedFlow} from "../../components/flow/flow.types";
+import {YDoc} from "../../../../yManagement/yManagement.types";
 import {Flow} from "../../components/flow/flow";
 import {FlowBranch} from "../../components/flowBranch/flowBranch";
 import {DocumentManagerView} from "./documentManager.view";
@@ -25,7 +21,6 @@ import {AppManager} from "../appManager/appManager";
 import {VcComponent} from "../../components/component/component";
 import {MediaManager} from "../mediaManager/mediaManager";
 import {SyncedMedia} from "../mediaManager/mediaManager.types";
-import {SyncedFlowPath} from "../../components/flowPath/flowPath.types";
 
 @define()
 export class DocumentManager extends ScreenManager<DocumentScreens, DocumentManagerView, SyncedDocument,

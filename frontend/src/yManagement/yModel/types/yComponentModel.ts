@@ -1,5 +1,6 @@
 import {YMap, YMapEvent} from "../../yManagement.types";
 import {YModel} from "../yModel";
+import {MvcBlockKeyType} from "turbodombuilder";
 
 /**
  * @class YComponent
@@ -10,19 +11,7 @@ import {YModel} from "../yModel";
  * @template DataType
  */
 export class YComponentModel extends YModel<any, YMap, string> {
-    protected getData(key: string, blockKey: string = this.defaultBlockKey): any {
-        const data = this.getDataBlock(blockKey);
-        if (!data || !(data instanceof YMap)) return undefined;
-        return data.get(key);
-    }
-
-    protected setData(key: string, value: unknown, blockKey: string = this.defaultBlockKey) {
-        const data = this.getDataBlock(blockKey);
-        if (!data || !(data instanceof YMap)) return;
-        data.set(key, value);
-    }
-
-    protected observeChanges(event: YMapEvent, blockKey: string | undefined): void {
+    protected observeChanges(event: YMapEvent, blockKey?: MvcBlockKeyType<"map">): void {
         event.keysChanged.forEach(key => {
             const change = event.changes.keys.get(key);
             this.fireKeyChangedCallback(key, blockKey, change.action == "delete");

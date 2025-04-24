@@ -31,7 +31,7 @@ export class FlowModel extends YComponentModel {
     public onFlowTagAdded: (data: SyncedFlowTag) => FlowTag;
 
     public constructor(data: SyncedFlow) {
-        super(data);
+        super(data as YMap);
         this.branchesModel = new FlowBranchesModel();
         this.tagsModel = new FlowTagsModel();
 
@@ -97,6 +97,7 @@ export class FlowModel extends YComponentModel {
     }
 
     public get branches(): FlowBranch[] {
+        console.log(this.branchesModel.getAllComponents())
         return this.branchesModel.getAllComponents();
     }
 

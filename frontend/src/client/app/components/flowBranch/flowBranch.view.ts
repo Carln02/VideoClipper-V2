@@ -20,6 +20,7 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
         if (!force && this.model.lastRedraw && Date.now() - this.model.lastRedraw < this.model.redrawInterval) return;
         this.model.lastRedraw = Date.now();
         this.drawPath();
+        console.log("REDRAWWW")
         //TODO TRIGGER RECOMPUTING OF BOUNDING BOX
     }
 
@@ -35,6 +36,7 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
         const points = this.model.points;
         this.clear();
 
+        console.log(points);
         if (points.length < 2) return;
         const isOverwriting = this.model.isOverwriting;
 

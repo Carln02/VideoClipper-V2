@@ -110,7 +110,6 @@ export class Scrubber extends VcComponent<any, any, any, DocumentManager> {
 
     private initMarkingMenu() {
         const isBetweenClips = this.isBetweenClips;
-        console.log("TOGGLING STUFF")
         Scrubber.markingMenu.enable(isBetweenClips, ScrubberMenu.deleteLeft, ScrubberMenu.deleteRight);
         Scrubber.markingMenu.enable(!isBetweenClips, ScrubberMenu.trimLeft, ScrubberMenu.trimRight,
             ScrubberMenu.split, ScrubberMenu.mute, ScrubberMenu.hide, ScrubberMenu.reshoot);
@@ -125,7 +124,6 @@ export class Scrubber extends VcComponent<any, any, any, DocumentManager> {
     }
 
     private get isBetweenClips(): boolean {
-        console.log(this.timeline.currentClipInfo.distanceFromClosestIntersection);
         return this.timeline.currentClipInfo.distanceFromClosestIntersection < 0.2;
     }
 }

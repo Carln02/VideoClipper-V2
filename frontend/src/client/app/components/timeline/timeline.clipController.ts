@@ -1,6 +1,6 @@
 import "./timeline.css";
 import {ClipRendererVisibility} from "../clipRenderer/clipRenderer.types";
-import {ClipTimelineEntry} from "./timeline.types";
+import {TimelineIndexInfo} from "./timeline.types";
 import {Timeline} from "./timeline";
 import {TurboController, TurboEvent} from "turbodombuilder";
 import {TimelineView} from "./timeline.view";
@@ -27,16 +27,16 @@ export class TimelineClipController extends TurboController<Timeline, TimelineVi
     }
 
     public reloadCurrentClip() {
-        this.model.currentClipInfo = this.getClipAtTimestamp();
+        this.model.indexInfo = this.clipHandler.getClipIndexAtTimestamp();
         this.element.screenManager.contextManager.setContext(this.model.currentClip, 2);
         if (this.element.renderer.isPlaying) return;
         this.element.renderer.setFrame(this.element.renderer.visibilityMode == ClipRendererVisibility.ghosting
-            ? this.model.currentClipInfo?.ghostingClip : this.model.currentClip, this.model.currentClipInfo?.offset);
+            ? this.model.currentGhostingClip : this.model.currentClip, this.model.indexInfo?.offset);
     }
 
-    public snapToClosest(entry: number | ClipTimelineEntry = this.model.currentClipInfo) {
+    public snapToClosest(entry: number | TimelineIndexInfo = this.model.indexInfo) {
         let index = typeof entry == "number" ? entry : entry.closestIntersection;
-        if (index > this.element.data.length) index = this.element.dataSize;
+        if (index > this.model.totalClipsCount) index = this.model.totalClipsCount;
 
         let currentTime = 0;
         for (let i = 0; i < index; i++) currentTime += this.getDuration(i);
@@ -45,33 +45,6 @@ export class TimelineClipController extends TurboController<Timeline, TimelineVi
 
     public snapAtEnd() {
         this.snapToClosest(this.element.dataSize);
-    }
-
-    public getClipAtTimestamp(time: number = this.model.currentTime): ClipTimelineEntry {
-        if (!this.element.dataSize) return;
-        let index = 0, accumulatedTime = 0;
-
-        while (index < this.element.dataSize && accumulatedTime + this.getDuration(index) < time) {
-            accumulatedTime += this.getDuration(index);
-            index++;
-        }
-
-        if (index == this.element.dataSize) {
-            index = this.element.dataSize - 1;
-            accumulatedTime -= this.getDuration(index);
-        }
-
-        const clip = this.clipHandler.getClipAt(index);
-        const offset = time - accumulatedTime;
-        const offsetToNext = clip?.duration - offset;
-        const closestToNext = offsetToNext < offset;
-        const ghostingClip = index == 0 && !closestToNext ? null : this.clipHandler.getClipAt(closestToNext ? index : index - 1);
-
-        return {
-            clip: clip, ghostingClip: ghostingClip, offset: offset, index: index,
-            closestIntersection: closestToNext ? (index + 1) : index,
-            distanceFromClosestIntersection: closestToNext ? offsetToNext : offset
-        };
     }
 
     private getDuration(index: number) {
