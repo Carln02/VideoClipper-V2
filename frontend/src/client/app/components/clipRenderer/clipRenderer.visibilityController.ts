@@ -24,6 +24,11 @@ export class ClipRendererVisibilityController extends TurboController<ClipRender
         styles: (state) => state == ClipRendererVisibility.shown ? "display: inherit" : "display: none"
     });
 
+    public initialize() {
+        super.initialize();
+        this.model.visibilityMode = ClipRendererVisibility.shown;
+    }
+
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
         this.elementVisibilityReifect.attach(this.element);

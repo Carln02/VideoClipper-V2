@@ -133,14 +133,12 @@ export class FlowBranchesHandler extends TurboHandler<FlowModel> {
                 if (parentBranchIndex < 0) return;
                 path.insertBranchAt(firstChildBranchId, parentBranchIndex + 1);
                 if (secondChildBranchId) tag.insertPath({
-                    branchIds: [...path.branchIdsArray.slice(0, parentBranchIndex), secondChildBranchId],
+                    branchIds: [...path.branchIdsArray.slice(0, parentBranchIndex + 1), secondChildBranchId],
                     name: this.model.defaultName + " - " + (tag.pathsArray.length + 1),
                 }, index + 1);
             });
         })
     }
-
-    public generateName
 
     public getPathsFromNode(nodeId: string): string[][] {
         const entries: FlowPoint[] = this.model.searchHandler.findNodeEntries(nodeId);

@@ -10,13 +10,16 @@ import {FlowBranchUpdateHandler} from "./flowBranch.updateHandler";
 import {FlowBranchIntersectionHandler} from "./flowBranch.intersectionHandler";
 import {Flow} from "../flow/flow";
 import {FlowBranchConnectionHandler} from "./flowBranch.connectionHandler";
+import {YUtilities} from "../../../../yManagement/yUtilities";
 
 export class FlowBranchModel extends YComponentModel {
     public flow: Flow;
     public pathSelection: d3.Selection<SVGPathElement, unknown, null, undefined>;
 
     public lastNode: string = null;
-    public flowId: string;
+
+    public readonly defaultStrokeWidth: number = 1 as const;
+    public readonly highlightedStrokeWidth: number = 3 as const;
 
     public readonly redrawInterval: number = 100 as const;
     public readonly chevronInterval = 300 as const;
@@ -32,15 +35,7 @@ export class FlowBranchModel extends YComponentModel {
 
     public set data(value: any) {
         super.data = value;
-        this.data?.observeDeep(events => {
-            for (const event of events) {
-                if (event.path.includes("entries")) {
-                    console.log("FIRE REDRAWWWWWWWW FROM FLOW BRANCHHHHH")
-                    this.fireCallback("__redraw");
-                    break;
-                }
-            }
-        });
+        YUtilities.deepObserveAny(this.data, () => this.fireCallback("__redraw"), "entries");
     }
 
     public get path(): SVGPathElement {
@@ -76,6 +71,10 @@ export class FlowBranchModel extends YComponentModel {
         this.setData("overwriting", value);
     }
 
+    public get flowId(): string {
+        return this.flow?.dataId;
+    }
+
     public get points(): Point[] {
         const points = this.entriesArray
             ?.flatMap(cardWithConnections => cardWithConnections.get("points"))
@@ -91,6 +90,15 @@ export class FlowBranchModel extends YComponentModel {
     @auto()
     public set temporaryPoint(point: Point) {
         this.fireCallback("temporaryPoint");
+    }
+
+    @auto()
+    public set highlighted(value: boolean) {
+        this.fireCallback("__redraw")
+    }
+
+    public get strokeWidth(): number {
+        return this.highlighted ? this.highlightedStrokeWidth : this.defaultStrokeWidth;
     }
 
     public get entryHandler(): FlowBranchEntryHandler {

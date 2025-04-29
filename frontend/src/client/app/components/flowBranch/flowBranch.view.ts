@@ -20,7 +20,6 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
         if (!force && this.model.lastRedraw && Date.now() - this.model.lastRedraw < this.model.redrawInterval) return;
         this.model.lastRedraw = Date.now();
         this.drawPath();
-        console.log("REDRAWWW")
         //TODO TRIGGER RECOMPUTING OF BOUNDING BOX
     }
 
@@ -36,7 +35,6 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
         const points = this.model.points;
         this.clear();
 
-        console.log(points);
         if (points.length < 2) return;
         const isOverwriting = this.model.isOverwriting;
 
@@ -53,7 +51,8 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
             .attr("class", "flow")
             .attr("d", pathData)
             .attr("stroke-dasharray", isOverwriting ? "5, 5" : null)
-            .attr("opacity", isOverwriting ? 0.6 : 1);
+            .attr("opacity", isOverwriting ? 0.6 : 1)
+            .attr("stroke-width", this.model.strokeWidth);
 
         this.drawChevronsDelayed();
     }
@@ -79,7 +78,8 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
                 .attr("fill", isOverwriting ? "grey" : "black")
                 .attr("stroke-linecap", "round")
                 .attr("stroke-linejoin", "round")
-                .attr("opacity", isOverwriting ? 0.6 : 1);
+                .attr("opacity", isOverwriting ? 0.6 : 1)
+                .attr("stroke-width", this.model.strokeWidth);
         }
     }
 }

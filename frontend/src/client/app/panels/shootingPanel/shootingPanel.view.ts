@@ -3,7 +3,7 @@ import {ShootingPanel} from "./shootingPanel";
 import {ShootingPanelModel} from "./shootingPanel.model";
 import {CaptureButton} from "../../components/captureButton/captureButton";
 import {CaptureTimer} from "../../components/captureTimer/captureTimer";
-import {DefaultEventName, div, TurboIconToggle, TurboSelectEntry, TurboSelectWheel} from "turbodombuilder";
+import {DefaultEventName, div, spacer, TurboIconToggle, TurboSelectEntry, TurboSelectWheel} from "turbodombuilder";
 import {BackgroundSelector} from "../../components/backgroundSelector/backgroundSelector";
 import {CaptureMode} from "./shootingPanel.types";
 import {
@@ -52,8 +52,8 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
 
         this.backgroundSelector = new BackgroundSelector();
 
-        this.shootingDiv = new TurboSelectEntry({value: "shooting", element: div(), reflectValueOn: div()});
-        this.backgroundColorDiv = new TurboSelectEntry({value: "backgroundColor", element: div(), reflectValueOn: div()});
+        this.shootingDiv = new TurboSelectEntry({value: "shooting", reflectValueOn: div()});
+        this.backgroundColorDiv = new TurboSelectEntry({value: "backgroundColor", reflectValueOn: div()});
 
         this.animatedDiv = new AnimatedContentSwitchingDiv({values: [this.shootingDiv, this.backgroundColorDiv]});
     }
@@ -73,7 +73,7 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
             this.captureButton,
             div({
                 classes: "camera-buttons-child",
-                children: [this.switchCamera, this.microphone]
+                children: [this.switchCamera, this.microphone, spacer()]
             })
         ]);
 

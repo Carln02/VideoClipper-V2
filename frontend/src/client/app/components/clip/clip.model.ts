@@ -3,6 +3,7 @@ import {SyncedText} from "../textElement/textElement.types";
 import {YArray, YMapEvent } from "../../../../yManagement/yManagement.types";
 import {ClipTextHandler} from "./clip.textHandler";
 import {SyncedMedia} from "../../managers/mediaManager/mediaManager.types";
+import {YUtilities} from "../../../../yManagement/yUtilities";
 
 export class ClipModel extends YComponentModel {
     private _metadata: SyncedMedia;
@@ -17,20 +18,8 @@ export class ClipModel extends YComponentModel {
 
     public set data(value: any) {
         super.data = value;
-        this.data?.observeDeep(events => {
-            let relevantChanges = false;
-
-            for (const event of events) {
-                if (!(event instanceof YMapEvent)) continue;
-                for (const [key] of event.changes.keys) {
-                    if (!["startTime", "endTime", "backgroundFill", "mediaId", "content"].includes(key)) continue;
-                    relevantChanges = true;
-                    break;
-                }
-                if (relevantChanges) break;
-            }
-            if (relevantChanges) this.fireCallback("reload_thumbnail");
-        });
+        YUtilities.deepObserveAny(this.data, () => this.fireCallback("reload_thumbnail"),
+            "startTime", "endTime", "backgroundFill", "mediaId", "content");
     }
 
     public get metadata(): SyncedMedia {

@@ -67,6 +67,6 @@ export class TimelineClipHandler extends TurboHandler<TimelineModel> {
         }
 
         const lastKey = blockKeys[blockKeys.length - 1] as number;
-        return [lastKey, this.model.getSize(lastKey) - 1];
+        return [lastKey, this.model.getSize(lastKey)];
     }
 }

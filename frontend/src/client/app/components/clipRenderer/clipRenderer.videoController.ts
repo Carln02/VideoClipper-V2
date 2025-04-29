@@ -12,9 +12,9 @@ export class ClipRendererVideoController extends RendererVideoController<ClipRen
             const clip = this.model.getClip(index);
             const offset = this.model.getOffset(index);
             const video = this.videos[index];
-            if (!clip || !video) return;
+            if (!video) return;
 
-            if (clip.uri) {
+            if (clip?.uri) {
                 video.src = clip.uri;
                 await RendererVideoController.waitForVideoLoad(video, offset);
             } else {

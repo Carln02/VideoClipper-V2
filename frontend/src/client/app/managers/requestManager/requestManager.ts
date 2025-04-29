@@ -11,7 +11,7 @@ export class RequestManager {
         const request = new XMLHttpRequest();
         request.onreadystatechange = _ => {
             if (request.readyState !== 4) return;
-            if (request.status !== 200) {
+            if (request.status < 200 || request.status >= 300) {
                 onFailure(request.responseText);
                 return;
             }

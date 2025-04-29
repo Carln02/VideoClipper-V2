@@ -1,4 +1,4 @@
-import {YArray, YMap} from "./yManagement.types";
+import {YAbstractType, YArray, YMap, YEvent, YMapEvent, YArrayEvent} from "./yManagement.types";
 import {generate_unique_id} from "../client/sync/datastore";
 
 export class YUtilities {
@@ -61,5 +61,63 @@ export class YUtilities {
             return true;
         }
         return false;
+    }
+
+    public static deepObserveAny(
+        data: YAbstractType,
+        callback: (fieldChanged: string, event: YEvent, target: YAbstractType) => void,
+        ...fieldNames: string[]
+    ): void {
+        if (!data) return;
+        const fields = new Set(fieldNames);
+        data.observeDeep((events: YEvent[]) => {
+            for (const event of events) {
+                const target = event.target;
+                const parentMap = target._item?.parent;
+                const key = target._item?.parentSub;
+
+                for (const field of fields) {
+                    if (
+                        (event instanceof YMapEvent && event.changes.keys.has(field)) ||
+                        (event instanceof YArrayEvent && parentMap instanceof YMap && key === field) ||
+                        (event.path?.some(segment => segment === field))
+                    ) {
+                        callback(field, event, target);
+                        return;
+                    }
+                }
+            }
+        });
+    }
+
+    public static deepObserveAll(
+        data: YAbstractType,
+        callback: (event: YEvent, target: YAbstractType) => void,
+        ...fieldNames: string[]
+    ): void {
+        if (!data) return;
+        const fields = new Set(fieldNames);
+        data.observeDeep(events => {
+            const changedFields = new Set<string>();
+
+            for (const event of events) {
+                const target = event.target;
+                const parentMap = target._item?.parent;
+                const key = target._item?.parentSub;
+
+                for (const field of fields) {
+                    if (
+                        (event instanceof YMapEvent && event.changes.keys.has(field)) ||
+                        (event instanceof YArrayEvent && parentMap instanceof YMap && key === field) ||
+                        (event.path?.some(segment => segment === field))
+                    ) changedFields.add(field);
+                }
+
+                if (changedFields.size === fields.size) {
+                    callback(event, target);
+                    return;
+                }
+            }
+        });
     }
 }

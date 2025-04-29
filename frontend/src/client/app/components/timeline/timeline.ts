@@ -36,26 +36,26 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
 
         this.model.onClipAdded = (syncedClip, id) => {
             const clip = new Clip({timeline: this, screenManager: this.screenManager});
+            const snapToNext = id === this.model.indexInfo?.closestIntersection;
             this.view.clipsContainer.addChild(clip, id + 1);
 
             clip.onMediaDataChanged = (clip: Clip) => {
                 if (clip != this.model.currentClip) return;
                 this.renderer.setFrame(clip, this.model.indexInfo?.offset);
-            }
+            };
+
             requestAnimationFrame(() => {
                 clip.data = syncedClip;
+                if (snapToNext) this.snapToClosest(id + 1);
                 if (clip != this.model.currentClip) this.renderer.setFrame(clip, this.model.indexInfo?.offset);
             });
             return clip;
         };
 
-        this.model.onClipChanged = () => {
-            this.timeController.reloadTime();
-            this.clipController.reloadCurrentClip();
-        };
+        this.model.onClipChanged = () => this.timeController.reloadTime();
 
-        this.card = properties.card;
         this.mvc.initialize();
+        this.card = properties.card;
     }
 
     protected get timeController(): TimelineTimeController {
@@ -69,7 +69,7 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
     @auto()
     public set card(card: Card) {
         if (!this.model) return;
-        this.model.setCardsData([card.data as YMap], false);
+        this.model.setCardsData([card.data as YMap]);
 
         const selectedClip = this.screenManager.contextManager.getContext(2);
 
@@ -113,6 +113,14 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
 
     public removeClipAt(position: number) {
         return this.model.clipHandler.removeClipAt(position);
+    }
+
+    public snapToClosest(entry: number | TimelineIndexInfo = this.model.indexInfo) {
+        this.clipController.snapToClosest(entry);
+    }
+
+    public snapAtEnd() {
+        this.snapToClosest(this.dataSize);
     }
 
     public reloadSize() {

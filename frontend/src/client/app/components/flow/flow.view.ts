@@ -31,7 +31,6 @@ export class FlowView extends TurboView<Flow, FlowModel> {
      * @private
      */
     private async updateViewBox() {
-        console.log("HI VIEWOK")
         // Ensure updates occur at defined rate
         if (Date.now() - this.model.lastViewBoxUpdate <= this.model.viewBoxUpdateRate) return;
         this.model.lastViewBoxUpdate = Date.now();

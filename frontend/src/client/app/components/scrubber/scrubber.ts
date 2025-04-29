@@ -11,7 +11,7 @@ import "./scrubber.css";
 import {ScrubberProperties} from "./scrubber.types";
 import {Clip} from "../clip/clip";
 import {Timeline} from "../timeline/timeline";
-import {ClipTimelineEntry} from "../timeline/timeline.types";
+import {TimelineIndexInfo} from "../timeline/timeline.types";
 import {VcComponent} from "../component/component";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
 import {ScrubberMarkingMenu} from "../scrubberMarkingMenu/scrubberMarkingMenu";
@@ -92,7 +92,7 @@ export class Scrubber extends VcComponent<any, any, any, DocumentManager> {
             });
     }
 
-    public get clipInfo(): ClipTimelineEntry {
+    public get clipInfo(): TimelineIndexInfo {
         return this.timeline.currentClipInfo;
     }
 

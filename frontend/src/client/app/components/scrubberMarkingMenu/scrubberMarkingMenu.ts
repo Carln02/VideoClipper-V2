@@ -3,7 +3,7 @@ import {define, TurboMarkingMenu, TurboMarkingMenuProperties, TurboSelectEntry} 
 import {ScrubberMenu} from "./scrubberMarkingMenu.types";
 import {Scrubber} from "../scrubber/scrubber";
 import {Clip} from "../clip/clip";
-import {ClipTimelineEntry} from "../timeline/timeline.types";
+import {TimelineIndexInfo} from "../timeline/timeline.types";
 import {Timeline} from "../timeline/timeline";
 
 @define()
@@ -31,7 +31,7 @@ export class ScrubberMarkingMenu extends TurboMarkingMenu {
         return this.scrubber.clip;
     }
 
-    public get clipInfo(): ClipTimelineEntry {
+    public get clipInfo(): TimelineIndexInfo {
         return this.scrubber.clipInfo;
     }
 
@@ -58,12 +58,12 @@ export class ScrubberMarkingMenu extends TurboMarkingMenu {
 
         this.addEntry(new TurboSelectEntry({
             value: ScrubberMenu.deleteRight, text: "Delete Right",
-            action: () => this.timeline.removeClipAt(this.clipInfo.index + 1)
+            action: () => this.timeline.removeClipAt(this.clipInfo.clipIndex + 1)
         }));
 
         this.addEntry(new TurboSelectEntry({
             value: ScrubberMenu.delete, text: "Delete",
-            action: () => this.timeline.removeClipAt(this.clipInfo.index)
+            action: () => this.timeline.removeClipAt(this.clipInfo.clipIndex)
         }));
 
         this.addEntry(new TurboSelectEntry({
@@ -73,7 +73,7 @@ export class ScrubberMarkingMenu extends TurboMarkingMenu {
 
         this.addEntry(new TurboSelectEntry({
             value: ScrubberMenu.deleteLeft, text: "Delete Left",
-            action: () => this.timeline.removeClipAt(this.clipInfo.index - 1)
+            action: () => this.timeline.removeClipAt(this.clipInfo.clipIndex - 1)
         }));
 
         this.addEntry(new TurboSelectEntry({

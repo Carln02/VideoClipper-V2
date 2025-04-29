@@ -11,7 +11,7 @@ export default class WebsocketProvider {
 		let online = window.navigator.onLine;
 		if(!online) wsOpts.connect = false;
 
-		this.ws = new YW.WebsocketProvider(`ws://${window.location.hostname}:3100`, room, ydoc, wsOpts);
+		this.ws = new YW.WebsocketProvider(`ws://${window.location.hostname}:3000`, room, ydoc, wsOpts);
 
 		//	Needed so we can unregister on destroy
 		this.connect = () => this.ws.connect();

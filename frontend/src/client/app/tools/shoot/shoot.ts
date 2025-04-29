@@ -36,6 +36,7 @@ export class ShootTool extends Tool {
 
         this.documentManager.currentType = DocumentScreens.camera;
         this.documentManager.camera.card = closestCard;
+        this.documentManager.camera.snapToClip(closestClip);
         this.documentManager.toolPanel.changePanel(ToolType.shoot);
         this.documentManager.camera.startStream();
     }

@@ -69,7 +69,7 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
     }
 
     public async setFrame(clip: Clip = this.model.getClip(), offsetTime: number = 0) {
-        if (clip) await this.frameController.setFrame(clip, offsetTime);
+        await this.frameController.setFrame(clip, offsetTime);
     }
 
     public async drawFrame(clip: Clip = this.model.getClip(), offset: number = 0): Promise<string> {

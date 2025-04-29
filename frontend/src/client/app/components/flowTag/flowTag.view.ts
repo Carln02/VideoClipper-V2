@@ -21,22 +21,24 @@ export class FlowTagView extends TurboView<FlowTag, FlowTagModel> {
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
 
+        this.element.onAttach = () => this.regenerateWheelEntries();
         this.emitter.add("pathsChanged", () => this.regenerateWheelEntries());
         this.emitter.add("nodeId", () => requestAnimationFrame(() => this.element.attachedNode.addChild(this.element)));
-        this.emitter.add("paths", () => this.regenerateWheelEntries());
      }
 
     private regenerateWheelEntries() {
-        this.wheel.reifect.detach(...this.wheel.entries); //TODO MOVE TO TURBODOMBUILDER
         this.wheel.values = this.model.pathsArray.map(pathData => {
             const path = new FlowPathModel(pathData);
             return new TurboSelectEntry({value: path.name,
                 onSelected: (b: boolean) => {
                     if (!b) return;
-                    console.log(path.data);
+                    this.element.flow.branches.forEach(branch => {
+                        branch.highlighted = path.branchIdsArray.includes(branch.dataId)
+                    });
                     //TODO this.flow.drawingHandler.highlightBranches(path.branchIndices);
                 }
             }).setStyle("padding", "6px").setStyle("whiteSpace", "nowrap");
         });
+        // requestAnimationFrame(() => this.wheel.select(this.wheel.selectedEntry));
     }
 }

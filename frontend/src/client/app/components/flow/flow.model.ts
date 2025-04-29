@@ -12,6 +12,7 @@ import {FlowCleaningHandler} from "./flow.cleaningHandler";
 import {FlowIntersectionHandler} from "./flow.intersectionHandler";
 import {FlowTagsModel} from "./flow.tagsModel";
 import {FlowTag} from "../flowTag/flowTag";
+import {YUtilities} from "../../../../yManagement/yUtilities";
 
 export class FlowModel extends YComponentModel {
     public currentBranchId: string = "0";
@@ -50,14 +51,7 @@ export class FlowModel extends YComponentModel {
         this.tagsModel.data = this.tagsData;
         this.tagsModel.onAdded = (data) => this.onFlowTagAdded(data);
 
-        this.data?.observeDeep(events => {
-            for (const event of events) {
-                if (event.path.includes("branches") && event.path.includes("entries")) {
-                    this.fireCallback("__redraw");
-                    break;
-                }
-            }
-        });
+        YUtilities.deepObserveAll(this.data, () => this.fireCallback("__redraw"), "branches", "entries");
     }
 
     public get searchHandler(): FlowSearchHandler {
@@ -97,7 +91,6 @@ export class FlowModel extends YComponentModel {
     }
 
     public get branches(): FlowBranch[] {
-        console.log(this.branchesModel.getAllComponents())
         return this.branchesModel.getAllComponents();
     }
 

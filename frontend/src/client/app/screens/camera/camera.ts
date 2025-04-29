@@ -72,6 +72,11 @@ export class Camera extends VcComponent<CameraView, object, CameraModel, Documen
         this.visibilityMode = ClipRendererVisibility.shown;
     }
 
+    public snapToClip(clip: Clip) {
+        if (clip) this.view.timeline.snapToClosest(clip.dataIndex + 1);
+        else this.view.timeline.snapAtEnd();
+    }
+
     public async switchCamera() {
         await this.model.captureHandler.switchCamera();
     }

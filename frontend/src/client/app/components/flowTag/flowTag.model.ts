@@ -1,7 +1,8 @@
-import {YArray, YMap, YMapEvent} from "../../../../yManagement/yManagement.types";
+import {YArray, YMap} from "../../../../yManagement/yManagement.types";
 import {YComponentModel} from "../../../../yManagement/yModel/types/yComponentModel";
 import {SyncedFlowPath} from "../flowPath/flowPath.types";
 import {YUtilities} from "../../../../yManagement/yUtilities";
+import {FlowPath} from "../flowPath/flowPath";
 
 export class FlowTagModel extends YComponentModel {
     public get data(): any {
@@ -10,15 +11,7 @@ export class FlowTagModel extends YComponentModel {
 
     public set data(value: any) {
         super.data = value;
-        this.data?.observeDeep(events => {
-            for (const event of events) {
-                if (!(event instanceof YMapEvent)) continue;
-                if (event.changes.keys)
-                for (const [key] of event.changes.keys) {
-                    if (key == "paths") return this.fireCallback("pathsChanged");
-                }
-            }
-        });
+        YUtilities.deepObserveAny(this.data, () => this.fireCallback("pathsChanged"), "paths");
     }
 
     public get nodeId(): string {
@@ -42,7 +35,7 @@ export class FlowTagModel extends YComponentModel {
     }
 
     public insertPath(pathData: YMap | SyncedFlowPath, index?: number) {
-        if (!(pathData instanceof YMap)) pathData = YUtilities.createYMap(pathData);
+        if (!(pathData instanceof YMap)) pathData = FlowPath.createData(pathData);
         if (index == undefined || index >= this.pathsArray.length) return this.paths.push([pathData]);
         if (index < 0) index = 0;
         this.paths.insert(index, [pathData]);

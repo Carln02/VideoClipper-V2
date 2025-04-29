@@ -31,7 +31,7 @@ export class FlowBranch extends TurboProxiedElement<"g", FlowBranchView, SyncedF
 
         this.model.flow = properties.flow;
         this.model.flow?.svg.addChild(this.element);
-        this.model.flowId = this.model.flow?.dataId;
+
         this.mvc.initialize();
     }
 
@@ -45,6 +45,14 @@ export class FlowBranch extends TurboProxiedElement<"g", FlowBranchView, SyncedF
         data.connectedBranches = YUtilities.createYArray(data.connectedBranches as string[]);
 
         return YUtilities.createYMap(data) as YMap & SyncedFlowBranch;
+    }
+
+    public get highlighted(): boolean {
+        return this.model.highlighted;
+    }
+
+    public set highlighted(value: boolean) {
+        this.model.highlighted = value;
     }
 
     public get flow(): Flow {

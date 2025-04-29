@@ -115,12 +115,19 @@ export class AnimatedContentSwitchingDiv<
                 states: [OnOff.on, OnOff.off],
                 transitionProperties: ["width", "height"],
                 transitionDuration: {
-                    [OnOff.on]: this.transitionDuration ?? 0,
+                    [OnOff.on]: this.transitionDuration,
                     [OnOff.off]: 0
                 },
                 transitionTimingFunction: "ease-out",
                 styles: {
-                    [OnOff.on]: {width: "", height: ""},
+                    [OnOff.on]: () => {
+                        if (!this.selectedEntry) return "";
+                        const entrySize = getSize(this.selectedEntry);
+                        return {
+                            width: entrySize.width > 0 ? `${entrySize.width}px` : "",
+                            height: entrySize.height > 0 ? `${entrySize.height}px` : ""
+                        };
+                    },
                     [OnOff.off]: {width: `${this.offsetWidth}px`, height: `${this.offsetHeight}px`}
                 }
             });
@@ -133,17 +140,18 @@ export class AnimatedContentSwitchingDiv<
         entry = super.addEntry(entry);
         this.transitionReifect?.attach(entry);
         this.positionReifect?.attach(entry);
+        this.transitionReifect?.initialize(Shown.hidden, entry);
+        this.positionReifect?.initialize(Shown.hidden, entry);
         return entry;
     }
 
     public select(entry: ValueType | EntryType): this {
         super.select(entry);
-        //TODO StatefulReifect --> add option to set styles instantly
         this.entries.forEach(entry => {
-            this.transitionReifect?.apply(entry == this.selectedEntry ? Shown.visible : Shown.hidden, entry);
-            this.positionReifect?.apply(entry == this.selectedEntry ? Shown.visible : Shown.hidden, entry);
+            this.transitionReifect?.apply(entry == this.selectedEntry ? Shown.visible : Shown.hidden, entry, {applyStylesInstantly: true});
+            this.positionReifect?.apply(entry == this.selectedEntry ? Shown.visible : Shown.hidden, entry, {applyStylesInstantly: true});
         });
-        requestAnimationFrame(() => this.refreshSize());
+        this.refreshSize();
         return this;
     }
 
@@ -151,11 +159,8 @@ export class AnimatedContentSwitchingDiv<
         this.setStyles({transition: "", width: `${this.offsetWidth}px`, height: `${this.offsetHeight}px`}, true);
 
         if (!this.selectedEntry) return;
-        this.sizeReifect?.apply(OnOff.on, undefined, {applyStylesInstantly: true});
+        this.sizeReifect?.apply(OnOff.on, undefined, {recomputeProperties: true});
 
-        const entrySize = getSize(this.selectedEntry);
-        this.setStyles({width: `${entrySize.width}px`, height: `${entrySize.height}px`});
-
-        setTimeout(() => this.sizeReifect.apply(OnOff.off), this.transitionDuration);
+        // setTimeout(() => this.sizeReifect.apply(OnOff.off), this.transitionDuration);
     }
 }

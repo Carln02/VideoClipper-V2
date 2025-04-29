@@ -1,23 +1,52 @@
-import {DataServer} from "./servers/dataServer";
-import {YJSServer} from "./servers/yjsServer";
+import {createServer} from "http";
+import express from "express";
+import {Server as WebSocketServer} from "ws";
 import path from "path";
+import {MulterConfig} from "./config/config.multer";
+import {MediaController} from "./media/media.controller";
+import {YWebSocketUtils} from "./utils/yWebSocketUtils";
+import cors from "cors";
 
-const MEDIA_PORT = parseInt(process.env.PORT || "3000");
+const PORT = parseInt(process.env.PORT || "3000");
 const MEDIA_PATH = path.join(__dirname, "../../data/media");
-
-const PERSISTENCE_PORT = parseInt(process.env.PORT || "3100");
 const PERSISTENCE_PATH = path.join(__dirname, "../../data/persistence");
 
 (async () => {
     try {
-        const mediaServer = new DataServer(MEDIA_PORT, MEDIA_PATH);
-        await mediaServer.init();
-        mediaServer.start();
+        const app = express();
+        app.use(express.json({limit: "100mb"}));
 
-        const yjsServer = new YJSServer(PERSISTENCE_PORT, PERSISTENCE_PATH);
-        yjsServer.start();
+        // Logging
+        app.use((req, _res, next) => {
+            console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+            next();
+        });
+
+        // Allow any origin or customize
+        app.use(cors({origin: "*", credentials: true}));
+
+        // Register media controller
+        const multerConfig = new MulterConfig(MEDIA_PATH);
+        const mediaController = new MediaController(MEDIA_PATH, multerConfig);
+        app.use("/", mediaController.router);
+
+        // Create shared HTTP server
+        const server = createServer(app);
+
+        // Create WebSocket server on same HTTP server
+        const wss = new WebSocketServer({server});
+        const yWebSocketUtils = new YWebSocketUtils(PERSISTENCE_PATH);
+        wss.on("connection", (conn, req) => yWebSocketUtils.setupWSConnection(conn as any, req));
+
+        // Start server
+        server.listen(PORT, () => {
+            console.log(`Unified server running at http://localhost:${PORT}`);
+            console.log(`Media path: ${MEDIA_PATH}`);
+            console.log(`Yjs path: ${PERSISTENCE_PATH}`);
+        });
+
     } catch (err: any) {
-        console.error("Failed to start server:", err.message);
+        console.error("Failed to start unified server:", err.message);
         process.exit(1);
     }
 })();

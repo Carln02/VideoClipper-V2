@@ -2,7 +2,7 @@ import {Clip} from "../clip/clip";
 import {YArray, YMap} from "../../../../yManagement/yManagement.types";
 import {SyncedClip} from "../clip/clip.types";
 import {TimelineIndexInfo} from "./timeline.types";
-import {trim} from "turbodombuilder";
+import {auto, trim} from "turbodombuilder";
 import {TimelineClipHandler} from "./timeline.clipHandler";
 import {TimelineTimeHandler} from "./timeline.timeHandler";
 import {YManagerModel} from "../../../../yManagement/yModel/types/yManagerModel";
@@ -16,7 +16,9 @@ export class TimelineModel extends YManagerModel<SyncedClip, Clip, number, YArra
     //TODO PATH DATA FROM FLOW TAG --> OBSERVE AND UPDATE CLIP LISTS ON CHANGE
     // public readonly path: YArray<string>;
 
-    public indexInfo: TimelineIndexInfo;
+    @auto()
+    public set indexInfo(value: TimelineIndexInfo) {
+    }
 
     public playTimer: NodeJS.Timeout | null = null;
     public nextTimer: NodeJS.Timeout | null = null;
@@ -80,6 +82,7 @@ export class TimelineModel extends YManagerModel<SyncedClip, Clip, number, YArra
     }
 
     public get currentGhostingClip() {
+        if (this.indexInfo?.ghostingIndex == null) return null;
         return this.clipHandler?.getClipAt(this.indexInfo?.ghostingIndex);
     }
 
