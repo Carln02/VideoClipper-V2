@@ -36,9 +36,11 @@ export class ClipModel extends YComponentModel {
 
     public async updateMediaData(media: SyncedMedia) {
         this._metadata = media;
-        this._uri = URL.createObjectURL(media?.blob ?? null);
+
+        if (media?.blob instanceof Blob) this._uri = URL.createObjectURL(media.blob);
+        else this._uri = null;
+
         this._videoDuration = media?.type == "video" ? media?.duration : null;
-        this.fireCallback("mediaDataChanged");
     }
 
     public get startTime(): number {

@@ -12,6 +12,7 @@ export class MediaService {
 
                 // find file that starts with the requested id
                 const matchingFile = files.find(file => file.startsWith(id));
+
                 if (!matchingFile) return reject(new Error("File not found"));
 
                 const filePath = path.join(this.mediaStoragePath, matchingFile);

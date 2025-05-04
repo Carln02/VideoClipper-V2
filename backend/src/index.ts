@@ -10,6 +10,7 @@ import cors from "cors";
 const PORT = parseInt(process.env.PORT || "3000");
 const MEDIA_PATH = path.join(__dirname, "../../data/media");
 const PERSISTENCE_PATH = path.join(__dirname, "../../data/persistence");
+const FRONTEND_PUBLIC_PATH = path.join(__dirname, "../../frontend/public");
 
 (async () => {
     try {
@@ -25,6 +26,8 @@ const PERSISTENCE_PATH = path.join(__dirname, "../../data/persistence");
         // Allow any origin or customize
         app.use(cors({origin: "*", credentials: true}));
 
+        app.use(express.static(FRONTEND_PUBLIC_PATH));
+
         // Register media controller
         const multerConfig = new MulterConfig(MEDIA_PATH);
         const mediaController = new MediaController(MEDIA_PATH, multerConfig);
@@ -37,6 +40,10 @@ const PERSISTENCE_PATH = path.join(__dirname, "../../data/persistence");
         const wss = new WebSocketServer({server});
         const yWebSocketUtils = new YWebSocketUtils(PERSISTENCE_PATH);
         wss.on("connection", (conn, req) => yWebSocketUtils.setupWSConnection(conn as any, req));
+
+        app.get("*", (_req, res) => {
+            res.sendFile(path.join(FRONTEND_PUBLIC_PATH, "index.html"));
+        });
 
         // Start server
         server.listen(PORT, () => {

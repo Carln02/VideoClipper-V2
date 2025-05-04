@@ -25,14 +25,6 @@ export class ClipView extends TurboView<Clip, ClipModel> {
         this.emitter.add("color", (value: string) => this.clipContent.setStyle("backgroundColor", value));
         this.emitter.add("startTime", () => this.reloadSize());
         this.emitter.add("endTime", () => this.reloadSize());
-        this.emitter.add("mediaId", async (value: string) => {
-            this.model.updateMediaData(await this.element.screenManager.MediaManager.getMedia(value));
-
-            //TODO maybe remove this? idk
-            // if (media.metadata?.thumbnail) {
-            //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
-            // }
-        });
 
         this.emitter.add("hidden", (value: boolean) => this.element.toggleClass("hidden-clip", value));
         this.emitter.add("thumbnail", (value: string) => {

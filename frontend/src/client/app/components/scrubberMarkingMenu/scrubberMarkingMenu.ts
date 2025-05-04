@@ -1,5 +1,5 @@
 import "./scrubberMarkingMenu.css";
-import {define, TurboMarkingMenu, TurboMarkingMenuProperties, TurboSelectEntry} from "turbodombuilder";
+import {define, Point, TurboMarkingMenu, TurboMarkingMenuProperties, TurboSelectEntry} from "turbodombuilder";
 import {ScrubberMenu} from "./scrubberMarkingMenu.types";
 import {Scrubber} from "../scrubber/scrubber";
 import {Clip} from "../clip/clip";
@@ -11,8 +11,6 @@ export class ScrubberMarkingMenu extends TurboMarkingMenu {
     public scrubber: Scrubber;
 
     public constructor(properties: TurboMarkingMenuProperties) {
-        if (!properties.startAngle) properties.startAngle = -Math.PI * 0.8;
-        if (!properties.endAngle) properties.endAngle = Math.PI * 0.8;
         if (!properties.semiMinor) properties.semiMinor = 40;
         if (!properties.semiMajor) properties.semiMajor = 40;
         super(properties);
@@ -28,17 +26,17 @@ export class ScrubberMarkingMenu extends TurboMarkingMenu {
     }
 
     public get clip(): Clip {
-        return this.scrubber.clip;
+        return this.timeline.currentClip;
     }
 
     public get clipInfo(): TimelineIndexInfo {
-        return this.scrubber.clipInfo;
+        return this.timeline.currentClipInfo;
     }
 
     protected initializeEntries(): void {
         this.addEntry(new TurboSelectEntry({
             value: ScrubberMenu.split, text: "Split",
-            action: () => {}
+            action: () => this.timeline.splitClipAt()
         }));
 
         this.addEntry(new TurboSelectEntry({
@@ -85,5 +83,27 @@ export class ScrubberMarkingMenu extends TurboMarkingMenu {
             value: ScrubberMenu.hide, text: "Hide",
             action: () => this.clip.hidden = !this.clip.hidden
         }));
+    }
+
+    public show(b?: boolean, position?: Point): this {
+        const isBetweenClips = this.clipInfo.distanceFromClosestIntersection < 0.2;
+        const clipIndex = this.clipInfo.clipIndex;
+
+        this.enable(isBetweenClips && clipIndex !== 0, ScrubberMenu.deleteRight);
+        this.enable(isBetweenClips && clipIndex !== this.timeline.clips.length - 1, ScrubberMenu.deleteLeft);
+
+        this.enable(!isBetweenClips, ScrubberMenu.trimLeft, ScrubberMenu.trimRight, ScrubberMenu.delete,
+            ScrubberMenu.split, ScrubberMenu.mute, ScrubberMenu.hide, ScrubberMenu.reshoot);
+
+        if (!isBetweenClips) {
+            this.find(ScrubberMenu.mute).text = this.clip.muted ? "Unmute" : "Mute";
+            this.find(ScrubberMenu.hide).text = this.clip.hidden ? "Show" : "Hide";
+        }
+
+        const isFullCircle = this.enabledEntries.length > 4;
+        this.startAngle = isFullCircle ? 0 : -0.33 * Math.PI;
+        this.endAngle = isFullCircle ? Math.PI * 2 : 0.33 * Math.PI;
+
+        return super.show(b, position);
     }
 }

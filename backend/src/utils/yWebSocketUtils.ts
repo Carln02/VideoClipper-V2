@@ -43,10 +43,10 @@ export class YWebSocketUtils {
                 provider: ldb,
                 bindState: async (docName, ydoc) => {
                     const persistedYdoc = await ldb.getYDoc(docName);
-                    const newUpdates = Y.encodeStateAsUpdate(ydoc);
-                    ldb.storeUpdate(docName, newUpdates);
-                    Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc));
-                    ydoc.on("update", (update: any) => ldb.storeUpdate(docName, update));
+                    Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc)); // Apply first
+                    ydoc.on("update", (update: any) => {
+                        ldb.storeUpdate(docName, update); // Save future changes
+                    });
                 },
                 writeState: async (docName, ydoc) => {
                     const state = Y.encodeStateAsUpdate(ydoc);

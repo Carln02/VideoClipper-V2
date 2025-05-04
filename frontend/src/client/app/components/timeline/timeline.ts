@@ -14,6 +14,7 @@ import {TimelineClipHandler} from "./timeline.clipHandler";
 import {TimelineTimeHandler} from "./timeline.timeHandler";
 import {YArray, YMap} from "../../../../yManagement/yManagement.types";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
+import {YUtilities} from "../../../../yManagement/yUtilities";
 
 @define("vc-timeline")
 export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, TimelineModel> {
@@ -129,6 +130,12 @@ export class Timeline extends TurboDrawer<TimelineView, YArray<SyncedClip>, Time
 
     public getClipFromPosition(e: TurboEvent) {
        return this.model.clipHandler.getClipIndexAtTimestamp(this.timeController.getTimeFromPosition(e));
+    }
+
+    public async splitClipAt(time: number = this.model.currentTime) {
+        const info = this.model.clipHandler.getClipIndexAtTimestamp(time);
+        const clip = this.model.clipHandler.getClipAt(info.clipIndex);
+        await this.model.clipHandler.addClip(clip.split(clip.startTime + info.offset), info.clipIndex + 1);
     }
 
     public addIndicatorAt(indicator: Element, index: number) {

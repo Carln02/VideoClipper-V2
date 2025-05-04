@@ -118,10 +118,26 @@ export async function join_room(group_id, minicode = null, password = null) {
 
     let group_entry = index_doc.getMap(group_id);
 
-    if(!group_entry.has("pointer")) return {
-        success: false,
-        reason: "index_does_not_exist"
+// ⏳ Wait for pointer to appear (max 10s)
+    if (!group_entry.has("pointer")) {
+        const success = await new Promise((resolve) => {
+            const timeout = setTimeout(() => resolve(false), 10000);
+            const observer = () => {
+                if (group_entry.has("pointer")) {
+                    clearTimeout(timeout);
+                    group_entry.unobserve(observer);
+                    resolve(true);
+                }
+            };
+            group_entry.observe(observer);
+        });
+
+        if (!success) return {
+            success: false,
+            reason: "index_does_not_exist"
+        };
     }
+
 
     let group_info = group_entry.get("pointer") as any;
 
@@ -172,10 +188,23 @@ export async function join_room(group_id, minicode = null, password = null) {
 
     connect_room(full_id);
 
-    let success = await new Promise((success, error) => {
-        window.setTimeout(() => success(false), 10000);
-        group_metadata.observe(() => { if(group_metadata.has("minicode")) { success(true) }});
+    let success = await new Promise((resolve) => {
+        const timeout = setTimeout(() => {
+            group_metadata.unobserve(observer);
+            resolve(false);
+        }, 10000);
+
+        const observer = () => {
+            if (group_metadata.has("minicode")) {
+                clearTimeout(timeout);
+                group_metadata.unobserve(observer);
+                resolve(true);
+            }
+        };
+
+        group_metadata.observe(observer);
     });
+
 
     if(!success) return {
         success: false,

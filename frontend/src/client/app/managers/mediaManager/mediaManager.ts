@@ -13,7 +13,7 @@ export class MediaManager extends RequestManager {
     }
 
     private get url(): string {
-        return this.baseUrl + "media/";
+        return this.serverUrl + "media/";
     }
 
     private async initializeLocalDatabase() {
@@ -39,29 +39,10 @@ export class MediaManager extends RequestManager {
 
         return new Promise<Blob | undefined>((resolve) => {
             this.makeRequest(this.url + id, "GET", id, response => resolve(response),
-                error => console.error("Upload failed", error), false);
-        }).then(blob => {return {...metadata, blob: blob};});
-    }
-
-    public async saveMedia(data: SyncedMedia): Promise<string> {
-        const blob = data?.blob;
-        if (!blob) return undefined;
-
-        const type = data?.type ?? "video";
-        const id = `${type}-${Math.floor(Math.random() * 1000)}-${Date.now()}`;
-
-        this.documentManager.setMedia(id, {...data, blob: undefined});
-
-        const formData = new FormData();
-        formData.append("media", blob, id);
-        this.makeRequest(this.url + id, "POST", formData, response => console.log("Upload success", response),
-            error => console.error("Upload failed", error), false);
-
-        const db = await this.initializeLocalDatabase();
-        const storeName = type + "s";
-        await db.transaction(storeName, "readwrite").objectStore(storeName).add({id, blob});
-
-        return id;
+                error => console.error("Upload failed", error), false, "blob");
+        }).then(blob => {
+            console.log(blob);
+            return {...metadata, blob: blob};});
     }
 
     public async updateMedia(data: SyncedMedia): Promise<string> {
@@ -69,11 +50,18 @@ export class MediaManager extends RequestManager {
         const blob = data?.blob;
         if (!id || !blob) return undefined;
 
-        const type = data?.type ?? "video";
+        const type = data.type ?? "video";
         this.documentManager.setMedia(id, {...data, blob: undefined});
 
         const formData = new FormData();
-        formData.append("media", blob, id.toString());
+
+        const extension = blob.type === "video/mp4" ? ".mp4"
+            : blob.type === "video/webm" ? ".webm"
+                : blob.type === "image/png" ? ".png"
+                    : blob.type === "image/jpeg" ? ".jpg"
+                        : "";
+
+        formData.append("media", blob, id + extension);
         this.makeRequest(this.url + id, "POST", formData, response => console.log("Upload success", response),
             error => console.error("Upload failed", error), false);
 
@@ -82,5 +70,12 @@ export class MediaManager extends RequestManager {
         await db.transaction(storeName, "readwrite").objectStore(storeName).put({id, blob});
 
         return id;
+    }
+
+    public async saveMedia(data: SyncedMedia): Promise<string> {
+        if (!data?.blob) return undefined;
+        const type = data.type ?? "video";
+        data.id = `${type}-${Math.floor(Math.random() * 1000)}-${Date.now()}`;
+        return this.updateMedia(data);
     }
 }

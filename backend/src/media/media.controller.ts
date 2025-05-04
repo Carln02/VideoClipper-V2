@@ -6,7 +6,7 @@ export class MediaController {
     public router: Router;
     private readonly mediaService: MediaService;
 
-    constructor(private mediaStoragePath: string, private readonly multerConfig: MulterConfig) {
+    public constructor(private mediaStoragePath: string, private readonly multerConfig: MulterConfig) {
         this.router = Router();
         this.mediaService = new MediaService(this.mediaStoragePath);
         this.initRoutes();

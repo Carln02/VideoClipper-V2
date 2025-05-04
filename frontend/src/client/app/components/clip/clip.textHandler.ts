@@ -18,7 +18,7 @@ export class ClipTextHandler extends TurboHandler<ClipModel> {
             origin: position instanceof Point ? position.object : position,
             fontSize: 0.1
         }, this.model.content);
-    }
+   }
 
     /**
      * @function removeText

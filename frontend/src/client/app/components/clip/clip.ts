@@ -34,7 +34,16 @@ export class Clip extends VcComponent<ClipView, SyncedClip, ClipModel, DocumentM
             controllerConstructors: [ClipThumbnailController]
         });
 
-        this.mvc.emitter.add("mediaDataChanged", () => this.onMediaDataChanged(this));
+        this.mvc.emitter.add("mediaId", async (value: string) => {
+            this.model.updateMediaData(await this.screenManager.MediaManager.getMedia(value));
+
+            //TODO maybe remove this? idk
+            // if (media.metadata?.thumbnail) {
+            //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
+            // }
+
+            this.onMediaDataChanged(this)
+        });
     }
 
     public static createData(data?: SyncedClip): YMap & SyncedClip {
@@ -145,6 +154,14 @@ export class Clip extends VcComponent<ClipView, SyncedClip, ClipModel, DocumentM
         clone.setStyle("height", this.offsetHeight + "px");
         clone.selected = this.selected;
         return clone;
+    }
+
+    public split(localSplitTime: number): YMap & SyncedClip {
+        if (localSplitTime < this.startTime || localSplitTime > this.endTime) return;
+        const newData = Clip.createData((this.data as YMap).toJSON());
+        newData.set("startTime", localSplitTime);
+        this.endTime = localSplitTime;
+        return newData;
     }
 
     public cloneAndMove(e: TurboDragEvent) {

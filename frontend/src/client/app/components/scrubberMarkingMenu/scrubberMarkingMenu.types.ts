@@ -1,6 +1,3 @@
-import {TurboMarkingMenuProperties} from "turbodombuilder";
-import {Scrubber} from "../scrubber/scrubber";
-
 export enum ScrubberMenu {
     split = "split",
     mute = "mute",

@@ -9,13 +9,10 @@ import {
 } from "turbodombuilder";
 import "./scrubber.css";
 import {ScrubberProperties} from "./scrubber.types";
-import {Clip} from "../clip/clip";
 import {Timeline} from "../timeline/timeline";
-import {TimelineIndexInfo} from "../timeline/timeline.types";
 import {VcComponent} from "../component/component";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
 import {ScrubberMarkingMenu} from "../scrubberMarkingMenu/scrubberMarkingMenu";
-import {ScrubberMenu} from "../scrubberMarkingMenu/scrubberMarkingMenu.types";
 
 @define("vc-scrubber")
 export class Scrubber extends VcComponent<any, any, any, DocumentManager> {
@@ -83,21 +80,11 @@ export class Scrubber extends VcComponent<any, any, any, DocumentManager> {
         Scrubber.markingMenu.attachTo(this.markingMenuHandle,
             (e: TurboEvent) => {
                 Scrubber.markingMenu.scrubber = this;
-                this.initMarkingMenu();
                 Scrubber.markingMenu.show(true, e.scaledPosition);
             }, (e: TurboDragEvent) => {
                 Scrubber.markingMenu.scrubber = this;
-                this.initMarkingMenu();
                 Scrubber.markingMenu.show(undefined, e.scaledOrigins.first);
             });
-    }
-
-    public get clipInfo(): TimelineIndexInfo {
-        return this.timeline.currentClipInfo;
-    }
-
-    public get clip(): Clip {
-        return this.timeline.currentClip;
     }
 
     /**
@@ -106,24 +93,5 @@ export class Scrubber extends VcComponent<any, any, any, DocumentManager> {
     @auto()
     public set translation(value: number) {
         this.style.transform = `translate(calc(${value / this.screenManager.canvas.scale}px - 50%), 0)`;
-    }
-
-    private initMarkingMenu() {
-        const isBetweenClips = this.isBetweenClips;
-        Scrubber.markingMenu.enable(isBetweenClips, ScrubberMenu.deleteLeft, ScrubberMenu.deleteRight);
-        Scrubber.markingMenu.enable(!isBetweenClips, ScrubberMenu.trimLeft, ScrubberMenu.trimRight,
-            ScrubberMenu.split, ScrubberMenu.mute, ScrubberMenu.hide, ScrubberMenu.reshoot);
-
-        if (!isBetweenClips) {
-            Scrubber.markingMenu.find(ScrubberMenu.mute).text = this.timeline.currentClip.muted ? "Unmute" : "Mute";
-            Scrubber.markingMenu.find(ScrubberMenu.hide).text = this.timeline.currentClip.hidden ? "Show" : "Hide";
-        }
-
-        Scrubber.markingMenu.startAngle = isBetweenClips ? Math.PI * 0.5 : 0;
-        Scrubber.markingMenu.endAngle = isBetweenClips ? Math.PI * 1.5 : Math.PI * 2;
-    }
-
-    private get isBetweenClips(): boolean {
-        return this.timeline.currentClipInfo.distanceFromClosestIntersection < 0.2;
     }
 }
