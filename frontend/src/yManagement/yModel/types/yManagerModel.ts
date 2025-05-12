@@ -3,8 +3,8 @@ import {YModel} from "../yModel";
 import {MvcBlockKeyType, TurboElement, TurboProxiedElement} from "turbodombuilder";
 
 export class YManagerModel<
-    DataType extends object,
-    ComponentType extends object,
+    DataType,
+    ComponentType,
     KeyType extends string | number,
     YType extends YMap | YArray,
     IdType extends string | number = string,
@@ -26,7 +26,7 @@ export class YManagerModel<
             this.getBlock(blockKey).instances?.delete(id);
         };
 
-    protected createBlock(value: YType, id?: IdType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey): BlockType {
+    public createBlock(value: YType, id?: IdType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey): BlockType {
         return {
             ...super.createBlock(value, id, blockKey),
             instances: new Map<KeyType, ComponentType>(),
@@ -70,20 +70,26 @@ export class YManagerModel<
     }
 
     protected fireKeyChangedCallback(key: KeyType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey, deleted: boolean = false) {
-        if (!this.getAllKeys(blockKey).includes(key)) return super.fireKeyChangedCallback(key, blockKey, deleted);
+        if (!this.getAllKeys(blockKey).includes(key)) {
+            return super.fireKeyChangedCallback(key, blockKey, deleted);
+        }
+
         if (!this.onAdded) return;
 
         const data = this.getData(key, blockKey) as DataType;
         const instance = this.onAdded(data, key, blockKey);
         this.getBlock(blockKey).instances?.set(key, instance);
 
-        if ("data" in instance) instance.data = data;
-        if ("dataId" in instance) instance.dataId = key.toString();
+        if (typeof instance === "object") {
+            if ("data" in instance) instance.data = data;
+            if ("dataId" in instance) instance.dataId = key.toString();
+        }
+
         this.onUpdated?.(data, instance, key, blockKey);
     }
 
     private removeInstance(instance: ComponentType) {
-        if ("remove" in instance && typeof instance.remove == "function") instance?.remove();
+        if (typeof instance === "object" && "remove" in instance && typeof instance.remove == "function") instance?.remove();
     }
 
     protected observeChanges(event: YEvent, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey) {
@@ -138,7 +144,7 @@ export class YManagerModel<
         for (const [oldIndex] of itemsToShift) block.delete(oldIndex as KeyType);
         for (const [oldIndex, instance] of itemsToShift) {
             const newIndex = oldIndex + offset;
-            if ("dataId" in instance) instance.dataId = newIndex;
+            if (typeof instance === "object" && "dataId" in instance) instance.dataId = newIndex;
             block.set((oldIndex + offset) as KeyType, instance);
         }
     }

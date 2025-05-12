@@ -10,7 +10,7 @@ import {auto, MvcBlockKeyType, TurboModel} from "turbodombuilder";
  * @template DataType
  */
 export abstract class YModel<
-    DataType extends object = any,
+    DataType = any,
     YType extends YMap | YArray = YMap | YArray,
     KeyType extends string | number = string | number,
     IdType extends string | number = string,
@@ -42,7 +42,7 @@ export abstract class YModel<
         });
     }
 
-    protected getData(key: KeyType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey): any {
+    public getData(key: KeyType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey): any {
         const data = this.getBlockData(blockKey);
         if (data instanceof YMap) return data.get(key.toString());
         if (data instanceof YArray) {
@@ -52,7 +52,7 @@ export abstract class YModel<
         return null;
     }
 
-    protected setData(key: KeyType, value: unknown, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey) {
+    public setData(key: KeyType, value: unknown, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey) {
         const data = this.getBlockData(blockKey);
         if (data instanceof YMap) data.set(key.toString(), value);
         else if (data instanceof YArray) {
@@ -69,14 +69,14 @@ export abstract class YModel<
         return 0;
     }
 
-    protected createBlock(value: YType, id?: IdType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey): BlockType {
+    public createBlock(value: YType, id?: IdType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey): BlockType {
         return {
             ...super.createBlock(value, id),
             observer: (event: YEvent) => this.observeChanges(event, blockKey)
         } as BlockType;
     }
 
-    protected setBlock(value: YType, id?: IdType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey, initialize: boolean = true) {
+    public setBlock(value: YType, id?: IdType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey, initialize: boolean = true) {
         if (this.enabledCallbacks) {
             const block = this.getBlock(blockKey);
             if (block && block.data && block.observer) block.data.unobserve(block.observer);

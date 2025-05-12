@@ -3,5 +3,6 @@ import {Timeline} from "../timeline/timeline";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 export type ScrubberProperties = VcComponentProperties<any, any, any, DocumentManager> & {
-    timeline?: Timeline;
+    timeline?: Timeline,
+    scaled?: boolean,
 };

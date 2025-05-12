@@ -11,7 +11,6 @@ import {YArray, YMap} from "../../../../yManagement/yManagement.types";
 import {SyncedFlowPath} from "../flowPath/flowPath.types";
 import {FlowPath} from "../flowPath/flowPath";
 import {YUtilities} from "../../../../yManagement/yUtilities";
-import {FlowPathModel} from "../flowPath/flowPath.model";
 
 @define("vc-flow-tag")
 export class FlowTag extends VcComponent<FlowTagView, SyncedFlowTag, FlowTagModel, DocumentManager> {
@@ -25,7 +24,6 @@ export class FlowTag extends VcComponent<FlowTagView, SyncedFlowTag, FlowTagMode
             modelConstructor: FlowTagModel,
             data: properties.data
         });
-        this.model.paths.toArray().forEach(path => console.log(new FlowPathModel(path).branchIds))
     }
 
     public static createData(data?: SyncedFlowTag): YMap & SyncedFlowTag {
@@ -51,4 +49,6 @@ export class FlowTag extends VcComponent<FlowTagView, SyncedFlowTag, FlowTagMode
     public insertPath(pathData: YMap | SyncedFlowPath, index?: number) {
         return this.model.insertPath(pathData, index);
     }
+
+
 }

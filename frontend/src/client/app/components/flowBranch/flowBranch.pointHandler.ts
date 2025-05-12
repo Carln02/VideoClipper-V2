@@ -1,6 +1,5 @@
 import {Point, TurboHandler} from "turbodombuilder";
 import {FlowBranchModel} from "./flowBranch.model";
-import {FlowEntryModel} from "../flowEntry/flowEntry.model";
 
 export class FlowBranchPointHandler extends TurboHandler<FlowBranchModel> {
     /**
@@ -24,17 +23,14 @@ export class FlowBranchPointHandler extends TurboHandler<FlowBranchModel> {
         this.model.temporaryPoint = null;
         this.model.lastNode = nodeId;
 
-        //Get data and flow entries (for ease of use)
-        const flowEntries = this.model.entriesArray;
-
         //Create an entry if none exist
-        if (flowEntries.length == 0) {
+        if (this.model.entries.length == 0) {
             if (!nodeId) return;
             this.model.entryHandler.addNewEntry({startNodeId: nodeId, endNodeId: nodeId});
         }
 
         //Get last entry
-        const currentEntry = new FlowEntryModel(flowEntries[flowEntries.length - 1]);
+        const currentEntry = this.model.entries[this.model.entries.length - 1];
 
         //Now adding the point...
 

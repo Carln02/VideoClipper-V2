@@ -27,7 +27,7 @@ export type YDocumentProperties<
 };
 
 export type YDataBlock<
-    DataType extends object = any,
+    DataType = any,
     IdType extends string | number | symbol = any
 > = MvcDataBlock<DataType, IdType> & {
     observer: (event: YEvent) => void,
@@ -35,9 +35,9 @@ export type YDataBlock<
 };
 
 export type YManagerDataBlock<
-    DataType extends object = any,
+    DataType = any,
     IdType extends string | number | symbol = any,
-    ComponentType extends object = object,
+    ComponentType = object,
     KeyType extends string | number = string | number,
 > = YDataBlock<DataType, IdType> & {
     instances: Map<KeyType, ComponentType>

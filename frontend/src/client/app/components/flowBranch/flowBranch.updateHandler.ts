@@ -12,10 +12,10 @@ export class FlowBranchUpdateHandler extends TurboHandler<FlowBranchModel> {
     public updateAfterMovingNode(nodeId: string, deltaPosition: Point) {
         if (!nodeId) return;
 
-        const flowEntries = this.model.entriesArray;
+        const flowEntries = this.model.entries;
 
         for (let i = 0; i < flowEntries.length; i++) {
-            const entry = new FlowEntryModel(flowEntries[i]);
+            const entry = flowEntries[i];
             const points = entry.points;
 
             if (entry.startNodeId != nodeId && entry.endNodeId != nodeId) continue;
@@ -44,9 +44,9 @@ export class FlowBranchUpdateHandler extends TurboHandler<FlowBranchModel> {
     public updateOnDetachingNode(nodeId: string): boolean {
         if (!nodeId) return;
 
-        const flowEntries = this.model.entriesArray;
+        const flowEntries = this.model.entries;
         for (let i = flowEntries.length - 1; i >= 0; i--) {
-            const entry = new FlowEntryModel(flowEntries[i]);
+            const entry = flowEntries[i];
             // If the entry is not connected to the card on any end --> skip it
             if (entry.startNodeId != nodeId && entry.endNodeId != nodeId) continue;
             //Otherwise --> delete entry

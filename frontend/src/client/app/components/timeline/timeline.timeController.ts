@@ -8,7 +8,7 @@ export class TimelineTimeController extends TurboController<Timeline, TimelineVi
         super.setupChangedCallbacks();
 
         this.emitter.add("totalDurationChanged", () => {
-            this.element.card.duration = this.model.totalDuration;
+            if (this.element.card) this.element.card.duration = this.model.totalDuration;
         });
 
         this.view.scrubber.onScrubbing = (e: TurboDragEvent) => this.emitter.fire("containerClicked", e);

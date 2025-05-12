@@ -9,12 +9,12 @@ export class FlowBranchSearchHandler extends TurboHandler<FlowBranchModel> {
      * @param nodeId
      */
     public findNodeEntry(nodeId: string): FlowPoint {
-        const flowEntries = this.model.entriesArray;
+        const flowEntries = this.model.entries;
         if (!flowEntries) return null;
 
         //Loop on entries
         for (let entryIndex = 0; entryIndex < flowEntries.length; entryIndex++) {
-            const entry = new FlowEntryModel(flowEntries[entryIndex]);
+            const entry = flowEntries[entryIndex];
             //If entry is inside the given node --> store it
             if (entry.startNodeId == nodeId && entry.endNodeId == nodeId) {
                 return {
@@ -34,14 +34,14 @@ export class FlowBranchSearchHandler extends TurboHandler<FlowBranchModel> {
      * @param nodeId
      */
     public findNodeEntries(nodeId: string): FlowPoint[] {
-        const flowEntries = this.model.entriesArray;
+        const flowEntries = this.model.entries;
         if (!flowEntries) return [];
 
         const results = [];
 
         //Loop on entries
         for (let entryIndex = 0; entryIndex < flowEntries.length; entryIndex++) {
-            const entry = new FlowEntryModel(flowEntries[entryIndex]);
+            const entry = flowEntries[entryIndex];
             //If entry is inside the given node --> store it
             if (entry.startNodeId == nodeId && entry.endNodeId == nodeId) {
                 results.push({
@@ -64,11 +64,11 @@ export class FlowBranchSearchHandler extends TurboHandler<FlowBranchModel> {
         //Initialize closest point data and minimum distance
         let closestPoint: FlowPoint = null;
         let minDistance = Infinity;
-        const flowEntries = this.model.entriesArray;
+        const flowEntries = this.model.entries;
 
         //Loop on all entries of the flow
         for (let entryIndex = flowEntries.length - 1; entryIndex >= 0; entryIndex--) {
-            const entry = new FlowEntryModel(flowEntries[entryIndex]);
+            const entry = flowEntries[entryIndex];
 
             //Loop on points
             entry.points.forEach((p: Coordinate, index: number) => {
@@ -95,9 +95,9 @@ export class FlowBranchSearchHandler extends TurboHandler<FlowBranchModel> {
         let count = 0;
         let pointData: FlowPoint = null;
 
-        const flowEntries = this.model.entriesArray;
+        const flowEntries = this.model.entries;
         for (let entryIndex = 0; entryIndex < flowEntries.length; entryIndex++) {
-            const entry = new FlowEntryModel(flowEntries[entryIndex]);
+            const entry = flowEntries[entryIndex];
 
             if (count + entry.points.length < index) {
                 count += entry.points.length;

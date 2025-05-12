@@ -57,9 +57,9 @@ export class FlowBranchesHandler extends TurboHandler<FlowModel> {
         const parentBranchId = p.branchId!;
         const entryIndex = p.entryIndex!;
         const parentBranch = this.model.branchHandler.getBranchById(parentBranchId);
-        const originalEntry = new FlowEntryModel(parentBranch.getEntry(p.entryIndex));
+        const originalEntry = parentBranch.getEntry(p.entryIndex);
         const splitPointIndex = p.pointIndex != undefined ? p.pointIndex : Math.floor(originalEntry.points.length - 1 / 2);
-        const originalEntries: SyncedFlowEntry[] = parentBranch.entries.toJSON();
+        const originalEntries: SyncedFlowEntry[] = parentBranch.entriesData.toJSON();
 
         const {beforeSplit, splitEntry, afterSplit} =
             originalEntry.splitAtPoint(splitPointIndex, nodeId!, branchPosition

@@ -23,7 +23,12 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
         //TODO TRIGGER RECOMPUTING OF BOUNDING BOX
     }
 
-    public clear(): void {
+    public clearDrawing(): void {
+        clearTimeout(this.model.chevronTimer);
+        d3.select(this.element.element).selectAll("*").remove();
+    }
+
+    protected clearChevrons(): void {
         d3.select(this.element.element).selectAll(".chevron").remove();
     }
 
@@ -33,7 +38,7 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
      */
     private drawPath() {
         const points = this.model.points;
-        this.clear();
+        this.clearChevrons();
 
         if (points.length < 2) return;
         const isOverwriting = this.model.isOverwriting;

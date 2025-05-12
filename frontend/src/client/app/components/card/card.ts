@@ -25,7 +25,7 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
         this.mvc.generate({
             viewConstructor: CardView,
             modelConstructor: CardModel,
-            data: properties.data
+            data: properties.data,
         });
         this.renderer.card = this;
     }

@@ -6,4 +6,12 @@ vc-flow-tag {
     background-color: cyan;
     padding: 1em;
     border-radius: 6px 0 0 6px;
+
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+}
+
+vc-flow-tag > turbo-icon {
+    height: 1.3em;
 }

@@ -15,7 +15,7 @@ import {FlowTag} from "../flowTag/flowTag";
 import {YUtilities} from "../../../../yManagement/yUtilities";
 
 export class FlowModel extends YComponentModel {
-    public currentBranchId: string = "0";
+    private _currentBranchId: string = "0";
 
     public readonly branchesModel: FlowBranchesModel;
     public readonly tagsModel: FlowTagsModel;
@@ -54,6 +54,14 @@ export class FlowModel extends YComponentModel {
         YUtilities.deepObserveAll(this.data, () => this.fireCallback("__redraw"), "branches", "entries");
     }
 
+    public get currentBranchId(): string {
+        return this._currentBranchId;
+    }
+
+    public set currentBranchId(value: string) {
+        this.currentBranch.redraw(true);
+        this._currentBranchId = value;
+    }
     public get searchHandler(): FlowSearchHandler {
         return this.getHandler("search") as FlowSearchHandler;
     }

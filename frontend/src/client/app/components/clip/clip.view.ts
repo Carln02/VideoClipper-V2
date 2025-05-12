@@ -1,7 +1,6 @@
 import {ClipModel} from "./clip.model";
 import {Clip} from "./clip";
 import {DefaultEventName, div, icon, img, TurboDragEvent, TurboView} from "turbodombuilder";
-import {DocumentScreens} from "../../managers/documentManager/documentManager.types";
 
 export class ClipView extends TurboView<Clip, ClipModel> {
     private clipContent: HTMLDivElement;
@@ -14,7 +13,7 @@ export class ClipView extends TurboView<Clip, ClipModel> {
      * @function reloadSize
      * @description Reloads the size of the clip element and thus, reloads as well the timeline.
      */
-    public reloadSize() {
+    private reloadSize() {
         this.element.setStyle("width", this.element.timeline?.pixelsPerSecondUnit * this.element.duration + "px");
         this.element.timeline.reloadSize();
     }
@@ -60,8 +59,8 @@ export class ClipView extends TurboView<Clip, ClipModel> {
 
     private dragHandle(side: "left" | "right", e: TurboDragEvent) {
         e.stopImmediatePropagation();
-        const delta = (this.element.screenManager.currentType == DocumentScreens.canvas ? e.scaledDeltaPosition.x
-            : e.deltaPosition.x) / this.element.timeline?.pixelsPerSecondUnit;
+        const delta = (this.element.timeline.scaled ? e.scaledDeltaPosition.x : e.deltaPosition.x)
+            / this.element.timeline?.pixelsPerSecondUnit;
         if (side == "left") this.model.startTime += delta;
         else this.model.endTime += delta;
     }

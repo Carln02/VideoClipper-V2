@@ -16,7 +16,6 @@ export class CreateCardTool extends Tool {
     //On click
     public clickAction(e: TurboEvent) {
         //If there's already a card at click position --> return
-        console.log(e.closest(Card, false));
         if (e.closest(Card, false)) return;
         //Otherwise --> create card at click position
         this.documentManager.createNewCard(e.scaledPosition);

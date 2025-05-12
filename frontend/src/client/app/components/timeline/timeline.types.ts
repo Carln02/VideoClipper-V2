@@ -9,14 +9,16 @@ import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 export type TimelineIndexInfo = {
     clipIndex?: number,
+    cardIndex?: number,
     ghostingIndex?: number,
     offset?: number,
     closestIntersection?: number,
     distanceFromClosestIntersection?: number,
 }
 
-export type TimelineProperties = TurboDrawerProperties<TimelineView, YArray<SyncedClip>, TimelineModel> & {
+export type TimelineProperties<View extends TimelineView = TimelineView> = TurboDrawerProperties<View, YArray<SyncedClip>, TimelineModel> & {
     screenManager: DocumentManager,
     card: Card,
-    renderer: ClipRenderer
+    renderer: ClipRenderer,
+    scaled?: boolean
 };

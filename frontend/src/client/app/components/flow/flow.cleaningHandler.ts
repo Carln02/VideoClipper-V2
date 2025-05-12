@@ -8,7 +8,10 @@ export class FlowCleaningHandler extends TurboHandler<FlowModel> {
      */
     public removeUnnecessaryBranchesOrFlow() {
         for (const branch of this.model.branches) {
-            if (branch.checkIfUnnecessary()) this.model.branchHandler.removeBranch(branch);
+            if (branch.checkIfUnnecessary()) {
+                branch.clearDrawing();
+                this.model.branchHandler.removeBranch(branch);
+            }
         }
 
         // TODO MOVE TO DOCUMENT MANAGER

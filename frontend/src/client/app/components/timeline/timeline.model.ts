@@ -7,18 +7,15 @@ import {TimelineClipHandler} from "./timeline.clipHandler";
 import {TimelineTimeHandler} from "./timeline.timeHandler";
 import {YManagerModel} from "../../../../yManagement/yModel/types/yManagerModel";
 import {SyncedCard} from "../card/card.types";
+import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
+import {SyncedFlowPath} from "../flowPath/flowPath.types";
+import {Flow} from "../flow/flow";
+import {Card} from "../card/card";
 
 export class TimelineModel extends YManagerModel<SyncedClip, Clip, number, YArray, string, "array"> {
     public readonly pixelsPerSecondUnit: number = 20 as const;
     public readonly timeIncrementMs = 10 as const;
     public readonly timeIncrementS = 0.01 as const;
-
-    //TODO PATH DATA FROM FLOW TAG --> OBSERVE AND UPDATE CLIP LISTS ON CHANGE
-    // public readonly path: YArray<string>;
-
-    @auto()
-    public set indexInfo(value: TimelineIndexInfo) {
-    }
 
     public playTimer: NodeJS.Timeout | null = null;
     public nextTimer: NodeJS.Timeout | null = null;
@@ -26,11 +23,25 @@ export class TimelineModel extends YManagerModel<SyncedClip, Clip, number, YArra
     private _storedTotalDuration: number = 0;
     private _currentTime: number = 0;
 
+    protected _cards: Card[];
+    protected cardsModel: YManagerModel<string, Card, number, YArray>;
+
+    public onCardAdded: (cardId: string, index: number) => Card = () => undefined;
+
     public onClipAdded: (syncedClip: SyncedClip, id: number, blockKey: number) => Clip = () => undefined;
     public onClipChanged: (syncedClip: SyncedClip, clip: Clip, id: number, blockKey: number) => void = () => {};
 
     public constructor(data?: YArray<SyncedClip>) {
         super(data, "array");
+
+        this.cardsModel = new YManagerModel();
+        this.cardsModel.onAdded = (cardId, index) => {
+            const card = this.onCardAdded(cardId, index);
+            if (!card) return undefined;
+            this.setBlock(card.syncedClips, cardId, index);
+            return card;
+        }
+        this.cardsModel.onDeleted = () => {};
 
         this.onAdded = (syncedClip, id, blockKey) => {
             return this.onClipAdded(syncedClip, id, blockKey);
@@ -49,10 +60,64 @@ export class TimelineModel extends YManagerModel<SyncedClip, Clip, number, YArra
         };
     }
 
-    public setCardsData(data: (SyncedCard & YMap)[], initialize: boolean = true) {
+    public get cardIds(): string[] {
+       if (this._cards) return this._cards.map(card => card.dataId);
+       return this.cardsModel.data.toArray();
+    }
+
+    public set cardIds(data: YArray<string>) {
+        this._cards = undefined;
         this.clear();
-        this.dataBlocks.length = 0;
-        data.forEach((card, index) => this.addBlock(card.get("syncedClips"), undefined, index, initialize));
+        this.cardsModel.data = data;
+    }
+
+    public get cards(): Card[] {
+        if (this._cards) return this._cards;
+        return this.cardsModel.getAllComponents();
+    }
+
+    public set cards(data: Card[]) {
+        this.cardsModel.data = undefined;
+        this._cards = data;
+        this.clear();
+        data.forEach((card: Card, index: number) => {
+            if (!card) return;
+            this.addBlock(card.syncedClips, card.dataId, index)
+        });
+    }
+
+    public getCardAt(index: number): Card {
+        const cards = this.cards;
+        if (typeof index !== "number") return null;
+        if (index < 0) index = 0;
+        if (index >= cards.length) index = cards.length - 1;
+        return cards[index];
+    }
+
+    @auto()
+    public set indexInfo(value: TimelineIndexInfo) {
+    }
+
+    public get currentClip() {
+        return this.clipHandler?.getClipAt(this.indexInfo?.clipIndex);
+    }
+
+    public get currentGhostingClip() {
+        if (this.indexInfo?.ghostingIndex == null) return null;
+        return this.clipHandler?.getClipAt(this.indexInfo?.ghostingIndex);
+    }
+
+    public get currentCardData() {
+        return this.currentClip?.card;
+    }
+
+    public get currentTime(): number {
+        return this._currentTime;
+    }
+
+    public set currentTime(value: number) {
+        this._currentTime = trim(value, this.totalDuration);
+        this.fireCallback("currentTimeChanged");
     }
 
     public getClipsAt(index: number): YArray<SyncedClip> {
@@ -81,21 +146,5 @@ export class TimelineModel extends YManagerModel<SyncedClip, Clip, number, YArra
         return this.getHandler("time") as TimelineTimeHandler;
     }
 
-    public get currentGhostingClip() {
-        if (this.indexInfo?.ghostingIndex == null) return null;
-        return this.clipHandler?.getClipAt(this.indexInfo?.ghostingIndex);
-    }
 
-    public get currentClip() {
-        return this.clipHandler?.getClipAt(this.indexInfo?.clipIndex);
-    }
-
-    public get currentTime(): number {
-        return this._currentTime;
-    }
-
-    public set currentTime(value: number) {
-        this._currentTime = trim(value, this.totalDuration);
-        this.fireCallback("currentTimeChanged");
-    }
 }

@@ -1,10 +1,10 @@
 import {SyncedText} from "../textElement/textElement.types";
-import {ClipView} from "./clip.view";
 import {ClipModel} from "./clip.model";
 import {Timeline} from "../timeline/timeline";
 import {VcComponentProperties} from "../component/component.types";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
 import {YArray} from "yjs/dist/src/types/YArray";
+import {TurboView} from "turbodombuilder";
 
 export type SyncedClip = {
     startTime?: number,
@@ -21,6 +21,11 @@ export type SyncedClip = {
     muted?: boolean
 };
 
-export type ClipProperties = VcComponentProperties<ClipView, SyncedClip, ClipModel, DocumentManager> & {
+export type ClipProperties<
+    View extends TurboView = TurboView,
+    Data extends SyncedClip = SyncedClip,
+    Model extends ClipModel = ClipModel,
+    Manager extends DocumentManager = DocumentManager
+> = VcComponentProperties<View, Data, Model, Manager> & {
     timeline: Timeline
 };

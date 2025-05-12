@@ -36,6 +36,7 @@ export class CameraView extends TurboView<Camera, CameraModel> {
         this.timeline = new Timeline({
             screenManager: this.element.screenManager,
             card: this.element.card,
+            scaled: false,
             renderer: this.clipRenderer,
             side: Side.top,
             icon: "chevron",

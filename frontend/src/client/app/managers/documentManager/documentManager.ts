@@ -3,7 +3,7 @@ import {Card} from "../../components/card/card";
 import {auto, Coordinate, define, Point} from "turbodombuilder";
 import {YUtilities} from "../../../../yManagement/yUtilities";
 import {DocumentManagerModel} from "./documentManager.model";
-import {YDoc} from "../../../../yManagement/yManagement.types";
+import {YDoc, YMap} from "../../../../yManagement/yManagement.types";
 import {Flow} from "../../components/flow/flow";
 import {FlowBranch} from "../../components/flowBranch/flowBranch";
 import {DocumentManagerView} from "./documentManager.view";
@@ -21,6 +21,7 @@ import {AppManager} from "../appManager/appManager";
 import {VcComponent} from "../../components/component/component";
 import {MediaManager} from "../mediaManager/mediaManager";
 import {SyncedMedia} from "../mediaManager/mediaManager.types";
+import {SyncedBranchingNode} from "../../components/branchingNode/branchingNode.types";
 
 @define()
 export class DocumentManager extends ScreenManager<DocumentScreens, DocumentManagerView, SyncedDocument,
@@ -110,6 +111,14 @@ export class DocumentManager extends ScreenManager<DocumentScreens, DocumentMana
 
     public getNode(id: string): BranchingNode {
         return this.model.cardsModel.getInstance(id);
+    }
+
+    public getNodeData(id: string): SyncedBranchingNode {
+        return this.model.cardsModel.getInstance(id).data;
+    }
+
+    public getNodesData(...ids: string[]): SyncedBranchingNode[] {
+        return ids.map(id => this.getNodeData(id));
     }
 
     public getMedia(id: string): SyncedMedia {

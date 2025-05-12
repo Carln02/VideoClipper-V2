@@ -1,9 +1,9 @@
-import {YComponentModel} from "../../../../yManagement/yModel/types/yComponentModel";
-import {SyncedText} from "../textElement/textElement.types";
-import {YArray, YMapEvent } from "../../../../yManagement/yManagement.types";
-import {ClipTextHandler} from "./clip.textHandler";
-import {SyncedMedia} from "../../managers/mediaManager/mediaManager.types";
 import {YUtilities} from "../../../../yManagement/yUtilities";
+import {SyncedMedia} from "../../managers/mediaManager/mediaManager.types";
+import {YComponentModel} from "../../../../yManagement/yModel/types/yComponentModel";
+import {ClipTextHandler} from "./clip.textHandler";
+import { YArray } from "../../../../yManagement/yManagement.types";
+import { SyncedText } from "../textElement/textElement.types";
 
 export class ClipModel extends YComponentModel {
     private _metadata: SyncedMedia;
@@ -18,6 +18,7 @@ export class ClipModel extends YComponentModel {
 
     public set data(value: any) {
         super.data = value;
+        //TODO MAKE IT TOGGLEABLE
         YUtilities.deepObserveAny(this.data, () => this.fireCallback("reload_thumbnail"),
             "startTime", "endTime", "backgroundFill", "mediaId", "content");
     }

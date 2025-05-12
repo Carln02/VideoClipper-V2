@@ -59,12 +59,16 @@ export class FlowBranch extends TurboProxiedElement<"g", FlowBranchView, SyncedF
         return this.model.flow;
     }
 
-    public get entries(): YArray<SyncedFlowEntry> {
+    public get entriesData(): YArray<SyncedFlowEntry> {
+        return this.model.entriesData;
+    }
+
+    public get entries(): FlowEntry[] {
         return this.model.entries;
     }
 
     public get entriesArray(): SyncedFlowEntry[] {
-        return this.model.entriesArray;
+        return this.model.entriesDataArray;
     }
 
     public get connectedBranches(): YArray<string> {
@@ -87,12 +91,20 @@ export class FlowBranch extends TurboProxiedElement<"g", FlowBranchView, SyncedF
         return this.view.redraw(force);
     }
 
-    public getEntry(index: number): SyncedFlowEntry & YMap {
+    public clearDrawing(): void {
+        return this.view.clearDrawing();
+    }
+
+    public getEntry(index: number): FlowEntry {
         return this.model.entryHandler.getEntry(index);
     }
 
     public spliceEntries(start: number, deleteCount?: number, ...entries: SyncedFlowEntry[]) {
         return this.model.entryHandler.spliceEntries(start, deleteCount, ...entries);
+    }
+
+    public getNodesIds(): string[] {
+        return this.model.entryHandler.getNodesIds();
     }
 
     /**
@@ -173,5 +185,10 @@ export class FlowBranch extends TurboProxiedElement<"g", FlowBranchView, SyncedF
 
     public addConnectedBranch(...branches: string[]) {
         return this.model.connectionHandler.addConnectedBranch(...branches);
+    }
+
+    public getCardsInBranch() {
+        // const
+        // return this.model.entries.map()
     }
 }

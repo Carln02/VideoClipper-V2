@@ -27,6 +27,7 @@ export class TimelineClipHandler extends TurboHandler<TimelineModel> {
 
         return {
             clipIndex: index,
+            cardIndex: this.convertIndexToBlockScope(index)[0],
             ghostingIndex: (index == 0 && !closestToNext)
                 ? null
                 : closestToNext ? index : index - 1,
@@ -56,7 +57,7 @@ export class TimelineClipHandler extends TurboHandler<TimelineModel> {
         this.model.getClipsAt(blockKey).delete(localIndex, 1);
     }
 
-    protected convertIndexToBlockScope(index: number): [number, number] {
+    public convertIndexToBlockScope(index: number): [number, number] {
         if (!index || index < 0) return [0, 0];
         const blockKeys = this.model.getAllBlockKeys();
 
@@ -68,5 +69,17 @@ export class TimelineClipHandler extends TurboHandler<TimelineModel> {
 
         const lastKey = blockKeys[blockKeys.length - 1] as number;
         return [lastKey, this.model.getSize(lastKey)];
+    }
+
+    public convertBlockScopeToIndex(index: number, blockKey: number): number {
+        const blockKeys = this.model.getAllBlockKeys();
+        let globalIndex = 0;
+
+        for (const key of blockKeys) {
+            if (key === blockKey) break;
+            globalIndex += this.model.getSize(key);
+        }
+
+        return globalIndex + index;
     }
 }

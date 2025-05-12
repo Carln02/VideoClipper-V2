@@ -1,5 +1,5 @@
 import {YComponentModel} from "../../../../yManagement/yModel/types/yComponentModel";
-import {auto, Coordinate, Point} from "turbodombuilder";
+import {auto, Coordinate, MvcBlockKeyType, Point} from "turbodombuilder";
 import {YArray, YMap} from "../../../../yManagement/yManagement.types";
 import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 import {FlowBranchEntryHandler} from "./flowBranch.entryHandler";
@@ -11,6 +11,7 @@ import {FlowBranchIntersectionHandler} from "./flowBranch.intersectionHandler";
 import {Flow} from "../flow/flow";
 import {FlowBranchConnectionHandler} from "./flowBranch.connectionHandler";
 import {YUtilities} from "../../../../yManagement/yUtilities";
+import {FlowEntry} from "../flowEntry/flowEntry";
 
 export class FlowBranchModel extends YComponentModel {
     public flow: Flow;
@@ -35,19 +36,30 @@ export class FlowBranchModel extends YComponentModel {
 
     public set data(value: any) {
         super.data = value;
+
         YUtilities.deepObserveAny(this.data, () => this.fireCallback("__redraw"), "entries");
+    }
+
+    public initialize(blockKey: MvcBlockKeyType<"map"> = this.defaultBlockKey) {
+        super.initialize(blockKey);
+        this.entryHandler?.setData(this.entriesData);
+        // this.entryHandler.initializeModel();
     }
 
     public get path(): SVGPathElement {
         return this.pathSelection.node() as SVGPathElement;
     }
 
-    public get entries(): YArray<SyncedFlowEntry & YMap> {
+    public get entriesData(): YArray<SyncedFlowEntry & YMap> {
         return this.getData("entries");
     }
 
-    public get entriesArray(): (SyncedFlowEntry & YMap)[] {
-        return this.entries?.toArray();
+    public get entriesDataArray(): (SyncedFlowEntry & YMap)[] {
+        return this.entriesData?.toArray();
+    }
+
+    public get entries(): FlowEntry[] {
+        return this.entryHandler.getEntries();
     }
 
     public get connectedBranches(): YArray<string> {
@@ -76,7 +88,7 @@ export class FlowBranchModel extends YComponentModel {
     }
 
     public get points(): Point[] {
-        const points = this.entriesArray
+        const points = this.entriesDataArray
             ?.flatMap(cardWithConnections => cardWithConnections.get("points"))
             .filter((point: Coordinate) => !!point)
             .map((point: Coordinate) => new Point(point));

@@ -26,6 +26,8 @@ export class Scrubber extends VcComponent<any, any, any, DocumentManager> {
     //The timeline it is attached to
     public readonly timeline: Timeline;
 
+    public scaled: boolean = true;
+
     //Whether it is currently scrubbing (fired by the user's action)
     private scrubbing: boolean = false;
 
@@ -40,6 +42,7 @@ export class Scrubber extends VcComponent<any, any, any, DocumentManager> {
             this.screenManager.canvas.content.addChild(Scrubber.markingMenu);
         }
         this.timeline = properties.timeline;
+        this.scaled = properties.scaled ?? true;
         this.initializeUI();
     }
 
@@ -80,10 +83,10 @@ export class Scrubber extends VcComponent<any, any, any, DocumentManager> {
         Scrubber.markingMenu.attachTo(this.markingMenuHandle,
             (e: TurboEvent) => {
                 Scrubber.markingMenu.scrubber = this;
-                Scrubber.markingMenu.show(true, e.scaledPosition);
+                Scrubber.markingMenu.show(true, this.scaled ? e.scaledPosition : e.position);
             }, (e: TurboDragEvent) => {
                 Scrubber.markingMenu.scrubber = this;
-                Scrubber.markingMenu.show(undefined, e.scaledOrigins.first);
+                Scrubber.markingMenu.show(undefined, this.scaled ? e.scaledOrigins.first : e.origins.first);
             });
     }
 
@@ -92,6 +95,6 @@ export class Scrubber extends VcComponent<any, any, any, DocumentManager> {
      */
     @auto()
     public set translation(value: number) {
-        this.style.transform = `translate(calc(${value / this.screenManager.canvas.scale}px - 50%), 0)`;
+        this.style.transform = `translate(calc(${value / (this.scaled ? this.screenManager.canvas.scale : 1)}px - 50%), 0)`;
     }
 }
