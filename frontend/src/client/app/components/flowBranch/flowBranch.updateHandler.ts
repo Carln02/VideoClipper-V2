@@ -1,5 +1,4 @@
 import {Point, TurboHandler} from "turbodombuilder";
-import {FlowEntryModel} from "../flowEntry/flowEntry.model";
 import {FlowBranchModel} from "./flowBranch.model";
 
 

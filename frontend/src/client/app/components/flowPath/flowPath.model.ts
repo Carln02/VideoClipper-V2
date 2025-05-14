@@ -23,8 +23,6 @@ export class FlowPathModel extends YComponentModel {
 
         this.entriesModel.onAdded = () => this.entryCardHandler?.updateCardsModel(this.entriesModel);
         this.entriesModel.onDeleted = () => this.entryCardHandler?.updateCardsModel(this.entriesModel);
-
-
     }
 
     public initialize(blockKey: MvcBlockKeyType<"map"> = this.defaultBlockKey) {
@@ -57,7 +55,7 @@ export class FlowPathModel extends YComponentModel {
     }
 
     public get branchIdsArray(): string[] {
-        return this.branchIds.toArray();
+        return this.branchIds?.toArray();
     }
 
     public get cardIds(): YArray<string> {

@@ -1475,7 +1475,7 @@ let Card = class Card extends _branchingNode_branchingNode__WEBPACK_IMPORTED_MOD
         this.mvc.generate({
             viewConstructor: _card_view__WEBPACK_IMPORTED_MODULE_4__.CardView,
             modelConstructor: _card_model__WEBPACK_IMPORTED_MODULE_3__.CardModel,
-            data: properties.data
+            data: properties.data,
         });
         this.renderer.card = this;
     }
@@ -1622,7 +1622,6 @@ class CardView extends _branchingNode_branchingNode_view__WEBPACK_IMPORTED_MODUL
         });
         this._timeline = new _timeline_timeline__WEBPACK_IMPORTED_MODULE_5__.Timeline({
             screenManager: this.element.screenManager,
-            data: this.model.syncedClips,
             card: this.element,
             renderer: this.renderer,
             icon: "chevron",
@@ -1718,8 +1717,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   ClipModel: () => (/* binding */ ClipModel)
 /* harmony export */ });
-/* harmony import */ var _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../yManagement/yModel/types/yComponentModel */ "./frontend/src/yManagement/yModel/types/yComponentModel.ts");
-/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+/* harmony import */ var _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../yManagement/yModel/types/yComponentModel */ "./frontend/src/yManagement/yModel/types/yComponentModel.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1731,7 +1730,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 
-class ClipModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_0__.YComponentModel {
+class ClipModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_1__.YComponentModel {
     constructor() {
         super(...arguments);
         this._videoDuration = null;
@@ -1742,7 +1741,8 @@ class ClipModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
     }
     set data(value) {
         super.data = value;
-        _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_1__.YUtilities.deepObserveAny(this.data, () => this.fireCallback("reload_thumbnail"), "startTime", "endTime", "backgroundFill", "mediaId", "content");
+        //TODO MAKE IT TOGGLEABLE
+        _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__.YUtilities.deepObserveAny(this.data, () => this.fireCallback("reload_thumbnail"), "startTime", "endTime", "backgroundFill", "mediaId", "content");
     }
     get metadata() {
         return this._metadata;
@@ -1917,13 +1917,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 /* harmony import */ var _clip_view__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./clip.view */ "./frontend/src/client/app/components/clip/clip.view.ts");
 /* harmony import */ var _clip_model__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./clip.model */ "./frontend/src/client/app/components/clip/clip.model.ts");
-/* harmony import */ var _clip_textHandler__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./clip.textHandler */ "./frontend/src/client/app/components/clip/clip.textHandler.ts");
-/* harmony import */ var _clipThumbnailController__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./clipThumbnailController */ "./frontend/src/client/app/components/clip/clipThumbnailController.ts");
-/* harmony import */ var _component_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../component/component */ "./frontend/src/client/app/components/component/component.ts");
+/* harmony import */ var _clipThumbnailController__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./clipThumbnailController */ "./frontend/src/client/app/components/clip/clipThumbnailController.ts");
+/* harmony import */ var _basicComponents_movableComponent_movableComponent__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../basicComponents/movableComponent/movableComponent */ "./frontend/src/client/app/components/basicComponents/movableComponent/movableComponent.ts");
+/* harmony import */ var _clip_textHandler__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./clip.textHandler */ "./frontend/src/client/app/components/clip/clip.textHandler.ts");
 /* harmony import */ var _textElement_textElement__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../textElement/textElement */ "./frontend/src/client/app/components/textElement/textElement.ts");
-/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+/* harmony import */ var _component_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../component/component */ "./frontend/src/client/app/components/component/component.ts");
 /* harmony import */ var _utils_random__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../../utils/random */ "./frontend/src/client/utils/random.ts");
-/* harmony import */ var _basicComponents_movableComponent_movableComponent__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../basicComponents/movableComponent/movableComponent */ "./frontend/src/client/app/components/basicComponents/movableComponent/movableComponent.ts");
+/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1951,17 +1951,17 @@ var Clip_1;
 
 
 
-let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MODULE_6__.VcComponent {
+let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MODULE_8__.VcComponent {
     constructor(properties) {
-        super(properties);
+        super(Object.assign(Object.assign({}, properties), { generate: false }));
         this.onMediaDataChanged = () => { };
         this.timeline = properties.timeline;
         this.mvc.generate({
             viewConstructor: _clip_view__WEBPACK_IMPORTED_MODULE_2__.ClipView,
             modelConstructor: _clip_model__WEBPACK_IMPORTED_MODULE_3__.ClipModel,
             data: properties.data,
-            handlerConstructors: [_clip_textHandler__WEBPACK_IMPORTED_MODULE_4__.ClipTextHandler],
-            controllerConstructors: [_clipThumbnailController__WEBPACK_IMPORTED_MODULE_5__.ClipThumbnailController]
+            handlerConstructors: [_clip_textHandler__WEBPACK_IMPORTED_MODULE_6__.ClipTextHandler],
+            controllerConstructors: [_clipThumbnailController__WEBPACK_IMPORTED_MODULE_4__.ClipThumbnailController]
         });
         this.mvc.emitter.add("mediaId", (value) => __awaiter(this, void 0, void 0, function* () {
             this.model.updateMediaData(yield this.screenManager.MediaManager.getMedia(value));
@@ -1984,15 +1984,12 @@ let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MO
             data.backgroundFill = "#FFFFFF";
         if (!data.color)
             data.color = (0,_utils_random__WEBPACK_IMPORTED_MODULE_9__.randomColor)();
-        const contentArray = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_8__.YUtilities.createYArray([]);
+        const contentArray = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__.YUtilities.createYArray([]);
         (_a = data.content) === null || _a === void 0 ? void 0 : _a.forEach((content) => contentArray.push([_textElement_textElement__WEBPACK_IMPORTED_MODULE_7__.TextElement.createData(content)]));
         data.content = contentArray;
-        return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_8__.YUtilities.createYMap(data);
+        return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__.YUtilities.createYMap(data);
     }
     //Getters and setters
-    get card() {
-        return this.timeline.card;
-    }
     /**
      * @description Whether the element is selected or not. Setting it will accordingly toggle the "selected" CSS
      * class on the element and update the UI.
@@ -2001,8 +1998,12 @@ let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MO
         return super.selected;
     }
     set selected(value) {
+        var _a;
         super.selected = value;
-        this.view.showHandles(value);
+        (_a = this.view) === null || _a === void 0 ? void 0 : _a.showHandles(value);
+    }
+    get card() {
+        return this.timeline.card;
     }
     get uri() {
         return this.model.uri;
@@ -2055,7 +2056,7 @@ let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MO
     /**
      * @function clone
      * @description Creates a clone of this clip.
-     * @returns {Clip} - The clone.
+     * @returns {HeadlessClip} - The clone.
      */
     clone() {
         const clone = new Clip_1({ timeline: this.timeline, data: this.data, screenManager: this.screenManager });
@@ -2075,8 +2076,8 @@ let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MO
     cloneAndMove(e) {
         const clone = this.clone();
         this.setStyle("opacity", "0.4");
-        const moveableClone = new _basicComponents_movableComponent_movableComponent__WEBPACK_IMPORTED_MODULE_10__.MovableComponent(clone, this, { parent: this.screenManager.canvas.content });
-        moveableClone.translation = e.scaledPosition;
+        const moveableClone = new _basicComponents_movableComponent_movableComponent__WEBPACK_IMPORTED_MODULE_5__.MovableComponent(clone, this, { parent: this.screenManager.canvas.content });
+        moveableClone.translation = this.timeline.scaled ? e.scaledPosition : e.position;
         return moveableClone;
     }
 };
@@ -2100,8 +2101,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   ClipView: () => (/* binding */ ClipView)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _managers_documentManager_documentManager_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../managers/documentManager/documentManager.types */ "./frontend/src/client/app/managers/documentManager/documentManager.types.ts");
-
 
 class ClipView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
     /**
@@ -2147,8 +2146,8 @@ class ClipView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
     dragHandle(side, e) {
         var _a;
         e.stopImmediatePropagation();
-        const delta = (this.element.screenManager.currentType == _managers_documentManager_documentManager_types__WEBPACK_IMPORTED_MODULE_1__.DocumentScreens.canvas ? e.scaledDeltaPosition.x
-            : e.deltaPosition.x) / ((_a = this.element.timeline) === null || _a === void 0 ? void 0 : _a.pixelsPerSecondUnit);
+        const delta = (this.element.timeline.scaled ? e.scaledDeltaPosition.x : e.deltaPosition.x)
+            / ((_a = this.element.timeline) === null || _a === void 0 ? void 0 : _a.pixelsPerSecondUnit);
         if (side == "left")
             this.model.startTime += delta;
         else
@@ -2787,10 +2786,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 /* harmony import */ var _flowBranch_flowBranch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../flowBranch/flowBranch */ "./frontend/src/client/app/components/flowBranch/flowBranch.ts");
-/* harmony import */ var _flowEntry_flowEntry_model__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../flowEntry/flowEntry.model */ "./frontend/src/client/app/components/flowEntry/flowEntry.model.ts");
-/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
-/* harmony import */ var _ungap_structured_clone__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @ungap/structured-clone */ "./node_modules/@ungap/structured-clone/esm/index.js");
-/* harmony import */ var _flowPath_flowPath_model__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../flowPath/flowPath.model */ "./frontend/src/client/app/components/flowPath/flowPath.model.ts");
+/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+/* harmony import */ var _ungap_structured_clone__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @ungap/structured-clone */ "./node_modules/@ungap/structured-clone/esm/index.js");
+/* harmony import */ var _flowPath_flowPath_model__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../flowPath/flowPath.model */ "./frontend/src/client/app/components/flowPath/flowPath.model.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -2800,7 +2798,6 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
 
 
 
@@ -2847,23 +2844,23 @@ class FlowBranchesHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.T
             const parentBranchId = p.branchId;
             const entryIndex = p.entryIndex;
             const parentBranch = this.model.branchHandler.getBranchById(parentBranchId);
-            const originalEntry = new _flowEntry_flowEntry_model__WEBPACK_IMPORTED_MODULE_2__.FlowEntryModel(parentBranch.getEntry(p.entryIndex));
+            const originalEntry = parentBranch.getEntry(p.entryIndex);
             const splitPointIndex = p.pointIndex != undefined ? p.pointIndex : Math.floor(originalEntry.points.length - 1 / 2);
             const originalEntries = parentBranch.entriesData.toJSON();
             const { beforeSplit, splitEntry, afterSplit } = originalEntry.splitAtPoint(splitPointIndex, nodeId, branchPosition
                 ? new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point(this.model.intersectionHandler.closestPointOnPath(branchPosition, 200).point).object
                 : originalEntry.points[splitPointIndex]);
-            parentBranch.spliceEntries(entryIndex - 1, undefined, (0,_ungap_structured_clone__WEBPACK_IMPORTED_MODULE_5__["default"])(beforeSplit));
-            const newChildId = yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_3__.YUtilities.addInYMap(_flowBranch_flowBranch__WEBPACK_IMPORTED_MODULE_1__.FlowBranch.createData({
-                entries: (0,_ungap_structured_clone__WEBPACK_IMPORTED_MODULE_5__["default"])([afterSplit, ...originalEntries.slice(entryIndex + 1)])
+            parentBranch.spliceEntries(entryIndex - 1, undefined, (0,_ungap_structured_clone__WEBPACK_IMPORTED_MODULE_4__["default"])(beforeSplit));
+            const newChildId = yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_2__.YUtilities.addInYMap(_flowBranch_flowBranch__WEBPACK_IMPORTED_MODULE_1__.FlowBranch.createData({
+                entries: (0,_ungap_structured_clone__WEBPACK_IMPORTED_MODULE_4__["default"])([afterSplit, ...originalEntries.slice(entryIndex + 1)])
             }), this.model.branchesModel.data);
             if (this.model.currentBranchId == parentBranchId)
                 this.model.currentBranchId = newChildId;
             // this.getBranchById(newChildId).setConnectedBranches(parentBranch.connectedBranches);
             // parentBranch.setConnectedBranches([newChildId]);
             if (createThirdBranch) {
-                this.model.currentBranchId = yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_3__.YUtilities.addInYMap(_flowBranch_flowBranch__WEBPACK_IMPORTED_MODULE_1__.FlowBranch.createData({
-                    entries: [(0,_ungap_structured_clone__WEBPACK_IMPORTED_MODULE_5__["default"])(splitEntry)],
+                this.model.currentBranchId = yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_2__.YUtilities.addInYMap(_flowBranch_flowBranch__WEBPACK_IMPORTED_MODULE_1__.FlowBranch.createData({
+                    entries: [(0,_ungap_structured_clone__WEBPACK_IMPORTED_MODULE_4__["default"])(splitEntry)],
                     overwriting: isOverwritingSibling ? newChildId : undefined,
                 }), this.model.branchesModel.data);
                 // parentBranch.addConnectedBranch(this.model.currentBranchId);
@@ -2906,7 +2903,7 @@ class FlowBranchesHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.T
             parentBranch.addConnectedBranch(secondChildBranchId);
         this.model.tags.forEach(tag => {
             tag.pathsArray.forEach((pathData, index) => {
-                const path = new _flowPath_flowPath_model__WEBPACK_IMPORTED_MODULE_4__.FlowPathModel(pathData);
+                const path = new _flowPath_flowPath_model__WEBPACK_IMPORTED_MODULE_3__.FlowPathModel(pathData);
                 const parentBranchIndex = path.branchIdsArray.indexOf(parentBranchId);
                 if (parentBranchIndex < 0)
                     return;
@@ -2980,8 +2977,10 @@ class FlowCleaningHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.T
      */
     removeUnnecessaryBranchesOrFlow() {
         for (const branch of this.model.branches) {
-            if (branch.checkIfUnnecessary())
+            if (branch.checkIfUnnecessary()) {
+                branch.clearDrawing();
                 this.model.branchHandler.removeBranch(branch);
+            }
         }
         // TODO MOVE TO DOCUMENT MANAGER
         // // Delete the flow if it has no branches
@@ -3376,49 +3375,6 @@ let Flow = class Flow extends _component_component__WEBPACK_IMPORTED_MODULE_8__.
     get svg() {
         return this.view.svg;
     }
-    // public static async create(p: Point, nodeId: string): Promise<Flow> {
-    //     this.root.counters.flows++;
-    //     const defaultName = "Flow " + this.root.counters.flows;
-    //     const data: SyncedFlowData = {
-    //         defaultName: defaultName,
-    //         flowBranches: [{
-    //             flowEntries: [{startNodeId: nodeId, endNodeId: nodeId, points: [p.object]}],
-    //             childBranches: []
-    //         }],
-    //         flowTags: [{
-    //             nodeId: nodeId,
-    //             namedPaths: [{
-    //                 name: defaultName,
-    //                 index: 1,
-    //                 branchIndices: [0]
-    //             }]
-    //         }]
-    //     };
-    //
-    //     const id = await super.createInObject(data, this.root.flows);
-    //     //TODO MIGHT CAUSE ERROR DEPENDING ON EXEC TIME (IF CALLBACKS FIRED LATER) -- TO CHECK
-    //     return this.root.flows[id].getBoundObjectOfType(Flow);
-    // }
-    setupCallbacks() {
-        // this.data.flowTags.bind(YProxyEventName.entryChanged,
-        //     (newValue: SyncedFlowTag, oldValue: SyncedFlowTag, _isLocal, path: YPath) => {
-        //         if (!newValue && !oldValue) return;
-        //
-        //         const key = path[path.length - 1];
-        //         const index = typeof key == "number" ? key : Number.parseInt(key);
-        //
-        //         if (!newValue) {
-        //             this.flowTagsElements[index]?.destroy();
-        //             this.flowTagsElements.splice(index, 1);
-        //         } else if (!oldValue) {
-        //             const flowTag = new FlowTag(this, newValue);
-        //             this.flowTagsElements.splice(index, 0, flowTag);
-        //         } else {
-        //             const flowTag = this.flowTagsElements[index];
-        //             if (flowTag) flowTag.data = newValue;
-        //         }
-        //     }, this);
-    }
     get branches() {
         return this.model.branches;
     }
@@ -3427,6 +3383,9 @@ let Flow = class Flow extends _component_component__WEBPACK_IMPORTED_MODULE_8__.
     }
     get currentBranchData() {
         return this.currentBranch.data;
+    }
+    getBranchById(id) {
+        return this.model.branchHandler.getBranchById(id);
     }
     /**
      * @description Finds the last flow entry inside the given node's ID
@@ -3565,33 +3524,31 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   FlowBranchCleaningHandler: () => (/* binding */ FlowBranchCleaningHandler)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _flowEntry_flowEntry_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../flowEntry/flowEntry.model */ "./frontend/src/client/app/components/flowEntry/flowEntry.model.ts");
-
 
 class FlowBranchCleaningHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
     checkIfUnnecessary() {
-        const entriesArray = this.model.entriesArray;
+        const entriesArray = this.model.entries;
         //If less than 2 entries --> unnecessary
         if (entriesArray.length < 2)
             return true;
         //Otherwise, if more than 2 entries --> keep
         else if (entriesArray.length > 2)
             return false;
-        const firstEntry = new _flowEntry_flowEntry_model__WEBPACK_IMPORTED_MODULE_1__.FlowEntryModel(entriesArray[0]);
-        const secondEntry = new _flowEntry_flowEntry_model__WEBPACK_IMPORTED_MODULE_1__.FlowEntryModel(entriesArray[1]);
         //If 2 entries that do not each belong to a node --> unnecessary
-        return firstEntry.startNodeId != firstEntry.endNodeId || secondEntry.startNodeId != secondEntry.endNodeId;
+        return (!entriesArray[0].startNodeId || entriesArray[0].startNodeId.length === 0)
+            || (!entriesArray[1].startNodeId || entriesArray[1].startNodeId.length === 0)
+            || entriesArray[0].startNodeId != entriesArray[0].endNodeId
+            || entriesArray[1].startNodeId != entriesArray[1].endNodeId;
     }
     endBranch() {
         //Clear temporary point
         this.model.temporaryPoint = null;
-        const entriesArray = this.model.entriesArray;
-        if (entriesArray.length < 2)
-            return;
-        const lastEntry = new _flowEntry_flowEntry_model__WEBPACK_IMPORTED_MODULE_1__.FlowEntryModel(entriesArray[entriesArray.length - 1]);
+        const entriesArray = this.model.entries;
+        // if (entriesArray.length < 2) return;
+        const lastEntry = entriesArray[entriesArray.length - 1];
         //If flow ends with an entry that doesn't have an end node --> the flow was stopped outside a node --> remove
         //the last entry and save
-        if (lastEntry.endNodeId == undefined)
+        if (!lastEntry.endNodeId || lastEntry.endNodeId === "")
             this.model.entryHandler.removeEntryAt(entriesArray.length - 1);
     }
 }
@@ -3663,64 +3620,86 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   FlowBranchEntryHandler: () => (/* binding */ FlowBranchEntryHandler)
 /* harmony export */ });
-/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../yManagement/yManagement.types */ "./frontend/src/yManagement/yManagement.types.ts");
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../yManagement/yManagement.types */ "./frontend/src/yManagement/yManagement.types.ts");
+/* harmony import */ var _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../yManagement/yModel/types/yManagerModel */ "./frontend/src/yManagement/yModel/types/yManagerModel.ts");
+/* harmony import */ var _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../flowEntry/flowEntry */ "./frontend/src/client/app/components/flowEntry/flowEntry.ts");
 
 
 
-class FlowBranchEntryHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboHandler {
+
+class FlowBranchEntryHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
+    constructor(model) {
+        super(model);
+        this.entriesModel = new _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_2__.YManagerModel();
+        this.entriesModel.onAdded = entry => new _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_3__.FlowEntry(entry);
+    }
+    setData(data, initialize = false) {
+        this.entriesModel.data = data;
+    }
+    initializeModel() {
+        this.entriesModel.initialize();
+    }
+    getEntries() {
+        return this.entriesModel.getAllComponents();
+    }
     getEntry(index) {
-        const length = this.model.entriesArray.length;
-        if (index === undefined || index === null || index < 0)
-            index = 0;
-        if (index > length - 1)
-            index = length - 1;
-        return this.model.entries.get(index);
+        return this.entriesModel.getInstance(index);
     }
     createEntry(data) {
-        return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__.YUtilities.createYMap({
-            startNodeId: data.startNodeId,
-            endNodeId: data.endNodeId,
-            points: data.points || []
-        });
+        return _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_3__.FlowEntry.createData(data);
     }
     addEntry(entry, index) {
-        if (index === undefined || index === null || index > this.model.entriesArray.length - 1)
-            this.model.entries.push([entry]);
+        if (entry instanceof _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_3__.FlowEntry)
+            entry = entry.data;
+        if (index === undefined || index === null || index > this.model.entriesDataArray.length - 1) {
+            this.model.entriesData.push([entry]);
+        }
         else {
             if (index < 0)
                 index = 0;
-            this.model.entries.insert(index, [entry]);
+            this.model.entriesData.insert(index, [entry]);
         }
     }
     addNewEntry(data, index) {
-        this.addEntry(data instanceof _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_2__.YMap ? data : this.createEntry(data), index);
+        this.addEntry((data instanceof _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_1__.YMap || data instanceof _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_3__.FlowEntry) ? data : this.createEntry(data), index);
     }
     removeEntryAt(index) {
-        const length = this.model.entriesArray.length;
+        const length = this.model.entriesDataArray.length;
         if (index === undefined || index === null || index > length - 1)
             index = length - 1;
         else if (index < 0)
             index = 0;
-        this.model.entries.delete(index);
+        this.model.entriesData.delete(index);
     }
     removeEntry(entry) {
-        const array = this.model.entriesArray;
-        if (!array.includes(entry))
+        const array = this.model.entriesDataArray;
+        if (!array.includes(entry.data))
             return;
-        this.removeEntryAt(array.indexOf(entry));
+        this.removeEntryAt(array.indexOf(entry.data));
     }
     setEntry(entry, index) {
         this.removeEntryAt(index);
-        this.addEntry(entry, index);
+        this.addEntry(entry.data, index);
     }
     spliceEntries(start, deleteCount, ...entries) {
         if (deleteCount == undefined)
-            deleteCount = this.model.entries.length - start;
+            deleteCount = this.model.entriesData.length - start;
         for (let i = start + deleteCount - 1; i > start; i--)
             this.removeEntryAt(i);
         entries === null || entries === void 0 ? void 0 : entries.forEach(entry => this.addNewEntry(entry), start);
+    }
+    getNodesIds() {
+        const ids = [];
+        const pushIdIfValid = (id) => {
+            if (id !== undefined && (ids.length <= 0 || ids[ids.length - 1] !== id))
+                ids.push(id);
+        };
+        this.model.entriesDataArray.forEach((entry) => {
+            pushIdIfValid(entry.get("startNodeId"));
+            pushIdIfValid(entry.get("endNodeId"));
+        });
+        return ids;
     }
 }
 
@@ -3847,15 +3826,24 @@ class FlowBranchModel extends _yManagement_yModel_types_yComponentModel__WEBPACK
         super.data = value;
         _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_2__.YUtilities.deepObserveAny(this.data, () => this.fireCallback("__redraw"), "entries");
     }
+    initialize(blockKey = this.defaultBlockKey) {
+        var _a;
+        super.initialize(blockKey);
+        (_a = this.entryHandler) === null || _a === void 0 ? void 0 : _a.setData(this.entriesData);
+        // this.entryHandler.initializeModel();
+    }
     get path() {
         return this.pathSelection.node();
     }
-    get entries() {
+    get entriesData() {
         return this.getData("entries");
     }
-    get entriesArray() {
+    get entriesDataArray() {
         var _a;
-        return (_a = this.entries) === null || _a === void 0 ? void 0 : _a.toArray();
+        return (_a = this.entriesData) === null || _a === void 0 ? void 0 : _a.toArray();
+    }
+    get entries() {
+        return this.entryHandler.getEntries();
     }
     get connectedBranches() {
         return this.getData("connectedBranches");
@@ -3879,7 +3867,7 @@ class FlowBranchModel extends _yManagement_yModel_types_yComponentModel__WEBPACK
     }
     get points() {
         var _a;
-        const points = (_a = this.entriesArray) === null || _a === void 0 ? void 0 : _a.flatMap(cardWithConnections => cardWithConnections.get("points")).filter((point) => !!point).map((point) => new turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Point(point));
+        const points = (_a = this.entriesDataArray) === null || _a === void 0 ? void 0 : _a.flatMap(cardWithConnections => cardWithConnections.get("points")).filter((point) => !!point).map((point) => new turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Point(point));
         if (this.temporaryPoint)
             points.push(this.temporaryPoint);
         return points;
@@ -3940,8 +3928,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   FlowBranchPointHandler: () => (/* binding */ FlowBranchPointHandler)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _flowEntry_flowEntry_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../flowEntry/flowEntry.model */ "./frontend/src/client/app/components/flowEntry/flowEntry.model.ts");
-
 
 class FlowBranchPointHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
     /**
@@ -3963,16 +3949,14 @@ class FlowBranchPointHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
         //Clear temporary point and update flow's lastNode
         this.model.temporaryPoint = null;
         this.model.lastNode = nodeId;
-        //Get data and flow entries (for ease of use)
-        const flowEntries = this.model.entriesArray;
         //Create an entry if none exist
-        if (flowEntries.length == 0) {
+        if (this.model.entries.length == 0) {
             if (!nodeId)
                 return;
             this.model.entryHandler.addNewEntry({ startNodeId: nodeId, endNodeId: nodeId });
         }
         //Get last entry
-        const currentEntry = new _flowEntry_flowEntry_model__WEBPACK_IMPORTED_MODULE_1__.FlowEntryModel(flowEntries[flowEntries.length - 1]);
+        const currentEntry = this.model.entries[this.model.entries.length - 1];
         //Now adding the point...
         //Point inside of same last node --> just add it
         if (currentEntry.startNodeId == nodeId && currentEntry.endNodeId == nodeId)
@@ -4029,8 +4013,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   FlowBranchSearchHandler: () => (/* binding */ FlowBranchSearchHandler)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _flowEntry_flowEntry_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../flowEntry/flowEntry.model */ "./frontend/src/client/app/components/flowEntry/flowEntry.model.ts");
-
 
 class FlowBranchSearchHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
     /**
@@ -4038,12 +4020,12 @@ class FlowBranchSearchHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
      * @param nodeId
      */
     findNodeEntry(nodeId) {
-        const flowEntries = this.model.entriesArray;
+        const flowEntries = this.model.entries;
         if (!flowEntries)
             return null;
         //Loop on entries
         for (let entryIndex = 0; entryIndex < flowEntries.length; entryIndex++) {
-            const entry = new _flowEntry_flowEntry_model__WEBPACK_IMPORTED_MODULE_1__.FlowEntryModel(flowEntries[entryIndex]);
+            const entry = flowEntries[entryIndex];
             //If entry is inside the given node --> store it
             if (entry.startNodeId == nodeId && entry.endNodeId == nodeId) {
                 return {
@@ -4061,13 +4043,13 @@ class FlowBranchSearchHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
      * @param nodeId
      */
     findNodeEntries(nodeId) {
-        const flowEntries = this.model.entriesArray;
+        const flowEntries = this.model.entries;
         if (!flowEntries)
             return [];
         const results = [];
         //Loop on entries
         for (let entryIndex = 0; entryIndex < flowEntries.length; entryIndex++) {
-            const entry = new _flowEntry_flowEntry_model__WEBPACK_IMPORTED_MODULE_1__.FlowEntryModel(flowEntries[entryIndex]);
+            const entry = flowEntries[entryIndex];
             //If entry is inside the given node --> store it
             if (entry.startNodeId == nodeId && entry.endNodeId == nodeId) {
                 results.push({
@@ -4088,10 +4070,10 @@ class FlowBranchSearchHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
         //Initialize closest point data and minimum distance
         let closestPoint = null;
         let minDistance = Infinity;
-        const flowEntries = this.model.entriesArray;
+        const flowEntries = this.model.entries;
         //Loop on all entries of the flow
         for (let entryIndex = flowEntries.length - 1; entryIndex >= 0; entryIndex--) {
-            const entry = new _flowEntry_flowEntry_model__WEBPACK_IMPORTED_MODULE_1__.FlowEntryModel(flowEntries[entryIndex]);
+            const entry = flowEntries[entryIndex];
             //Loop on points
             entry.points.forEach((p, index) => {
                 //Compute distance
@@ -4114,9 +4096,9 @@ class FlowBranchSearchHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
     findPointFromIndex(index) {
         let count = 0;
         let pointData = null;
-        const flowEntries = this.model.entriesArray;
+        const flowEntries = this.model.entries;
         for (let entryIndex = 0; entryIndex < flowEntries.length; entryIndex++) {
-            const entry = new _flowEntry_flowEntry_model__WEBPACK_IMPORTED_MODULE_1__.FlowEntryModel(flowEntries[entryIndex]);
+            const entry = flowEntries[entryIndex];
             if (count + entry.points.length < index) {
                 count += entry.points.length;
                 continue;
@@ -4211,11 +4193,14 @@ class FlowBranch extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.TurboProxi
     get flow() {
         return this.model.flow;
     }
+    get entriesData() {
+        return this.model.entriesData;
+    }
     get entries() {
         return this.model.entries;
     }
     get entriesArray() {
-        return this.model.entriesArray;
+        return this.model.entriesDataArray;
     }
     get connectedBranches() {
         return this.model.connectedBranches;
@@ -4232,11 +4217,17 @@ class FlowBranch extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.TurboProxi
     redraw(force = false) {
         return this.view.redraw(force);
     }
+    clearDrawing() {
+        return this.view.clearDrawing();
+    }
     getEntry(index) {
         return this.model.entryHandler.getEntry(index);
     }
     spliceEntries(start, deleteCount, ...entries) {
         return this.model.entryHandler.spliceEntries(start, deleteCount, ...entries);
+    }
+    getNodesIds() {
+        return this.model.entryHandler.getNodesIds();
     }
     /**
      * @description Adds the provided point to the flow with the given ID. The node ID indicates the ID of the node
@@ -4303,6 +4294,10 @@ class FlowBranch extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.TurboProxi
     addConnectedBranch(...branches) {
         return this.model.connectionHandler.addConnectedBranch(...branches);
     }
+    getCardsInBranch() {
+        // const
+        // return this.model.entries.map()
+    }
 }
 
 
@@ -4320,8 +4315,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   FlowBranchUpdateHandler: () => (/* binding */ FlowBranchUpdateHandler)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _flowEntry_flowEntry_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../flowEntry/flowEntry.model */ "./frontend/src/client/app/components/flowEntry/flowEntry.model.ts");
-
 
 class FlowBranchUpdateHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
     /**
@@ -4332,9 +4325,9 @@ class FlowBranchUpdateHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
     updateAfterMovingNode(nodeId, deltaPosition) {
         if (!nodeId)
             return;
-        const flowEntries = this.model.entriesArray;
+        const flowEntries = this.model.entries;
         for (let i = 0; i < flowEntries.length; i++) {
-            const entry = new _flowEntry_flowEntry_model__WEBPACK_IMPORTED_MODULE_1__.FlowEntryModel(flowEntries[i]);
+            const entry = flowEntries[i];
             const points = entry.points;
             if (entry.startNodeId != nodeId && entry.endNodeId != nodeId)
                 continue;
@@ -4362,9 +4355,9 @@ class FlowBranchUpdateHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
     updateOnDetachingNode(nodeId) {
         if (!nodeId)
             return;
-        const flowEntries = this.model.entriesArray;
+        const flowEntries = this.model.entries;
         for (let i = flowEntries.length - 1; i >= 0; i--) {
-            const entry = new _flowEntry_flowEntry_model__WEBPACK_IMPORTED_MODULE_1__.FlowEntryModel(flowEntries[i]);
+            const entry = flowEntries[i];
             // If the entry is not connected to the card on any end --> skip it
             if (entry.startNodeId != nodeId && entry.endNodeId != nodeId)
                 continue;
@@ -4412,7 +4405,11 @@ class FlowBranchView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboV
         this.drawPath();
         //TODO TRIGGER RECOMPUTING OF BOUNDING BOX
     }
-    clear() {
+    clearDrawing() {
+        clearTimeout(this.model.chevronTimer);
+        d3__WEBPACK_IMPORTED_MODULE_1__.select(this.element.element).selectAll("*").remove();
+    }
+    clearChevrons() {
         d3__WEBPACK_IMPORTED_MODULE_1__.select(this.element.element).selectAll(".chevron").remove();
     }
     /**
@@ -4421,7 +4418,7 @@ class FlowBranchView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboV
      */
     drawPath() {
         const points = this.model.points;
-        this.clear();
+        this.clearChevrons();
         if (points.length < 2)
             return;
         const isOverwriting = this.model.isOverwriting;
@@ -4559,6 +4556,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../yManagement/yManagement.types */ "./frontend/src/yManagement/yManagement.types.ts");
 /* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+/* harmony import */ var _flowEntry_model__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./flowEntry.model */ "./frontend/src/client/app/components/flowEntry/flowEntry.model.ts");
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+
+
 
 
 class FlowEntry {
@@ -4574,6 +4575,118 @@ class FlowEntry {
         if (!data.points)
             data.points = [];
         return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_1__.YUtilities.createYMap(data);
+    }
+    constructor(data) {
+        this.mvc = new turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.MvcHandler({
+            modelConstructor: _flowEntry_model__WEBPACK_IMPORTED_MODULE_2__.FlowEntryModel,
+            data: data,
+            generate: true
+        });
+    }
+    get model() {
+        return this.mvc.model;
+    }
+    get data() {
+        return this.model.data;
+    }
+    set data(data) {
+        this.model.data = data;
+    }
+    get startNodeId() {
+        return this.model.startNodeId;
+    }
+    set startNodeId(value) {
+        this.model.startNodeId = value;
+    }
+    get endNodeId() {
+        return this.model.endNodeId;
+    }
+    set endNodeId(value) {
+        this.model.endNodeId = value;
+    }
+    get points() {
+        return this.model.points;
+    }
+    addPoint(point) {
+        return this.model.points.push(point);
+    }
+    removePoint(index) {
+        return this.model.removePoint(index);
+    }
+    incrementPoint(index, increment) {
+        return this.model.incrementPoint(index, increment);
+    }
+    /**
+     * Splits an entry at the given point index into before/after + a new "split" entry.
+     * Returns [beforeSplitEntry, splitEntry, afterSplitEntry].
+     */
+    splitAtPoint(splitPointIndex, nodeId, splitPoint) {
+        // Create before/after
+        const beforeSplit = {
+            startNodeId: this.startNodeId,
+            endNodeId: nodeId,
+            points: [...this.points.slice(0, splitPointIndex), splitPoint]
+        };
+        const afterSplit = {
+            startNodeId: nodeId,
+            endNodeId: this.endNodeId,
+            points: [splitPoint, ...this.points.slice(splitPointIndex + 1)]
+        };
+        // The newly inserted "middle" entry (splitEntry).
+        const splitEntry = {
+            startNodeId: nodeId,
+            endNodeId: nodeId,
+            points: [splitPoint]
+        };
+        return { beforeSplit: beforeSplit, splitEntry: splitEntry, afterSplit: afterSplit };
+    }
+}
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/app/components/flowPath/flowPath.entryCardHandler.ts":
+/*!**********************************************************************************!*\
+  !*** ./frontend/src/client/app/components/flowPath/flowPath.entryCardHandler.ts ***!
+  \**********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FlowPathEntryCardHandler: () => (/* binding */ FlowPathEntryCardHandler)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+
+class FlowPathEntryCardHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
+    pushIdIfValid(newData, id) {
+        if (id === undefined)
+            return false;
+        if (newData.length > 0 && newData[newData.length - 1] === id)
+            return false;
+        newData.push(id);
+        return true;
+    }
+    updateCardsModel(entriesModel) {
+        const newData = [];
+        entriesModel.getAllBlockKeys().forEach(blockKey => {
+            entriesModel.getBlock(blockKey).data.toArray().forEach((entry, id) => {
+                this.pushIdIfValid(newData, entry.get("startNodeId"));
+                this.pushIdIfValid(newData, entry.get("endNodeId"));
+            });
+        });
+        const cardIds = this.model.cardIds;
+        const current = this.model.cardIdsArray;
+        let changeStart = 0;
+        while (changeStart < newData.length &&
+            changeStart < current.length &&
+            newData[changeStart] === current[changeStart]) {
+            changeStart++;
+        }
+        if (changeStart === newData.length && changeStart === current.length)
+            return;
+        cardIds.delete(changeStart, current.length - changeStart);
+        cardIds.insert(changeStart, newData.slice(changeStart));
     }
 }
 
@@ -4592,8 +4705,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   FlowPathModel: () => (/* binding */ FlowPathModel)
 /* harmony export */ });
 /* harmony import */ var _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../yManagement/yModel/types/yComponentModel */ "./frontend/src/yManagement/yModel/types/yComponentModel.ts");
+/* harmony import */ var _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../yManagement/yModel/types/yManagerModel */ "./frontend/src/yManagement/yModel/types/yManagerModel.ts");
+
 
 class FlowPathModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_0__.YComponentModel {
+    constructor(data) {
+        super(data);
+        this.branchIdsModel = new _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_1__.YManagerModel();
+        this.entriesModel = new _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_1__.YManagerModel();
+        this.branchIdsModel.onAdded = (branchId, branchIndex) => { var _a; return this.entriesModel.setBlock((_a = this.flow.getBranchById(branchId)) === null || _a === void 0 ? void 0 : _a.entriesData, branchId, branchIndex); };
+        this.entriesModel.onAdded = () => { var _a; return (_a = this.entryCardHandler) === null || _a === void 0 ? void 0 : _a.updateCardsModel(this.entriesModel); };
+        this.entriesModel.onDeleted = () => { var _a; return (_a = this.entryCardHandler) === null || _a === void 0 ? void 0 : _a.updateCardsModel(this.entriesModel); };
+    }
+    initialize(blockKey = this.defaultBlockKey) {
+        super.initialize(blockKey);
+        if (blockKey === this.defaultBlockKey)
+            this.branchIdsModel.data = this.branchIds;
+    }
     get name() {
         return this.getData("name");
     }
@@ -4613,7 +4741,14 @@ class FlowPathModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_I
         this.setData("branchIds", value);
     }
     get branchIdsArray() {
-        return this.branchIds.toArray();
+        var _a;
+        return (_a = this.branchIds) === null || _a === void 0 ? void 0 : _a.toArray();
+    }
+    get cardIds() {
+        return this.getData("cardIds");
+    }
+    get cardIdsArray() {
+        return this.cardIds.toJSON();
     }
     insertBranchAt(branchId, index) {
         if (index == undefined || index >= this.branchIdsArray.length)
@@ -4621,6 +4756,9 @@ class FlowPathModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_I
         if (index < 0)
             index = 0;
         this.branchIds.insert(index, [branchId]);
+    }
+    get entryCardHandler() {
+        return this.getHandler("entryCard");
     }
 }
 
@@ -4639,17 +4777,90 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   FlowPath: () => (/* binding */ FlowPath)
 /* harmony export */ });
 /* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+/* harmony import */ var _flowPath_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./flowPath.model */ "./frontend/src/client/app/components/flowPath/flowPath.model.ts");
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _flowPath_entryCardHandler__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./flowPath.entryCardHandler */ "./frontend/src/client/app/components/flowPath/flowPath.entryCardHandler.ts");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 
-class FlowPath {
+
+
+
+let FlowPath = class FlowPath extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.TurboSelectEntry {
     static createData(data) {
         if (!data)
             data = {};
         if (!data.name)
             data.name = "Flow Path";
         data.branchIds = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__.YUtilities.createYArray(data.branchIds ? data.branchIds : ["0"]);
+        data.cardIds = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__.YUtilities.createYArray([]);
         return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__.YUtilities.createYMap(data);
     }
-}
+    constructor(properties) {
+        super(properties);
+        this.mvc.generate({
+            modelConstructor: _flowPath_model__WEBPACK_IMPORTED_MODULE_1__.FlowPathModel,
+            handlerConstructors: [_flowPath_entryCardHandler__WEBPACK_IMPORTED_MODULE_3__.FlowPathEntryCardHandler],
+            data: properties.data,
+            initialize: false
+        });
+        this.model.flow = properties.flow;
+        this.mvc.emitter.add("name", () => this.value = this.model.name);
+        this.mvc.initialize();
+        this.initializeUI();
+    }
+    initializeUI() {
+        super.initializeUI();
+        this.setStyle("padding", "6px").setStyle("whiteSpace", "nowrap");
+    }
+    setupUIListeners() {
+        super.setupUIListeners();
+        this.onSelected = (b) => {
+            var _a;
+            if (!b)
+                return;
+            (_a = this.model.flow.branches) === null || _a === void 0 ? void 0 : _a.forEach(branch => { var _a; return branch.highlighted = (_a = this.branchIdsArray) === null || _a === void 0 ? void 0 : _a.includes(branch.dataId); });
+        };
+    }
+    get name() {
+        return this.model.name;
+    }
+    set name(value) {
+        this.model.name = value;
+    }
+    get index() {
+        return this.model.index;
+    }
+    set index(value) {
+        this.model.index = value;
+    }
+    get branchIds() {
+        return this.model.branchIds;
+    }
+    set branchIds(value) {
+        this.model.branchIds = value;
+    }
+    get branchIdsArray() {
+        return this.model.branchIdsArray;
+    }
+    get cardIds() {
+        return this.model.cardIds;
+    }
+    get cardIdsArray() {
+        return this.model.cardIdsArray;
+    }
+    insertBranchAt(branchId, index) {
+        return this.model.insertBranchAt(branchId, index);
+    }
+};
+FlowPath = __decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.define)()
+], FlowPath);
+
 
 
 /***/ }),
@@ -4720,19 +4931,35 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../yManagement/yManagement.types */ "./frontend/src/yManagement/yManagement.types.ts");
 /* harmony import */ var _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../yManagement/yModel/types/yComponentModel */ "./frontend/src/yManagement/yModel/types/yComponentModel.ts");
-/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
-/* harmony import */ var _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../flowPath/flowPath */ "./frontend/src/client/app/components/flowPath/flowPath.ts");
+/* harmony import */ var _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../flowPath/flowPath */ "./frontend/src/client/app/components/flowPath/flowPath.ts");
+/* harmony import */ var _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../yManagement/yModel/types/yManagerModel */ "./frontend/src/yManagement/yModel/types/yManagerModel.ts");
 
 
 
 
 class FlowTagModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_1__.YComponentModel {
+    constructor(data) {
+        super(data);
+        this.onPathAdded = () => { };
+        this.pathsModel = new _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_3__.YManagerModel();
+        this.pathsModel.onAdded = (pathData, index) => {
+            var _a;
+            const path = new _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_2__.FlowPath({ value: pathData.get("name"), flow: this.flow });
+            (_a = this.onPathAdded) === null || _a === void 0 ? void 0 : _a.call(this, path, index);
+            return path;
+        };
+    }
+    initialize(blockKey = this.defaultBlockKey) {
+        super.initialize(blockKey);
+        if (blockKey === this.defaultBlockKey)
+            this.pathsModel.data = this.pathsData;
+    }
     get data() {
         return super.data;
     }
     set data(value) {
         super.data = value;
-        _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_2__.YUtilities.deepObserveAny(this.data, () => this.fireCallback("pathsChanged"), "paths");
+        // YUtilities.deepObserveAny(this.data, () => this.fireCallback("pathsChanged"), "paths");
     }
     get nodeId() {
         return this.getData("nodeId");
@@ -4740,23 +4967,26 @@ class FlowTagModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IM
     set nodeId(value) {
         this.setData("nodeId", value);
     }
-    get paths() {
+    get pathsData() {
         return this.getData("paths");
     }
-    set paths(value) {
+    set pathsData(value) {
         this.setData("paths", value);
     }
-    get pathsArray() {
-        return this.paths.toArray();
+    get pathsDataArray() {
+        return this.pathsData.toArray();
+    }
+    get paths() {
+        return this.pathsModel.getAllComponents();
     }
     insertPath(pathData, index) {
         if (!(pathData instanceof _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_0__.YMap))
-            pathData = _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_3__.FlowPath.createData(pathData);
-        if (index == undefined || index >= this.pathsArray.length)
-            return this.paths.push([pathData]);
+            pathData = _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_2__.FlowPath.createData(pathData);
+        if (index == undefined || index >= this.pathsDataArray.length)
+            return this.pathsData.push([pathData]);
         if (index < 0)
             index = 0;
-        this.paths.insert(index, [pathData]);
+        this.pathsData.insert(index, [pathData]);
     }
 }
 
@@ -4781,7 +5011,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _flowTag_view__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./flowTag.view */ "./frontend/src/client/app/components/flowTag/flowTag.view.ts");
 /* harmony import */ var _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../flowPath/flowPath */ "./frontend/src/client/app/components/flowPath/flowPath.ts");
 /* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
-/* harmony import */ var _flowPath_flowPath_model__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../flowPath/flowPath.model */ "./frontend/src/client/app/components/flowPath/flowPath.model.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -4795,17 +5024,18 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
-
 let FlowTag = class FlowTag extends _component_component__WEBPACK_IMPORTED_MODULE_2__.VcComponent {
     constructor(properties) {
         super(properties);
-        this.flow = properties.flow;
         this.mvc.generate({
             viewConstructor: _flowTag_view__WEBPACK_IMPORTED_MODULE_4__.FlowTagView,
             modelConstructor: _flowTag_model__WEBPACK_IMPORTED_MODULE_3__.FlowTagModel,
-            data: properties.data
+            data: properties.data,
+            initialize: false
         });
-        this.model.paths.toArray().forEach(path => console.log(new _flowPath_flowPath_model__WEBPACK_IMPORTED_MODULE_7__.FlowPathModel(path).branchIds));
+        this.model.flow = properties.flow;
+        this.model.onPathAdded = (path, index) => this.view.addPathEntry(path, index);
+        this.mvc.initialize();
     }
     static createData(data) {
         if (!data)
@@ -4821,10 +5051,10 @@ let FlowTag = class FlowTag extends _component_component__WEBPACK_IMPORTED_MODUL
         return this.screenManager.getNode(this.model.nodeId);
     }
     get paths() {
-        return this.model.paths;
+        return this.model.pathsData;
     }
     get pathsArray() {
-        return this.model.pathsArray;
+        return this.model.pathsDataArray;
     }
     insertPath(pathData, index) {
         return this.model.insertPath(pathData, index);
@@ -4850,39 +5080,43 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   FlowTagView: () => (/* binding */ FlowTagView)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _flowPath_flowPath_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../flowPath/flowPath.model */ "./frontend/src/client/app/components/flowPath/flowPath.model.ts");
+/* harmony import */ var _playback_playback__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../playback/playback */ "./frontend/src/client/app/components/playback/playback.ts");
 
 
 class FlowTagView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
+    addPathEntry(path, index) {
+        console.log(path);
+        this.wheel.addEntry(path, index);
+    }
     setupUIElements() {
         super.setupUIElements();
-        this.wheel = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelectWheel({ direction: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.vertical, values: ["hi"] }).setStyle("margin", 0);
+        this.wheel = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelectWheel({
+            direction: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.vertical,
+            values: [],
+            forceSelection: true,
+        }).setStyle("margin", 0);
+        this.playButton = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboIcon({ icon: "play", classes: "icon" });
     }
     setupUILayout() {
         super.setupUILayout();
-        this.element.addChild(this.wheel);
+        this.element.addChild([this.wheel, this.playButton]);
+    }
+    setupUIListeners() {
+        super.setupUIListeners();
+        this.wheel.onSelect = () => requestAnimationFrame(() => {
+            console.log(this.wheel.entries);
+            console.log(this.wheel.enabledEntries);
+            console.log(this.wheel.selectedEntries);
+            console.log(this.wheel.reifect.getEnabledObjectsData().map(obj => obj.object.deref()));
+        });
+        this.playButton.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, () => this.playPath(this.wheel.selectedEntry));
     }
     setupChangedCallbacks() {
         super.setupChangedCallbacks();
-        this.element.onAttach = () => this.regenerateWheelEntries();
-        this.emitter.add("pathsChanged", () => this.regenerateWheelEntries());
-        this.emitter.add("nodeId", () => requestAnimationFrame(() => this.element.attachedNode.addChild(this.element)));
+        this.emitter.add("nodeId", () => { var _a; return (_a = this.element.attachedNode) === null || _a === void 0 ? void 0 : _a.addChild(this.element); });
     }
-    regenerateWheelEntries() {
-        this.wheel.values = this.model.pathsArray.map(pathData => {
-            const path = new _flowPath_flowPath_model__WEBPACK_IMPORTED_MODULE_1__.FlowPathModel(pathData);
-            return new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelectEntry({ value: path.name,
-                onSelected: (b) => {
-                    if (!b)
-                        return;
-                    this.element.flow.branches.forEach(branch => {
-                        branch.highlighted = path.branchIdsArray.includes(branch.dataId);
-                    });
-                    //TODO this.flow.drawingHandler.highlightBranches(path.branchIndices);
-                }
-            }).setStyle("padding", "6px").setStyle("whiteSpace", "nowrap");
-        });
-        // requestAnimationFrame(() => this.wheel.select(this.wheel.selectedEntry));
+    playPath(path) {
+        new _playback_playback__WEBPACK_IMPORTED_MODULE_1__.Playback({ screenManager: this.element.screenManager, path: path, parent: document.body });
     }
 }
 
@@ -5093,6 +5327,207 @@ class MetadataDrawerView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Tu
     initialize() {
         super.initialize();
         this.tabbedMenu.select("Metadata");
+    }
+}
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/app/components/playback/playback.css":
+/*!******************************************************************!*\
+  !*** ./frontend/src/client/app/components/playback/playback.css ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../../../../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "./node_modules/style-loader/dist/runtime/styleDomAPI.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "./node_modules/style-loader/dist/runtime/insertBySelector.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../../../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "./node_modules/style-loader/dist/runtime/insertStyleElement.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_playback_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../../../../node_modules/css-loader/dist/cjs.js!./playback.css */ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/app/components/playback/playback.css");
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_playback_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_playback_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_playback_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_playback_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/app/components/playback/playback.model.ts":
+/*!***********************************************************************!*\
+  !*** ./frontend/src/client/app/components/playback/playback.model.ts ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   PlaybackModel: () => (/* binding */ PlaybackModel)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+
+class PlaybackModel extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboModel {
+    constructor() {
+        super(...arguments);
+        this.aspectRatio = 1.33;
+    }
+}
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/app/components/playback/playback.ts":
+/*!*****************************************************************!*\
+  !*** ./frontend/src/client/app/components/playback/playback.ts ***!
+  \*****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Playback: () => (/* binding */ Playback)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _playback_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./playback.css */ "./frontend/src/client/app/components/playback/playback.css");
+/* harmony import */ var _playback_view__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./playback.view */ "./frontend/src/client/app/components/playback/playback.view.ts");
+/* harmony import */ var _playback_model__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./playback.model */ "./frontend/src/client/app/components/playback/playback.model.ts");
+/* harmony import */ var _managers_documentManager_documentManager_types__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../managers/documentManager/documentManager.types */ "./frontend/src/client/app/managers/documentManager/documentManager.types.ts");
+/* harmony import */ var _component_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../component/component */ "./frontend/src/client/app/components/component/component.ts");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+
+
+
+
+let Playback = class Playback extends _component_component__WEBPACK_IMPORTED_MODULE_5__.VcComponent {
+    constructor(properties) {
+        super(properties);
+        this.mvc.generate({
+            viewConstructor: _playback_view__WEBPACK_IMPORTED_MODULE_2__.PlaybackView,
+            modelConstructor: _playback_model__WEBPACK_IMPORTED_MODULE_3__.PlaybackModel
+        });
+        this.path = properties.path;
+    }
+    set path(value) {
+        this.view.timeline.cardIds = value.cardIds;
+        console.log(value.cardIdsArray);
+    }
+    get frameWidth() {
+        return this.view.renderer.offsetWidth;
+    }
+    get frameHeight() {
+        return this.view.renderer.offsetHeight;
+    }
+    fillCanvas(fill) {
+        this.view.renderer.setFill(fill);
+    }
+    clear() {
+        this.view.timeline.data = undefined; //TODO idk if gd idea
+        this.screenManager.currentType = _managers_documentManager_documentManager_types__WEBPACK_IMPORTED_MODULE_4__.DocumentScreens.canvas;
+    }
+    snapToClip(clip) {
+        if (clip)
+            this.view.timeline.snapToClosest(clip.dataIndex + 1);
+        else
+            this.view.timeline.snapAtEnd();
+    }
+};
+__decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
+], Playback.prototype, "path", null);
+Playback = __decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-playback")
+], Playback);
+
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/app/components/playback/playback.view.ts":
+/*!**********************************************************************!*\
+  !*** ./frontend/src/client/app/components/playback/playback.view.ts ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   PlaybackView: () => (/* binding */ PlaybackView)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _timeline_timeline__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../timeline/timeline */ "./frontend/src/client/app/components/timeline/timeline.ts");
+/* harmony import */ var _clipRenderer_clipRenderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../clipRenderer/clipRenderer */ "./frontend/src/client/app/components/clipRenderer/clipRenderer.ts");
+
+
+
+class PlaybackView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
+    initialize() {
+        super.initialize();
+        this.resize();
+    }
+    setupUIElements() {
+        super.setupUIElements();
+        this.renderer = new _clipRenderer_clipRenderer__WEBPACK_IMPORTED_MODULE_2__.ClipRenderer({ screenManager: this.element.screenManager, videoProperties: { playsInline: true } });
+        this.timeline = new _timeline_timeline__WEBPACK_IMPORTED_MODULE_1__.Timeline({
+            screenManager: this.element.screenManager,
+            card: null,
+            scaled: false,
+            renderer: this.renderer,
+            side: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.top,
+            icon: "chevron",
+            offset: { [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Open.open]: -4 },
+            initiallyOpen: true
+        });
+    }
+    setupUILayout() {
+        super.setupUILayout();
+        this.element.addChild([this.renderer, this.timeline]);
+    }
+    setupUIListeners() {
+        super.setupUIListeners();
+        window.addEventListener("resize", () => this.resize());
+    }
+    resize() {
+        this.renderer.resize(this.model.aspectRatio);
     }
 }
 
@@ -5817,7 +6252,9 @@ var Scrubber_1;
 
 let Scrubber = Scrubber_1 = class Scrubber extends _component_component__WEBPACK_IMPORTED_MODULE_2__.VcComponent {
     constructor(properties = {}) {
+        var _a;
         super(properties);
+        this.scaled = true;
         //Whether it is currently scrubbing (fired by the user's action)
         this.scrubbing = false;
         if (!Scrubber_1.markingMenu) {
@@ -5825,6 +6262,7 @@ let Scrubber = Scrubber_1 = class Scrubber extends _component_component__WEBPACK
             this.screenManager.canvas.content.addChild(Scrubber_1.markingMenu);
         }
         this.timeline = properties.timeline;
+        this.scaled = (_a = properties.scaled) !== null && _a !== void 0 ? _a : true;
         this.initializeUI();
     }
     setupUIElements() {
@@ -5862,17 +6300,17 @@ let Scrubber = Scrubber_1 = class Scrubber extends _component_component__WEBPACK
         });
         Scrubber_1.markingMenu.attachTo(this.markingMenuHandle, (e) => {
             Scrubber_1.markingMenu.scrubber = this;
-            Scrubber_1.markingMenu.show(true, e.scaledPosition);
+            Scrubber_1.markingMenu.show(true, this.scaled ? e.scaledPosition : e.position);
         }, (e) => {
             Scrubber_1.markingMenu.scrubber = this;
-            Scrubber_1.markingMenu.show(undefined, e.scaledOrigins.first);
+            Scrubber_1.markingMenu.show(undefined, this.scaled ? e.scaledOrigins.first : e.origins.first);
         });
     }
     /**
      * @description Translation value of the scrubber, in relation to the timeline container's dimensions.
      */
     set translation(value) {
-        this.style.transform = `translate(calc(${value / this.screenManager.canvas.scale}px - 50%), 0)`;
+        this.style.transform = `translate(calc(${value / (this.scaled ? this.screenManager.canvas.scale : 1)}px - 50%), 0)`;
     }
 };
 __decorate([
@@ -6516,6 +6954,7 @@ class TimelineClipHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.T
         const closestToNext = offsetToNext < offset;
         return {
             clipIndex: index,
+            cardIndex: this.convertIndexToBlockScope(index)[0],
             ghostingIndex: (index == 0 && !closestToNext)
                 ? null
                 : closestToNext ? index : index - 1,
@@ -6555,6 +6994,16 @@ class TimelineClipHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.T
         }
         const lastKey = blockKeys[blockKeys.length - 1];
         return [lastKey, this.model.getSize(lastKey)];
+    }
+    convertBlockScopeToIndex(index, blockKey) {
+        const blockKeys = this.model.getAllBlockKeys();
+        let globalIndex = 0;
+        for (const key of blockKeys) {
+            if (key === blockKey)
+                break;
+            globalIndex += this.model.getSize(key);
+        }
+        return globalIndex + index;
     }
 }
 
@@ -6636,10 +7085,6 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 class TimelineModel extends _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_1__.YManagerModel {
-    //TODO PATH DATA FROM FLOW TAG --> OBSERVE AND UPDATE CLIP LISTS ON CHANGE
-    // public readonly path: YArray<string>;
-    set indexInfo(value) {
-    }
     constructor(data) {
         super(data, "array");
         this.pixelsPerSecondUnit = 20;
@@ -6649,8 +7094,18 @@ class TimelineModel extends _yManagement_yModel_types_yManagerModel__WEBPACK_IMP
         this.nextTimer = null;
         this._storedTotalDuration = 0;
         this._currentTime = 0;
+        this.onCardAdded = () => undefined;
         this.onClipAdded = () => undefined;
         this.onClipChanged = () => { };
+        this.cardsModel = new _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_1__.YManagerModel();
+        this.cardsModel.onAdded = (cardId, index) => {
+            const card = this.onCardAdded(cardId, index);
+            if (!card)
+                return undefined;
+            this.setBlock(card.syncedClips, cardId, index);
+            return card;
+        };
+        this.cardsModel.onDeleted = () => { };
         this.onAdded = (syncedClip, id, blockKey) => {
             return this.onClipAdded(syncedClip, id, blockKey);
         };
@@ -6665,10 +7120,63 @@ class TimelineModel extends _yManagement_yModel_types_yManagerModel__WEBPACK_IMP
             return this.onClipChanged(syncedClip, clip, id, blockKey);
         };
     }
-    setCardsData(data, initialize = true) {
+    get cardIds() {
+        if (this._cards)
+            return this._cards.map(card => card.dataId);
+        return this.cardsModel.data.toArray();
+    }
+    set cardIds(data) {
+        this._cards = undefined;
         this.clear();
-        this.dataBlocks.length = 0;
-        data.forEach((card, index) => this.addBlock(card.get("syncedClips"), undefined, index, initialize));
+        this.cardsModel.data = data;
+    }
+    get cards() {
+        if (this._cards)
+            return this._cards;
+        return this.cardsModel.getAllComponents();
+    }
+    set cards(data) {
+        this.cardsModel.data = undefined;
+        this._cards = data;
+        this.clear();
+        data.forEach((card, index) => {
+            if (!card)
+                return;
+            this.addBlock(card.syncedClips, card.dataId, index);
+        });
+    }
+    getCardAt(index) {
+        const cards = this.cards;
+        if (typeof index !== "number")
+            return null;
+        if (index < 0)
+            index = 0;
+        if (index >= cards.length)
+            index = cards.length - 1;
+        return cards[index];
+    }
+    set indexInfo(value) {
+    }
+    get currentClip() {
+        var _a, _b;
+        return (_a = this.clipHandler) === null || _a === void 0 ? void 0 : _a.getClipAt((_b = this.indexInfo) === null || _b === void 0 ? void 0 : _b.clipIndex);
+    }
+    get currentGhostingClip() {
+        var _a, _b, _c;
+        if (((_a = this.indexInfo) === null || _a === void 0 ? void 0 : _a.ghostingIndex) == null)
+            return null;
+        return (_b = this.clipHandler) === null || _b === void 0 ? void 0 : _b.getClipAt((_c = this.indexInfo) === null || _c === void 0 ? void 0 : _c.ghostingIndex);
+    }
+    get currentCardData() {
+        var _a;
+        return (_a = this.currentClip) === null || _a === void 0 ? void 0 : _a.card;
+    }
+    get currentTime() {
+        return this._currentTime;
+    }
+    set currentTime(value) {
+        this._currentTime = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.trim)(value, this.totalDuration);
+        this.fireCallback("currentTimeChanged");
     }
     getClipsAt(index) {
         return this.getBlockData(index);
@@ -6691,23 +7199,6 @@ class TimelineModel extends _yManagement_yModel_types_yManagerModel__WEBPACK_IMP
     }
     get timeHandler() {
         return this.getHandler("time");
-    }
-    get currentGhostingClip() {
-        var _a, _b, _c;
-        if (((_a = this.indexInfo) === null || _a === void 0 ? void 0 : _a.ghostingIndex) == null)
-            return null;
-        return (_b = this.clipHandler) === null || _b === void 0 ? void 0 : _b.getClipAt((_c = this.indexInfo) === null || _c === void 0 ? void 0 : _c.ghostingIndex);
-    }
-    get currentClip() {
-        var _a, _b;
-        return (_a = this.clipHandler) === null || _a === void 0 ? void 0 : _a.getClipAt((_b = this.indexInfo) === null || _b === void 0 ? void 0 : _b.clipIndex);
-    }
-    get currentTime() {
-        return this._currentTime;
-    }
-    set currentTime(value) {
-        this._currentTime = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.trim)(value, this.totalDuration);
-        this.fireCallback("currentTimeChanged");
     }
 }
 __decorate([
@@ -6774,6 +7265,7 @@ class TimelinePlayController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
             yield this.renderer.setFrame(curClip, offset);
             yield this.renderer.playNext();
             yield this.renderer.loadNext(nextClip);
+            console.log(nextClip);
             this.initializePlayTimer();
             const timeoutDuration = 1000 * (((curClip === null || curClip === void 0 ? void 0 : curClip.duration) || 0) - offset);
             this.model.nextTimer = setTimeout(() => this.playRecur(index + 1), timeoutDuration);
@@ -6792,6 +7284,7 @@ class TimelinePlayController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
             }
             this.model.timeHandler.resetTimeIfOutsideBounds();
             yield this.renderer.loadNext(this.model.currentClip, this.model.indexInfo.offset);
+            console.log(this.model.currentClip);
             yield this.playRecur(this.model.indexInfo.clipIndex, this.model.indexInfo.offset);
         });
     }
@@ -6817,7 +7310,8 @@ class TimelineTimeController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
     setupChangedCallbacks() {
         super.setupChangedCallbacks();
         this.emitter.add("totalDurationChanged", () => {
-            this.element.card.duration = this.model.totalDuration;
+            if (this.element.card)
+                this.element.card.duration = this.model.totalDuration;
         });
         this.view.scrubber.onScrubbing = (e) => this.emitter.fire("containerClicked", e);
         this.emitter.add("containerClicked", (e) => {
@@ -6921,6 +7415,7 @@ let Timeline = class Timeline extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
         super(properties);
         this.screenManager = properties.screenManager;
         this.renderer = properties.renderer;
+        this.scaled = true;
         this.mvc.generate({
             viewConstructor: _timeline_view__WEBPACK_IMPORTED_MODULE_3__.TimelineView,
             modelConstructor: _timeline_model__WEBPACK_IMPORTED_MODULE_4__.TimelineModel,
@@ -6929,11 +7424,12 @@ let Timeline = class Timeline extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
             data: properties.data,
             initialize: false
         });
-        this.model.onClipAdded = (syncedClip, id) => {
+        this.model.onCardAdded = (cardId) => this.screenManager.getNode(cardId);
+        this.model.onClipAdded = (syncedClip, id, blockKey) => {
             var _a;
             const clip = new _clip_clip__WEBPACK_IMPORTED_MODULE_1__.Clip({ timeline: this, screenManager: this.screenManager });
             const snapToNext = id === ((_a = this.model.indexInfo) === null || _a === void 0 ? void 0 : _a.closestIntersection);
-            this.view.clipsContainer.addChild(clip, id + 1);
+            this.view.clipsContainer.addChild(clip, this.model.clipHandler.convertBlockScopeToIndex(id + 1, blockKey));
             clip.onMediaDataChanged = (clip) => {
                 var _a;
                 if (clip != this.model.currentClip)
@@ -6952,6 +7448,8 @@ let Timeline = class Timeline extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
         };
         this.model.onClipChanged = () => this.timeController.reloadTime();
         this.mvc.initialize();
+        if (properties.scaled !== undefined)
+            this.scaled = properties.scaled;
         this.card = properties.card;
     }
     get timeController() {
@@ -6960,20 +7458,33 @@ let Timeline = class Timeline extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
     get clipController() {
         return this.mvc.getController("clip");
     }
-    set card(card) {
-        if (!this.model || !card)
-            return;
-        this.model.setCardsData([card.data]);
-        const selectedClip = this.screenManager.contextManager.getContext(2);
-        // if (selectedClip && selectedClip[0] instanceof Clip) this.clipController.snapToClosest();
-        // else this.clipController.snapAtEnd();
-        this.clipController.reloadCurrentClip();
-        this.card.duration = this.model.totalDuration;
+    set scaled(value) {
+        if (this.view && this.view.scrubber)
+            this.view.scrubber.scaled = value;
     }
-    set cardsData(value) {
-        if (!this.model)
+    get card() {
+        var _a;
+        //TODO
+        return this.model.getCardAt(((_a = this.model.indexInfo) === null || _a === void 0 ? void 0 : _a.cardIndex) || 0);
+    }
+    set card(card) {
+        this.model.cards = [card];
+        this.onCardsChanged();
+        if (card)
+            card.duration = this.model.totalDuration;
+    }
+    set cardIds(value) {
+        this.model.cardIds = value;
+        this.onCardsChanged();
+    }
+    onCardsChanged() {
+        if (!this.card)
             return;
-        this.model.setCardsData(value);
+        const selectedClip = this.screenManager.contextManager.getContext(2);
+        if (selectedClip && selectedClip[0] instanceof _clip_clip__WEBPACK_IMPORTED_MODULE_1__.Clip)
+            this.clipController.snapToClosest();
+        else
+            this.clipController.snapAtEnd();
         this.clipController.reloadCurrentClip();
     }
     get clips() {
@@ -6992,7 +7503,7 @@ let Timeline = class Timeline extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
         return this.renderer.isPlaying;
     }
     get width() {
-        return this.model.totalDuration * this.pixelsPerSecondUnit * (this.screenManager.canvas.scale || 1);
+        return this.model.totalDuration * this.pixelsPerSecondUnit * ((this.scaled ? this.screenManager.canvas.scale : 1) || 1);
     }
     addClip(clip, index) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -7031,7 +7542,7 @@ let Timeline = class Timeline extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
 };
 __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
-], Timeline.prototype, "card", null);
+], Timeline.prototype, "scaled", null);
 Timeline = __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-timeline")
 ], Timeline);
@@ -7060,8 +7571,8 @@ __webpack_require__.r(__webpack_exports__);
 class TimelineView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
     setupUIElements() {
         super.setupUIElements();
-        this.clipsContainer = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ classes: "clips-container" });
-        this.scrubber = new _scrubber_scrubber__WEBPACK_IMPORTED_MODULE_2__.Scrubber({ timeline: this.element, parent: this.clipsContainer, screenManager: this.element.screenManager });
+        this.scrubberContainer = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ classes: "clips-container" });
+        this.scrubber = new _scrubber_scrubber__WEBPACK_IMPORTED_MODULE_2__.Scrubber({ timeline: this.element, parent: this.scrubberContainer, screenManager: this.element.screenManager });
         this.currentTimeText = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.p)({ style: "min-width: 3em" });
         this.totalDurationText = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.p)({ style: "min-width: 3em; text-align: right" });
         this.playButton = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({
@@ -7071,9 +7582,9 @@ class TimelineView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboVie
     }
     setupUILayout() {
         super.setupUILayout();
-        this.clipsContainer.addChild(this.scrubber, 0);
+        this.scrubberContainer.addChild(this.scrubber, 0);
         this.element.addChild([
-            this.clipsContainer,
+            this.scrubberContainer,
             (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.flexRowCenter)({
                 children: [
                     this.currentTimeText,
@@ -7087,7 +7598,7 @@ class TimelineView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboVie
     }
     setupUIListeners() {
         super.setupUIListeners();
-        this.clipsContainer.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, (e) => this.emitter.fire("containerClicked", e));
+        this.scrubberContainer.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, (e) => this.emitter.fire("containerClicked", e));
         this.playButton.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, (e) => {
             e.stopImmediatePropagation();
             this.emitter.fire("playButtonClicked", e);
@@ -7914,6 +8425,12 @@ let DocumentManager = class DocumentManager extends _screenManager_screenManager
     }
     getNode(id) {
         return this.model.cardsModel.getInstance(id);
+    }
+    getNodeData(id) {
+        return this.model.cardsModel.getInstance(id).data;
+    }
+    getNodesData(...ids) {
+        return ids.map(id => this.getNodeData(id));
     }
     getMedia(id) {
         return this.model.media.get(id);
@@ -9982,6 +10499,7 @@ class CameraView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView 
         this.timeline = new _components_timeline_timeline__WEBPACK_IMPORTED_MODULE_3__.Timeline({
             screenManager: this.element.screenManager,
             card: this.element.card,
+            scaled: false,
             renderer: this.clipRenderer,
             side: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.top,
             icon: "chevron",
@@ -10537,7 +11055,6 @@ let CreateCardTool = class CreateCardTool extends _tool_tool__WEBPACK_IMPORTED_M
     //On click
     clickAction(e) {
         //If there's already a card at click position --> return
-        console.log(e.closest(_components_card_card__WEBPACK_IMPORTED_MODULE_2__.Card, false));
         if (e.closest(_components_card_card__WEBPACK_IMPORTED_MODULE_2__.Card, false))
             return;
         //Otherwise --> create card at click position
@@ -12682,21 +13199,24 @@ class YManagerModel extends _yModel__WEBPACK_IMPORTED_MODULE_1__.YModel {
     }
     fireKeyChangedCallback(key, blockKey = this.defaultBlockKey, deleted = false) {
         var _a, _b;
-        if (!this.getAllKeys(blockKey).includes(key))
+        if (!this.getAllKeys(blockKey).includes(key)) {
             return super.fireKeyChangedCallback(key, blockKey, deleted);
+        }
         if (!this.onAdded)
             return;
         const data = this.getData(key, blockKey);
         const instance = this.onAdded(data, key, blockKey);
         (_a = this.getBlock(blockKey).instances) === null || _a === void 0 ? void 0 : _a.set(key, instance);
-        if ("data" in instance)
-            instance.data = data;
-        if ("dataId" in instance)
-            instance.dataId = key.toString();
+        if (typeof instance === "object") {
+            if ("data" in instance)
+                instance.data = data;
+            if ("dataId" in instance)
+                instance.dataId = key.toString();
+        }
         (_b = this.onUpdated) === null || _b === void 0 ? void 0 : _b.call(this, data, instance, key, blockKey);
     }
     removeInstance(instance) {
-        if ("remove" in instance && typeof instance.remove == "function")
+        if (typeof instance === "object" && "remove" in instance && typeof instance.remove == "function")
             instance === null || instance === void 0 ? void 0 : instance.remove();
     }
     observeChanges(event, blockKey = this.defaultBlockKey) {
@@ -12757,7 +13277,7 @@ class YManagerModel extends _yModel__WEBPACK_IMPORTED_MODULE_1__.YModel {
             block.delete(oldIndex);
         for (const [oldIndex, instance] of itemsToShift) {
             const newIndex = oldIndex + offset;
-            if ("dataId" in instance)
+            if (typeof instance === "object" && "dataId" in instance)
                 instance.dataId = newIndex;
             block.set((oldIndex + offset), instance);
         }
@@ -14106,7 +14626,15 @@ ___CSS_LOADER_EXPORT___.push([module.id, `vc-flow-tag {
     background-color: cyan;
     padding: 1em;
     border-radius: 6px 0 0 6px;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/app/components/flowTag/flowTag.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,WAAW;;IAEX,SAAS;IACT,sBAAsB;IACtB,YAAY;IACZ,0BAA0B;AAC9B","sourcesContent":["vc-flow-tag {\r\n    position: absolute;\r\n    right: 100%;\r\n\r\n    top: 20px;\r\n    background-color: cyan;\r\n    padding: 1em;\r\n    border-radius: 6px 0 0 6px;\r\n}"],"sourceRoot":""}]);
+
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+}
+
+vc-flow-tag > turbo-icon {
+    height: 1.3em;
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/app/components/flowTag/flowTag.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,WAAW;;IAEX,SAAS;IACT,sBAAsB;IACtB,YAAY;IACZ,0BAA0B;;IAE1B,aAAa;IACb,mBAAmB;IACnB,QAAQ;AACZ;;AAEA;IACI,aAAa;AACjB","sourcesContent":["vc-flow-tag {\r\n    position: absolute;\r\n    right: 100%;\r\n\r\n    top: 20px;\r\n    background-color: cyan;\r\n    padding: 1em;\r\n    border-radius: 6px 0 0 6px;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    gap: 1em;\r\n}\r\n\r\nvc-flow-tag > turbo-icon {\r\n    height: 1.3em;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -14210,6 +14738,72 @@ textarea {
     min-height: 1em;
     min-width: 16em;
 }`, "",{"version":3,"sources":["webpack://./frontend/src/client/app/components/metadataDrawer/metadataDrawer.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,SAAS;AACb;;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,UAAU;IACV,mBAAmB;AACvB;;AAEA;IACI,gBAAgB;IAChB,cAAc;IACd,oBAAoB;AACxB;;AAEA;IACI,YAAY;IACZ,cAAc;IACd,yBAAyB;IACzB,oBAAoB;AACxB;;AAEA;IACI,eAAe;AACnB;;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,UAAU;AACd;;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,UAAU;IACV,iBAAiB;IACjB,mBAAmB;AACvB;;AAEA;IACI,gBAAgB;IAChB,gBAAgB;IAChB,cAAc;IACd,kBAAkB;AACtB;;AAEA;IACI,UAAU;IACV,YAAY;AAChB;;AAEA;IACI,WAAW;AACf;;AAEA;IACI,gBAAgB;IAChB,gBAAgB;AACpB;;AAEA;IACI,UAAU;IACV,YAAY;AAChB;;AAEA;IACI,YAAY;IACZ,YAAY;IACZ,UAAU;IACV,eAAe;IACf,eAAe;IACf,eAAe;AACnB","sourcesContent":["metadata-drawer {\r\n    position: absolute;\r\n    top: 100%;\r\n}\r\n\r\nmetadata-drawer turbo-select {\r\n    display: flex;\r\n    flex-direction: row;\r\n    gap: 0.5em;\r\n    padding-bottom: 1em;\r\n}\r\n\r\nmetadata-drawer turbo-select > turbo-select-entry {\r\n    font-size: 0.9em;\r\n    color: #727377;\r\n    padding: 0.5em 0.8em;\r\n}\r\n\r\nmetadata-drawer turbo-select > turbo-select-entry.selected-tab {\r\n    color: black;\r\n    font-size: 1em;\r\n    background-color: #d4ffff;\r\n    border-radius: 100px;\r\n}\r\n\r\nmetadata-drawer animated-content-switch {\r\n    min-width: 100%;\r\n}\r\n\r\nmetadata-drawer .metadata-panel {\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 0.6em;\r\n}\r\n\r\nmetadata-drawer turbo-input {\r\n    display: flex;\r\n    flex-direction: row;\r\n    gap: 0.6em;\r\n    overflow: visible;\r\n    align-items: center;\r\n}\r\n\r\nmetadata-drawer turbo-input label {\r\n    font-weight: 600;\r\n    font-size: 0.9em;\r\n    color: #727377;\r\n    white-space:nowrap;\r\n}\r\n\r\nmetadata-drawer turbo-input turbo-rich-element {\r\n    padding: 0;\r\n    border: none;\r\n}\r\n\r\nmetadata-drawer .separator {\r\n    height: 1em;\r\n}\r\n\r\nmetadata-drawer turbo-input input {\r\n    font-size: 0.9em;\r\n    font-weight: 600;\r\n}\r\n\r\nmetadata-drawer turbo-input div {\r\n    padding: 0;\r\n    border: none;\r\n}\r\n\r\ntextarea {\r\n    resize: none;\r\n    border: none;\r\n    padding: 0;\r\n    max-height: 8em;\r\n    min-height: 1em;\r\n    min-width: 16em;\r\n}"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/app/components/playback/playback.css":
+/*!********************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/app/components/playback/playback.css ***!
+  \********************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `vc-playback {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+
+    height: 225px;
+    width: 300px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: black;
+}
+
+vc-playback vc-timeline {
+    position: absolute;
+    top: calc(100% - 3em);
+}
+
+vc-playback > #capture-bar {
+    position: absolute;
+    height: 100%;
+    right: 0;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    padding: 2em 2em 2em 0;
+
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+vc-playback > #capture-bar > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    margin-left: 2em;
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/app/components/playback/playback.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,SAAS;IACT,WAAW;;IAEX,aAAa;IACb,YAAY;;IAEZ,aAAa;IACb,uBAAuB;IACvB,mBAAmB;;IAEnB,uBAAuB;AAC3B;;AAEA;IACI,kBAAkB;IAClB,qBAAqB;AACzB;;AAEA;IACI,kBAAkB;IAClB,YAAY;IACZ,QAAQ;;IAER,aAAa;IACb,mBAAmB;IACnB,mBAAmB;;IAEnB,sBAAsB;;IAEtB,oCAAoC;AACxC;;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,QAAQ;IACR,gBAAgB;AACpB","sourcesContent":["vc-playback {\r\n    position: absolute;\r\n    top: 20px;\r\n    right: 20px;\r\n\r\n    height: 225px;\r\n    width: 300px;\r\n\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n\r\n    background-color: black;\r\n}\r\n\r\nvc-playback vc-timeline {\r\n    position: absolute;\r\n    top: calc(100% - 3em);\r\n}\r\n\r\nvc-playback > #capture-bar {\r\n    position: absolute;\r\n    height: 100%;\r\n    right: 0;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    align-items: center;\r\n\r\n    padding: 2em 2em 2em 0;\r\n\r\n    background-color: rgba(0, 0, 0, 0.3);\r\n}\r\n\r\nvc-playback > #capture-bar > div:last-child {\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 2em;\r\n    margin-left: 2em;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -56475,6 +57069,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   TurboEventManager: () => (/* binding */ TurboEventManager),
 /* harmony export */   TurboEventName: () => (/* binding */ TurboEventName),
 /* harmony export */   TurboHandler: () => (/* binding */ TurboHandler),
+/* harmony export */   TurboHeadlessElement: () => (/* binding */ TurboHeadlessElement),
 /* harmony export */   TurboIcon: () => (/* binding */ TurboIcon),
 /* harmony export */   TurboIconSwitch: () => (/* binding */ TurboIconSwitch),
 /* harmony export */   TurboIconToggle: () => (/* binding */ TurboIconToggle),
@@ -57766,12 +58361,14 @@ class MvcHandler {
             this.generate(properties);
     }
     set view(view) {
+        this.linkModelToView();
     }
     set model(model) {
         this.linkModelToEmitter();
         this.linkModelToView();
     }
     set emitter(emitter) {
+        this.linkModelToEmitter();
     }
     get data() {
         return this.model?.data;
@@ -57826,7 +58423,6 @@ class MvcHandler {
             this.emitter = properties.emitterConstructor
                 ? new properties.emitterConstructor(this.model)
                 : new TurboEmitter(this.model);
-            this.linkModelToEmitter();
         }
         if (properties.viewConstructor && (!this.view || properties.force)) {
             this.view = new properties.viewConstructor({
@@ -57834,7 +58430,6 @@ class MvcHandler {
                 model: this.model,
                 emitter: this.emitter
             });
-            this.linkModelToView();
         }
         if (properties.controllerConstructors) {
             const controllerProperties = {
@@ -57953,12 +58548,12 @@ class TurboModel {
     }
     set enabledCallbacks(value) { }
     getData(key, blockKey) {
-        if (!blockKey === undefined)
+        if (!this.isValidBlockKey(blockKey))
             return null;
         return this.getBlockData(blockKey)?.[key];
     }
     setData(key, value, blockKey) {
-        if (!blockKey === undefined)
+        if (!this.isValidBlockKey(blockKey))
             return;
         const data = this.getBlockData(blockKey);
         if (data)
@@ -57970,7 +58565,7 @@ class TurboModel {
         return this.getAllKeys(blockKey)?.length ?? 0;
     }
     getBlock(blockKey = this.defaultBlockKey) {
-        if (blockKey === undefined)
+        if (!this.isValidBlockKey(blockKey))
             return null;
         if (this.isDataBlocksArray) {
             const index = Number(blockKey);
@@ -57986,7 +58581,7 @@ class TurboModel {
         return { id: id ?? null, data: value };
     }
     setBlock(value, id, blockKey = this.defaultBlockKey, initialize = true) {
-        if (!value || !blockKey)
+        if (!this.isValidBlockKey(blockKey) || value === null || value === undefined)
             return;
         const block = this.createBlock(value, id, blockKey);
         if (this.isDataBlocksArray) {
@@ -58037,7 +58632,7 @@ class TurboModel {
             block.id = value;
     }
     fireKeyChangedCallback(key, blockKey = this.defaultBlockKey, deleted = false) {
-        if (blockKey === undefined)
+        if (!this.isValidBlockKey(blockKey))
             blockKey = this.getAllBlockKeys()[0];
         this.keyChangedCallback(key, blockKey, deleted ? undefined : this.getData(key, blockKey));
     }
@@ -58045,6 +58640,8 @@ class TurboModel {
         this.keyChangedCallback(key, this.defaultBlockKey, ...args);
     }
     fireBlockCallback(key, blockKey = this.defaultBlockKey, ...args) {
+        if (!this.isValidBlockKey(blockKey))
+            blockKey = this.getAllBlockKeys()[0];
         this.keyChangedCallback(key, blockKey, ...args);
     }
     initialize(blockKey = this.defaultBlockKey) {
@@ -58063,6 +58660,11 @@ class TurboModel {
             ? this.dataBlocks.length
             : this.dataBlocks.size;
         return size > 1 ? null : this.defaultBlockKey;
+    }
+    isValidBlockKey(blockKey) {
+        return blockKey !== undefined && blockKey !== null
+            && ((typeof blockKey === "string" && blockKey.length !== 0)
+                || typeof blockKey === "number");
     }
     getAllBlockKeys() {
         if (this.isDataBlocksArray)
@@ -58134,6 +58736,45 @@ class TurboView {
     }
 }
 
+class Delegate {
+    callbacks = new Set();
+    /**
+     * @description Adds a callback to the list.
+     * @param callback - The callback function to add.
+     */
+    add(callback) {
+        this.callbacks.add(callback);
+    }
+    /**
+     * @description Removes a callback from the list.
+     * @param callback - The callback function to remove.
+     * @returns A boolean indicating whether the callback was found and removed.
+     */
+    remove(callback) {
+        return this.callbacks.delete(callback);
+    }
+    /**
+     * @description Invokes all callbacks with the provided arguments.
+     * @param args - The arguments to pass to the callbacks.
+     */
+    fire(...args) {
+        for (const callback of this.callbacks) {
+            try {
+                callback(...args);
+            }
+            catch (error) {
+                console.error("Error invoking callback:", error);
+            }
+        }
+    }
+    /**
+     * @description Clears added callbacks
+     */
+    clear() {
+        this.callbacks.clear();
+    }
+}
+
 /**
  * @class TurboElement
  * @extends HTMLElement
@@ -58149,9 +58790,9 @@ class TurboElement extends HTMLElement {
      */
     static config = { shadowDOM: false, defaultSelectedClass: "selected" };
     mvc;
-    onAttach = () => { };
-    onDetach = () => { };
-    onAdopt = () => { };
+    onAttach = new Delegate();
+    onDetach = new Delegate();
+    onAdopt = new Delegate();
     /**
      * @description Update the class's static configurations. Will only overwrite the set properties.
      * @property {typeof this.config} value - The object containing the new configurations.
@@ -58171,13 +58812,13 @@ class TurboElement extends HTMLElement {
         this.mvc = new MvcHandler({ ...properties, element: this });
     }
     connectedCallback() {
-        this.onAttach?.();
+        this.onAttach.fire();
     }
     disconnectedCallback() {
-        this.onDetach?.();
+        this.onDetach.fire();
     }
     adoptedCallback() {
-        this.onAdopt?.();
+        this.onAdopt.fire();
     }
     attributeChangedCallback(name, oldValue, newValue) {
         if (!newValue || newValue == oldValue)
@@ -58251,6 +58892,86 @@ class TurboElement extends HTMLElement {
 __decorate([
     auto()
 ], TurboElement.prototype, "selected", null);
+
+/**
+ * @class TurboHeadlessElement
+ * @description TurboHeadlessElement class, similar to TurboElement but without extending HTMLElement.
+ * @template ViewType - TurboView
+ * @template DataType - object
+ * @template ModelType - TurboModel<DataType>
+ */
+class TurboHeadlessElement {
+    //STATIC CONFIG
+    /**
+     * @description Static configuration object.
+     */
+    static config = {};
+    /**
+     * @description Update the class's static configurations. Will only overwrite the set properties.
+     * @property {typeof this.config} value - The object containing the new configurations.
+     */
+    static configure(value) {
+        Object.entries(value).forEach(([key, val]) => {
+            if (val !== undefined)
+                this.config[key] = val;
+        });
+    }
+    //ELEMENT
+    mvc;
+    constructor(properties = {}) {
+        this.mvc = new MvcHandler({ ...properties, element: this });
+    }
+    /**
+     * @description Whether the element is selected or not. Setting it will accordingly toggle the "selected" CSS
+     * class on the element and update the UI.
+     */
+    set selected(value) {
+    }
+    get view() {
+        return this.mvc.view;
+    }
+    set view(view) {
+        this.mvc.view = view;
+    }
+    get model() {
+        return this.mvc.model;
+    }
+    set model(model) {
+        this.mvc.model = model;
+    }
+    get data() {
+        return this.mvc.data;
+    }
+    set data(data) {
+        this.mvc.data = data;
+    }
+    get dataId() {
+        return this.mvc.dataId;
+    }
+    set dataId(value) {
+        this.mvc.dataId = value;
+    }
+    get dataIndex() {
+        return this.mvc.dataIndex;
+    }
+    set dataIndex(value) {
+        this.mvc.dataIndex = value;
+    }
+    get dataSize() {
+        return this.mvc.dataSize;
+    }
+    getPropertiesValue(propertiesValue, configFieldName, defaultValue) {
+        if (propertiesValue !== undefined && propertiesValue !== null)
+            return propertiesValue;
+        const configValue = this.constructor.config[configFieldName];
+        if (configValue !== undefined && configValue !== null)
+            return configValue;
+        return defaultValue;
+    }
+}
+__decorate([
+    auto()
+], TurboHeadlessElement.prototype, "selected", null);
 
 /**
  * @class TurboProxiedElement
@@ -60428,45 +61149,6 @@ function turbofy() {
     addReifectManagementToNodePrototype();
 }
 
-class Delegate {
-    callbacks = new Set();
-    /**
-     * @description Adds a callback to the list.
-     * @param callback - The callback function to add.
-     */
-    add(callback) {
-        this.callbacks.add(callback);
-    }
-    /**
-     * @description Removes a callback from the list.
-     * @param callback - The callback function to remove.
-     * @returns A boolean indicating whether the callback was found and removed.
-     */
-    remove(callback) {
-        return this.callbacks.delete(callback);
-    }
-    /**
-     * @description Invokes all callbacks with the provided arguments.
-     * @param args - The arguments to pass to the callbacks.
-     */
-    fire(...args) {
-        for (const callback of this.callbacks) {
-            try {
-                callback(...args);
-            }
-            catch (error) {
-                console.error("Error invoking callback:", error);
-            }
-        }
-    }
-    /**
-     * @description Clears added callbacks
-     */
-    clear() {
-        this.callbacks.clear();
-    }
-}
-
 const TurboKeyEventName = {
     keyPressed: "turbo-key-pressed",
     keyReleased: "turbo-key-released"
@@ -62342,7 +63024,7 @@ let TurboSelect = class TurboSelect extends TurboElement {
             });
         });
     }
-    addEntry(entry) {
+    addEntry(entry, index = this.entries.length) {
         if (!(entry instanceof TurboSelectEntry)) {
             if (typeof entry == "object" && "value" in entry) {
                 if (!entry.inputName)
@@ -62353,12 +63035,30 @@ let TurboSelect = class TurboSelect extends TurboElement {
                 entry = new TurboSelectEntry({ value: entry, inputName: this.inputName });
             }
         }
+        if (index === undefined || typeof index !== "number" || index > this.entries.length)
+            index = this.entries.length;
+        if (index < 0)
+            index = 0;
         if (!entry.selectedClasses)
             entry.selectedClasses = this.selectedEntryClasses;
         entry.addListener(DefaultEventName.click, (e) => this.onEntryClick(entry, e));
-        entry.onAttach = () => requestAnimationFrame(() => this.select(this.selectedEntry));
-        this.entriesParent.addChild(entry);
-        this.entries.push(entry);
+        entry.onAttach.add(() => {
+            if (!this.entries.includes(entry)) {
+                const domIndex = this.entriesParent.indexOfChild(entry);
+                const insertionIndex = Math.max(0, Math.min(domIndex, this.entries.length));
+                this.entries.splice(insertionIndex, 0, entry);
+            }
+            requestAnimationFrame(() => this.select(this.selectedEntry));
+        });
+        entry.onDetach.add(() => {
+            const i = this.entries.indexOf(entry);
+            if (i !== -1)
+                this.entries.splice(i, 1);
+            if (entry.selected)
+                entry.toggle();
+        });
+        this.entries.splice(index, 0, entry);
+        this.entriesParent.addChild(entry, index);
         return entry;
     }
     onEntryClick(entry, e) {
@@ -62367,9 +63067,10 @@ let TurboSelect = class TurboSelect extends TurboElement {
     /**
      * @description Select an entry.
      * @param {string | EntryType} entry - The DropdownEntry (or its string value) to select.
+     * @param selected
      * @return {TurboSelect} - This Dropdown for chaining.
      */
-    select(entry) {
+    select(entry, selected = true) {
         if (entry === undefined || entry === null)
             return this;
         if (!(entry instanceof TurboSelectEntry)) {
@@ -62378,9 +63079,13 @@ let TurboSelect = class TurboSelect extends TurboElement {
                 return this;
             entry = el;
         }
+        if (entry.selected === selected)
+            return this;
         if (!this.multiSelection)
-            this.selectedEntries.forEach(selectedEntry => selectedEntry.toggle());
-        entry.toggle();
+            this.selectedEntries.forEach(selectedEntry => selectedEntry.selected = false);
+        entry.selected = selected;
+        if (this.selectedEntries.length === 0 && this.forceSelection)
+            this.select(this.enabledEntries[0]);
         this.onSelect(entry.selected, entry, this.getIndex(entry));
         this.dispatchEvent(new TurboSelectInputEvent(entry, this.selectedValues));
         return this;
@@ -63223,8 +63928,8 @@ let TurboDropdown = class TurboDropdown extends TurboSelect {
         super.onEntryClick(entry);
         this.openPopup(false);
     }
-    select(entry) {
-        super.select(entry);
+    select(entry, selected = true) {
+        super.select(entry, selected);
         if (this.selector instanceof TurboButton)
             this.selector.text = this.stringSelectedValue;
         return this;
@@ -63262,7 +63967,7 @@ let TurboMarkingMenu = class TurboMarkingMenu extends TurboSelect {
     set endAngle(value) { }
     ;
     constructor(properties = {}) {
-        super({ ...properties });
+        super(properties);
         super.show(false);
         this.startAngle = 0;
         this.endAngle = properties.endAngle ?? Math.PI * 2;
@@ -63346,8 +64051,8 @@ let TurboMarkingMenu = class TurboMarkingMenu extends TurboSelect {
             angle -= Math.PI * 2;
         return angle;
     }
-    addEntry(entry) {
-        entry = super.addEntry(entry);
+    addEntry(entry, index = this.entries.length) {
+        entry = super.addEntry(entry, index);
         this.transition?.initialize(this.isShown ? InOut.in : InOut.out, entry);
         entry.setStyles({ position: "absolute" });
         return entry;
@@ -63586,6 +64291,8 @@ let TurboSelectWheel = class TurboSelectWheel extends TurboSelect {
      * Recalculates the dimensions and positions of all entries
      */
     reloadEntrySizes() {
+        if (!this.reifect)
+            return;
         this.sizePerEntry.length = 0;
         this.positionPerEntry.length = 0;
         this.totalSize = 0;
@@ -63637,8 +64344,8 @@ let TurboSelectWheel = class TurboSelectWheel extends TurboSelect {
             });
         element.setStyles(styles);
     }
-    select(entry) {
-        super.select(entry);
+    select(entry, selected = true) {
+        super.select(entry, selected);
         if (entry === undefined || entry === null)
             return this;
         const index = this.getIndex(this.selectedEntry);
@@ -63659,8 +64366,8 @@ let TurboSelectWheel = class TurboSelectWheel extends TurboSelect {
         if (!this.alwaysOpen)
             this.setOpenTimer();
     }
-    addEntry(entry) {
-        entry = super.addEntry(entry);
+    addEntry(entry, index = this.entries.length) {
+        entry = super.addEntry(entry, index);
         entry.setStyles({ position: "absolute" });
         entry.addListener(DefaultEventName.dragStart, (e) => {
             e.stopImmediatePropagation();
@@ -63680,10 +64387,11 @@ let TurboSelectWheel = class TurboSelectWheel extends TurboSelect {
                 clearTimeout(showTimer);
             showTimer = null;
         });
-        if (this.reifect) {
-            this.reifect.attach(entry);
+        entry.onDetach.add(() => this.reifect?.detach(entry));
+        entry.onAttach.add(() => {
+            this.reifect?.attach(entry);
             this.reloadEntrySizes();
-        }
+        });
         this.refresh();
         return entry;
     }

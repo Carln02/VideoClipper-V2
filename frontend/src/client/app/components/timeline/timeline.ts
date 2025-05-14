@@ -1,4 +1,4 @@
-import {SyncedClip} from "../clip/clip.types";
+import {ClipProperties, SyncedClip} from "../clip/clip.types";
 import {auto, define, TurboDrawer, TurboEvent} from "turbodombuilder";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {Clip} from "../clip/clip";
@@ -13,21 +13,24 @@ import {TimelineTimeController} from "./timeline.timeController";
 import {TimelineClipHandler} from "./timeline.clipHandler";
 import {TimelineTimeHandler} from "./timeline.timeHandler";
 import {YArray, YMap} from "../../../../yManagement/yManagement.types";
+import {VcComponent} from "../component/component";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
 
 @define("vc-timeline")
-export class Timeline<View extends TimelineView = TimelineView> extends TurboDrawer<View, YArray<SyncedClip>, TimelineModel> {
-    public screenManager: DocumentManager;
+export class Timeline<
+    View extends TimelineView = TimelineView<any, any>
+> extends VcComponent<View, YArray<SyncedClip>, TimelineModel, DocumentManager> {
     public readonly renderer: ClipRenderer;
 
     public constructor(properties: TimelineProperties<View>) {
         super(properties);
+        this.addClass("vc-timeline");
         this.screenManager = properties.screenManager;
         this.renderer = properties.renderer;
         this.scaled = true;
 
         this.mvc.generate({
-            viewConstructor: TimelineView,
+            viewConstructor: properties.viewConstructor ?? TimelineView as unknown as new () => View,
             modelConstructor: TimelineModel,
             controllerConstructors: [TimelinePlayController, TimelineClipController, TimelineTimeController],
             handlerConstructors: [TimelineClipHandler, TimelineTimeHandler],
@@ -36,34 +39,30 @@ export class Timeline<View extends TimelineView = TimelineView> extends TurboDra
         });
 
         this.model.onCardAdded = (cardId) => this.screenManager.getNode(cardId) as Card;
-        this.model.onClipAdded = (syncedClip, id, blockKey) => {
-            const clip = new Clip({timeline: this, screenManager: this.screenManager});
-            const snapToNext = id === this.model.indexInfo?.closestIntersection;
-            this.view.clipsContainer.addChild(clip, this.model.clipHandler.convertBlockScopeToIndex(id + 1, blockKey));
-
-            clip.onMediaDataChanged = (clip: Clip) => {
-                if (clip != this.model.currentClip) return;
-                this.renderer.setFrame(clip, this.model.indexInfo?.offset);
-            };
-
-            requestAnimationFrame(() => {
-                clip.data = syncedClip;
-                if (snapToNext) this.snapToClosest(id + 1);
-                if (clip != this.model.currentClip) this.renderer.setFrame(clip, this.model.indexInfo?.offset);
-            });
-            return clip;
-        };
-
-        this.model.onClipChanged = () => this.timeController.reloadTime();
+        this.model.onClipAdded = (syncedClip, id, blockKey) => this.onClipAdded(syncedClip, id, blockKey);
+        this.model.onClipChanged = () => this.reloadTime();
 
         this.mvc.initialize();
         if (properties.scaled !== undefined) this.scaled = properties.scaled;
         this.card = properties.card;
     }
 
-    @auto()
-    public set scaled(value: boolean) {
-        if (this.view && this.view.scrubber) this.view.scrubber.scaled = value;
+    protected onClipAdded(syncedClip: SyncedClip, id: number, blockKey: number, clipProperties: ClipProperties = {}): Clip {
+        const clip = new Clip({...clipProperties, timeline: this, screenManager: this.screenManager});
+        const snapToNext = id === this.model.indexInfo?.closestIntersection;
+
+        clip.onMediaDataChanged = (clip: Clip) => {
+            if (clip != this.model.currentClip) return;
+            this.renderer.setFrame(clip, this.model.indexInfo?.offset);
+        };
+
+        requestAnimationFrame(() => {
+            clip.data = syncedClip;
+            if (snapToNext) this.snapToClosest(id + 1);
+            if (clip != this.model.currentClip) this.renderer.setFrame(clip, this.model.indexInfo?.offset);
+        });
+
+        return clip;
     }
 
     protected get timeController(): TimelineTimeController {
@@ -72,6 +71,11 @@ export class Timeline<View extends TimelineView = TimelineView> extends TurboDra
 
     protected get clipController(): TimelineClipController {
         return this.mvc.getController("clip") as TimelineClipController;
+    }
+
+    @auto()
+    public set scaled(value: boolean) {
+        if (this.view && this.view.scrubber) this.view.scrubber.scaled = value;
     }
 
     public get card(): Card {
@@ -142,7 +146,7 @@ export class Timeline<View extends TimelineView = TimelineView> extends TurboDra
         this.snapToClosest(this.dataSize);
     }
 
-    public reloadSize() {
+    public reloadTime() {
         this.timeController.reloadTime();
     }
 
@@ -158,6 +162,6 @@ export class Timeline<View extends TimelineView = TimelineView> extends TurboDra
 
     public addIndicatorAt(indicator: Element, index: number) {
         indicator.remove();
-        this.view.clipsContainer.addChild(indicator, index);
+        this.view.scrubberContainer.addChild(indicator, index);
     }
 }

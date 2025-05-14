@@ -15,7 +15,7 @@ import {SyncedMedia} from "../../managers/mediaManager/mediaManager.types";
 import {ClipProperties, SyncedClip} from "./clip.types";
 
 @define("vc-clip-headless")
-export class ClipHeadless<
+export class HeadlessClip<
     View extends TurboView = TurboView,
     Data extends SyncedClip = SyncedClip,
     Model extends ClipModel = ClipModel,
@@ -47,8 +47,8 @@ export class ClipHeadless<
             this.onMediaDataChanged(this)
         });
 
-        this.mvc.emitter.add("startTime", () => this.timeline.reloadSize());
-        this.mvc.emitter.add("endTime", () => this.timeline.reloadSize());
+        this.mvc.emitter.add("startTime", () => this.timeline.reloadTime());
+        this.mvc.emitter.add("endTime", () => this.timeline.reloadTime());
     }
 
     public static createData(data?: SyncedClip): YMap & SyncedClip {
@@ -138,10 +138,10 @@ export class ClipHeadless<
     /**
      * @function clone
      * @description Creates a clone of this clip.
-     * @returns {ClipHeadless} - The clone.
+     * @returns {HeadlessClip} - The clone.
      */
-    public clone(): ClipHeadless {
-        const clone = new ClipHeadless({timeline: this.timeline, data: this.data, screenManager: this.screenManager});
+    public clone(): HeadlessClip {
+        const clone = new HeadlessClip({timeline: this.timeline, data: this.data, screenManager: this.screenManager});
         clone.setStyle("width", this.offsetWidth + "px");
         clone.setStyle("height", this.offsetHeight + "px");
         clone.selected = this.selected;
@@ -150,7 +150,7 @@ export class ClipHeadless<
 
     public split(localSplitTime: number): YMap & SyncedClip {
         if (localSplitTime < this.startTime || localSplitTime > this.endTime) return;
-        const newData = ClipHeadless.createData((this.data as any as YMap).toJSON());
+        const newData = HeadlessClip.createData((this.data as any as YMap).toJSON());
         newData.set("startTime", localSplitTime);
         this.endTime = localSplitTime;
         return newData;

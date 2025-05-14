@@ -1,28 +1,17 @@
 import {
     auto,
     define,
-    div,
     icon, TurboDragEvent,
-    TurboEvent,
     TurboEventName,
-    TurboIcon
 } from "turbodombuilder";
 import "./scrubber.css";
 import {ScrubberProperties} from "./scrubber.types";
 import {Timeline} from "../timeline/timeline";
 import {VcComponent} from "../component/component";
 import {DocumentManager} from "../../managers/documentManager/documentManager";
-import {ScrubberMarkingMenu} from "../scrubberMarkingMenu/scrubberMarkingMenu";
 
 @define("vc-scrubber")
 export class Scrubber extends VcComponent<any, any, any, DocumentManager> {
-    private static markingMenu: ScrubberMarkingMenu;
-
-    public screenManager: DocumentManager;
-
-    private head: TurboIcon;
-    private markingMenuHandle: HTMLDivElement;
-
     //The timeline it is attached to
     public readonly timeline: Timeline;
 
@@ -37,31 +26,19 @@ export class Scrubber extends VcComponent<any, any, any, DocumentManager> {
 
     public constructor(properties: ScrubberProperties = {}) {
         super(properties);
-        if (!Scrubber.markingMenu) {
-            Scrubber.markingMenu = new ScrubberMarkingMenu({});
-            this.screenManager.canvas.content.addChild(Scrubber.markingMenu);
-        }
+        this.addClass("vc-scrubber");
+
         this.timeline = properties.timeline;
         this.scaled = properties.scaled ?? true;
-        this.initializeUI();
+        if (properties.initialize) this.initializeUI();
     }
 
-    protected setupUIElements() {
-        super.setupUIElements();
-        this.head = icon({icon: "scrubber-head", directory: "assets/misc"});
-        this.markingMenuHandle = div();
-    }
 
-    protected setupUILayout() {
-        super.setupUILayout();
-        this.addChild([this.head, this.markingMenuHandle]);
-    }
 
     protected setupUIListeners() {
         super.setupUIListeners();
-
         //Drag start --> start scrubbing and stop propagation
-        this.head.addListener(TurboEventName.dragStart, (e: TurboDragEvent) => {
+        this.addListener(TurboEventName.dragStart, (e: TurboDragEvent) => {
             this.scrubbing = true;
             if (this.onScrubbingStart) this.onScrubbingStart(e);
         });
@@ -79,15 +56,6 @@ export class Scrubber extends VcComponent<any, any, any, DocumentManager> {
             this.scrubbing = false;
             if (this.onScrubbingEnd) this.onScrubbingEnd(e);
         });
-
-        Scrubber.markingMenu.attachTo(this.markingMenuHandle,
-            (e: TurboEvent) => {
-                Scrubber.markingMenu.scrubber = this;
-                Scrubber.markingMenu.show(true, this.scaled ? e.scaledPosition : e.position);
-            }, (e: TurboDragEvent) => {
-                Scrubber.markingMenu.scrubber = this;
-                Scrubber.markingMenu.show(undefined, this.scaled ? e.scaledOrigins.first : e.origins.first);
-            });
     }
 
     /**

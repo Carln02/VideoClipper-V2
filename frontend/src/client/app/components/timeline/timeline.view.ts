@@ -4,20 +4,25 @@ import {DefaultEventName, div, flexRowCenter, icon, p, spacer, TurboEvent, Turbo
 import {formatMMSS} from "../../../utils/time";
 import {Scrubber} from "../scrubber/scrubber";
 
-export class TimelineView extends TurboView<Timeline, TimelineModel> {
-    public clipsContainer: HTMLDivElement;
+export class TimelineView<
+    Element extends Timeline = Timeline,
+    Model extends TimelineModel = TimelineModel
+> extends TurboView<Element, Model> {
+    public scrubberContainer: HTMLDivElement;
     public scrubber: Scrubber;
 
-    private currentTimeText: HTMLParagraphElement;
-    private totalDurationText: HTMLParagraphElement;
-    private playButton: TurboIcon;
+    protected controlsContainer: HTMLElement;
+    protected currentTimeText: HTMLParagraphElement;
+    protected totalDurationText: HTMLParagraphElement;
+    protected playButton: TurboIcon;
 
     protected setupUIElements() {
         super.setupUIElements();
 
-        this.clipsContainer = div({classes: "clips-container"});
-        this.scrubber = new Scrubber({timeline: this.element, parent: this.clipsContainer, screenManager: this.element.screenManager});
+        this.scrubberContainer = div({classes: "scrubber-container"});
+        this.scrubber = new Scrubber({timeline: this.element, screenManager: this.element.screenManager});
 
+        this.controlsContainer = flexRowCenter();
         this.currentTimeText = p({style: "min-width: 3em"});
         this.totalDurationText = p({style: "min-width: 3em; text-align: right"});
 
@@ -30,25 +35,22 @@ export class TimelineView extends TurboView<Timeline, TimelineModel> {
     protected setupUILayout() {
         super.setupUILayout();
 
-        this.clipsContainer.addChild(this.scrubber, 0);
-        this.element.addChild([
-            this.clipsContainer,
-            flexRowCenter({
-                children: [
-                    this.currentTimeText,
-                    spacer(),
-                    this.playButton,
-                    spacer(),
-                    this.totalDurationText
-                ]
-            })
+        this.controlsContainer.addChild([
+            this.currentTimeText,
+            spacer(),
+            this.playButton,
+            spacer(),
+            this.totalDurationText
         ]);
+
+        this.scrubberContainer.addChild(this.scrubber, 0);
+        this.element.addChild([this.scrubberContainer, this.controlsContainer]);
     }
 
     protected setupUIListeners() {
         super.setupUIListeners();
 
-        this.clipsContainer.addEventListener(DefaultEventName.click, (e: TurboEvent) =>
+        this.scrubberContainer.addEventListener(DefaultEventName.click, (e: TurboEvent) =>
             this.emitter.fire("containerClicked", e));
 
         this.playButton.addListener(DefaultEventName.click, (e: TurboEvent) => {

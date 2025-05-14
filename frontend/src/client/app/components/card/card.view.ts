@@ -15,7 +15,7 @@ import {CardModel} from "./card.model";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {MetadataDrawer} from "../metadataDrawer/metadataDrawer";
 import {Timeline} from "../timeline/timeline";
-import {ClipTimeline} from "../timeline/clipTimeline";
+import {ClipTimeline} from "../timeline/clipTimeline/clipTimeline";
 
 export class CardView extends BranchingNodeView<Card, CardModel> {
     private titleElement: TurboInput;
@@ -67,13 +67,15 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
         });
 
         this._timeline = new ClipTimeline({
+            drawerProperties: {
+                icon: "chevron",
+                side: Side.right,
+                hideOverflow: true,
+                offset: {[Open.open]: 12}
+            },
             screenManager: this.element.screenManager,
             card: this.element,
             renderer: this.renderer,
-            icon: "chevron",
-            side: Side.right,
-            hideOverflow: true,
-            offset: {[Open.open]: 12}
         });
     }
 

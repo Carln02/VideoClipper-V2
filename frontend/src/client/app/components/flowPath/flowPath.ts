@@ -26,7 +26,9 @@ export class FlowPath extends TurboSelectEntry<string, string, "p", TurboView, S
 
         this.model.flow = properties.flow;
         this.mvc.emitter.add("name", () => this.value = this.model.name);
+        console.log("PRE CUR INIT")
         this.mvc.initialize();
+        console.log("POST CUR INIT")
         this.initializeUI();
     }
 
@@ -38,10 +40,21 @@ export class FlowPath extends TurboSelectEntry<string, string, "p", TurboView, S
     protected setupUIListeners() {
         super.setupUIListeners();
 
+        console.log(this.selected);
         this.onSelected = (b: boolean) => {
+            console.log("SELECTING", b);
+            console.log(this.model.flow.branches);
+            console.log(this.branchIdsArray);
+            console.log(this.branchIds);
+
+
+            this.model.flow.branches?.forEach(branch => {
+                console.log("SHOULD BE HIGHLIGHJTED", this.branchIdsArray?.includes(branch.dataId))
+                branch.highlighted = this.branchIdsArray?.includes(branch.dataId)
+            });
             if (!b) return;
-            this.model.flow.branches.forEach(branch =>
-                branch.highlighted = this.branchIdsArray.includes(branch.dataId));
+            this.model.flow.branches?.forEach(branch =>
+                branch.highlighted = this.branchIdsArray?.includes(branch.dataId));
         };
     }
 

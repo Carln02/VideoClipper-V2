@@ -27,5 +27,5 @@ export type ClipProperties<
     Model extends ClipModel = ClipModel,
     Manager extends DocumentManager = DocumentManager
 > = VcComponentProperties<View, Data, Model, Manager> & {
-    timeline: Timeline
+    timeline?: Timeline
 };

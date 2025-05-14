@@ -19,11 +19,10 @@ export class TimelineTimeController extends TurboController<Timeline, TimelineVi
 
     public reloadTime() {
         this.model.currentTime = (this.view.scrubber.translation / this.element.width * this.model.totalDuration) || 0;
-        this.element.refresh();
     }
 
     public getTimeFromPosition(e: TurboEvent): number {
-        let offsetPosition = e.position.x - this.view.clipsContainer.getBoundingClientRect().left;
+        let offsetPosition = e.position.x - this.view.scrubberContainer.getBoundingClientRect().left;
         if (offsetPosition < 0) offsetPosition = 0;
         if (offsetPosition > this.element.width) offsetPosition = this.element.width;
         return offsetPosition / this.element.width * this.model.totalDuration;

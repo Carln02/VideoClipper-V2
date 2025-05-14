@@ -7,6 +7,7 @@ import {Timeline} from "../../components/timeline/timeline";
 import {MetadataDrawer} from "../../components/metadataDrawer/metadataDrawer";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {Renderer} from "../../components/renderer/renderer";
+import {ClipTimeline} from "../../components/timeline/clipTimeline/clipTimeline";
 
 export class CameraView extends TurboView<Camera, CameraModel> {
     public cameraRenderer: Renderer;
@@ -33,15 +34,17 @@ export class CameraView extends TurboView<Camera, CameraModel> {
         this.toolbar = new Toolbar({classes: "left-toolbar", screenManager: this.element.screenManager});
         this.toolbar.populateWith(ToolType.selection, ToolType.shoot, ToolType.text, ToolType.delete);
 
-        this.timeline = new Timeline({
+        this.timeline = new ClipTimeline({
+            drawerProperties: {
+                side: Side.top,
+                icon: "chevron",
+                offset: {[Open.open]: -4},
+                initiallyOpen: true
+            },
             screenManager: this.element.screenManager,
             card: this.element.card,
             scaled: false,
             renderer: this.clipRenderer,
-            side: Side.top,
-            icon: "chevron",
-            offset: {[Open.open]: -4},
-            initiallyOpen: true
         });
 
         this.metadataDrawer = new MetadataDrawer({

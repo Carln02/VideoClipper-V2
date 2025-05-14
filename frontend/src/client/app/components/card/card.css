@@ -14,9 +14,7 @@ vc-card .vc-renderer {
     border: none;
 }
 
-vc-card > vc-timeline {
-
-
+vc-card > .vc-clip-timeline {
     min-height: 15em;
 }
 

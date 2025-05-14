@@ -3,7 +3,6 @@ import {FlowModel} from "./flow.model";
 import {SyncedFlowBranch} from "../flowBranch/flowBranch.types";
 import {FlowBranch} from "../flowBranch/flowBranch";
 import {FlowPoint} from "./flow.types";
-import {FlowEntryModel} from "../flowEntry/flowEntry.model";
 import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 import {YUtilities} from "../../../../yManagement/yUtilities";
 import structuredClone from "@ungap/structured-clone";

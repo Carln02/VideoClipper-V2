@@ -8,10 +8,19 @@ export class FlowTagView extends TurboView<FlowTag, FlowTagModel> {
     private wheel: TurboSelectWheel<string, string, FlowPath>;
     private playButton: TurboIcon;
 
+    public addPathEntry(path: FlowPath, index: number) {
+        this.wheel.addEntry(path, index);
+        if (!this.wheel.selectedEntry) this.wheel.select(path);
+    }
+
     protected setupUIElements() {
         super.setupUIElements();
 
-        this.wheel = new TurboSelectWheel<string, string, FlowPath>({direction: Direction.vertical, values: ["hi"]}).setStyle("margin", 0);
+        this.wheel = new TurboSelectWheel<string, string, FlowPath>({
+            direction: Direction.vertical,
+            values: [],
+            forceSelection: true,
+        }).setStyle("margin", 0);
         this.playButton = new TurboIcon({icon: "play", classes: "icon"});
     }
 
@@ -28,15 +37,7 @@ export class FlowTagView extends TurboView<FlowTag, FlowTagModel> {
 
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
-
-        this.element.onAttach = () => this.regenerateWheelEntries();
-        this.emitter.add("pathsChanged", () => this.regenerateWheelEntries());
-        this.emitter.add("nodeId", () => requestAnimationFrame(() => this.element.attachedNode.addChild(this.element)));
-     }
-
-    private regenerateWheelEntries() {
-        this.wheel.values = this.model.pathsArray.map(pathData =>
-            new FlowPath({data: pathData, value: pathData.get("name"), flow: this.element.flow}));
+        this.emitter.add("nodeId", () => this.element.attachedNode?.addChild(this.element));
     }
 
     private playPath(path: FlowPath) {
