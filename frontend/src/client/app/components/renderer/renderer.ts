@@ -61,6 +61,6 @@ export class Renderer<
     }
 
     public resize(aspectRatio: number = 1.33, width: number = this.offsetWidth, height: number = this.offsetHeight) {
-        this.canvasController.resize(aspectRatio, width, height);
+        this.view.resize(aspectRatio, width, height);
     }
 }

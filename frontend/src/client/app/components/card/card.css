@@ -1,21 +1,17 @@
 vc-card {
     position: absolute;
 
-    width: 13.3em;
-    height: 10em;
-    background-color: antiquewhite;
+    width: 18em;
 }
 
 vc-card.selected {
     z-index: 2;
 }
 
-vc-card .vc-renderer {
-    border: none;
-}
-
 vc-card > .vc-clip-timeline {
-    min-height: 15em;
+    position: absolute;
+    height: 100%;
+    top: 0;
 }
 
 vc-card > .card-title {

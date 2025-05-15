@@ -81,6 +81,7 @@ export abstract class YModel<
             const block = this.getBlock(blockKey);
             if (block && block.data && block.observer) block.data.unobserve(block.observer);
         }
+
         this.clear(blockKey);
         super.setBlock(value, id, blockKey, initialize);
     }

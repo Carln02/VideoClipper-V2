@@ -1,5 +1,5 @@
 import {ClipProperties, SyncedClip} from "../clip/clip.types";
-import {auto, define, TurboDrawer, TurboEvent} from "turbodombuilder";
+import {auto, define, TurboEvent} from "turbodombuilder";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {Clip} from "../clip/clip";
 import "./timeline.css";
@@ -27,9 +27,9 @@ export class Timeline<
         this.addClass("vc-timeline");
         this.screenManager = properties.screenManager;
         this.renderer = properties.renderer;
-        this.scaled = true;
 
         this.mvc.generate({
+            ...properties,
             viewConstructor: properties.viewConstructor ?? TimelineView as unknown as new () => View,
             modelConstructor: TimelineModel,
             controllerConstructors: [TimelinePlayController, TimelineClipController, TimelineTimeController],
@@ -43,7 +43,7 @@ export class Timeline<
         this.model.onClipChanged = () => this.reloadTime();
 
         this.mvc.initialize();
-        if (properties.scaled !== undefined) this.scaled = properties.scaled;
+        this.scaled = properties.scaled ?? false;
         this.card = properties.card;
     }
 
@@ -71,6 +71,11 @@ export class Timeline<
 
     protected get clipController(): TimelineClipController {
         return this.mvc.getController("clip") as TimelineClipController;
+    }
+
+    @auto()
+    public set hasControls(value: boolean) {
+        this.view.hasControls = value;
     }
 
     @auto()
@@ -123,7 +128,7 @@ export class Timeline<
     }
 
     public get width() {
-        return this.model.totalDuration * this.pixelsPerSecondUnit * ((this.scaled ? this.screenManager.canvas.scale : 1) || 1);
+        return this.offsetWidth;
     }
 
     public async addClip(clip: SyncedClip & YMap, index?: number): Promise<number> {

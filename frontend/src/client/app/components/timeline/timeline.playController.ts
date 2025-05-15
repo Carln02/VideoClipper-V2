@@ -43,7 +43,6 @@ export class TimelinePlayController extends TurboController<Timeline, TimelineVi
         await this.renderer.setFrame(curClip, offset);
         await this.renderer.playNext();
         await this.renderer.loadNext(nextClip);
-        console.log(nextClip);
         this.initializePlayTimer();
 
         const timeoutDuration = 1000 * ((curClip?.duration || 0) - offset);
@@ -62,7 +61,6 @@ export class TimelinePlayController extends TurboController<Timeline, TimelineVi
 
         this.model.timeHandler.resetTimeIfOutsideBounds();
         await this.renderer.loadNext(this.model.currentClip, this.model.indexInfo.offset);
-        console.log(this.model.currentClip);
         await this.playRecur(this.model.indexInfo.clipIndex, this.model.indexInfo.offset);
     }
 }

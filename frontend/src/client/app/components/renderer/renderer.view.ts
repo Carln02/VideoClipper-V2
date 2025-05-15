@@ -81,4 +81,17 @@ export class RendererView<
                 this.snapshotEffectTransition.transitionDuration[Shown.hidden] * 1000);
         }, this.snapshotEffectTransition.transitionDuration[Shown.visible] * 1000);
     }
+
+    public resize(aspectRatio: number = 1.33, width: number = this.element.offsetWidth,
+                  height: number = this.element.offsetHeight) {
+        if (width / height <= aspectRatio) height = width / aspectRatio;
+        else width = height * aspectRatio;
+
+        this.element.setStyles(`width: ${width}px; height: ${height}px`);
+        this.snapshotEffectDiv.setStyles(`width: ${width}px; height: ${height}px`);
+        this.videos.forEach(video => video.setStyles(`width: ${width}px; height: ${height}px`));
+
+        this.canvas.width = width;
+        this.canvas.height = height;
+    }
 }

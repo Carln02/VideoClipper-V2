@@ -12,7 +12,7 @@
         "lint": "eslint . --ext .ts"
     },
     "dependencies": {
-        "turbodombuilder": "0.8.82",
+        "turbodombuilder": "0.8.83",
         "@ffmpeg/ffmpeg": "^0.12.10",
         "@ffmpeg/types": "^0.12.2",
         "@ffmpeg/util": "^0.12.1",

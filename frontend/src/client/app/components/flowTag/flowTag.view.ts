@@ -41,6 +41,6 @@ export class FlowTagView extends TurboView<FlowTag, FlowTagModel> {
     }
 
     private playPath(path: FlowPath) {
-        new Playback({screenManager: this.element.screenManager, path: path, parent: document.body});
+        new Playback({screenManager: this.element.screenManager, path: path, parent: document.body, classes: "over-screen-playback"});
     }
 }

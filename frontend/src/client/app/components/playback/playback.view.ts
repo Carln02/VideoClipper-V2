@@ -1,14 +1,16 @@
-import {Open, Side, TurboView} from "turbodombuilder";
+import {div, TurboView} from "turbodombuilder";
 import {Playback} from "./playback";
 import {PlaybackModel} from "./playback.model";
 import {Timeline} from "../timeline/timeline";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 
 export class PlaybackView extends TurboView<Playback, PlaybackModel> {
+    protected scaleContainer: HTMLElement;
+
     public renderer: ClipRenderer;
     public timeline: Timeline;
 
-    initialize() {
+    public initialize() {
         super.initialize();
         this.resize();
     }
@@ -16,24 +18,17 @@ export class PlaybackView extends TurboView<Playback, PlaybackModel> {
     protected setupUIElements() {
         super.setupUIElements();
 
+        this.scaleContainer = div();
         this.renderer = new ClipRenderer({screenManager: this.element.screenManager, videoProperties: {playsInline: true}});
-
-        this.timeline = new Timeline({
-            screenManager: this.element.screenManager,
-            card: null,
-            scaled: false,
-            renderer: this.renderer,
-            side: Side.top,
-            icon: "chevron",
-            offset: {[Open.open]: -4},
-            initiallyOpen: true
-        });
+        this.timeline = new Timeline({screenManager: this.element.screenManager, renderer: this.renderer, initialize: true});
     }
 
     protected setupUILayout() {
         super.setupUILayout();
 
-        this.element.addChild([this.renderer, this.timeline]);
+        this.element.addChild(this.scaleContainer);
+        this.scaleContainer.addChild([this.renderer, this.timeline]);
+        this.element.childHandler = this.scaleContainer;
     }
 
     protected setupUIListeners() {

@@ -1,6 +1,17 @@
 import {Timeline} from "./timeline";
 import {TimelineModel} from "./timeline.model";
-import {DefaultEventName, div, flexRowCenter, icon, p, spacer, TurboEvent, TurboIcon, TurboView} from "turbodombuilder";
+import {
+    auto,
+    DefaultEventName,
+    div,
+    flexRowCenter,
+    icon,
+    p,
+    spacer,
+    TurboEvent,
+    TurboIcon,
+    TurboView
+} from "turbodombuilder";
 import {formatMMSS} from "../../../utils/time";
 import {Scrubber} from "../scrubber/scrubber";
 
@@ -16,11 +27,21 @@ export class TimelineView<
     protected totalDurationText: HTMLParagraphElement;
     protected playButton: TurboIcon;
 
+    public initialize() {
+        super.initialize();
+        this.emitter.fire("totalDurationChanged");
+    }
+
+    @auto()
+    public set hasControls(value: boolean) {
+        this.controlsContainer.setStyle("display", value ? "" : "none");
+    }
+
     protected setupUIElements() {
         super.setupUIElements();
 
         this.scrubberContainer = div({classes: "scrubber-container"});
-        this.scrubber = new Scrubber({timeline: this.element, screenManager: this.element.screenManager});
+        this.scrubber = new Scrubber({timeline: this.element, screenManager: this.element.screenManager, initialize: true});
 
         this.controlsContainer = flexRowCenter();
         this.currentTimeText = p({style: "min-width: 3em"});

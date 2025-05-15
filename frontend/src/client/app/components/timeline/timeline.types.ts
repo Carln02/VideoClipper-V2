@@ -18,7 +18,7 @@ export type TimelineIndexInfo = {
 
 export type TimelineProperties<View extends TimelineView = TimelineView> = VcComponentProperties<View, YArray<SyncedClip>, TimelineModel> & {
     screenManager: DocumentManager,
-    card: Card,
     renderer: ClipRenderer,
+    card?: Card,
     scaled?: boolean,
 };

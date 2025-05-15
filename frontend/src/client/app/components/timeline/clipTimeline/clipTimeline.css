@@ -3,6 +3,16 @@
     display: flex;
 }
 
+.vc-timeline.vc-clip-timeline .scrubber-container {
+    position: relative;
+    border-radius: 0.35em;
+    height: 3.8em;
+    background-color: transparent;
+
+    display: flex;
+    flex-direction: row;
+}
+
 .vc-clip-timeline .turbo-drawer {
     height: 120%;
     align-items: center;

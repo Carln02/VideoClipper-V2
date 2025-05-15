@@ -15,7 +15,7 @@ export class Scrubber extends VcComponent<any, any, any, DocumentManager> {
     //The timeline it is attached to
     public readonly timeline: Timeline;
 
-    public scaled: boolean = true;
+    public scaled: boolean = false;
 
     //Whether it is currently scrubbing (fired by the user's action)
     private scrubbing: boolean = false;
@@ -33,12 +33,12 @@ export class Scrubber extends VcComponent<any, any, any, DocumentManager> {
         if (properties.initialize) this.initializeUI();
     }
 
-
-
     protected setupUIListeners() {
         super.setupUIListeners();
+
         //Drag start --> start scrubbing and stop propagation
         this.addListener(TurboEventName.dragStart, (e: TurboDragEvent) => {
+            e.stopImmediatePropagation();
             this.scrubbing = true;
             if (this.onScrubbingStart) this.onScrubbingStart(e);
         });
@@ -63,6 +63,7 @@ export class Scrubber extends VcComponent<any, any, any, DocumentManager> {
      */
     @auto()
     public set translation(value: number) {
-        this.style.transform = `translate(calc(${value / (this.scaled ? this.screenManager.canvas.scale : 1)}px - 50%), 0)`;
+        const basis = this.scaled ? this.screenManager.canvas.scale : 1;
+        this.style.transform = `translate(calc(${value / basis}px - 50%), 0)`;
     }
 }

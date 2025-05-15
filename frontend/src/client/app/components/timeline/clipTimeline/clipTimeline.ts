@@ -17,6 +17,7 @@ export class ClipTimeline extends Timeline<ClipTimelineView> {
     public constructor(properties: ClipTimelineProperties) {
         super({...properties, viewConstructor: ClipTimelineView});
         this.addClass("vc-clip-timeline");
+        this.scaled = true;
         if (properties.drawerProperties) this.view.drawer.setProperties(properties.drawerProperties);
     }
 

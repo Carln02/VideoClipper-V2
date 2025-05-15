@@ -16,17 +16,18 @@ import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {MetadataDrawer} from "../metadataDrawer/metadataDrawer";
 import {Timeline} from "../timeline/timeline";
 import {ClipTimeline} from "../timeline/clipTimeline/clipTimeline";
+import {Playback} from "../playback/playback";
 
 export class CardView extends BranchingNodeView<Card, CardModel> {
     private titleElement: TurboInput;
     private durationElement: HTMLDivElement;
 
-    private _renderer: ClipRenderer;
+    private playback: Playback;
     private _metadataDrawer: MetadataDrawer;
     private _timeline: Timeline;
 
     public get renderer(): ClipRenderer {
-        return this._renderer;
+        return this.playback.renderer;
     }
 
     public get metadataDrawer(): MetadataDrawer {
@@ -57,7 +58,7 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
         this.titleElement = new TurboInput({selectTextOnFocus: true});
         this.durationElement = div();
 
-        this._renderer = new ClipRenderer({screenManager: this.element.screenManager});
+        this.playback = new Playback({screenManager: this.element.screenManager, card: this.element, classes: "card-playback"});
 
         this._metadataDrawer = new MetadataDrawer({
             card: this.element,
@@ -76,12 +77,15 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
             screenManager: this.element.screenManager,
             card: this.element,
             renderer: this.renderer,
+            model: this.playback.timeline.model
         });
+
+        this._timeline.hasControls = false;
     }
 
     protected setupUILayout(): void {
         this.element.addChild([
-            this.renderer,
+            this.playback,
             this.metadataDrawer,
             this.timeline,
             div({

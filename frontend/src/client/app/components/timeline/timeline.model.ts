@@ -1,15 +1,11 @@
 import {Clip} from "../clip/clip";
-import {YArray, YMap} from "../../../../yManagement/yManagement.types";
+import {YArray} from "../../../../yManagement/yManagement.types";
 import {SyncedClip} from "../clip/clip.types";
 import {TimelineIndexInfo} from "./timeline.types";
 import {auto, trim} from "turbodombuilder";
 import {TimelineClipHandler} from "./timeline.clipHandler";
 import {TimelineTimeHandler} from "./timeline.timeHandler";
 import {YManagerModel} from "../../../../yManagement/yModel/types/yManagerModel";
-import {SyncedCard} from "../card/card.types";
-import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
-import {SyncedFlowPath} from "../flowPath/flowPath.types";
-import {Flow} from "../flow/flow";
 import {Card} from "../card/card";
 
 export class TimelineModel extends YManagerModel<SyncedClip, Clip, number, YArray, string, "array"> {
@@ -27,7 +23,6 @@ export class TimelineModel extends YManagerModel<SyncedClip, Clip, number, YArra
     protected cardsModel: YManagerModel<string, Card, number, YArray>;
 
     public onCardAdded: (cardId: string, index: number) => Card = () => undefined;
-
     public onClipAdded: (syncedClip: SyncedClip, id: number, blockKey: number) => Clip = () => undefined;
     public onClipChanged: (syncedClip: SyncedClip, clip: Clip, id: number, blockKey: number) => void = () => {};
 
@@ -44,6 +39,7 @@ export class TimelineModel extends YManagerModel<SyncedClip, Clip, number, YArra
         this.cardsModel.onDeleted = () => {};
 
         this.onAdded = (syncedClip, id, blockKey) => {
+
             return this.onClipAdded(syncedClip, id, blockKey);
         };
 
@@ -80,9 +76,10 @@ export class TimelineModel extends YManagerModel<SyncedClip, Clip, number, YArra
         this.cardsModel.data = undefined;
         this._cards = data;
         this.clear();
+
         data.forEach((card: Card, index: number) => {
             if (!card) return;
-            this.addBlock(card.syncedClips, card.dataId, index)
+            this.setBlock(card.syncedClips, card.dataId, index)
         });
     }
 

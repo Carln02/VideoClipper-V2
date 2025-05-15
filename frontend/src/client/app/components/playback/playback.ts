@@ -8,6 +8,9 @@ import {VcComponent} from "../component/component";
 import {Clip} from "../clip/clip";
 import {PlaybackProperties} from "./playback.types";
 import {FlowPath} from "../flowPath/flowPath";
+import {Card} from "../card/card";
+import {Timeline} from "../timeline/timeline";
+import {ClipRenderer} from "../clipRenderer/clipRenderer";
 
 @define("vc-playback")
 export class Playback extends VcComponent<PlaybackView, object, PlaybackModel, DocumentManager> {
@@ -18,13 +21,26 @@ export class Playback extends VcComponent<PlaybackView, object, PlaybackModel, D
             viewConstructor: PlaybackView,
             modelConstructor: PlaybackModel
         });
-        this.path = properties.path;
+        if (properties.path) this.path = properties.path;
+        if (properties.card) this.card = properties.card;
     }
 
     @auto()
     public set path(value: FlowPath) {
         this.view.timeline.cardIds = value.cardIds;
-        console.log(value.cardIdsArray)
+    }
+
+    @auto()
+    public set card(value: Card) {
+        this.view.timeline.card = value;
+    }
+
+    public get renderer(): ClipRenderer {
+        return this.view.renderer;
+    }
+
+    public get timeline(): Timeline {
+        return this.view.timeline;
     }
 
     public get frameWidth() {

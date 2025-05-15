@@ -16,8 +16,6 @@ export class RequestManager {
         const request = new XMLHttpRequest();
         request.responseType = responseType;
 
-        console.log(url);
-
         request.onreadystatechange = _ => {
             if (request.readyState !== 4) return;
             if (request.status < 200 || request.status >= 300) {
