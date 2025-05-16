@@ -1578,9 +1578,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _branchingNode_branchingNode_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../branchingNode/branchingNode.view */ "./frontend/src/client/app/components/branchingNode/branchingNode.view.ts");
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 /* harmony import */ var _utils_time__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../utils/time */ "./frontend/src/client/utils/time.ts");
-/* harmony import */ var _metadataDrawer_metadataDrawer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../metadataDrawer/metadataDrawer */ "./frontend/src/client/app/components/metadataDrawer/metadataDrawer.ts");
-/* harmony import */ var _timeline_clipTimeline_clipTimeline__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../timeline/clipTimeline/clipTimeline */ "./frontend/src/client/app/components/timeline/clipTimeline/clipTimeline.ts");
-/* harmony import */ var _playback_playback__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../playback/playback */ "./frontend/src/client/app/components/playback/playback.ts");
+/* harmony import */ var _clipRenderer_clipRenderer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../clipRenderer/clipRenderer */ "./frontend/src/client/app/components/clipRenderer/clipRenderer.ts");
+/* harmony import */ var _metadataDrawer_metadataDrawer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../metadataDrawer/metadataDrawer */ "./frontend/src/client/app/components/metadataDrawer/metadataDrawer.ts");
+/* harmony import */ var _timeline_timeline__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../timeline/timeline */ "./frontend/src/client/app/components/timeline/timeline.ts");
 
 
 
@@ -1589,7 +1589,7 @@ __webpack_require__.r(__webpack_exports__);
 
 class CardView extends _branchingNode_branchingNode_view__WEBPACK_IMPORTED_MODULE_0__.BranchingNodeView {
     get renderer() {
-        return this.playback.renderer;
+        return this._renderer;
     }
     get metadataDrawer() {
         return this._metadataDrawer;
@@ -1613,30 +1613,26 @@ class CardView extends _branchingNode_branchingNode_view__WEBPACK_IMPORTED_MODUL
     setupUIElements() {
         this.titleElement = new turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboInput({ selectTextOnFocus: true });
         this.durationElement = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.div)();
-        this.playback = new _playback_playback__WEBPACK_IMPORTED_MODULE_5__.Playback({ screenManager: this.element.screenManager, card: this.element, classes: "card-playback" });
-        this._metadataDrawer = new _metadataDrawer_metadataDrawer__WEBPACK_IMPORTED_MODULE_3__.MetadataDrawer({
+        this._renderer = new _clipRenderer_clipRenderer__WEBPACK_IMPORTED_MODULE_3__.ClipRenderer({ screenManager: this.element.screenManager });
+        this._metadataDrawer = new _metadataDrawer_metadataDrawer__WEBPACK_IMPORTED_MODULE_4__.MetadataDrawer({
             card: this.element,
             icon: "chevron",
             hideOverflow: true,
             offset: { [turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Open.open]: 12 }
         });
-        this._timeline = new _timeline_clipTimeline_clipTimeline__WEBPACK_IMPORTED_MODULE_4__.ClipTimeline({
-            drawerProperties: {
-                icon: "chevron",
-                side: turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Side.right,
-                hideOverflow: true,
-                offset: { [turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Open.open]: 12 }
-            },
+        this._timeline = new _timeline_timeline__WEBPACK_IMPORTED_MODULE_5__.Timeline({
             screenManager: this.element.screenManager,
             card: this.element,
             renderer: this.renderer,
-            model: this.playback.timeline.model
+            icon: "chevron",
+            side: turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Side.right,
+            hideOverflow: true,
+            offset: { [turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Open.open]: 12 }
         });
-        this._timeline.hasControls = false;
     }
     setupUILayout() {
         this.element.addChild([
-            this.playback,
+            this.renderer,
             this.metadataDrawer,
             this.timeline,
             (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.div)({
@@ -1919,15 +1915,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _clip_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./clip.css */ "./frontend/src/client/app/components/clip/clip.css");
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _clip_model__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./clip.model */ "./frontend/src/client/app/components/clip/clip.model.ts");
-/* harmony import */ var _clipThumbnailController__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./clipThumbnailController */ "./frontend/src/client/app/components/clip/clipThumbnailController.ts");
-/* harmony import */ var _basicComponents_movableComponent_movableComponent__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../basicComponents/movableComponent/movableComponent */ "./frontend/src/client/app/components/basicComponents/movableComponent/movableComponent.ts");
-/* harmony import */ var _clip_textHandler__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./clip.textHandler */ "./frontend/src/client/app/components/clip/clip.textHandler.ts");
-/* harmony import */ var _textElement_textElement__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../textElement/textElement */ "./frontend/src/client/app/components/textElement/textElement.ts");
-/* harmony import */ var _component_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../component/component */ "./frontend/src/client/app/components/component/component.ts");
-/* harmony import */ var _utils_random__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../../utils/random */ "./frontend/src/client/utils/random.ts");
-/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
-/* harmony import */ var _clip_view__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./clip.view */ "./frontend/src/client/app/components/clip/clip.view.ts");
+/* harmony import */ var _clip_view__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./clip.view */ "./frontend/src/client/app/components/clip/clip.view.ts");
+/* harmony import */ var _clip_model__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./clip.model */ "./frontend/src/client/app/components/clip/clip.model.ts");
+/* harmony import */ var _clipThumbnailController__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./clipThumbnailController */ "./frontend/src/client/app/components/clip/clipThumbnailController.ts");
+/* harmony import */ var _basicComponents_movableComponent_movableComponent__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../basicComponents/movableComponent/movableComponent */ "./frontend/src/client/app/components/basicComponents/movableComponent/movableComponent.ts");
+/* harmony import */ var _clip_textHandler__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./clip.textHandler */ "./frontend/src/client/app/components/clip/clip.textHandler.ts");
+/* harmony import */ var _textElement_textElement__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../textElement/textElement */ "./frontend/src/client/app/components/textElement/textElement.ts");
+/* harmony import */ var _component_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../component/component */ "./frontend/src/client/app/components/component/component.ts");
+/* harmony import */ var _utils_random__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../../utils/random */ "./frontend/src/client/utils/random.ts");
+/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1955,17 +1951,17 @@ var Clip_1;
 
 
 
-let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MODULE_7__.VcComponent {
+let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MODULE_8__.VcComponent {
     constructor(properties) {
         super(Object.assign(Object.assign({}, properties), { generate: false }));
         this.onMediaDataChanged = () => { };
         this.timeline = properties.timeline;
         this.mvc.generate({
-            viewConstructor: properties.viewConstructor,
-            modelConstructor: _clip_model__WEBPACK_IMPORTED_MODULE_2__.ClipModel,
+            viewConstructor: _clip_view__WEBPACK_IMPORTED_MODULE_2__.ClipView,
+            modelConstructor: _clip_model__WEBPACK_IMPORTED_MODULE_3__.ClipModel,
             data: properties.data,
-            handlerConstructors: [_clip_textHandler__WEBPACK_IMPORTED_MODULE_5__.ClipTextHandler],
-            controllerConstructors: [_clipThumbnailController__WEBPACK_IMPORTED_MODULE_3__.ClipThumbnailController]
+            handlerConstructors: [_clip_textHandler__WEBPACK_IMPORTED_MODULE_6__.ClipTextHandler],
+            controllerConstructors: [_clipThumbnailController__WEBPACK_IMPORTED_MODULE_4__.ClipThumbnailController]
         });
         this.mvc.emitter.add("mediaId", (value) => __awaiter(this, void 0, void 0, function* () {
             this.model.updateMediaData(yield this.screenManager.MediaManager.getMedia(value));
@@ -1987,11 +1983,11 @@ let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MO
         if (!data.backgroundFill && !data.mediaId)
             data.backgroundFill = "#FFFFFF";
         if (!data.color)
-            data.color = (0,_utils_random__WEBPACK_IMPORTED_MODULE_8__.randomColor)();
-        const contentArray = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_9__.YUtilities.createYArray([]);
-        (_a = data.content) === null || _a === void 0 ? void 0 : _a.forEach((content) => contentArray.push([_textElement_textElement__WEBPACK_IMPORTED_MODULE_6__.TextElement.createData(content)]));
+            data.color = (0,_utils_random__WEBPACK_IMPORTED_MODULE_9__.randomColor)();
+        const contentArray = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__.YUtilities.createYArray([]);
+        (_a = data.content) === null || _a === void 0 ? void 0 : _a.forEach((content) => contentArray.push([_textElement_textElement__WEBPACK_IMPORTED_MODULE_7__.TextElement.createData(content)]));
         data.content = contentArray;
-        return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_9__.YUtilities.createYMap(data);
+        return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__.YUtilities.createYMap(data);
     }
     //Getters and setters
     /**
@@ -2004,8 +2000,7 @@ let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MO
     set selected(value) {
         var _a;
         super.selected = value;
-        if (this.view && this.view instanceof _clip_view__WEBPACK_IMPORTED_MODULE_10__.ClipView)
-            (_a = this.view) === null || _a === void 0 ? void 0 : _a.showHandles(value);
+        (_a = this.view) === null || _a === void 0 ? void 0 : _a.showHandles(value);
     }
     get card() {
         return this.timeline.card;
@@ -2064,13 +2059,7 @@ let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MO
      * @returns {HeadlessClip} - The clone.
      */
     clone() {
-        var _a;
-        const clone = new Clip_1({
-            timeline: this.timeline,
-            data: this.data,
-            viewConstructor: (_a = this.view) === null || _a === void 0 ? void 0 : _a.constructor,
-            screenManager: this.screenManager
-        });
+        const clone = new Clip_1({ timeline: this.timeline, data: this.data, screenManager: this.screenManager });
         clone.setStyle("width", this.offsetWidth + "px");
         clone.setStyle("height", this.offsetHeight + "px");
         clone.selected = this.selected;
@@ -2087,7 +2076,7 @@ let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MO
     cloneAndMove(e) {
         const clone = this.clone();
         this.setStyle("opacity", "0.4");
-        const moveableClone = new _basicComponents_movableComponent_movableComponent__WEBPACK_IMPORTED_MODULE_4__.MovableComponent(clone, this, { parent: this.screenManager.canvas.content });
+        const moveableClone = new _basicComponents_movableComponent_movableComponent__WEBPACK_IMPORTED_MODULE_5__.MovableComponent(clone, this, { parent: this.screenManager.canvas.content });
         moveableClone.translation = this.timeline.scaled ? e.scaledPosition : e.position;
         return moveableClone;
     }
@@ -2121,7 +2110,7 @@ class ClipView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
     reloadSize() {
         var _a;
         this.element.setStyle("width", ((_a = this.element.timeline) === null || _a === void 0 ? void 0 : _a.pixelsPerSecondUnit) * this.element.duration + "px");
-        this.element.timeline.reloadTime();
+        this.element.timeline.reloadSize();
     }
     setupChangedCallbacks() {
         super.setupChangedCallbacks();
@@ -2493,7 +2482,7 @@ let ClipRenderer = class ClipRenderer extends _renderer_renderer__WEBPACK_IMPORT
     }
     connectedCallback() {
         var _a, _b;
-        (_a = this.view) === null || _a === void 0 ? void 0 : _a.resize();
+        (_a = this.canvasController) === null || _a === void 0 ? void 0 : _a.resize();
         (_b = this.canvasController) === null || _b === void 0 ? void 0 : _b.refreshCanvas();
     }
     set visibilityMode(value) {
@@ -2688,14 +2677,6 @@ class ClipRendererView extends _renderer_renderer_view__WEBPACK_IMPORTED_MODULE_
     }
     showCurrentVideo() {
         this.videos.forEach((video, index) => video.show(index == this.model.currentIndex));
-    }
-    resize(aspectRatio = 1.33, width = this.element.offsetWidth, height = this.element.offsetHeight) {
-        super.resize(aspectRatio, width, height);
-        if (width / height <= aspectRatio)
-            height = width / aspectRatio;
-        else
-            width = height * aspectRatio;
-        this.textParent.setStyles(`width: ${width}px; height: ${height}px`);
     }
 }
 
@@ -4839,14 +4820,10 @@ let FlowPath = class FlowPath extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2
     setupUIListeners() {
         super.setupUIListeners();
         this.onSelected = (b) => {
-            var _a, _b;
-            (_a = this.model.flow.branches) === null || _a === void 0 ? void 0 : _a.forEach(branch => {
-                var _a;
-                branch.highlighted = (_a = this.branchIdsArray) === null || _a === void 0 ? void 0 : _a.includes(branch.dataId);
-            });
+            var _a;
             if (!b)
                 return;
-            (_b = this.model.flow.branches) === null || _b === void 0 ? void 0 : _b.forEach(branch => { var _a; return branch.highlighted = (_a = this.branchIdsArray) === null || _a === void 0 ? void 0 : _a.includes(branch.dataId); });
+            (_a = this.model.flow.branches) === null || _a === void 0 ? void 0 : _a.forEach(branch => { var _a; return branch.highlighted = (_a = this.branchIdsArray) === null || _a === void 0 ? void 0 : _a.includes(branch.dataId); });
         };
     }
     get name() {
@@ -4967,7 +4944,7 @@ class FlowTagModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IM
         this.pathsModel = new _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_3__.YManagerModel();
         this.pathsModel.onAdded = (pathData, index) => {
             var _a;
-            const path = new _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_2__.FlowPath({ value: pathData.get("name"), data: pathData, flow: this.flow });
+            const path = new _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_2__.FlowPath({ value: pathData.get("name"), flow: this.flow });
             (_a = this.onPathAdded) === null || _a === void 0 ? void 0 : _a.call(this, path, index);
             return path;
         };
@@ -5108,9 +5085,8 @@ __webpack_require__.r(__webpack_exports__);
 
 class FlowTagView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
     addPathEntry(path, index) {
+        console.log(path);
         this.wheel.addEntry(path, index);
-        if (!this.wheel.selectedEntry)
-            this.wheel.select(path);
     }
     setupUIElements() {
         super.setupUIElements();
@@ -5127,6 +5103,12 @@ class FlowTagView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView
     }
     setupUIListeners() {
         super.setupUIListeners();
+        this.wheel.onSelect = () => requestAnimationFrame(() => {
+            console.log(this.wheel.entries);
+            console.log(this.wheel.enabledEntries);
+            console.log(this.wheel.selectedEntries);
+            console.log(this.wheel.reifect.getEnabledObjectsData().map(obj => obj.object.deref()));
+        });
         this.playButton.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, () => this.playPath(this.wheel.selectedEntry));
     }
     setupChangedCallbacks() {
@@ -5134,7 +5116,7 @@ class FlowTagView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView
         this.emitter.add("nodeId", () => { var _a; return (_a = this.element.attachedNode) === null || _a === void 0 ? void 0 : _a.addChild(this.element); });
     }
     playPath(path) {
-        new _playback_playback__WEBPACK_IMPORTED_MODULE_1__.Playback({ screenManager: this.element.screenManager, path: path, parent: document.body, classes: "over-screen-playback" });
+        new _playback_playback__WEBPACK_IMPORTED_MODULE_1__.Playback({ screenManager: this.element.screenManager, path: path, parent: document.body });
     }
 }
 
@@ -5463,22 +5445,11 @@ let Playback = class Playback extends _component_component__WEBPACK_IMPORTED_MOD
             viewConstructor: _playback_view__WEBPACK_IMPORTED_MODULE_2__.PlaybackView,
             modelConstructor: _playback_model__WEBPACK_IMPORTED_MODULE_3__.PlaybackModel
         });
-        if (properties.path)
-            this.path = properties.path;
-        if (properties.card)
-            this.card = properties.card;
+        this.path = properties.path;
     }
     set path(value) {
         this.view.timeline.cardIds = value.cardIds;
-    }
-    set card(value) {
-        this.view.timeline.card = value;
-    }
-    get renderer() {
-        return this.view.renderer;
-    }
-    get timeline() {
-        return this.view.timeline;
+        console.log(value.cardIdsArray);
     }
     get frameWidth() {
         return this.view.renderer.offsetWidth;
@@ -5503,9 +5474,6 @@ let Playback = class Playback extends _component_component__WEBPACK_IMPORTED_MOD
 __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
 ], Playback.prototype, "path", null);
-__decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
-], Playback.prototype, "card", null);
 Playback = __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-playback")
 ], Playback);
@@ -5538,15 +5506,21 @@ class PlaybackView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboVie
     }
     setupUIElements() {
         super.setupUIElements();
-        this.scaleContainer = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)();
         this.renderer = new _clipRenderer_clipRenderer__WEBPACK_IMPORTED_MODULE_2__.ClipRenderer({ screenManager: this.element.screenManager, videoProperties: { playsInline: true } });
-        this.timeline = new _timeline_timeline__WEBPACK_IMPORTED_MODULE_1__.Timeline({ screenManager: this.element.screenManager, renderer: this.renderer, initialize: true });
+        this.timeline = new _timeline_timeline__WEBPACK_IMPORTED_MODULE_1__.Timeline({
+            screenManager: this.element.screenManager,
+            card: null,
+            scaled: false,
+            renderer: this.renderer,
+            side: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.top,
+            icon: "chevron",
+            offset: { [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Open.open]: -4 },
+            initiallyOpen: true
+        });
     }
     setupUILayout() {
         super.setupUILayout();
-        this.element.addChild(this.scaleContainer);
-        this.scaleContainer.addChild([this.renderer, this.timeline]);
-        this.element.childHandler = this.scaleContainer;
+        this.element.addChild([this.renderer, this.timeline]);
     }
     setupUIListeners() {
         super.setupUIListeners();
@@ -5751,6 +5725,20 @@ class RendererCanvasController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_
                 this.view.canvasContext.drawImage(fill, 0, 0, this.view.width, this.view.height);
             }
         });
+    }
+    resize(aspectRatio = 1.33, width = this.element.offsetWidth, height = this.element.offsetHeight) {
+        if (width / height <= aspectRatio) {
+            this.element.setStyle("width", width + "px");
+            this.element.setStyle("height", width / aspectRatio + "px");
+            this.view.canvas.width = width;
+            this.view.canvas.height = width / aspectRatio;
+        }
+        else {
+            this.element.setStyle("width", height * aspectRatio + "px");
+            this.element.setStyle("height", height + "px");
+            this.view.canvas.width = height * aspectRatio;
+            this.view.canvas.height = height;
+        }
     }
 }
 
@@ -6020,7 +6008,7 @@ let Renderer = class Renderer extends _component_component__WEBPACK_IMPORTED_MOD
         this.model.currentCanvasFill = fill;
     }
     resize(aspectRatio = 1.33, width = this.offsetWidth, height = this.offsetHeight) {
-        this.view.resize(aspectRatio, width, height);
+        this.canvasController.resize(aspectRatio, width, height);
     }
 };
 Renderer = __decorate([
@@ -6178,136 +6166,7 @@ class RendererView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboVie
             setTimeout(() => this.snapshotEffectDiv.setStyle("display", "none"), this.snapshotEffectTransition.transitionDuration[turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Shown.hidden] * 1000);
         }, this.snapshotEffectTransition.transitionDuration[turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Shown.visible] * 1000);
     }
-    resize(aspectRatio = 1.33, width = this.element.offsetWidth, height = this.element.offsetHeight) {
-        if (width / height <= aspectRatio)
-            height = width / aspectRatio;
-        else
-            width = height * aspectRatio;
-        this.element.setStyles(`width: ${width}px; height: ${height}px`);
-        this.snapshotEffectDiv.setStyles(`width: ${width}px; height: ${height}px`);
-        this.videos.forEach(video => video.setStyles(`width: ${width}px; height: ${height}px`));
-        this.canvas.width = width;
-        this.canvas.height = height;
-    }
 }
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/app/components/scrubber/clipScrubber/clipScrubber.css":
-/*!***********************************************************************************!*\
-  !*** ./frontend/src/client/app/components/scrubber/clipScrubber/clipScrubber.css ***!
-  \***********************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../../../../../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "./node_modules/style-loader/dist/runtime/styleDomAPI.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../../../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "./node_modules/style-loader/dist/runtime/insertBySelector.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../../../../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../../../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "./node_modules/style-loader/dist/runtime/insertStyleElement.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../../../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clipScrubber_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../../../../../node_modules/css-loader/dist/cjs.js!./clipScrubber.css */ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/app/components/scrubber/clipScrubber/clipScrubber.css");
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var options = {};
-
-options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
-options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
-options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
-options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
-options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clipScrubber_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
-
-
-
-
-       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clipScrubber_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_clipScrubber_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_clipScrubber_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/app/components/scrubber/clipScrubber/clipScrubber.ts":
-/*!**********************************************************************************!*\
-  !*** ./frontend/src/client/app/components/scrubber/clipScrubber/clipScrubber.ts ***!
-  \**********************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ClipScrubber: () => (/* binding */ ClipScrubber)
-/* harmony export */ });
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _clipScrubber_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./clipScrubber.css */ "./frontend/src/client/app/components/scrubber/clipScrubber/clipScrubber.css");
-/* harmony import */ var _scrubberMarkingMenu_scrubberMarkingMenu__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../scrubberMarkingMenu/scrubberMarkingMenu */ "./frontend/src/client/app/components/scrubberMarkingMenu/scrubberMarkingMenu.ts");
-/* harmony import */ var _scrubber__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../scrubber */ "./frontend/src/client/app/components/scrubber/scrubber.ts");
-var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var ClipScrubber_1;
-
-
-
-
-let ClipScrubber = ClipScrubber_1 = class ClipScrubber extends _scrubber__WEBPACK_IMPORTED_MODULE_3__.Scrubber {
-    constructor(properties = {}) {
-        super(Object.assign(Object.assign({}, properties), { initialize: false }));
-        this.addClass("vc-clip-scrubber");
-        if (!ClipScrubber_1.markingMenu) {
-            ClipScrubber_1.markingMenu = new _scrubberMarkingMenu_scrubberMarkingMenu__WEBPACK_IMPORTED_MODULE_2__.ScrubberMarkingMenu({});
-            this.screenManager.canvas.content.addChild(ClipScrubber_1.markingMenu);
-        }
-        if (properties.initialize)
-            this.initializeUI();
-    }
-    setupUIElements() {
-        super.setupUIElements();
-        this.head = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({ icon: "scrubber-head", directory: "assets/misc" });
-        this.markingMenuHandle = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)();
-    }
-    setupUILayout() {
-        super.setupUILayout();
-        this.addChild([this.head, this.markingMenuHandle]);
-    }
-    setupUIListeners() {
-        super.setupUIListeners();
-        ClipScrubber_1.markingMenu.attachTo(this.markingMenuHandle, (e) => {
-            ClipScrubber_1.markingMenu.scrubber = this;
-            ClipScrubber_1.markingMenu.show(true, this.scaled ? e.scaledPosition : e.position);
-        }, (e) => {
-            ClipScrubber_1.markingMenu.scrubber = this;
-            ClipScrubber_1.markingMenu.show(undefined, this.scaled ? e.scaledOrigins.first : e.origins.first);
-        });
-    }
-};
-ClipScrubber = ClipScrubber_1 = __decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-clip-scrubber")
-], ClipScrubber);
-
 
 
 /***/ }),
@@ -6379,33 +6238,46 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 /* harmony import */ var _scrubber_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./scrubber.css */ "./frontend/src/client/app/components/scrubber/scrubber.css");
 /* harmony import */ var _component_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../component/component */ "./frontend/src/client/app/components/component/component.ts");
+/* harmony import */ var _scrubberMarkingMenu_scrubberMarkingMenu__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../scrubberMarkingMenu/scrubberMarkingMenu */ "./frontend/src/client/app/components/scrubberMarkingMenu/scrubberMarkingMenu.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var Scrubber_1;
 
 
 
-let Scrubber = class Scrubber extends _component_component__WEBPACK_IMPORTED_MODULE_2__.VcComponent {
+
+let Scrubber = Scrubber_1 = class Scrubber extends _component_component__WEBPACK_IMPORTED_MODULE_2__.VcComponent {
     constructor(properties = {}) {
         var _a;
         super(properties);
-        this.scaled = false;
+        this.scaled = true;
         //Whether it is currently scrubbing (fired by the user's action)
         this.scrubbing = false;
-        this.addClass("vc-scrubber");
+        if (!Scrubber_1.markingMenu) {
+            Scrubber_1.markingMenu = new _scrubberMarkingMenu_scrubberMarkingMenu__WEBPACK_IMPORTED_MODULE_3__.ScrubberMarkingMenu({});
+            this.screenManager.canvas.content.addChild(Scrubber_1.markingMenu);
+        }
         this.timeline = properties.timeline;
         this.scaled = (_a = properties.scaled) !== null && _a !== void 0 ? _a : true;
-        if (properties.initialize)
-            this.initializeUI();
+        this.initializeUI();
+    }
+    setupUIElements() {
+        super.setupUIElements();
+        this.head = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({ icon: "scrubber-head", directory: "assets/misc" });
+        this.markingMenuHandle = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)();
+    }
+    setupUILayout() {
+        super.setupUILayout();
+        this.addChild([this.head, this.markingMenuHandle]);
     }
     setupUIListeners() {
         super.setupUIListeners();
         //Drag start --> start scrubbing and stop propagation
-        this.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.dragStart, (e) => {
-            e.stopImmediatePropagation();
+        this.head.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.dragStart, (e) => {
             this.scrubbing = true;
             if (this.onScrubbingStart)
                 this.onScrubbingStart(e);
@@ -6426,19 +6298,25 @@ let Scrubber = class Scrubber extends _component_component__WEBPACK_IMPORTED_MOD
             if (this.onScrubbingEnd)
                 this.onScrubbingEnd(e);
         });
+        Scrubber_1.markingMenu.attachTo(this.markingMenuHandle, (e) => {
+            Scrubber_1.markingMenu.scrubber = this;
+            Scrubber_1.markingMenu.show(true, this.scaled ? e.scaledPosition : e.position);
+        }, (e) => {
+            Scrubber_1.markingMenu.scrubber = this;
+            Scrubber_1.markingMenu.show(undefined, this.scaled ? e.scaledOrigins.first : e.origins.first);
+        });
     }
     /**
      * @description Translation value of the scrubber, in relation to the timeline container's dimensions.
      */
     set translation(value) {
-        const basis = this.scaled ? this.screenManager.canvas.scale : 1;
-        this.style.transform = `translate(calc(${value / basis}px - 50%), 0)`;
+        this.style.transform = `translate(calc(${value / (this.scaled ? this.screenManager.canvas.scale : 1)}px - 50%), 0)`;
     }
 };
 __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
 ], Scrubber.prototype, "translation", null);
-Scrubber = __decorate([
+Scrubber = Scrubber_1 = __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-scrubber")
 ], Scrubber);
 
@@ -6970,159 +6848,6 @@ class TextElementView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Turbo
 
 /***/ }),
 
-/***/ "./frontend/src/client/app/components/timeline/clipTimeline/clipTimeline.css":
-/*!***********************************************************************************!*\
-  !*** ./frontend/src/client/app/components/timeline/clipTimeline/clipTimeline.css ***!
-  \***********************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../../../../../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "./node_modules/style-loader/dist/runtime/styleDomAPI.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../../../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "./node_modules/style-loader/dist/runtime/insertBySelector.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../../../../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../../../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "./node_modules/style-loader/dist/runtime/insertStyleElement.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../../../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clipTimeline_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../../../../../node_modules/css-loader/dist/cjs.js!./clipTimeline.css */ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/app/components/timeline/clipTimeline/clipTimeline.css");
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var options = {};
-
-options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
-options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
-options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
-options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
-options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clipTimeline_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
-
-
-
-
-       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clipTimeline_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_clipTimeline_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_clipTimeline_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/app/components/timeline/clipTimeline/clipTimeline.ts":
-/*!**********************************************************************************!*\
-  !*** ./frontend/src/client/app/components/timeline/clipTimeline/clipTimeline.ts ***!
-  \**********************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ClipTimeline: () => (/* binding */ ClipTimeline)
-/* harmony export */ });
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _clipTimeline_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./clipTimeline.css */ "./frontend/src/client/app/components/timeline/clipTimeline/clipTimeline.css");
-/* harmony import */ var _timeline__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../timeline */ "./frontend/src/client/app/components/timeline/timeline.ts");
-/* harmony import */ var _clip_clip_view__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../clip/clip.view */ "./frontend/src/client/app/components/clip/clip.view.ts");
-/* harmony import */ var _clipTimeline_view__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./clipTimeline.view */ "./frontend/src/client/app/components/timeline/clipTimeline/clipTimeline.view.ts");
-var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-
-
-
-
-
-let ClipTimeline = class ClipTimeline extends _timeline__WEBPACK_IMPORTED_MODULE_2__.Timeline {
-    constructor(properties) {
-        super(Object.assign(Object.assign({}, properties), { viewConstructor: _clipTimeline_view__WEBPACK_IMPORTED_MODULE_4__.ClipTimelineView }));
-        this.addClass("vc-clip-timeline");
-        this.scaled = true;
-        if (properties.drawerProperties)
-            this.view.drawer.setProperties(properties.drawerProperties);
-    }
-    onClipAdded(syncedClip, id, blockKey) {
-        const clip = super.onClipAdded(syncedClip, id, blockKey, { viewConstructor: _clip_clip_view__WEBPACK_IMPORTED_MODULE_3__.ClipView });
-        this.view.scrubberContainer.addChild(clip, this.model.clipHandler.convertBlockScopeToIndex(id + 1, blockKey));
-        return clip;
-    }
-    set scaled(value) {
-        if (this.view && this.view.scrubber)
-            this.view.scrubber.scaled = value;
-    }
-    get width() {
-        return this.model.totalDuration * this.pixelsPerSecondUnit * ((this.scaled ? this.screenManager.canvas.scale : 1) || 1);
-    }
-    reloadTime() {
-        super.reloadTime();
-        this.view.drawer.refresh();
-    }
-    addIndicatorAt(indicator, index) {
-        indicator.remove();
-        this.view.scrubberContainer.addChild(indicator, index);
-    }
-};
-__decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
-], ClipTimeline.prototype, "scaled", null);
-ClipTimeline = __decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-clip-timeline")
-], ClipTimeline);
-
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/app/components/timeline/clipTimeline/clipTimeline.view.ts":
-/*!***************************************************************************************!*\
-  !*** ./frontend/src/client/app/components/timeline/clipTimeline/clipTimeline.view.ts ***!
-  \***************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ClipTimelineView: () => (/* binding */ ClipTimelineView)
-/* harmony export */ });
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _timeline_view__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../timeline.view */ "./frontend/src/client/app/components/timeline/timeline.view.ts");
-/* harmony import */ var _scrubber_clipScrubber_clipScrubber__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../scrubber/clipScrubber/clipScrubber */ "./frontend/src/client/app/components/scrubber/clipScrubber/clipScrubber.ts");
-
-
-
-class ClipTimelineView extends _timeline_view__WEBPACK_IMPORTED_MODULE_1__.TimelineView {
-    setupUIElements() {
-        super.setupUIElements();
-        this.drawer = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboDrawer({ icon: "chevron", side: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.right });
-        this.scrubber = new _scrubber_clipScrubber_clipScrubber__WEBPACK_IMPORTED_MODULE_2__.ClipScrubber({ timeline: this.element, screenManager: this.element.screenManager, initialize: true });
-    }
-    setupUILayout() {
-        this.element.addChild(this.drawer);
-        this.element.childHandler = this.drawer.childHandler;
-        super.setupUILayout();
-    }
-}
-
-
-/***/ }),
-
 /***/ "./frontend/src/client/app/components/timeline/timeline.clipController.ts":
 /*!********************************************************************************!*\
   !*** ./frontend/src/client/app/components/timeline/timeline.clipController.ts ***!
@@ -7417,7 +7142,7 @@ class TimelineModel extends _yManagement_yModel_types_yManagerModel__WEBPACK_IMP
         data.forEach((card, index) => {
             if (!card)
                 return;
-            this.setBlock(card.syncedClips, card.dataId, index);
+            this.addBlock(card.syncedClips, card.dataId, index);
         });
     }
     getCardAt(index) {
@@ -7540,6 +7265,7 @@ class TimelinePlayController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
             yield this.renderer.setFrame(curClip, offset);
             yield this.renderer.playNext();
             yield this.renderer.loadNext(nextClip);
+            console.log(nextClip);
             this.initializePlayTimer();
             const timeoutDuration = 1000 * (((curClip === null || curClip === void 0 ? void 0 : curClip.duration) || 0) - offset);
             this.model.nextTimer = setTimeout(() => this.playRecur(index + 1), timeoutDuration);
@@ -7558,6 +7284,7 @@ class TimelinePlayController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
             }
             this.model.timeHandler.resetTimeIfOutsideBounds();
             yield this.renderer.loadNext(this.model.currentClip, this.model.indexInfo.offset);
+            console.log(this.model.currentClip);
             yield this.playRecur(this.model.indexInfo.clipIndex, this.model.indexInfo.offset);
         });
     }
@@ -7593,9 +7320,10 @@ class TimelineTimeController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
     }
     reloadTime() {
         this.model.currentTime = (this.view.scrubber.translation / this.element.width * this.model.totalDuration) || 0;
+        this.element.refresh();
     }
     getTimeFromPosition(e) {
-        let offsetPosition = e.position.x - this.view.scrubberContainer.getBoundingClientRect().left;
+        let offsetPosition = e.position.x - this.view.clipsContainer.getBoundingClientRect().left;
         if (offsetPosition < 0)
             offsetPosition = 0;
         if (offsetPosition > this.element.width)
@@ -7657,7 +7385,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _timeline_timeController__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./timeline.timeController */ "./frontend/src/client/app/components/timeline/timeline.timeController.ts");
 /* harmony import */ var _timeline_clipHandler__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./timeline.clipHandler */ "./frontend/src/client/app/components/timeline/timeline.clipHandler.ts");
 /* harmony import */ var _timeline_timeHandler__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./timeline.timeHandler */ "./frontend/src/client/app/components/timeline/timeline.timeHandler.ts");
-/* harmony import */ var _component_component__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../component/component */ "./frontend/src/client/app/components/component/component.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -7683,50 +7410,53 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-
-let Timeline = class Timeline extends _component_component__WEBPACK_IMPORTED_MODULE_10__.VcComponent {
+let Timeline = class Timeline extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboDrawer {
     constructor(properties) {
-        var _a, _b;
         super(properties);
-        this.addClass("vc-timeline");
         this.screenManager = properties.screenManager;
         this.renderer = properties.renderer;
-        this.mvc.generate(Object.assign(Object.assign({}, properties), { viewConstructor: (_a = properties.viewConstructor) !== null && _a !== void 0 ? _a : _timeline_view__WEBPACK_IMPORTED_MODULE_3__.TimelineView, modelConstructor: _timeline_model__WEBPACK_IMPORTED_MODULE_4__.TimelineModel, controllerConstructors: [_timeline_playController__WEBPACK_IMPORTED_MODULE_5__.TimelinePlayController, _timeline_clipController__WEBPACK_IMPORTED_MODULE_6__.TimelineClipController, _timeline_timeController__WEBPACK_IMPORTED_MODULE_7__.TimelineTimeController], handlerConstructors: [_timeline_clipHandler__WEBPACK_IMPORTED_MODULE_8__.TimelineClipHandler, _timeline_timeHandler__WEBPACK_IMPORTED_MODULE_9__.TimelineTimeHandler], data: properties.data, initialize: false }));
-        this.model.onCardAdded = (cardId) => this.screenManager.getNode(cardId);
-        this.model.onClipAdded = (syncedClip, id, blockKey) => this.onClipAdded(syncedClip, id, blockKey);
-        this.model.onClipChanged = () => this.reloadTime();
-        this.mvc.initialize();
-        this.scaled = (_b = properties.scaled) !== null && _b !== void 0 ? _b : false;
-        this.card = properties.card;
-    }
-    onClipAdded(syncedClip, id, blockKey, clipProperties = {}) {
-        var _a;
-        const clip = new _clip_clip__WEBPACK_IMPORTED_MODULE_1__.Clip(Object.assign(Object.assign({}, clipProperties), { timeline: this, screenManager: this.screenManager }));
-        const snapToNext = id === ((_a = this.model.indexInfo) === null || _a === void 0 ? void 0 : _a.closestIntersection);
-        clip.onMediaDataChanged = (clip) => {
-            var _a;
-            if (clip != this.model.currentClip)
-                return;
-            this.renderer.setFrame(clip, (_a = this.model.indexInfo) === null || _a === void 0 ? void 0 : _a.offset);
-        };
-        requestAnimationFrame(() => {
-            var _a;
-            clip.data = syncedClip;
-            if (snapToNext)
-                this.snapToClosest(id + 1);
-            if (clip != this.model.currentClip)
-                this.renderer.setFrame(clip, (_a = this.model.indexInfo) === null || _a === void 0 ? void 0 : _a.offset);
+        this.scaled = true;
+        this.mvc.generate({
+            viewConstructor: _timeline_view__WEBPACK_IMPORTED_MODULE_3__.TimelineView,
+            modelConstructor: _timeline_model__WEBPACK_IMPORTED_MODULE_4__.TimelineModel,
+            controllerConstructors: [_timeline_playController__WEBPACK_IMPORTED_MODULE_5__.TimelinePlayController, _timeline_clipController__WEBPACK_IMPORTED_MODULE_6__.TimelineClipController, _timeline_timeController__WEBPACK_IMPORTED_MODULE_7__.TimelineTimeController],
+            handlerConstructors: [_timeline_clipHandler__WEBPACK_IMPORTED_MODULE_8__.TimelineClipHandler, _timeline_timeHandler__WEBPACK_IMPORTED_MODULE_9__.TimelineTimeHandler],
+            data: properties.data,
+            initialize: false
         });
-        return clip;
+        this.model.onCardAdded = (cardId) => this.screenManager.getNode(cardId);
+        this.model.onClipAdded = (syncedClip, id, blockKey) => {
+            var _a;
+            const clip = new _clip_clip__WEBPACK_IMPORTED_MODULE_1__.Clip({ timeline: this, screenManager: this.screenManager });
+            const snapToNext = id === ((_a = this.model.indexInfo) === null || _a === void 0 ? void 0 : _a.closestIntersection);
+            this.view.clipsContainer.addChild(clip, this.model.clipHandler.convertBlockScopeToIndex(id + 1, blockKey));
+            clip.onMediaDataChanged = (clip) => {
+                var _a;
+                if (clip != this.model.currentClip)
+                    return;
+                this.renderer.setFrame(clip, (_a = this.model.indexInfo) === null || _a === void 0 ? void 0 : _a.offset);
+            };
+            requestAnimationFrame(() => {
+                var _a;
+                clip.data = syncedClip;
+                if (snapToNext)
+                    this.snapToClosest(id + 1);
+                if (clip != this.model.currentClip)
+                    this.renderer.setFrame(clip, (_a = this.model.indexInfo) === null || _a === void 0 ? void 0 : _a.offset);
+            });
+            return clip;
+        };
+        this.model.onClipChanged = () => this.timeController.reloadTime();
+        this.mvc.initialize();
+        if (properties.scaled !== undefined)
+            this.scaled = properties.scaled;
+        this.card = properties.card;
     }
     get timeController() {
         return this.mvc.getController("time");
     }
     get clipController() {
         return this.mvc.getController("clip");
-    }
-    set hasControls(value) {
-        this.view.hasControls = value;
     }
     set scaled(value) {
         if (this.view && this.view.scrubber)
@@ -7773,7 +7503,7 @@ let Timeline = class Timeline extends _component_component__WEBPACK_IMPORTED_MOD
         return this.renderer.isPlaying;
     }
     get width() {
-        return this.offsetWidth;
+        return this.model.totalDuration * this.pixelsPerSecondUnit * ((this.scaled ? this.screenManager.canvas.scale : 1) || 1);
     }
     addClip(clip, index) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -7792,7 +7522,7 @@ let Timeline = class Timeline extends _component_component__WEBPACK_IMPORTED_MOD
     snapAtEnd() {
         this.snapToClosest(this.dataSize);
     }
-    reloadTime() {
+    reloadSize() {
         this.timeController.reloadTime();
     }
     getClipFromPosition(e) {
@@ -7807,12 +7537,9 @@ let Timeline = class Timeline extends _component_component__WEBPACK_IMPORTED_MOD
     }
     addIndicatorAt(indicator, index) {
         indicator.remove();
-        this.view.scrubberContainer.addChild(indicator, index);
+        this.view.clipsContainer.addChild(indicator, index);
     }
 };
-__decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
-], Timeline.prototype, "hasControls", null);
 __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
 ], Timeline.prototype, "scaled", null);
@@ -7838,28 +7565,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 /* harmony import */ var _utils_time__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../utils/time */ "./frontend/src/client/utils/time.ts");
 /* harmony import */ var _scrubber_scrubber__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../scrubber/scrubber */ "./frontend/src/client/app/components/scrubber/scrubber.ts");
-var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
 
 
 
 class TimelineView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
-    initialize() {
-        super.initialize();
-        this.emitter.fire("totalDurationChanged");
-    }
-    set hasControls(value) {
-        this.controlsContainer.setStyle("display", value ? "" : "none");
-    }
     setupUIElements() {
         super.setupUIElements();
-        this.scrubberContainer = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ classes: "scrubber-container" });
-        this.scrubber = new _scrubber_scrubber__WEBPACK_IMPORTED_MODULE_2__.Scrubber({ timeline: this.element, screenManager: this.element.screenManager, initialize: true });
-        this.controlsContainer = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.flexRowCenter)();
+        this.scrubberContainer = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ classes: "clips-container" });
+        this.scrubber = new _scrubber_scrubber__WEBPACK_IMPORTED_MODULE_2__.Scrubber({ timeline: this.element, parent: this.scrubberContainer, screenManager: this.element.screenManager });
         this.currentTimeText = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.p)({ style: "min-width: 3em" });
         this.totalDurationText = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.p)({ style: "min-width: 3em; text-align: right" });
         this.playButton = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({
@@ -7869,15 +7582,19 @@ class TimelineView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboVie
     }
     setupUILayout() {
         super.setupUILayout();
-        this.controlsContainer.addChild([
-            this.currentTimeText,
-            (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.spacer)(),
-            this.playButton,
-            (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.spacer)(),
-            this.totalDurationText
-        ]);
         this.scrubberContainer.addChild(this.scrubber, 0);
-        this.element.addChild([this.scrubberContainer, this.controlsContainer]);
+        this.element.addChild([
+            this.scrubberContainer,
+            (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.flexRowCenter)({
+                children: [
+                    this.currentTimeText,
+                    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.spacer)(),
+                    this.playButton,
+                    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.spacer)(),
+                    this.totalDurationText
+                ]
+            })
+        ]);
     }
     setupUIListeners() {
         super.setupUIListeners();
@@ -7901,9 +7618,6 @@ class TimelineView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboVie
         this.playButton.icon = isPlaying ? "pause" : "play";
     }
 }
-__decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
-], TimelineView.prototype, "hasControls", null);
 
 
 /***/ }),
@@ -8161,7 +7875,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _screenManager_screenManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../screenManager/screenManager */ "./frontend/src/client/app/managers/screenManager/screenManager.ts");
 /* harmony import */ var _documentManager_documentManager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../documentManager/documentManager */ "./frontend/src/client/app/managers/documentManager/documentManager.ts");
 /* harmony import */ var _appManager_types__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./appManager.types */ "./frontend/src/client/app/managers/appManager/appManager.types.ts");
-/* harmony import */ var _authenticationManager_authenticationManager__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../authenticationManager/authenticationManager */ "./frontend/src/client/app/managers/authenticationManager/authenticationManager.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8173,11 +7886,9 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
-
 let AppManager = class AppManager extends _screenManager_screenManager__WEBPACK_IMPORTED_MODULE_2__.ScreenManager {
     constructor(properties) {
         super(properties);
-        this._authenticationManager = new _authenticationManager_authenticationManager__WEBPACK_IMPORTED_MODULE_5__.AuthenticationManager();
         this._eventManager = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventManager();
         this._cursorManager = new _cursorManager_cursorManager__WEBPACK_IMPORTED_MODULE_1__.CursorManager();
         this.addScreen(new _documentManager_documentManager__WEBPACK_IMPORTED_MODULE_3__.DocumentManager({ screenManager: this }), _appManager_types__WEBPACK_IMPORTED_MODULE_4__.AppScreens.document);
@@ -8230,92 +7941,6 @@ var AppScreens;
 (function (AppScreens) {
     AppScreens["document"] = "document";
 })(AppScreens || (AppScreens = {}));
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/app/managers/authenticationManager/authenticationManager.ts":
-/*!*****************************************************************************************!*\
-  !*** ./frontend/src/client/app/managers/authenticationManager/authenticationManager.ts ***!
-  \*****************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   AuthenticationManager: () => (/* binding */ AuthenticationManager)
-/* harmony export */ });
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-class AuthenticationManager {
-    constructor() {
-        window.addEventListener("load", () => __awaiter(this, void 0, void 0, function* () { return yield this.setup(); }));
-    }
-    setup() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const isLoggedIn = yield this.checkLoginStatus();
-            if (isLoggedIn) {
-                console.log("User already logged in");
-                return;
-            }
-            if (!this.isGoogleDefined()) {
-                console.error("Google script not loaded");
-                return;
-            }
-            this.initialize();
-            this.render();
-        });
-    }
-    isGoogleDefined() {
-        return !!window.google;
-    }
-    checkLoginStatus() {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const res = yield fetch("/api/auth/me", { credentials: "include" });
-                if (!res.ok)
-                    return false;
-                const data = yield res.json();
-                return data.loggedIn === true;
-            }
-            catch (_a) {
-                return false;
-            }
-        });
-    }
-    initialize() {
-        var _a;
-        (_a = window.google) === null || _a === void 0 ? void 0 : _a.accounts.id.initialize({
-            client_id: "494682680465-p2mlm6q6aefp7lu45qe8f5lcl9kj5j8t.apps.googleusercontent.com",
-            callback: (response) => __awaiter(this, void 0, void 0, function* () {
-                var _a;
-                const result = yield fetch("/api/auth/google", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ idToken: response.credential }),
-                });
-                if (result.ok) {
-                    console.log("Logged in successfully");
-                    (_a = document.getElementById("google-login")) === null || _a === void 0 ? void 0 : _a.remove();
-                }
-                else {
-                    alert("Login failed.");
-                }
-            })
-        });
-    }
-    render() {
-        var _a;
-        (_a = window.google) === null || _a === void 0 ? void 0 : _a.accounts.id.renderButton(document.getElementById("google-login"), { theme: "outline", size: "large" });
-    }
-}
 
 
 /***/ }),
@@ -9233,6 +8858,7 @@ class RequestManager {
     makeRequest(url, method, body, onSuccess = () => { }, onFailure = () => { }, parse = false, responseType = "text") {
         const request = new XMLHttpRequest();
         request.responseType = responseType;
+        console.log(url);
         request.onreadystatechange = _ => {
             if (request.readyState !== 4)
                 return;
@@ -10846,10 +10472,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 /* harmony import */ var _components_clipRenderer_clipRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../components/clipRenderer/clipRenderer */ "./frontend/src/client/app/components/clipRenderer/clipRenderer.ts");
 /* harmony import */ var _components_toolbar_toolbar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../components/toolbar/toolbar */ "./frontend/src/client/app/components/toolbar/toolbar.ts");
-/* harmony import */ var _components_metadataDrawer_metadataDrawer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/metadataDrawer/metadataDrawer */ "./frontend/src/client/app/components/metadataDrawer/metadataDrawer.ts");
-/* harmony import */ var _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../managers/toolManager/toolManager.types */ "./frontend/src/client/app/managers/toolManager/toolManager.types.ts");
-/* harmony import */ var _components_renderer_renderer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../components/renderer/renderer */ "./frontend/src/client/app/components/renderer/renderer.ts");
-/* harmony import */ var _components_timeline_clipTimeline_clipTimeline__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../components/timeline/clipTimeline/clipTimeline */ "./frontend/src/client/app/components/timeline/clipTimeline/clipTimeline.ts");
+/* harmony import */ var _components_timeline_timeline__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/timeline/timeline */ "./frontend/src/client/app/components/timeline/timeline.ts");
+/* harmony import */ var _components_metadataDrawer_metadataDrawer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../components/metadataDrawer/metadataDrawer */ "./frontend/src/client/app/components/metadataDrawer/metadataDrawer.ts");
+/* harmony import */ var _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../managers/toolManager/toolManager.types */ "./frontend/src/client/app/managers/toolManager/toolManager.types.ts");
+/* harmony import */ var _components_renderer_renderer__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../components/renderer/renderer */ "./frontend/src/client/app/components/renderer/renderer.ts");
 
 
 
@@ -10864,25 +10490,23 @@ class CameraView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView 
     }
     setupUIElements() {
         super.setupUIElements();
-        this.cameraRenderer = new _components_renderer_renderer__WEBPACK_IMPORTED_MODULE_5__.Renderer({ screenManager: this.element.screenManager,
+        this.cameraRenderer = new _components_renderer_renderer__WEBPACK_IMPORTED_MODULE_6__.Renderer({ screenManager: this.element.screenManager,
             videoProperties: { autoplay: true, muted: true, playsInline: true } });
         this.clipRenderer = new _components_clipRenderer_clipRenderer__WEBPACK_IMPORTED_MODULE_1__.ClipRenderer({ screenManager: this.element.screenManager, videoProperties: { playsInline: true } });
         //TODO this.sidePanel = new SidePanel(this.element, this.captureManager);
         this.toolbar = new _components_toolbar_toolbar__WEBPACK_IMPORTED_MODULE_2__.Toolbar({ classes: "left-toolbar", screenManager: this.element.screenManager });
-        this.toolbar.populateWith(_managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_4__.ToolType.selection, _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_4__.ToolType.shoot, _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_4__.ToolType.text, _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_4__.ToolType.delete);
-        this.timeline = new _components_timeline_clipTimeline_clipTimeline__WEBPACK_IMPORTED_MODULE_6__.ClipTimeline({
-            drawerProperties: {
-                side: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.top,
-                icon: "chevron",
-                offset: { [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Open.open]: -4 },
-                initiallyOpen: true
-            },
+        this.toolbar.populateWith(_managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_5__.ToolType.selection, _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_5__.ToolType.shoot, _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_5__.ToolType.text, _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_5__.ToolType.delete);
+        this.timeline = new _components_timeline_timeline__WEBPACK_IMPORTED_MODULE_3__.Timeline({
             screenManager: this.element.screenManager,
             card: this.element.card,
             scaled: false,
             renderer: this.clipRenderer,
+            side: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.top,
+            icon: "chevron",
+            offset: { [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Open.open]: -4 },
+            initiallyOpen: true
         });
-        this.metadataDrawer = new _components_metadataDrawer_metadataDrawer__WEBPACK_IMPORTED_MODULE_3__.MetadataDrawer({
+        this.metadataDrawer = new _components_metadataDrawer_metadataDrawer__WEBPACK_IMPORTED_MODULE_4__.MetadataDrawer({
             card: this.element.card,
             side: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.bottom,
             icon: "chevron",
@@ -13481,10 +13105,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _yModel__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../yModel */ "./frontend/src/yManagement/yModel/yModel.ts");
 
 /**
- * @class YComponentModel
- * @extends YModel
- * @description An MVC model that handles a Yjs map and observes changes on its direct fields, firing change
- * callbacks at the keys that changed through the emitter.
+ * @class YComponent
+ * @extends TurboElement
+ * @description A general class representing a component attached to a Ywrapped data object. It takes as a
+ * generic the datatype of the data that is shared through Yjs. Components that extend this class would ideally
+ * include defined callbacks that will be triggered by Thibaut's Ywrapper accordingly when the attached data changes.
+ * @template DataType
  */
 class YComponentModel extends _yModel__WEBPACK_IMPORTED_MODULE_0__.YModel {
     observeChanges(event, blockKey) {
@@ -13515,18 +13141,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-/**
- * @class YManagerModel
- * @template DataType - The type of the data stored in each block.
- * @template ComponentType - The type of component that corresponds to each entry/field of the data.
- * @template {string | number | symbol} KeyType - The type of the keys used to access data in blocks.
- * @template {YMap | YArray} YType - The type of the Yjs data (YMap or YArray).
- * @template {string | number | symbol} IdType - The type of the block IDs.
- * @template {"array" | "map"} BlocksType - Whether data blocks are stored as an array or a map.
- * @template {YManagerDataBlock<YType, IdType, ComponentType, KeyType>} BlockType - The structure of each data block.
- * @description MVC model that manages Yjs data and synchronizes it with a map or array of components, each attached to
- * one entry of the data object.
- */
 class YManagerModel extends _yModel__WEBPACK_IMPORTED_MODULE_1__.YModel {
     constructor() {
         super(...arguments);
@@ -13542,15 +13156,6 @@ class YManagerModel extends _yModel__WEBPACK_IMPORTED_MODULE_1__.YModel {
             (_a = this.getBlock(blockKey).instances) === null || _a === void 0 ? void 0 : _a.delete(id);
         };
     }
-    /**
-     * @function createBlock
-     * @description Creates a data block entry.
-     * @param {YType} value - The data of the block.
-     * @param {IdType} [id] - The optional ID of the data.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The key of the block.
-     * @protected
-     * @return {BlockType} - The created block.
-     */
     createBlock(value, id, blockKey = this.defaultBlockKey) {
         return Object.assign(Object.assign({}, super.createBlock(value, id, blockKey)), { instances: new Map() });
     }
@@ -13584,11 +13189,6 @@ class YManagerModel extends _yModel__WEBPACK_IMPORTED_MODULE_1__.YModel {
         }
         return this.getAllBlocks(blockKey).flatMap(block => { var _a; return Array.from((_a = block.instances) === null || _a === void 0 ? void 0 : _a.values()) || []; });
     }
-    /**
-     * @function clear
-     * @description Clears the block data at the given key.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block key.
-     */
     clear(blockKey = this.defaultComputationBlockKey) {
         super.clear(blockKey);
         this.getAllBlocks(blockKey).forEach(block => {
@@ -13597,13 +13197,6 @@ class YManagerModel extends _yModel__WEBPACK_IMPORTED_MODULE_1__.YModel {
             (_b = block === null || block === void 0 ? void 0 : block.instances) === null || _b === void 0 ? void 0 : _b.clear();
         });
     }
-    /**
-     * @function fireKeyChangedCallback
-     * @description Fires the emitter's change callback for the given key in a block, passing it the data at the key's value.
-     * @param {KeyType} key - The key that changed.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey=this.defaultBlockKey] - The block where the change occurred.
-     * @param {boolean} [deleted=false] - Whether the key was deleted.
-     */
     fireKeyChangedCallback(key, blockKey = this.defaultBlockKey, deleted = false) {
         var _a, _b;
         if (!this.getAllKeys(blockKey).includes(key)) {
@@ -13716,28 +13309,16 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 /**
- * @class YModel
- * @abstract
- * @extends TurboModel
- * @template DataType - The plain shape of the shared data.
- * @template {YMap | YArray} YType - The Yjs type used (YMap or YArray).
- * @template {string | number} KeyType - The type of keys used to access values.
- * @template {string | number} IdType - The type of block identifiers.
- * @template {"array" | "map"} BlocksType - Either 'array' or 'map' depending on the block storage format.
- * @template {YDataBlock<YType, IdType>} BlockType - The structure of each block including observer.
- * @description A model that wraps and manages Yjs data structures (YMap/YArray), adding automatic observer support.
- *  */
+ * @class YComponent
+ * @extends TurboElement
+ * @description A general class representing a component attached to a Ywrapped data object. It takes as a
+ * generic the datatype of the data that is shared through Yjs. Components that extend this class would ideally
+ * include defined callbacks that will be triggered by Thibaut's Ywrapper accordingly when the attached data changes.
+ * @template DataType
+ */
 class YModel extends turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboModel {
     /**
-     * @constructor
-     * @param {DataType} [data] - Initial data. Not initialized if provided.
-     * @param {BlocksType} [dataBlocksType] - Type of data blocks (array or map).
-     */
-    constructor(data, dataBlocksType) {
-        super(data, dataBlocksType);
-    }
-    /**
-     * @description The data of the default block.
+     * @description The observed data. When it is set, this component will set again all the defined setters.
      */
     get data() {
         return super.data;
@@ -13747,9 +13328,9 @@ class YModel extends turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboModel {
             return;
         super.data = value;
     }
-    /**
-     * @description Whether callbacks are enabled or disabled.
-     */
+    constructor(data, dataBlocksType) {
+        super(data, dataBlocksType);
+    }
     set enabledCallbacks(value) {
         this.getAllBlocks().forEach(block => {
             if (!block.observer || !block.data)
@@ -13760,14 +13341,6 @@ class YModel extends turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboModel {
                 block.data.unobserve(block.observer);
         });
     }
-    /**
-     * @function getData
-     * @description Retrieves the value associated with a given key in the specified block.
-     * @param {KeyType} key - The key to retrieve.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block from which to retrieve the
-     * data.
-     * @returns {unknown} The value associated with the key, or null if not found.
-     */
     getData(key, blockKey = this.defaultBlockKey) {
         const data = this.getBlockData(blockKey);
         if (data instanceof _yManagement_types__WEBPACK_IMPORTED_MODULE_0__.YMap)
@@ -13779,13 +13352,6 @@ class YModel extends turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboModel {
         }
         return null;
     }
-    /**
-     * @function setData
-     * @description Sets the value for a given key in the specified block and triggers callbacks (if enabled).
-     * @param {KeyType} key - The key to update.
-     * @param {unknown} value - The value to assign.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block to update.
-     */
     setData(key, value, blockKey = this.defaultBlockKey) {
         const data = this.getBlockData(blockKey);
         if (data instanceof _yManagement_types__WEBPACK_IMPORTED_MODULE_0__.YMap)
@@ -13799,38 +13365,15 @@ class YModel extends turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboModel {
             data.insert(index, [value]);
         }
     }
-    /**
-     * @function getSize
-     * @description Returns the size of the specified block.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block to check.
-     * @returns {number} The size.
-     */
     getSize(blockKey = this.defaultBlockKey) {
         const data = this.getBlockData(blockKey);
         if (data instanceof _yManagement_types__WEBPACK_IMPORTED_MODULE_0__.YMap || data instanceof _yManagement_types__WEBPACK_IMPORTED_MODULE_0__.YArray)
             return (data instanceof _yManagement_types__WEBPACK_IMPORTED_MODULE_0__.YArray) ? data.length : data.size;
         return 0;
     }
-    /**
-     * @function createBlock
-     * @description Creates a data block entry.
-     * @param {YType} value - The data of the block.
-     * @param {IdType} [id] - The optional ID of the data.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The key of the block.
-     * @protected
-     * @return {BlockType} - The created block.
-     */
     createBlock(value, id, blockKey = this.defaultBlockKey) {
         return Object.assign(Object.assign({}, super.createBlock(value, id)), { observer: (event) => this.observeChanges(event, blockKey) });
     }
-    /**
-     * @function setBlock
-     * @description Creates and sets a data block at the specified key.
-     * @param {YType} value - The data to set.
-     * @param {IdType} [id] - Optional block ID.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The key of the block.
-     * @param {boolean} [initialize = true] - Whether to initialize the block after setting.
-     */
     setBlock(value, id, blockKey = this.defaultBlockKey, initialize = true) {
         if (this.enabledCallbacks) {
             const block = this.getBlock(blockKey);
@@ -13840,23 +13383,12 @@ class YModel extends turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboModel {
         this.clear(blockKey);
         super.setBlock(value, id, blockKey, initialize);
     }
-    /**
-     * @function initialize
-     * @description Initializes the block at the given key, and triggers callbacks for all the keys in its data.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block key.
-     */
     initialize(blockKey = this.defaultBlockKey) {
         var _a;
         super.initialize(blockKey);
         const block = this.getBlock(blockKey);
         (_a = block === null || block === void 0 ? void 0 : block.data) === null || _a === void 0 ? void 0 : _a.observe(block === null || block === void 0 ? void 0 : block.observer);
     }
-    /**
-     * @function getAllKeys
-     * @description Retrieves all keys within the given block(s).
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey=this.defaultComputationBlockKey] - The block key.
-     * @returns {KeyType[]} Array of keys.
-     */
     getAllKeys(blockKey = this.defaultComputationBlockKey) {
         const output = [];
         for (const block of this.getAllBlocks(blockKey)) {
@@ -13870,12 +13402,6 @@ class YModel extends turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboModel {
         }
         return output;
     }
-    /**
-     * @function getAllObservers
-     * @description Retrieves all observers within the given block(s).
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey=this.defaultComputationBlockKey] - The block key.
-     * @returns {((event: YEvent) => void)[]} Array of observers.
-     */
     getAllObservers(blockKey = this.defaultComputationBlockKey) {
         return this.getAllBlocks(blockKey).map(block => block.observer);
     }
@@ -13911,32 +13437,13 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 
-/**
- * @class YUtilities
- * @description Static utility functions for working with Yjs collaborative types (YMap, YArray, etc).
- */
 class YUtilities {
-    /**
-     * @function createYMap
-     * @static
-     * @description Creates a YMap and populates it with key-value pairs from a plain object.
-     * @param {object} data - The initial data to populate the YMap with.
-     * @returns {YMap} A new YMap instance.
-     */
     static createYMap(data) {
         const map = new _yManagement_types__WEBPACK_IMPORTED_MODULE_0__.YMap();
         for (const [key, value] of Object.entries(data))
             map.set(key, value);
         return map;
     }
-    /**
-     * @function createYArray
-     * @static
-     * @template DataType - The type of the array's content.
-     * @description Creates a YArray and populates it with elements from a plain array.
-     * @param {DataType[]} data - The array of data to populate the YArray with.
-     * @returns {YArray} A new YArray instance.
-     */
     static createYArray(data) {
         const array = new _yManagement_types__WEBPACK_IMPORTED_MODULE_0__.YArray();
         array.push(data);
@@ -13946,11 +13453,13 @@ class YUtilities {
      * @function addInYMap
      * @static
      * @async
-     * @description Adds the provided data in the provided parent in the Yjs document, with a unique ID as its field name.
+     * @description Adds the provided data in the provided parent in the Yjs document, with a unique ID as its field
+     * name.
      * @param {object} data - The data to append to the Yjs document.
-     * @param {YMap} parentYMap - The YMap to add the data to.
-     * @param {string} [id] - Optional ID to use. If not provided, a unique ID is generated.
-     * @returns {Promise<string>} The ID of the inserted data.
+     * @param parentYMap
+     * @param id
+     * document.
+     * @returns {Promise<string>} - The ID of the data in its parent.
      */
     static addInYMap(data, parentYMap, id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -13965,9 +13474,11 @@ class YUtilities {
      * @static
      * @description Adds the provided data in the provided parent array in the Yjs document.
      * @param {object} data - The data to append to the Yjs document.
-     * @param {YArray} parentYArray - The YArray to which the data should be appended.
-     * @param {number} [index] - The index to insert the data at. If omitted or invalid, it is appended at the end.
-     * @returns {number} The index where the data was inserted.
+     * @param {YArray} parentYArray - The pointer to the parent array to which the data should be appended in
+     * the Yjs document.
+     * @param {number} [index] - The index position in the array where the data should be added. By default, the data
+     * is pushed at the end of the array.
+     * @returns {number} - The index of the data in its parent.
      */
     static addInYArray(data, parentYArray, index) {
         if (index == undefined || index > parentYArray.length) {
@@ -13981,14 +13492,6 @@ class YUtilities {
         }
         return index;
     }
-    /**
-     * @function removeFromYArray
-     * @static
-     * @description Removes the first occurrence of the given entry from the YArray.
-     * @param {unknown} entry - The entry to remove.
-     * @param {YArray} parentYArray - The parent YArray.
-     * @returns {boolean} True if removed, false otherwise.
-     */
     static removeFromYArray(entry, parentYArray) {
         for (const [index, child] of parentYArray.toArray()) {
             if (entry != child)
@@ -13998,16 +13501,6 @@ class YUtilities {
         }
         return false;
     }
-    /**
-     * @function deepObserveAny
-     * @static
-     * @description Observes deeply for changes to any of the specified fields and invokes callback when any field
-     * changes.
-     * @param {YAbstractType} data - The Yjs type to observe.
-     * @param {(fieldChanged: string, event: YEvent, target: YAbstractType) => void} callback - The function to call
-     * when a matching field changes.
-     * @param {...string} fieldNames - List of field names to observe.
-     */
     static deepObserveAny(data, callback, ...fieldNames) {
         if (!data)
             return;
@@ -14029,15 +13522,6 @@ class YUtilities {
             }
         });
     }
-    /**
-     * @function deepObserveAll
-     * @static
-     * @description Observes deeply for changes to all specified fields and invokes callback only when all fields
-     * have changed.
-     * @param {YAbstractType} data - The Yjs type to observe.
-     * @param {(event: YEvent, target: YAbstractType) => void} callback - The function to call when all fields change.
-     * @param {...string} fieldNames - List of field names to observe.
-     */
     static deepObserveAll(data, callback, ...fieldNames) {
         if (!data)
             return;
@@ -14910,17 +14394,23 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 ___CSS_LOADER_EXPORT___.push([module.id, `vc-card {
     position: absolute;
 
-    width: 18em;
+    width: 13.3em;
+    height: 10em;
+    background-color: antiquewhite;
 }
 
 vc-card.selected {
     z-index: 2;
 }
 
-vc-card > .vc-clip-timeline {
-    position: absolute;
-    height: 100%;
-    top: 0;
+vc-card .vc-renderer {
+    border: none;
+}
+
+vc-card > vc-timeline {
+
+
+    min-height: 15em;
 }
 
 vc-card > .card-title {
@@ -14943,7 +14433,7 @@ vc-card > .card-title > turbo-input > turbo-rich-element {
     background-color: transparent;
     border: none;
     color: black;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/app/components/card/card.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;;IAElB,WAAW;AACf;;AAEA;IACI,UAAU;AACd;;AAEA;IACI,kBAAkB;IAClB,YAAY;IACZ,MAAM;AACV;;AAEA;IACI,kBAAkB;IAClB,aAAa;IACb,mBAAmB;IACnB,UAAU;;IAEV,SAAS;IACT,OAAO;IACP,QAAQ;;IAER,UAAU;AACd;;AAEA;IACI,UAAU;IACV,SAAS;;IAET,6BAA6B;IAC7B,YAAY;IACZ,YAAY;AAChB","sourcesContent":["vc-card {\r\n    position: absolute;\r\n\r\n    width: 18em;\r\n}\r\n\r\nvc-card.selected {\r\n    z-index: 2;\r\n}\r\n\r\nvc-card > .vc-clip-timeline {\r\n    position: absolute;\r\n    height: 100%;\r\n    top: 0;\r\n}\r\n\r\nvc-card > .card-title {\r\n    position: absolute;\r\n    display: flex;\r\n    flex-direction: row;\r\n    gap: 0.5em;\r\n\r\n    top: -2em;\r\n    left: 0;\r\n    right: 0;\r\n\r\n    padding: 0;\r\n}\r\n\r\nvc-card > .card-title > turbo-input > turbo-rich-element {\r\n    padding: 0;\r\n    margin: 0;\r\n\r\n    background-color: transparent;\r\n    border: none;\r\n    color: black;\r\n}"],"sourceRoot":""}]);
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/app/components/card/card.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;;IAElB,aAAa;IACb,YAAY;IACZ,8BAA8B;AAClC;;AAEA;IACI,UAAU;AACd;;AAEA;IACI,YAAY;AAChB;;AAEA;;;IAGI,gBAAgB;AACpB;;AAEA;IACI,kBAAkB;IAClB,aAAa;IACb,mBAAmB;IACnB,UAAU;;IAEV,SAAS;IACT,OAAO;IACP,QAAQ;;IAER,UAAU;AACd;;AAEA;IACI,UAAU;IACV,SAAS;;IAET,6BAA6B;IAC7B,YAAY;IACZ,YAAY;AAChB","sourcesContent":["vc-card {\r\n    position: absolute;\r\n\r\n    width: 13.3em;\r\n    height: 10em;\r\n    background-color: antiquewhite;\r\n}\r\n\r\nvc-card.selected {\r\n    z-index: 2;\r\n}\r\n\r\nvc-card .vc-renderer {\r\n    border: none;\r\n}\r\n\r\nvc-card > vc-timeline {\r\n\r\n\r\n    min-height: 15em;\r\n}\r\n\r\nvc-card > .card-title {\r\n    position: absolute;\r\n    display: flex;\r\n    flex-direction: row;\r\n    gap: 0.5em;\r\n\r\n    top: -2em;\r\n    left: 0;\r\n    right: 0;\r\n\r\n    padding: 0;\r\n}\r\n\r\nvc-card > .card-title > turbo-input > turbo-rich-element {\r\n    padding: 0;\r\n    margin: 0;\r\n\r\n    background-color: transparent;\r\n    border: none;\r\n    color: black;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -15275,42 +14765,45 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `vc-playback {
-    display: block;
-    background-color: white;
-}
-
-vc-playback > div:first-child {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-    width: 100%;
-    height: 100%;
-}
-
-vc-playback vc-clip-renderer {
-    width: 100%;
-    height: fit-content;
-    box-sizing: content-box;
-    border: 1px solid #e1dfdf;
-}
-
-.over-screen-playback {
     position: absolute;
     top: 20px;
     right: 20px;
 
+    height: 225px;
     width: 300px;
-    padding: 20px;
-    border-radius: 16px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: black;
 }
 
-.card-playback {
-    position: relative;
-    width: calc(100% - 2em);
-    padding: 1em;
-    border-radius: 0.4em;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/app/components/playback/playback.css"],"names":[],"mappings":"AAAA;IACI,cAAc;IACd,uBAAuB;AAC3B;;AAEA;IACI,kBAAkB;IAClB,aAAa;IACb,sBAAsB;IACtB,QAAQ;IACR,WAAW;IACX,YAAY;AAChB;;AAEA;IACI,WAAW;IACX,mBAAmB;IACnB,uBAAuB;IACvB,yBAAyB;AAC7B;;AAEA;IACI,kBAAkB;IAClB,SAAS;IACT,WAAW;;IAEX,YAAY;IACZ,aAAa;IACb,mBAAmB;AACvB;;AAEA;IACI,kBAAkB;IAClB,uBAAuB;IACvB,YAAY;IACZ,oBAAoB;AACxB","sourcesContent":["vc-playback {\r\n    display: block;\r\n    background-color: white;\r\n}\r\n\r\nvc-playback > div:first-child {\r\n    position: relative;\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 1em;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\nvc-playback vc-clip-renderer {\r\n    width: 100%;\r\n    height: fit-content;\r\n    box-sizing: content-box;\r\n    border: 1px solid #e1dfdf;\r\n}\r\n\r\n.over-screen-playback {\r\n    position: absolute;\r\n    top: 20px;\r\n    right: 20px;\r\n\r\n    width: 300px;\r\n    padding: 20px;\r\n    border-radius: 16px;\r\n}\r\n\r\n.card-playback {\r\n    position: relative;\r\n    width: calc(100% - 2em);\r\n    padding: 1em;\r\n    border-radius: 0.4em;\r\n}"],"sourceRoot":""}]);
+vc-playback vc-timeline {
+    position: absolute;
+    top: calc(100% - 3em);
+}
+
+vc-playback > #capture-bar {
+    position: absolute;
+    height: 100%;
+    right: 0;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    padding: 2em 2em 2em 0;
+
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+vc-playback > #capture-bar > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    margin-left: 2em;
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/app/components/playback/playback.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,SAAS;IACT,WAAW;;IAEX,aAAa;IACb,YAAY;;IAEZ,aAAa;IACb,uBAAuB;IACvB,mBAAmB;;IAEnB,uBAAuB;AAC3B;;AAEA;IACI,kBAAkB;IAClB,qBAAqB;AACzB;;AAEA;IACI,kBAAkB;IAClB,YAAY;IACZ,QAAQ;;IAER,aAAa;IACb,mBAAmB;IACnB,mBAAmB;;IAEnB,sBAAsB;;IAEtB,oCAAoC;AACxC;;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,QAAQ;IACR,gBAAgB;AACpB","sourcesContent":["vc-playback {\r\n    position: absolute;\r\n    top: 20px;\r\n    right: 20px;\r\n\r\n    height: 225px;\r\n    width: 300px;\r\n\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n\r\n    background-color: black;\r\n}\r\n\r\nvc-playback vc-timeline {\r\n    position: absolute;\r\n    top: calc(100% - 3em);\r\n}\r\n\r\nvc-playback > #capture-bar {\r\n    position: absolute;\r\n    height: 100%;\r\n    right: 0;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    align-items: center;\r\n\r\n    padding: 2em 2em 2em 0;\r\n\r\n    background-color: rgba(0, 0, 0, 0.3);\r\n}\r\n\r\nvc-playback > #capture-bar > div:last-child {\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 2em;\r\n    margin-left: 2em;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -15388,15 +14881,18 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `.vc-renderer {
-    display: block;
+    position: absolute;
     width: 100%;
     height: 100%;
     overflow: hidden;
     aspect-ratio: 1.33;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .vc-renderer > * {
     position: absolute;
+    width: 100%;
+    height: 100%;
 }
 
 .vc-renderer > video {
@@ -15406,76 +14902,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.vc-renderer {
 .vc-renderer > .snapshot-effect-div {
     opacity: 0;
     background-color: black;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/app/components/renderer/renderer.css"],"names":[],"mappings":"AAAA;IACI,cAAc;IACd,WAAW;IACX,YAAY;IACZ,gBAAgB;IAChB,kBAAkB;AACtB;;AAEA;IACI,kBAAkB;AACtB;;AAEA;IACI,mBAAmB;AACvB;;AAEA;IACI,UAAU;IACV,uBAAuB;AAC3B","sourcesContent":[".vc-renderer {\r\n    display: block;\r\n    width: 100%;\r\n    height: 100%;\r\n    overflow: hidden;\r\n    aspect-ratio: 1.33;\r\n}\r\n\r\n.vc-renderer > * {\r\n    position: absolute;\r\n}\r\n\r\n.vc-renderer > video {\r\n    object-fit: contain;\r\n}\r\n\r\n.vc-renderer > .snapshot-effect-div {\r\n    opacity: 0;\r\n    background-color: black;\r\n}"],"sourceRoot":""}]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/app/components/scrubber/clipScrubber/clipScrubber.css":
-/*!*************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/app/components/scrubber/clipScrubber/clipScrubber.css ***!
-  \*************************************************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
-// Imports
-
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, `.vc-scrubber.vc-clip-scrubber {
-    position: absolute;
-    bottom: 0;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    width: 0.2em;
-    background-color: red;
-    height: calc(100% + 1em);
-    border-radius: 10px;
-
-    z-index: 2;
-}
-
-.vc-clip-scrubber > * {
-    position: absolute;
-    transform: translateX(0.01em);
-}
-
-.vc-clip-scrubber > :first-child {
-    top: -0.8em;
-
-    width: 1em;
-    height: 1em;
-    padding: 0.5em;
-}
-
-.vc-clip-scrubber > :first-child > svg {
-    width: 100%;
-    height: 100%;
-    fill: red;
-}
-
-.vc-clip-scrubber > div:last-child {
-    top: -1.6em;
-    width: 1em;
-    height: 1em;
-
-    border-radius: 2em;
-    background-color: pink;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/app/components/scrubber/clipScrubber/clipScrubber.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,SAAS;;IAET,aAAa;IACb,sBAAsB;IACtB,mBAAmB;;IAEnB,YAAY;IACZ,qBAAqB;IACrB,wBAAwB;IACxB,mBAAmB;;IAEnB,UAAU;AACd;;AAEA;IACI,kBAAkB;IAClB,6BAA6B;AACjC;;AAEA;IACI,WAAW;;IAEX,UAAU;IACV,WAAW;IACX,cAAc;AAClB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,SAAS;AACb;;AAEA;IACI,WAAW;IACX,UAAU;IACV,WAAW;;IAEX,kBAAkB;IAClB,sBAAsB;AAC1B","sourcesContent":[".vc-scrubber.vc-clip-scrubber {\r\n    position: absolute;\r\n    bottom: 0;\r\n\r\n    display: flex;\r\n    flex-direction: column;\r\n    align-items: center;\r\n\r\n    width: 0.2em;\r\n    background-color: red;\r\n    height: calc(100% + 1em);\r\n    border-radius: 10px;\r\n\r\n    z-index: 2;\r\n}\r\n\r\n.vc-clip-scrubber > * {\r\n    position: absolute;\r\n    transform: translateX(0.01em);\r\n}\r\n\r\n.vc-clip-scrubber > :first-child {\r\n    top: -0.8em;\r\n\r\n    width: 1em;\r\n    height: 1em;\r\n    padding: 0.5em;\r\n}\r\n\r\n.vc-clip-scrubber > :first-child > svg {\r\n    width: 100%;\r\n    height: 100%;\r\n    fill: red;\r\n}\r\n\r\n.vc-clip-scrubber > div:last-child {\r\n    top: -1.6em;\r\n    width: 1em;\r\n    height: 1em;\r\n\r\n    border-radius: 2em;\r\n    background-color: pink;\r\n}"],"sourceRoot":""}]);
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/app/components/renderer/renderer.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,WAAW;IACX,YAAY;IACZ,gBAAgB;IAChB,kBAAkB;IAClB,0CAA0C;AAC9C;;AAEA;IACI,kBAAkB;IAClB,WAAW;IACX,YAAY;AAChB;;AAEA;IACI,mBAAmB;AACvB;;AAEA;IACI,UAAU;IACV,uBAAuB;AAC3B","sourcesContent":[".vc-renderer {\r\n    position: absolute;\r\n    width: 100%;\r\n    height: 100%;\r\n    overflow: hidden;\r\n    aspect-ratio: 1.33;\r\n    border: 1px solid rgba(255, 255, 255, 0.3);\r\n}\r\n\r\n.vc-renderer > * {\r\n    position: absolute;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\n.vc-renderer > video {\r\n    object-fit: contain;\r\n}\r\n\r\n.vc-renderer > .snapshot-effect-div {\r\n    opacity: 0;\r\n    background-color: black;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -15502,19 +14929,49 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `.vc-scrubber {
+___CSS_LOADER_EXPORT___.push([module.id, `vc-scrubber {
     position: absolute;
+    bottom: 0;
 
     display: flex;
     flex-direction: column;
     align-items: center;
 
+    width: 0.2em;
+    background-color: red;
+    height: calc(100% + 1em);
+    border-radius: 10px;
+
+    z-index: 2;
+}
+
+vc-scrubber > * {
+    position: absolute;
+    transform: translateX(0.01em);
+}
+
+vc-scrubber > :first-child {
+    top: -0.8em;
+
+    width: 1em;
+    height: 1em;
+    padding: 0.5em;
+}
+
+vc-scrubber > :first-child > svg {
+    width: 100%;
+    height: 100%;
+    fill: red;
+}
+
+vc-scrubber > div:last-child {
+    top: -1.6em;
     width: 1em;
     height: 1em;
 
-    background-color: #727377;
-    border-radius: 1em;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/app/components/scrubber/scrubber.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;;IAElB,aAAa;IACb,sBAAsB;IACtB,mBAAmB;;IAEnB,UAAU;IACV,WAAW;;IAEX,yBAAyB;IACzB,kBAAkB;AACtB","sourcesContent":[".vc-scrubber {\r\n    position: absolute;\r\n\r\n    display: flex;\r\n    flex-direction: column;\r\n    align-items: center;\r\n\r\n    width: 1em;\r\n    height: 1em;\r\n\r\n    background-color: #727377;\r\n    border-radius: 1em;\r\n}"],"sourceRoot":""}]);
+    border-radius: 2em;
+    background-color: pink;
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/app/components/scrubber/scrubber.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,SAAS;;IAET,aAAa;IACb,sBAAsB;IACtB,mBAAmB;;IAEnB,YAAY;IACZ,qBAAqB;IACrB,wBAAwB;IACxB,mBAAmB;;IAEnB,UAAU;AACd;;AAEA;IACI,kBAAkB;IAClB,6BAA6B;AACjC;;AAEA;IACI,WAAW;;IAEX,UAAU;IACV,WAAW;IACX,cAAc;AAClB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,SAAS;AACb;;AAEA;IACI,WAAW;IACX,UAAU;IACV,WAAW;;IAEX,kBAAkB;IAClB,sBAAsB;AAC1B","sourcesContent":["vc-scrubber {\r\n    position: absolute;\r\n    bottom: 0;\r\n\r\n    display: flex;\r\n    flex-direction: column;\r\n    align-items: center;\r\n\r\n    width: 0.2em;\r\n    background-color: red;\r\n    height: calc(100% + 1em);\r\n    border-radius: 10px;\r\n\r\n    z-index: 2;\r\n}\r\n\r\nvc-scrubber > * {\r\n    position: absolute;\r\n    transform: translateX(0.01em);\r\n}\r\n\r\nvc-scrubber > :first-child {\r\n    top: -0.8em;\r\n\r\n    width: 1em;\r\n    height: 1em;\r\n    padding: 0.5em;\r\n}\r\n\r\nvc-scrubber > :first-child > svg {\r\n    width: 100%;\r\n    height: 100%;\r\n    fill: red;\r\n}\r\n\r\nvc-scrubber > div:last-child {\r\n    top: -1.6em;\r\n    width: 1em;\r\n    height: 1em;\r\n\r\n    border-radius: 2em;\r\n    background-color: pink;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -15585,110 +15042,6 @@ vc-text-entry input {
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/app/components/timeline/clipTimeline/clipTimeline.css":
-/*!*************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/app/components/timeline/clipTimeline/clipTimeline.css ***!
-  \*************************************************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
-// Imports
-
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, `.vc-timeline.vc-clip-timeline {
-    height: 100%;
-    display: flex;
-    width: 0;
-    right: 0;
-}
-
-.vc-timeline.vc-clip-timeline .scrubber-container {
-    position: relative;
-    border-radius: 0.35em;
-    height: 3.8em;
-    background-color: transparent;
-
-    display: flex;
-    flex-direction: row;
-}
-
-.vc-clip-timeline .turbo-drawer {
-    height: 120%;
-    align-items: center;
-}
-
-.vc-clip-timeline .turbo-drawer .turbo-drawer-panel-container {
-    height: 100%;
-    display: flex;
-    background-color: transparent;
-}
-
-.vc-clip-timeline .turbo-drawer .turbo-drawer-panel {
-    display: flex !important;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.vc-clip-timeline .turbo-drawer .clips-container {
-    position: relative;
-    border-radius: 0.35em;
-    height: calc(6em - 2.4em);
-
-    display: flex;
-    flex-direction: row;
-
-    flex-grow: 1;
-
-    z-index: 2;
-}
-
-.vc-clip-timeline .top-drawer {
-    bottom: 1em;
-}
-
-.vc-clip-timeline .right-drawer {
-    position: absolute;
-    left: 100%;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.vc-clip-timeline .play-button {
-    height: 1.5em;
-    padding: 0.2em;
-}
-
-.vc-clip-timeline vc-clip .vc-clip-content {
-    border-radius: 0;
-}
-
-.vc-clip-timeline vc-clip:nth-child(2) .vc-clip-content {
-    border-radius: 0.35em 0 0 0.35em;
-}
-
-.vc-clip-timeline vc-clip:last-child .vc-clip-content {
-    border-radius:  0 0.35em 0.35em 0;
-}
-
-.vc-clip-timeline vc-clip:last-child:nth-child(2) .vc-clip-content {
-    border-radius:  0.35em;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/app/components/timeline/clipTimeline/clipTimeline.css"],"names":[],"mappings":"AAAA;IACI,YAAY;IACZ,aAAa;IACb,QAAQ;IACR,QAAQ;AACZ;;AAEA;IACI,kBAAkB;IAClB,qBAAqB;IACrB,aAAa;IACb,6BAA6B;;IAE7B,aAAa;IACb,mBAAmB;AACvB;;AAEA;IACI,YAAY;IACZ,mBAAmB;AACvB;;AAEA;IACI,YAAY;IACZ,aAAa;IACb,6BAA6B;AACjC;;AAEA;IACI,wBAAwB;IACxB,sBAAsB;IACtB,WAAW;AACf;;AAEA;IACI,kBAAkB;IAClB,qBAAqB;IACrB,yBAAyB;;IAEzB,aAAa;IACb,mBAAmB;;IAEnB,YAAY;;IAEZ,UAAU;AACd;;AAEA;IACI,WAAW;AACf;;AAEA;IACI,kBAAkB;IAClB,UAAU;IACV,QAAQ;IACR,2BAA2B;AAC/B;;AAEA;IACI,aAAa;IACb,cAAc;AAClB;;AAEA;IACI,gBAAgB;AACpB;;AAEA;IACI,gCAAgC;AACpC;;AAEA;IACI,iCAAiC;AACrC;;AAEA;IACI,sBAAsB;AAC1B","sourcesContent":[".vc-timeline.vc-clip-timeline {\r\n    height: 100%;\r\n    display: flex;\r\n    width: 0;\r\n    right: 0;\r\n}\r\n\r\n.vc-timeline.vc-clip-timeline .scrubber-container {\r\n    position: relative;\r\n    border-radius: 0.35em;\r\n    height: 3.8em;\r\n    background-color: transparent;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n}\r\n\r\n.vc-clip-timeline .turbo-drawer {\r\n    height: 120%;\r\n    align-items: center;\r\n}\r\n\r\n.vc-clip-timeline .turbo-drawer .turbo-drawer-panel-container {\r\n    height: 100%;\r\n    display: flex;\r\n    background-color: transparent;\r\n}\r\n\r\n.vc-clip-timeline .turbo-drawer .turbo-drawer-panel {\r\n    display: flex !important;\r\n    flex-direction: column;\r\n    gap: 0.5rem;\r\n}\r\n\r\n.vc-clip-timeline .turbo-drawer .clips-container {\r\n    position: relative;\r\n    border-radius: 0.35em;\r\n    height: calc(6em - 2.4em);\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n\r\n    flex-grow: 1;\r\n\r\n    z-index: 2;\r\n}\r\n\r\n.vc-clip-timeline .top-drawer {\r\n    bottom: 1em;\r\n}\r\n\r\n.vc-clip-timeline .right-drawer {\r\n    position: absolute;\r\n    left: 100%;\r\n    top: 50%;\r\n    transform: translateY(-50%);\r\n}\r\n\r\n.vc-clip-timeline .play-button {\r\n    height: 1.5em;\r\n    padding: 0.2em;\r\n}\r\n\r\n.vc-clip-timeline vc-clip .vc-clip-content {\r\n    border-radius: 0;\r\n}\r\n\r\n.vc-clip-timeline vc-clip:nth-child(2) .vc-clip-content {\r\n    border-radius: 0.35em 0 0 0.35em;\r\n}\r\n\r\n.vc-clip-timeline vc-clip:last-child .vc-clip-content {\r\n    border-radius:  0 0.35em 0.35em 0;\r\n}\r\n\r\n.vc-clip-timeline vc-clip:last-child:nth-child(2) .vc-clip-content {\r\n    border-radius:  0.35em;\r\n}"],"sourceRoot":""}]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
 /***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/app/components/timeline/timeline.css":
 /*!********************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/app/components/timeline/timeline.css ***!
@@ -15709,45 +15062,65 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `.vc-timeline {
+___CSS_LOADER_EXPORT___.push([module.id, `vc-timeline {
+    height: 10em;
+}
+
+vc-timeline.turbo-drawer .turbo-drawer-panel-container {
+    height: 100%;
     display: flex;
+    background-color: transparent;
+}
+
+vc-timeline.turbo-drawer .turbo-drawer-panel {
+    display: flex !important;
     flex-direction: column;
-    gap: 0.5em;
-    width: 100%;
+    gap: 0.5rem;
 }
 
-.vc-timeline .vc-scrubber:not(.vc-clip-scrubber) {
-    top: -0.2em;
-    left: -0.1em;
-}
-
-.vc-timeline .scrubber-container {
+vc-timeline.turbo-drawer .clips-container {
     position: relative;
     border-radius: 0.35em;
-    height: 0.6em;
-    background-color: #eaeaea;
+    height: calc(6em - 2.4em);
+
+    display: flex;
+    flex-direction: row;
+
+    flex-grow: 1;
+
+    z-index: 2;
 }
 
-.vc-timeline .play-button {
+vc-timeline.top-drawer {
+    bottom: 1em;
+}
+
+vc-timeline.right-drawer {
+    position: absolute;
+    left: 100%;
+    top:  -22%;
+}
+
+vc-timeline .play-button {
     height: 1.5em;
     padding: 0.2em;
 }
 
-.vc-timeline vc-clip .vc-clip-content {
+vc-timeline vc-clip .vc-clip-content {
     border-radius: 0;
 }
 
-.vc-timeline vc-clip:nth-child(2) .vc-clip-content {
+vc-timeline vc-clip:nth-child(2) .vc-clip-content {
     border-radius: 0.35em 0 0 0.35em;
 }
 
-.vc-timeline vc-clip:last-child .vc-clip-content {
+vc-timeline vc-clip:last-child .vc-clip-content {
     border-radius:  0 0.35em 0.35em 0;
 }
 
-.vc-timeline vc-clip:last-child:nth-child(2) .vc-clip-content {
+vc-timeline vc-clip:last-child:nth-child(2) .vc-clip-content {
     border-radius:  0.35em;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/app/components/timeline/timeline.css"],"names":[],"mappings":"AAAA;IACI,aAAa;IACb,sBAAsB;IACtB,UAAU;IACV,WAAW;AACf;;AAEA;IACI,WAAW;IACX,YAAY;AAChB;;AAEA;IACI,kBAAkB;IAClB,qBAAqB;IACrB,aAAa;IACb,yBAAyB;AAC7B;;AAEA;IACI,aAAa;IACb,cAAc;AAClB;;AAEA;IACI,gBAAgB;AACpB;;AAEA;IACI,gCAAgC;AACpC;;AAEA;IACI,iCAAiC;AACrC;;AAEA;IACI,sBAAsB;AAC1B","sourcesContent":[".vc-timeline {\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 0.5em;\r\n    width: 100%;\r\n}\r\n\r\n.vc-timeline .vc-scrubber:not(.vc-clip-scrubber) {\r\n    top: -0.2em;\r\n    left: -0.1em;\r\n}\r\n\r\n.vc-timeline .scrubber-container {\r\n    position: relative;\r\n    border-radius: 0.35em;\r\n    height: 0.6em;\r\n    background-color: #eaeaea;\r\n}\r\n\r\n.vc-timeline .play-button {\r\n    height: 1.5em;\r\n    padding: 0.2em;\r\n}\r\n\r\n.vc-timeline vc-clip .vc-clip-content {\r\n    border-radius: 0;\r\n}\r\n\r\n.vc-timeline vc-clip:nth-child(2) .vc-clip-content {\r\n    border-radius: 0.35em 0 0 0.35em;\r\n}\r\n\r\n.vc-timeline vc-clip:last-child .vc-clip-content {\r\n    border-radius:  0 0.35em 0.35em 0;\r\n}\r\n\r\n.vc-timeline vc-clip:last-child:nth-child(2) .vc-clip-content {\r\n    border-radius:  0.35em;\r\n}"],"sourceRoot":""}]);
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/app/components/timeline/timeline.css"],"names":[],"mappings":"AAAA;IACI,YAAY;AAChB;;AAEA;IACI,YAAY;IACZ,aAAa;IACb,6BAA6B;AACjC;;AAEA;IACI,wBAAwB;IACxB,sBAAsB;IACtB,WAAW;AACf;;AAEA;IACI,kBAAkB;IAClB,qBAAqB;IACrB,yBAAyB;;IAEzB,aAAa;IACb,mBAAmB;;IAEnB,YAAY;;IAEZ,UAAU;AACd;;AAEA;IACI,WAAW;AACf;;AAEA;IACI,kBAAkB;IAClB,UAAU;IACV,UAAU;AACd;;AAEA;IACI,aAAa;IACb,cAAc;AAClB;;AAEA;IACI,gBAAgB;AACpB;;AAEA;IACI,gCAAgC;AACpC;;AAEA;IACI,iCAAiC;AACrC;;AAEA;IACI,sBAAsB;AAC1B","sourcesContent":["vc-timeline {\r\n    height: 10em;\r\n}\r\n\r\nvc-timeline.turbo-drawer .turbo-drawer-panel-container {\r\n    height: 100%;\r\n    display: flex;\r\n    background-color: transparent;\r\n}\r\n\r\nvc-timeline.turbo-drawer .turbo-drawer-panel {\r\n    display: flex !important;\r\n    flex-direction: column;\r\n    gap: 0.5rem;\r\n}\r\n\r\nvc-timeline.turbo-drawer .clips-container {\r\n    position: relative;\r\n    border-radius: 0.35em;\r\n    height: calc(6em - 2.4em);\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n\r\n    flex-grow: 1;\r\n\r\n    z-index: 2;\r\n}\r\n\r\nvc-timeline.top-drawer {\r\n    bottom: 1em;\r\n}\r\n\r\nvc-timeline.right-drawer {\r\n    position: absolute;\r\n    left: 100%;\r\n    top:  -22%;\r\n}\r\n\r\nvc-timeline .play-button {\r\n    height: 1.5em;\r\n    padding: 0.2em;\r\n}\r\n\r\nvc-timeline vc-clip .vc-clip-content {\r\n    border-radius: 0;\r\n}\r\n\r\nvc-timeline vc-clip:nth-child(2) .vc-clip-content {\r\n    border-radius: 0.35em 0 0 0.35em;\r\n}\r\n\r\nvc-timeline vc-clip:last-child .vc-clip-content {\r\n    border-radius:  0 0.35em 0.35em 0;\r\n}\r\n\r\nvc-timeline vc-clip:last-child:nth-child(2) .vc-clip-content {\r\n    border-radius:  0.35em;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -57817,34 +57190,9 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 /**
- * @typedef {Object} ElementTagDefinition
- * @template {ValidTag} Tag
- * @description Represents an element's definition of its tag and its namespace (both optional).
- *
- * @property {Tag} [tag="div"] - The HTML tag of the element (e.g., "div", "span", "input"). Defaults to "div."
- * @property {string} [namespace] - The namespace of the element. Defaults to HTML. If "svgManipulation" or "mathML" is provided,
- * the corresponding namespace will be used to create the element. Otherwise, the custom namespace provided will be used.
- */
-
-/**
- * @typedef {Object} TurboHeadlessProperties
- * @template {TurboView} ViewType - The element's view type, if initializing MVC.
- * @template {object} DataType - The element's data type, if initializing MVC.
- * @template {TurboModel<DataType>} ModelType - The element's model type, if initializing MVC.
- * @template {TurboEmitter} EmitterType - The element's emitter type, if initializing MVC.
- * @description Object containing properties for configuring a headless (non-HTML) element, with possibly MVC properties.
- */
-
-/**
  * @typedef {Object} TurboProperties
- * @template {ValidTag} Tag - The HTML (or other) tag of the element, if passing it as a property. Defaults to "div".
- * @template {TurboView} ViewType - The element's view type, if initializing MVC.
- * @template {object} DataType - The element's data type, if initializing MVC.
- * @template {TurboModel<DataType>} ModelType - The element's model type, if initializing MVC.
- * @template {TurboEmitter} EmitterType - The element's emitter type, if initializing MVC.
- *
- * @description Object containing properties for configuring a TurboElement, or any Element. A tag (and
- * possibly a namespace) can be provided for TurboProxiedElements for element creation. TurboElements will ignore these
+ * @description Object containing properties for configuring a TurboWrapper, a TurboElement, or any Element. A tag (and
+ * possibly a namespace) can be provided for TurboWrappers or for element creation. TurboElements will ignore these
  * properties if set.
  * Any HTML attribute can be passed as key to be processed by the class/function. A few of these attributes were
  * explicitly defined here for autocompletion in JavaScript. Use TypeScript for optimal autocompletion (with the target
@@ -57861,11 +57209,11 @@ __webpack_require__.r(__webpack_exports__);
  * - An object containing event listeners to be applied to this element.
  * @property {Element | Element[]} [children] - An array of child wrappers or elements to append to
  * the created element.
- * @property {Element} [parent] - The parent element to which the created element will be appended.
+ * @property {Element} [parent] - The parent element or wrapper to which the created element will be appended.
  * @property {string | Element} [out] - If defined, declares (or sets) the element in the parent as a field with the given value
  * as name.
  * @property {string} [text] - The text content of the element (if any).
- * @property {boolean} [shadowDOM] - If true, indicate that the element will be created under a shadow root.
+ * @property {boolean} [shadowDOM] - If true, indicate that the element or wrapper will be created under a shadow root.
  *
  * @property alt
  * @property src
@@ -57880,18 +57228,6 @@ __webpack_require__.r(__webpack_exports__);
  * @property disabled
  * @property checked
  * @property selected
- */
-
-/**
- * @typedef {Object} TurboCustomProperties
- * @extends TurboProperties
- * @template {TurboView} ViewType - The element's view type, if initializing MVC.
- * @template {object} DataType - The element's data type, if initializing MVC.
- * @template {TurboModel<DataType>} ModelType - The element's model type, if initializing MVC.
- * @template {TurboEmitter} EmitterType - The element's emitter type, if initializing MVC.
- *
- * @description Object containing properties for configuring a custom HTML element. Is basically TurboProperties
- * without the tag.
  */
 
 /**
@@ -58950,100 +58286,38 @@ typeof SuppressedError === "function" ? SuppressedError : function (error, suppr
     return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
 };
 
-/**
- * @class TurboEmitter
- * @template {TurboModel} ModelType -The element's MVC model type.
- * @description The base MVC emitter class. Its role is basically an event bus. It allows the different parts of the
- * MVC structure to fire events or listen to some, with various methods.
- */
 class TurboEmitter {
-    /**
-     * @description Map containing all callbacks.
-     * @protected
-     */
     callbacks = new Map();
-    /**
-     * @description The attached MVC model.
-     */
     model;
     constructor(model) {
         this.model = model;
     }
-    /**
-     * @function getBlock
-     * @description Retrieves the callback block by the given blockKey.
-     * @param {number | string} [blockKey] - The key of the block to retrieve.
-     * @protected
-     */
     getBlock(blockKey) {
-        return this.callbacks.get(blockKey?.toString());
+        return this.callbacks.get(blockKey.toString());
     }
-    /**
-     * @function getOrGenerateBlock
-     * @description Retrieves or creates a callback map for a given blockKey.
-     * @param {number | string} [blockKey] - The block key.
-     * @returns {Map<string, ((...args: any[]) => void)[]>} - The ensured callback map.
-     * @protected
-     */
     getOrGenerateBlock(blockKey) {
         if (!this.callbacks.has(blockKey.toString()))
             this.callbacks.set(blockKey.toString(), new Map());
         return this.callbacks.get(blockKey.toString());
     }
-    /**
-     * @function getKey
-     * @description Gets all callbacks for a given event key within a block.
-     * @param {string} key - The event name.
-     * @param {number | string} [blockKey] - The block in which the event is scoped.
-     * @returns {((...args: any[]) => void)[]} - An array of callbacks for that event.
-     * @protected
-     */
     getKey(key, blockKey) {
         const block = this.getBlock(blockKey);
-        return block ? block.get(key) : [];
+        if (!block)
+            return undefined;
+        return block.get(key);
     }
-    /**
-     * @function getOrGenerateKey
-     * @description Ensures and returns the array of callbacks for a given event key within a block.
-     * @param {string} key - The event name.
-     * @param {number | string} [blockKey] - The block in which the event is scoped.
-     * @returns {((...args: any[]) => void)[]} - An array of callbacks for that event.
-     * @protected
-     */
     getOrGenerateKey(key, blockKey) {
         const block = this.getOrGenerateBlock(blockKey);
         if (!block.has(key))
             block.set(key, []);
         return block.get(key);
     }
-    /**
-     * @function addWithBlock
-     * @description Registers a callback for an event key within a specified block -- usually for the corresponding
-     * data block in the model.
-     * @param {string} key - The event name.
-     * @param {number | string} blockKey - The block to register the event in.
-     * @param {(...args: any[]) => void} callback - The callback function to invoke when the event is fired.
-     */
     addWithBlock(key, blockKey, callback) {
         this.getOrGenerateKey(key, blockKey).push(callback);
     }
-    /**
-     * @function add
-     * @description Registers a callback for an event key in the default block.
-     * @param {string} key - The event name.
-     * @param {(...args: any[]) => void} callback - The callback function.
-     */
     add(key, callback) {
         this.addWithBlock(key, this.model.defaultBlockKey, callback);
     }
-    /**
-     * @function removeWithBlock
-     * @description Removes a specific callback or all callbacks for a key within a block.
-     * @param {string} key - The event name.
-     * @param {number | string} blockKey - The block from which to remove the event.
-     * @param {(...args: any[]) => void} [callback] - The specific callback to remove. If undefined, all callbacks
-     * for the key are removed.
-     */
     removeWithBlock(key, blockKey, callback) {
         if (callback == undefined)
             this.getBlock(blockKey)?.delete(key);
@@ -59054,51 +58328,22 @@ class TurboEmitter {
                 callbacks.splice(index, 1);
         }
     }
-    /**
-     * @function remove
-     * @description Removes a specific callback or all callbacks for a key in the default block.
-     * @param {string} key - The event name.
-     * @param {(...args: any[]) => void} [callback] - The callback to remove. If omitted, all callbacks are removed.
-     */
     remove(key, callback) {
         this.removeWithBlock(key, this.model.defaultBlockKey, callback);
     }
-    /**
-     * @function fireWithBlock
-     * @description Triggers all callbacks associated with an event key in a specified block.
-     * @param {string} key - The event name.
-     * @param {number | string} blockKey - The block in which the event is scoped.
-     * @param {...any[]} args - Arguments passed to each callback.
-     */
     fireWithBlock(key, blockKey, ...args) {
         this.callbacks.get(blockKey.toString())?.get(key)?.forEach((callback) => {
             if (callback && typeof callback == "function")
                 callback(...args);
         });
     }
-    /**
-     * @function fire
-     * @description Triggers all callbacks associated with an event key in the default block.
-     * @param {string} key - The event name.
-     * @param {...any[]} args - Arguments passed to the callback.
-     */
     fire(key, ...args) {
         this.fireWithBlock(key, this.model.defaultBlockKey, ...args);
     }
 }
 
-/**
- * @class MvcHandler
- * @description MVC -- Model-View-Component -- handler. Generates and manages an MVC structure for a certain object.
- * @template {object} ElementType - The type of the object that will be turned into MVC.
- * @template {TurboView} ViewType - The element's view type, if initializing MVC.
- * @template {object} DataType - The element's data type, if initializing MVC.
- * @template {TurboModel<DataType>} ModelType - The element's model type, if initializing MVC.
- * @template {TurboEmitter} EmitterType - The element's emitter type, if initializing MVC.
- * */
 class MvcHandler {
     element;
-    _model;
     controllers = new Map();
     constructor(properties) {
         if (properties.element)
@@ -59115,36 +58360,16 @@ class MvcHandler {
         if (properties.generate)
             this.generate(properties);
     }
-    /**
-     * @description The view (if any) of the current MVC structure. Setting it will link the current model (if any)
-     * to this new view.
-     */
-    set view(value) {
+    set view(view) {
         this.linkModelToView();
     }
-    /**
-     * @description The model (if any) of the current MVC structure. Setting it will de-link the previous model and link
-     * the new one to the current view (if any) and emitter (if any).
-     */
-    get model() {
-        return this._model;
-    }
     set model(model) {
-        this.deLinkModelFromEmitter();
-        this._model = model;
         this.linkModelToEmitter();
         this.linkModelToView();
     }
-    /**
-     * @description The emitter (if any) of the current MVC structure. Setting it will link the current model (if any)
-     * to this new emitter.
-     */
     set emitter(emitter) {
         this.linkModelToEmitter();
     }
-    /**
-     * @description The main data block (if any) attached to the element, taken from its model (if any).
-     */
     get data() {
         return this.model?.data;
     }
@@ -59152,9 +58377,6 @@ class MvcHandler {
         if (this.model)
             this.model.data = data;
     }
-    /**
-     * @description The ID of the main data block (if any) of the element, taken from its model (if any).
-     */
     get dataId() {
         return this.model?.dataId;
     }
@@ -59162,9 +58384,6 @@ class MvcHandler {
         if (this.model)
             this.model.dataId = value;
     }
-    /**
-     * @description The numerical index of the main data block (if any) of the element, taken from its model (if any).
-     */
     get dataIndex() {
         return Number.parseInt(this.dataId);
     }
@@ -59172,64 +58391,27 @@ class MvcHandler {
         if (this.model)
             this.model.dataId = value.toString();
     }
-    /**
-     * @description The size (number) of the main data block (if any) of the element, taken from its model (if any).
-     */
     get dataSize() {
         return this.model?.getSize();
     }
-    /**
-     * @function getController
-     * @description Retrieves the attached MVC controller with the given key.
-     * By default, unless manually defined in the controller, if the element's class name is MyElement
-     * and the controller's class name is MyElementSomethingController, the key would be "something".
-     * @param {string} key - The controller's key.
-     * @return {TurboController} - The controller.
-     */
     getController(key) {
         return this.controllers.get(key);
     }
-    /**
-     * @function addController
-     * @description Adds the given controller to the MVC structure.
-     * @param {TurboController} controller - The controller to add.
-     */
     addController(controller) {
         if (!controller.keyName)
             controller.keyName =
                 this.extractClassEssenceName(controller.constructor);
         this.controllers.set(controller.keyName, controller);
     }
-    /**
-     * @function getHandler
-     * @description Retrieves the attached MVC handler with the given key.
-     * By default, unless manually defined in the handler, if the element's class name is MyElement
-     * and the handler's class name is MyElementSomethingHandler, the key would be "something".
-     * @param {string} key - The handler's key.
-     * @return {TurboHandler} - The handler.
-     */
     getHandler(key) {
         return this.model.getHandler(key);
     }
-    /**
-     * @function addHandler
-     * @description Adds the given handler to the MVC structure.
-     * @param {TurboHandler} handler - The handler to add.
-     */
     addHandler(handler) {
         if (!handler.keyName)
             handler.keyName =
                 this.extractClassEssenceName(handler.constructor);
         this.model.addHandler(handler.keyName, handler);
     }
-    /**
-     * @function generate
-     * @description Generates the MVC structure based on the provided properties.
-     * If no model or modelConstructor is defined, no model will be generated. Similarly for the view.
-     * If the structure contains a model, an emitter will be created, even if it is not defined in the properties.
-     * @param {MvcGenerationProperties<ViewType, DataType, ModelType, EmitterType>} properties - The properties to use
-     * to generate the MVC structure.
-     */
     generate(properties = {}) {
         if (properties.initialize == undefined)
             properties.initialize = true;
@@ -59264,11 +58446,6 @@ class MvcHandler {
         if (properties.initialize)
             this.initialize();
     }
-    /**
-     * @function initialize
-     * @description Initializes the MVC parts: the view, the controllers, and the model (in this order). The model is
-     * initialized last to allow for the view and controllers to setup their change callbacks.
-     */
     initialize() {
         this.view?.initialize();
         this.controllers.forEach((controller) => controller.initialize());
@@ -59279,17 +58456,11 @@ class MvcHandler {
             return;
         this.view.model = this.model;
     }
-    emitterFireCallback = (keyName, blockKey, ...args) => this.emitter.fireWithBlock(keyName, blockKey, ...args);
-    deLinkModelFromEmitter() {
-        if (!this.emitter || !this.model)
-            return;
-        this.model.keyChangedCallback.remove(this.emitterFireCallback);
-    }
     linkModelToEmitter() {
         if (!this.emitter || !this.model)
             return;
         this.emitter.model = this.model;
-        this.model.keyChangedCallback.add(this.emitterFireCallback);
+        this.model.keyChangedCallback = (keyName, blockKey, ...args) => this.emitter.fireWithBlock(keyName, blockKey, ...args);
     }
     extractClassEssenceName(constructor) {
         let className = constructor.name;
@@ -59314,45 +58485,16 @@ __decorate([
 ], MvcHandler.prototype, "view", null);
 __decorate([
     auto()
+], MvcHandler.prototype, "model", null);
+__decorate([
+    auto()
 ], MvcHandler.prototype, "emitter", null);
 
-/**
- * @class TurboController
- * @description The MVC base controller class. Its main job is to handle  (some part of or all of) the logic of the
- * component. It has access to the element, the model to read and write data, the view to update the UI, and the
- * emitter to listen for changes in the model. It can only communicate with other controllers via the emitter
- * (by firing or listening for changes on a certain key).
- * @template {object} ElementType - The type of the main component.
- * @template {TurboView} ViewType - The element's MVC view type.
- * @template {TurboModel} ModelType - The element's MVC model type.
- * @template {TurboEmitter} EmitterType - The element's MVC emitter type.
- */
 class TurboController {
-    /**
-     * @description The key of the controller. Used to retrieve it in the main component. If not set, if the element's
-     * class name is MyElement and the controller's class name is MyElementSomethingController, the key would
-     * default to "something".
-     */
     keyName;
-    /**
-     * @description A reference to the component.
-     * @protected
-     */
     element;
-    /**
-     * @description A reference to the MVC view.
-     * @protected
-     */
     view;
-    /**
-     * @description A reference to the MVC model.
-     * @protected
-     */
     model;
-    /**
-     * @description A reference to the MVC emitter.
-     * @protected
-     */
     emitter;
     constructor(properties) {
         this.element = properties.element;
@@ -59360,42 +58502,237 @@ class TurboController {
         this.model = properties.model;
         this.emitter = properties.emitter;
     }
-    /**
-     * @function initialize
-     * @description Initializes the controller. Specifically, it will setup the change callbacks.
-     */
     initialize() {
         this.setupChangedCallbacks();
     }
-    /**
-     * @function setupChangedCallbacks
-     * @description Setup method intended to initialize change listeners and callbacks.
-     * @protected
-     */
     setupChangedCallbacks() {
     }
 }
 
-/**
- * @class TurboHandler
- * @description The MVC base handler class. It's an extension of the model, and its main job is to provide some utility
- * functions to manipulate the model's data.
- * @template {TurboModel} ModelType - The element's MVC model type.
- */
 class TurboHandler {
-    /**
-     * @description The key of the handler. Used to retrieve it in the main component. If not set, if the element's
-     * class name is MyElement and the handler's class name is MyElementSomethingHandler, the key would
-     * default to "something".
-     */
     keyName;
-    /**
-     * @description A reference to the MVC model.
-     * @protected
-     */
     model;
     constructor(model) {
         this.model = model;
+    }
+}
+
+class TurboModel {
+    isDataBlocksArray = false;
+    dataBlocks;
+    handlers = new Map();
+    keyChangedCallback;
+    constructor(data, dataBlocksType) {
+        if (dataBlocksType === "array") {
+            this.isDataBlocksArray = true;
+            this.dataBlocks = [];
+        }
+        else {
+            this.isDataBlocksArray = false;
+            this.dataBlocks = new Map();
+        }
+        this.enabledCallbacks = true;
+        this.setBlock(data, undefined, this.defaultBlockKey, false);
+    }
+    get data() {
+        return this.getBlockData();
+    }
+    set data(value) {
+        this.setBlock(value);
+    }
+    get dataId() {
+        return this.getBlockId();
+    }
+    set dataId(value) {
+        this.setBlockId(value);
+    }
+    set enabledCallbacks(value) { }
+    getData(key, blockKey) {
+        if (!this.isValidBlockKey(blockKey))
+            return null;
+        return this.getBlockData(blockKey)?.[key];
+    }
+    setData(key, value, blockKey) {
+        if (!this.isValidBlockKey(blockKey))
+            return;
+        const data = this.getBlockData(blockKey);
+        if (data)
+            data[key] = value;
+        if (this.enabledCallbacks)
+            this.fireKeyChangedCallback(key, blockKey);
+    }
+    getSize(blockKey = this.defaultBlockKey) {
+        return this.getAllKeys(blockKey)?.length ?? 0;
+    }
+    getBlock(blockKey = this.defaultBlockKey) {
+        if (!this.isValidBlockKey(blockKey))
+            return null;
+        if (this.isDataBlocksArray) {
+            const index = Number(blockKey);
+            return Number.isInteger(index) && index >= 0
+                ? this.dataBlocks[index] ?? null
+                : null;
+        }
+        else {
+            return this.dataBlocks.get(blockKey.toString()) ?? null;
+        }
+    }
+    createBlock(value, id, blockKey = this.defaultBlockKey) {
+        return { id: id ?? null, data: value };
+    }
+    setBlock(value, id, blockKey = this.defaultBlockKey, initialize = true) {
+        if (!this.isValidBlockKey(blockKey) || value === null || value === undefined)
+            return;
+        const block = this.createBlock(value, id, blockKey);
+        if (this.isDataBlocksArray) {
+            const index = Number(blockKey);
+            if (Number.isInteger(index) && index >= 0) {
+                this.dataBlocks[index] = block;
+            }
+        }
+        else {
+            this.dataBlocks.set(blockKey.toString(), block);
+        }
+        if (initialize)
+            this.initialize(blockKey);
+    }
+    hasBlock(blockKey) {
+        if (this.isDataBlocksArray) {
+            const index = Number(blockKey);
+            return Number.isInteger(index) && index >= 0 && index < this.dataBlocks.length;
+        }
+        return this.dataBlocks.has(blockKey.toString());
+    }
+    addBlock(value, id, blockKey, initialize = true) {
+        if (!value)
+            return;
+        if (!this.isDataBlocksArray)
+            return this.setBlock(value, id, blockKey, initialize);
+        const block = this.createBlock(value, id, blockKey);
+        let index = Number(blockKey);
+        if (!Number.isInteger(index) || index < 0)
+            index = this.dataBlocks.length;
+        this.dataBlocks.splice(index, 0, block);
+        if (initialize)
+            this.initialize(index);
+    }
+    getBlockData(blockKey = this.defaultBlockKey) {
+        const block = this.getBlock(blockKey);
+        return block ? block.data : null;
+    }
+    getBlockId(blockKey = this.defaultBlockKey) {
+        const block = this.getBlock(blockKey);
+        return block ? block.id : null;
+    }
+    setBlockId(value, blockKey = this.defaultBlockKey) {
+        if (!value)
+            return;
+        const block = this.getBlock(blockKey);
+        if (block)
+            block.id = value;
+    }
+    fireKeyChangedCallback(key, blockKey = this.defaultBlockKey, deleted = false) {
+        if (!this.isValidBlockKey(blockKey))
+            blockKey = this.getAllBlockKeys()[0];
+        this.keyChangedCallback(key, blockKey, deleted ? undefined : this.getData(key, blockKey));
+    }
+    fireCallback(key, ...args) {
+        this.keyChangedCallback(key, this.defaultBlockKey, ...args);
+    }
+    fireBlockCallback(key, blockKey = this.defaultBlockKey, ...args) {
+        if (!this.isValidBlockKey(blockKey))
+            blockKey = this.getAllBlockKeys()[0];
+        this.keyChangedCallback(key, blockKey, ...args);
+    }
+    initialize(blockKey = this.defaultBlockKey) {
+        const keys = this.getAllKeys(blockKey);
+        if (!keys || !this.enabledCallbacks)
+            return;
+        keys.forEach(key => this.fireKeyChangedCallback(key, blockKey));
+    }
+    clear(blockKey = this.defaultBlockKey) {
+    }
+    get defaultBlockKey() {
+        return (this.isDataBlocksArray ? 0 : "__turbo_default_block_key__");
+    }
+    get defaultComputationBlockKey() {
+        const size = this.isDataBlocksArray
+            ? this.dataBlocks.length
+            : this.dataBlocks.size;
+        return size > 1 ? null : this.defaultBlockKey;
+    }
+    isValidBlockKey(blockKey) {
+        return blockKey !== undefined && blockKey !== null
+            && ((typeof blockKey === "string" && blockKey.length !== 0)
+                || typeof blockKey === "number");
+    }
+    getAllBlockKeys() {
+        if (this.isDataBlocksArray)
+            return this.dataBlocks.map((_, index) => index);
+        else
+            return Array.from(this.dataBlocks.keys());
+    }
+    getAllIds() {
+        if (this.isDataBlocksArray)
+            return this.dataBlocks.map(entry => entry.id);
+        else
+            return Array.from(this.dataBlocks.values()).map(entry => entry.id);
+    }
+    getAllBlocks(blockKey = this.defaultComputationBlockKey) {
+        const output = [];
+        if (blockKey !== null) {
+            const block = this.getBlock(blockKey);
+            if (block)
+                output.push(block);
+        }
+        else {
+            for (const key of this.getAllBlockKeys()) {
+                const block = this.getBlock(key);
+                if (block)
+                    output.push(block);
+            }
+        }
+        return output;
+    }
+    getAllKeys(blockKey = this.defaultComputationBlockKey) {
+        return this.getAllBlocks(blockKey).flatMap(block => Object.keys(block.data));
+    }
+    getAllData(blockKey = this.defaultComputationBlockKey) {
+        return this.getAllBlocks(blockKey).flatMap(block => Object.values(block.data));
+    }
+    getHandler(key) {
+        return this.handlers.get(key);
+    }
+    addHandler(key, handler) {
+        this.handlers.set(key, handler);
+    }
+}
+__decorate([
+    auto()
+], TurboModel.prototype, "enabledCallbacks", null);
+
+class TurboView {
+    element;
+    model;
+    emitter;
+    constructor(properties) {
+        this.element = properties.element;
+        this.emitter = properties.emitter;
+        this.model = properties.model;
+    }
+    initialize() {
+        this.setupChangedCallbacks();
+        this.setupUIElements();
+        this.setupUILayout();
+        this.setupUIListeners();
+    }
+    setupChangedCallbacks() {
+    }
+    setupUIElements() {
+    }
+    setupUILayout() {
+    }
+    setupUIListeners() {
     }
 }
 
@@ -59439,487 +58776,22 @@ class Delegate {
 }
 
 /**
- * @class TurboModel
- * @template DataType - The type of the data stored in each block.
- * @template {string | number | symbol} KeyType - The type of the keys used to access data in blocks.
- * @template {string | number | symbol} IdType - The type of the block IDs.
- * @template {"array" | "map"} BlocksType - Whether data blocks are stored as an array or a map.
- * @template {MvcDataBlock<DataType, IdType>} BlockType - The structure of each data block.
- * @description A base class representing a model in MVC, which manages one or more data blocks and handles change
- * propagation.
- */
-class TurboModel {
-    isDataBlocksArray = false;
-    dataBlocks;
-    handlers = new Map();
-    /**
-     * @description Delegate triggered when a key changes.
-     */
-    keyChangedCallback;
-    /**
-     * @constructor
-     * @param {DataType} [data] - Initial data. Not initialized if provided
-     * @param {BlocksType} [dataBlocksType] - Type of data blocks (array or map).
-     */
-    constructor(data, dataBlocksType) {
-        this.keyChangedCallback = new Delegate();
-        if (dataBlocksType === "array") {
-            this.isDataBlocksArray = true;
-            this.dataBlocks = [];
-        }
-        else {
-            this.isDataBlocksArray = false;
-            this.dataBlocks = new Map();
-        }
-        this.enabledCallbacks = true;
-        this.setBlock(data, undefined, this.defaultBlockKey, false);
-    }
-    /**
-     * @description The data of the default block.
-     */
-    get data() {
-        return this.getBlockData();
-    }
-    set data(value) {
-        this.setBlock(value);
-    }
-    /**
-     * @description The ID of the default block.
-     */
-    get dataId() {
-        return this.getBlockId();
-    }
-    set dataId(value) {
-        this.setBlockId(value);
-    }
-    /**
-     * @description Whether callbacks are enabled or disabled.
-     */
-    set enabledCallbacks(value) { }
-    /**
-     * @function getData
-     * @description Retrieves the value associated with a given key in the specified block.
-     * @param {KeyType} key - The key to retrieve.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block from which to retrieve the
-     * data.
-     * @returns {unknown} The value associated with the key, or null if not found.
-     */
-    getData(key, blockKey = this.defaultBlockKey) {
-        if (!this.isValidBlockKey(blockKey))
-            return null;
-        return this.getBlockData(blockKey)?.[key];
-    }
-    /**
-     * @function setData
-     * @description Sets the value for a given key in the specified block and triggers callbacks (if enabled).
-     * @param {KeyType} key - The key to update.
-     * @param {unknown} value - The value to assign.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block to update.
-     */
-    setData(key, value, blockKey = this.defaultBlockKey) {
-        if (!this.isValidBlockKey(blockKey))
-            return;
-        const data = this.getBlockData(blockKey);
-        if (data)
-            data[key] = value;
-        if (this.enabledCallbacks)
-            this.fireKeyChangedCallback(key, blockKey);
-    }
-    /**
-     * @function getSize
-     * @description Returns the size of the specified block.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block to check.
-     * @returns {number} The size.
-     */
-    getSize(blockKey = this.defaultBlockKey) {
-        return this.getAllKeys(blockKey)?.length ?? 0;
-    }
-    /**
-     * @function getBlock
-     * @description Retrieves the data block for the given blockKey.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block key to retrieve.
-     * @returns {BlockType | null} The block or null if it doesn't exist.
-     */
-    getBlock(blockKey = this.defaultBlockKey) {
-        if (!this.isValidBlockKey(blockKey))
-            return null;
-        if (this.isDataBlocksArray) {
-            const index = Number(blockKey);
-            return Number.isInteger(index) && index >= 0
-                ? this.dataBlocks[index] ?? null
-                : null;
-        }
-        else {
-            return this.dataBlocks.get(blockKey.toString()) ?? null;
-        }
-    }
-    /**
-     * @function createBlock
-     * @description Creates a data block entry.
-     * @param {DataType} value - The data of the block.
-     * @param {IdType} [id] - The optional ID of the data.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The key of the block.
-     * @protected
-     * @return {BlockType} - The created block.
-     */
-    createBlock(value, id, blockKey = this.defaultBlockKey) {
-        return { id: id ?? null, data: value };
-    }
-    /**
-     * @function setBlock
-     * @description Creates and sets a data block at the specified key.
-     * @param {DataType} value - The data to set.
-     * @param {IdType} [id] - Optional block ID.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The key of the block.
-     * @param {boolean} [initialize = true] - Whether to initialize the block after setting.
-     */
-    setBlock(value, id, blockKey = this.defaultBlockKey, initialize = true) {
-        if (!this.isValidBlockKey(blockKey) || value === null || value === undefined)
-            return;
-        const block = this.createBlock(value, id, blockKey);
-        if (this.isDataBlocksArray) {
-            const index = Number(blockKey);
-            if (Number.isInteger(index) && index >= 0) {
-                this.dataBlocks[index] = block;
-            }
-        }
-        else {
-            this.dataBlocks.set(blockKey.toString(), block);
-        }
-        if (initialize)
-            this.initialize(blockKey);
-    }
-    /**
-     * @function hasBlock
-     * @description Check if a block exists at the given key.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey] - Block key.
-     * @return {boolean} - Whether the block exists or not.
-     */
-    hasBlock(blockKey) {
-        if (this.isDataBlocksArray) {
-            const index = Number(blockKey);
-            return Number.isInteger(index) && index >= 0 && index < this.dataBlocks.length;
-        }
-        return this.dataBlocks.has(blockKey.toString());
-    }
-    /**
-     * @function addBlock
-     * @description Adds a new block into the structure. Appends or inserts based on key if using array.
-     * @param {DataType} value - The block data.
-     * @param {IdType} [id] - Optional block ID.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey] - Block key (used for insertion in arrays).
-     * @param {boolean} [initialize=true] - Whether to initialize after adding.
-     */
-    addBlock(value, id, blockKey, initialize = true) {
-        if (!value)
-            return;
-        if (!this.isDataBlocksArray)
-            return this.setBlock(value, id, blockKey, initialize);
-        const block = this.createBlock(value, id, blockKey);
-        let index = Number(blockKey);
-        if (!Number.isInteger(index) || index < 0)
-            index = this.dataBlocks.length;
-        this.dataBlocks.splice(index, 0, block);
-        if (initialize)
-            this.initialize(index);
-    }
-    /**
-     * @function getBlockData
-     * @description Retrieves the data from a specific block.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block key.
-     * @returns {DataType | null} The block's data or  if it doesn't exist.
-     */
-    getBlockData(blockKey = this.defaultBlockKey) {
-        const block = this.getBlock(blockKey);
-        return block ? block.data : null;
-    }
-    /**
-     * @function getBlockId
-     * @description Retrieves the ID from a specific block.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block key.
-     * @returns {IdType | null} The block ID or null.
-     */
-    getBlockId(blockKey = this.defaultBlockKey) {
-        const block = this.getBlock(blockKey);
-        return block ? block.id : null;
-    }
-    /**
-     * @function setBlockId
-     * @description Sets the ID for a specific block.
-     * @param {IdType} value - The new ID.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey=this.defaultBlockKey] - The block key.
-     */
-    setBlockId(value, blockKey = this.defaultBlockKey) {
-        if (!value)
-            return;
-        const block = this.getBlock(blockKey);
-        if (block)
-            block.id = value;
-    }
-    /**
-     * @function fireKeyChangedCallback
-     * @description Fires the emitter's change callback for the given key in a block, passing it the data at the key's value.
-     * @param {KeyType} key - The key that changed.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey=this.defaultBlockKey] - The block where the change occurred.
-     * @param {boolean} [deleted=false] - Whether the key was deleted.
-     */
-    fireKeyChangedCallback(key, blockKey = this.defaultBlockKey, deleted = false) {
-        if (!this.isValidBlockKey(blockKey))
-            blockKey = this.getAllBlockKeys()[0];
-        this.keyChangedCallback.fire(key, blockKey, deleted ? undefined : this.getData(key, blockKey));
-    }
-    /**
-     * @function fireCallback
-     * @description Fires the emitter's change callback for the given key in the default blocks.
-     * @param {string | KeyType} key - The key to fire for.
-     * @param {...any[]} args - Additional arguments.
-     */
-    fireCallback(key, ...args) {
-        this.keyChangedCallback.fire(key, this.defaultBlockKey, ...args);
-    }
-    /**
-     * @function fireBlockCallback
-     * @description Fires the emitter's change callback for the given key in a specific block with custom arguments.
-     * @param {string | KeyType} key - The key to fire for.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey=this.defaultBlockKey] - The block key.
-     * @param {...any[]} args - Additional arguments.
-     */
-    fireBlockCallback(key, blockKey = this.defaultBlockKey, ...args) {
-        if (!this.isValidBlockKey(blockKey))
-            blockKey = this.getAllBlockKeys()[0];
-        this.keyChangedCallback.fire(key, blockKey, ...args);
-    }
-    /**
-     * @function initialize
-     * @description Initializes the block at the given key, and triggers callbacks for all the keys in its data.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block key.
-     */
-    initialize(blockKey = this.defaultBlockKey) {
-        const keys = this.getAllKeys(blockKey);
-        if (!keys || !this.enabledCallbacks)
-            return;
-        keys.forEach(key => this.fireKeyChangedCallback(key, blockKey));
-    }
-    /**
-     * @function clear
-     * @description Clears the block data at the given key.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block key.
-     */
-    clear(blockKey = this.defaultBlockKey) {
-    }
-    /**
-     * @description The default block key based on whether the data structure is an array or map.
-     */
-    get defaultBlockKey() {
-        return (this.isDataBlocksArray ? 0 : "__turbo_default_block_key__");
-    }
-    /**
-     * @description The default block key if there's only one block, otherwise null.
-     */
-    get defaultComputationBlockKey() {
-        const size = this.isDataBlocksArray
-            ? this.dataBlocks.length
-            : this.dataBlocks.size;
-        return size > 1 ? null : this.defaultBlockKey;
-    }
-    /**
-     * @function isValidBlockKey
-     * @description Checks if the block key is a valid string or number.
-     * @param {MvcBlockKeyType<BlocksType>} blockKey - The block key to validate.
-     * @returns {boolean} True if valid, false otherwise.
-     */
-    isValidBlockKey(blockKey) {
-        return blockKey !== undefined && blockKey !== null
-            && ((typeof blockKey === "string" && blockKey.length !== 0)
-                || typeof blockKey === "number");
-    }
-    /**
-     * @function getAllBlockKeys
-     * @description Retrieves all block keys in the model.
-     * @returns {MvcBlockKeyType<BlocksType>[]} Array of block keys.
-     */
-    getAllBlockKeys() {
-        if (this.isDataBlocksArray)
-            return this.dataBlocks.map((_, index) => index);
-        else
-            return Array.from(this.dataBlocks.keys());
-    }
-    /**
-     * @function getAllIds
-     * @description Retrieves all block (data) IDs in the model.
-     * @returns {IdType[]} Array of IDs.
-     */
-    getAllIds() {
-        if (this.isDataBlocksArray)
-            return this.dataBlocks.map(entry => entry.id);
-        else
-            return Array.from(this.dataBlocks.values()).map(entry => entry.id);
-    }
-    /**
-     * @function getAllBlocks
-     * @description Retrieves all blocks or a specific one if blockKey is defined.
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey=this.defaultComputationBlockKey] - The block key.
-     * @returns {BlockType[]} Array of blocks.
-     */
-    getAllBlocks(blockKey = this.defaultComputationBlockKey) {
-        const output = [];
-        if (blockKey !== null) {
-            const block = this.getBlock(blockKey);
-            if (block)
-                output.push(block);
-        }
-        else {
-            for (const key of this.getAllBlockKeys()) {
-                const block = this.getBlock(key);
-                if (block)
-                    output.push(block);
-            }
-        }
-        return output;
-    }
-    /**
-     * @function getAllKeys
-     * @description Retrieves all keys within the given block(s).
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey=this.defaultComputationBlockKey] - The block key.
-     * @returns {KeyType[]} Array of keys.
-     */
-    getAllKeys(blockKey = this.defaultComputationBlockKey) {
-        return this.getAllBlocks(blockKey).flatMap(block => Object.keys(block.data));
-    }
-    /**
-     * @function getAllData
-     * @description Retrieves all values across block(s).
-     * @param {MvcBlockKeyType<BlocksType>} [blockKey=this.defaultComputationBlockKey] - The block key.
-     * @returns {unknown[]} Array of values.
-     */
-    getAllData(blockKey = this.defaultComputationBlockKey) {
-        return this.getAllBlocks(blockKey).flatMap(block => Object.values(block.data));
-    }
-    /**
-     * @function getHandler
-     * @description Retrieves the attached MVC handler with the given key.
-     * By default, unless manually defined in the handler, if the element's class name is MyElement
-     * and the handler's class name is MyElementSomethingHandler, the key would be "something".
-     * @param {string} key - The handler's key.
-     * @return {TurboHandler} - The handler.
-     */
-    getHandler(key) {
-        return this.handlers.get(key);
-    }
-    /**
-     * @function addHandler
-     * @description Registers a TurboHandler for the given key.
-     * @param {string} key - The identifier for the handler.
-     * @param {TurboHandler} handler - The handler instance to register.
-     */
-    addHandler(key, handler) {
-        this.handlers.set(key, handler);
-    }
-}
-__decorate([
-    auto()
-], TurboModel.prototype, "enabledCallbacks", null);
-
-/**
- * @class TurboView
- * @template {object} ElementType - The type of the element attached to the view.
- * @template {TurboModel} ModelType - The model type used in this view.
- * @template {TurboEmitter} EmitterType - The emitter type used in this view.
- * @description A base view class for MVC elements, providing structure for initializing and managing UI setup and
- * event listeners. Designed to be devoid of logic and only handle direct UI changes.
- */
-class TurboView {
-    /**
-     * @description The main component this view is attached to.
-     */
-    element;
-    /**
-     * @description The model instance this view is bound to.
-     */
-    model;
-    /**
-     * @description The emitter instance used for event communication.
-     */
-    emitter;
-    /**
-     * @constructor
-     * @param {MvcViewProperties<ElementType, ModelType, EmitterType>} properties - Properties to initialize the view with.
-     */
-    constructor(properties) {
-        this.element = properties.element;
-        this.emitter = properties.emitter;
-        this.model = properties.model;
-    }
-    /**
-     * @function initialize
-     * @description Initializes the view by setting up change callbacks, UI elements, layout, and event listeners.
-     */
-    initialize() {
-        this.setupChangedCallbacks();
-        this.setupUIElements();
-        this.setupUILayout();
-        this.setupUIListeners();
-    }
-    /**
-     * @function setupChangedCallbacks
-     * @description Setup method for initializing data/model change listeners and associated UI logic.
-     * @protected
-     */
-    setupChangedCallbacks() {
-    }
-    /**
-     * @function setupUIElements
-     * @description Setup method for initializing and storing sub-elements of the UI.
-     * @protected
-     */
-    setupUIElements() {
-    }
-    /**
-     * @function setupUILayout
-     * @description Setup method for creating the layout structure and injecting sub-elements into the DOM tree.
-     * @protected
-     */
-    setupUILayout() {
-    }
-    /**
-     * @function setupUIListeners
-     * @description Setup method for defining DOM and input event listeners.
-     * @protected
-     */
-    setupUIListeners() {
-    }
-}
-
-/**
  * @class TurboElement
  * @extends HTMLElement
  * @description Base TurboElement class, extending the base HTML element with a few powerful tools and functions.
- * @template {TurboView} ViewType - The element's view type, if initializing MVC.
- * @template {object} DataType - The element's data type, if initializing MVC.
- * @template {TurboModel<DataType>} ModelType - The element's model type, if initializing MVC.
- * @template {TurboEmitter} EmitterType - The element's emitter type, if initializing MVC.
- * */
+ * @template ViewType - TurboView
+ * @template DataType - object
+ * @template ModelType - TurboModel<DataType>
+ */
 class TurboElement extends HTMLElement {
+    //STATIC CONFIG
     /**
      * @description Static configuration object.
      */
     static config = { shadowDOM: false, defaultSelectedClass: "selected" };
-    /**
-     * @description The MVC handler of the element. If initialized, turns the element into an MVC structure.
-     * @protected
-     */
     mvc;
-    /**
-     * @description Delegate fired when the element is attached to DOM.
-     */
     onAttach = new Delegate();
-    /**
-     * @description Delegate fired when the element is detached from the DOM.
-     */
     onDetach = new Delegate();
-    /**
-     * @description Delegate fired when the element is adopted by a new parent in the DOM.
-     */
     onAdopt = new Delegate();
     /**
      * @description Update the class's static configurations. Will only overwrite the set properties.
@@ -59931,6 +58803,7 @@ class TurboElement extends HTMLElement {
                 this.config[key] = val;
         });
     }
+    //ELEMENT
     constructor(properties = {}) {
         super();
         if (this.getPropertiesValue(properties.shadowDOM, "shadowDOM"))
@@ -59952,120 +58825,61 @@ class TurboElement extends HTMLElement {
             return;
         this[kebabToCamelCase(name)] = parse(newValue);
     }
-    /**
-     * @function initializeUI
-     * @description Initializes the element's UI by calling all the setup methods (setupChangedCallbacks,
-     * setupUIElements, setupUILayout, setupUIListeners).
-     */
     initializeUI() {
         this.setupChangedCallbacks();
         this.setupUIElements();
         this.setupUILayout();
         this.setupUIListeners();
     }
-    /**
-     * @function setupChangedCallbacks
-     * @description Setup method intended to initialize change listeners and callbacks.
-     * @protected
-     */
     setupChangedCallbacks() {
     }
-    /**
-     * @function setupUIElements
-     * @description Setup method intended to initialize all direct sub-elements attached to this element, and store
-     * them in fields.
-     * @protected
-     */
     setupUIElements() {
     }
-    /**
-     * @function setupUILayout
-     * @description Setup method to create the layout structure of the element by adding all created sub-elements to
-     * this element's child tree.
-     * @protected
-     */
     setupUILayout() {
     }
-    /**
-     * @function setupUIListeners
-     * @description Setup method to initialize and define all input/DOM event listeners of the element.
-     * @protected
-     */
     setupUIListeners() {
     }
     /**
      * @description Whether the element is selected or not. Setting it will accordingly toggle the "selected" CSS
-     * class (or whichever default selected class was set in the config) on the element and update the UI.
+     * class on the element and update the UI.
      */
     set selected(value) {
         const selectedClass = this.getPropertiesValue(null, "defaultSelectedClass", "selected");
         this.toggleClass(selectedClass, value);
     }
-    /**
-     * @description The view (if any) of the element. Only when initializing MVC.
-     */
     get view() {
         return this.mvc.view;
     }
     set view(view) {
         this.mvc.view = view;
     }
-    /**
-     * @description The model (if any) of the element. Only when initializing MVC.
-     */
     get model() {
         return this.mvc.model;
     }
     set model(model) {
         this.mvc.model = model;
     }
-    /**
-     * @description The main data block (if any) attached to the element, taken from its model (if any). Only when
-     * initializing MVC.
-     */
     get data() {
         return this.mvc.data;
     }
     set data(data) {
         this.mvc.data = data;
     }
-    /**
-     * @description The ID of the main data block (if any) of the element, taken from its model (if any). Only when
-     * initializing MVC.
-     */
     get dataId() {
         return this.mvc.dataId;
     }
     set dataId(value) {
         this.mvc.dataId = value;
     }
-    /**
-     * @description The numerical index of the main data block (if any) of the element, taken from its model (if any).
-     * Only when initializing MVC.
-     */
     get dataIndex() {
         return this.mvc.dataIndex;
     }
     set dataIndex(value) {
         this.mvc.dataIndex = value;
     }
-    /**
-     * @description The size (number) of the main data block (if any) of the element, taken from its model (if any).
-     * Only when initializing MVC.
-     */
     get dataSize() {
         return this.mvc.dataSize;
     }
-    /**
-     * @function getPropertiesValue
-     * @description Returns the value with some fallback mechanisms on the static config field and a default value.
-     * @param {Type} propertiesValue - The actual value; could be null.
-     * @param {string} [configFieldName] - The field name of the associated value in the static config. Will be returned
-     * if the actual value is null.
-     * @param {Type} [defaultValue] - The default fallback value. Will be returned if both the actual and
-     * config values are null.
-     * @protected
-     */
     getPropertiesValue(propertiesValue, configFieldName, defaultValue) {
         if (propertiesValue !== undefined && propertiesValue !== null)
             return propertiesValue;
@@ -60082,12 +58896,12 @@ __decorate([
 /**
  * @class TurboHeadlessElement
  * @description TurboHeadlessElement class, similar to TurboElement but without extending HTMLElement.
- * @template {TurboView} ViewType - The element's view type, if initializing MVC.
- * @template {object} DataType - The element's data type, if initializing MVC.
- * @template {TurboModel<DataType>} ModelType - The element's model type, if initializing MVC.
- * @template {TurboEmitter} EmitterType - The element's emitter type, if initializing MVC.
+ * @template ViewType - TurboView
+ * @template DataType - object
+ * @template ModelType - TurboModel<DataType>
  */
 class TurboHeadlessElement {
+    //STATIC CONFIG
     /**
      * @description Static configuration object.
      */
@@ -60102,84 +58916,50 @@ class TurboHeadlessElement {
                 this.config[key] = val;
         });
     }
-    /**
-     * @description The MVC handler of the element. If initialized, turns the element into an MVC structure.
-     * @protected
-     */
+    //ELEMENT
     mvc;
     constructor(properties = {}) {
         this.mvc = new MvcHandler({ ...properties, element: this });
     }
     /**
-     * @description Whether the element is selected or not.
+     * @description Whether the element is selected or not. Setting it will accordingly toggle the "selected" CSS
+     * class on the element and update the UI.
      */
     set selected(value) {
     }
-    /**
-     * @description The view (if any) of the element. Only when initializing MVC.
-     */
     get view() {
         return this.mvc.view;
     }
     set view(view) {
         this.mvc.view = view;
     }
-    /**
-     * @description The model (if any) of the element. Only when initializing MVC.
-     */
     get model() {
         return this.mvc.model;
     }
     set model(model) {
         this.mvc.model = model;
     }
-    /**
-     * @description The main data block (if any) attached to the element, taken from its model (if any). Only when
-     * initializing MVC.
-     */
     get data() {
         return this.mvc.data;
     }
     set data(data) {
         this.mvc.data = data;
     }
-    /**
-     * @description The ID of the main data block (if any) of the element, taken from its model (if any). Only when
-     * initializing MVC.
-     */
     get dataId() {
         return this.mvc.dataId;
     }
     set dataId(value) {
         this.mvc.dataId = value;
     }
-    /**
-     * @description The numerical index of the main data block (if any) of the element, taken from its model (if any).
-     * Only when initializing MVC.
-     */
     get dataIndex() {
         return this.mvc.dataIndex;
     }
     set dataIndex(value) {
         this.mvc.dataIndex = value;
     }
-    /**
-     * @description The size (number) of the main data block (if any) of the element, taken from its model (if any).
-     * Only when initializing MVC.
-     */
     get dataSize() {
         return this.mvc.dataSize;
     }
-    /**
-     * @function getPropertiesValue
-     * @description Returns the value with some fallback mechanisms on the static config field and a default value.
-     * @param {Type} propertiesValue - The actual value; could be null.
-     * @param {string} [configFieldName] - The field name of the associated value in the static config. Will be returned
-     * if the actual value is null.
-     * @param {Type} [defaultValue] - The default fallback value. Will be returned if both the actual and
-     * config values are null.
-     * @protected
-     */
     getPropertiesValue(propertiesValue, configFieldName, defaultValue) {
         if (propertiesValue !== undefined && propertiesValue !== null)
             return propertiesValue;
@@ -60196,12 +58976,12 @@ __decorate([
 /**
  * @class TurboProxiedElement
  * @description TurboProxiedElement class, similar to TurboElement but containing an HTML element instead of being one.
- * @template {TurboView} ViewType - The element's view type, if initializing MVC.
- * @template {object} DataType - The element's data type, if initializing MVC.
- * @template {TurboModel<DataType>} ModelType - The element's model type, if initializing MVC.
- * @template {TurboEmitter} EmitterType - The element's emitter type, if initializing MVC.
+ * @template ViewType - TurboView
+ * @template DataType - object
+ * @template ModelType - TurboModel<DataType>
  */
 class TurboProxiedElement {
+    //STATIC CONFIG
     /**
      * @description Static configuration object.
      */
@@ -60216,14 +58996,8 @@ class TurboProxiedElement {
                 this.config[key] = val;
         });
     }
-    /**
-     * @description The HTML (or other) element wrapped inside this instance.
-     */
+    //ELEMENT
     element;
-    /**
-     * @description The MVC handler of the element. If initialized, turns the element into an MVC structure.
-     * @protected
-     */
     mvc;
     constructor(properties = {}) {
         this.element = blindElement(properties);
@@ -60252,77 +59026,45 @@ class TurboProxiedElement {
     }
     /**
      * @description Whether the element is selected or not. Setting it will accordingly toggle the "selected" CSS
-     * class (or whichever default selected class was set in the config) on the element and update the UI.
+     * class on the element and update the UI.
      */
     set selected(value) {
         const selectedClass = this.getPropertiesValue(null, "defaultSelectedClass", "selected");
         this.element.toggleClass(selectedClass, value);
     }
-    /**
-     * @description The view (if any) of the element. Only when initializing MVC.
-     */
     get view() {
         return this.mvc.view;
     }
     set view(view) {
         this.mvc.view = view;
     }
-    /**
-     * @description The model (if any) of the element. Only when initializing MVC.
-     */
     get model() {
         return this.mvc.model;
     }
     set model(model) {
         this.mvc.model = model;
     }
-    /**
-     * @description The main data block (if any) attached to the element, taken from its model (if any). Only when
-     * initializing MVC.
-     */
     get data() {
         return this.mvc.data;
     }
     set data(data) {
         this.mvc.data = data;
     }
-    /**
-     * @description The ID of the main data block (if any) of the element, taken from its model (if any). Only when
-     * initializing MVC.
-     */
     get dataId() {
         return this.mvc.dataId;
     }
     set dataId(value) {
         this.mvc.dataId = value;
     }
-    /**
-     * @description The numerical index of the main data block (if any) of the element, taken from its model (if any).
-     * Only when initializing MVC.
-     */
     get dataIndex() {
         return this.mvc.dataIndex;
     }
     set dataIndex(value) {
         this.mvc.dataIndex = value;
     }
-    /**
-     * @description The size (number) of the main data block (if any) of the element, taken from its model (if any).
-     * Only when initializing MVC.
-     */
     get dataSize() {
         return this.mvc.dataSize;
     }
-    /**
-     * @function getPropertiesValue
-     * @description Returns the value with some fallback mechanisms on the static config field and a default value.
-     * @param {Type} propertiesValue - The actual value; could be null.
-     * @param {string} [configFieldName] - The field name of the associated value in the static config. Will be returned
-     * if the actual value is null.
-     * @param {Type} [defaultValue] - The default fallback value. Will be returned if both the actual and
-     * config values are null.
-     * @protected
-     */
     getPropertiesValue(propertiesValue, configFieldName, defaultValue) {
         if (propertiesValue !== undefined && propertiesValue !== null)
             return propertiesValue;
@@ -63582,9 +62324,7 @@ let TurboIcon = class TurboIcon extends TurboElement {
      * Setting it will update the icon accordingly.
      */
     set icon(value) {
-        const ext = getFileExtension(value).substring(1);
-        if (ext)
-            this.type = ext;
+        this.type = getFileExtension(value).substring(1);
         this.generateIcon();
     }
     /**
@@ -63618,8 +62358,6 @@ let TurboIcon = class TurboIcon extends TurboElement {
             return;
         }
         this.clear();
-        if (!this.icon)
-            return;
         const element = this.getLoader()(this.path);
         if (element instanceof Element)
             this.setupLoadedElement(element);
@@ -63945,30 +62683,24 @@ let TurboIconSwitch = class TurboIconSwitch extends TurboIcon {
      * @param {TurboIconSwitchProperties<State>} properties - Properties to configure the icon.
      */
     constructor(properties) {
-        super({ ...properties });
+        super({ ...properties, icon: undefined });
         if (properties.switchReifect instanceof StatefulReifect)
             this.switchReifect = properties.switchReifect;
         else
             this.switchReifect = new StatefulReifect(properties.switchReifect || {});
+        const reifectProperties = this.switchReifect.properties;
         this.switchReifect.attach(this);
-        this.appendStateToIconName = properties.appendStateToIconName;
-        if (properties.defaultState)
-            this.switchReifect.apply(properties.defaultState, this);
-    }
-    set appendStateToIconName(value) {
-        if (value) {
-            const reifectProperties = this.switchReifect.properties;
+        if (properties.appendStateToIconName)
             this.switchReifect.states.forEach(state => {
                 if (!reifectProperties[state])
                     reifectProperties[state] = {};
-                reifectProperties[state].icon = this.icon + "-" + state.toString();
+                reifectProperties[state].icon = properties.icon + "-" + state.toString();
             });
-        }
+        this.update(properties.appendStateToIconName ? { ...properties, icon: undefined } : properties);
+        if (properties.defaultState)
+            this.switchReifect.apply(properties.defaultState, this);
     }
 };
-__decorate([
-    auto()
-], TurboIconSwitch.prototype, "appendStateToIconName", null);
 TurboIconSwitch = __decorate([
     define()
 ], TurboIconSwitch);
@@ -64292,7 +63024,7 @@ let TurboSelect = class TurboSelect extends TurboElement {
             });
         });
     }
-    createEntry(entry) {
+    addEntry(entry, index = this.entries.length) {
         if (!(entry instanceof TurboSelectEntry)) {
             if (typeof entry == "object" && "value" in entry) {
                 if (!entry.inputName)
@@ -64303,10 +63035,6 @@ let TurboSelect = class TurboSelect extends TurboElement {
                 entry = new TurboSelectEntry({ value: entry, inputName: this.inputName });
             }
         }
-        return entry;
-    }
-    addEntry(entry, index = this.entries.length) {
-        entry = this.createEntry(entry);
         if (index === undefined || typeof index !== "number" || index > this.entries.length)
             index = this.entries.length;
         if (index < 0)
@@ -64670,12 +63398,13 @@ let TurboDrawer = class TurboDrawer extends TurboElement {
     thumb;
     panelContainer;
     panel;
-    _icon;
-    _offset;
-    _translation = 0;
+    icon;
     transition;
+    hideOverflow;
     dragging = false;
     animationOn = false;
+    _offset;
+    _translation = 0;
     resizeObserver;
     constructor(properties) {
         super(properties);
@@ -64689,11 +63418,12 @@ let TurboDrawer = class TurboDrawer extends TurboElement {
         this.addChild([this.thumb, this.panelContainer]);
         this.panelContainer.addChild(this.panel);
         this.hideOverflow = properties.hideOverflow ?? false;
+        if (this.hideOverflow)
+            this.panelContainer.setStyle("overflow", "hidden");
         this.side = properties.side || Side.bottom;
         this.offset = { open: properties.offset?.open || 0, closed: properties.offset?.closed || 0 };
-        this.attachSideToIconName = properties.attachSideToIconName;
-        this.rotateIconBasedOnSide = properties.rotateIconBasedOnSide;
-        this.icon = properties.icon;
+        this.icon = this.generateIcon(properties);
+        this.thumb.addChild(this.icon);
         this.childHandler = this.panel;
         //Transition
         this.transition = properties.transition ?? new Reifect({
@@ -64721,29 +63451,28 @@ let TurboDrawer = class TurboDrawer extends TurboElement {
         this.animationOn = true;
         this.initEvents();
     }
-    get icon() {
-        return this._icon;
-    }
-    set icon(value) {
-        if (this.icon?.parentElement === this.thumb)
-            this.thumb.removeChild(this.icon);
-        if (value instanceof Element) {
-            this._icon = value;
-            return;
+    generateIcon(properties) {
+        if (properties.icon instanceof Element)
+            return properties.icon;
+        const attachSideToIconName = properties.attachSideToIconName ?? typeof properties.icon == "string";
+        const rotateIconBasedOnSide = properties.rotateIconBasedOnSide ?? !attachSideToIconName;
+        const iconProperties = typeof properties.icon == "object"
+            ? properties.icon : {
+            icon: properties.icon,
+            switchReifect: { states: Object.values(Side) },
+            defaultState: this.open ? this.getOppositeSide() : this.side,
+            appendStateToIconName: attachSideToIconName,
+        };
+        const iconElement = new TurboIconSwitch(iconProperties);
+        if (rotateIconBasedOnSide) {
+            iconElement.switchReifect.styles = {
+                top: "transform: rotate(180deg)",
+                bottom: "transform: rotate(0deg)",
+                left: "transform: rotate(90deg)",
+                right: "transform: rotate(270deg)",
+            };
         }
-        let attachSideToIconName = this.attachSideToIconName;
-        if (typeof value === "string" && !attachSideToIconName && !this.rotateIconBasedOnSide)
-            attachSideToIconName = true;
-        this._icon = new TurboIconSwitch(typeof value == "object"
-            ? value
-            : {
-                icon: value,
-                switchReifect: { states: Object.values(Side) },
-                defaultState: this.open ? this.getOppositeSide() : this.side,
-                appendStateToIconName: attachSideToIconName,
-            });
-        this.thumb.addChild(this.icon);
-        this.attachSideToIconName = attachSideToIconName;
+        return iconElement;
     }
     initEvents() {
         this.thumb.addEventListener(DefaultEventName.click, (e) => {
@@ -64821,32 +63550,11 @@ let TurboDrawer = class TurboDrawer extends TurboElement {
                 return Side.bottom;
         }
     }
-    set hideOverflow(value) {
-        this.panelContainer.setStyle("overflow", value ? "hidden" : "");
-    }
-    set attachSideToIconName(value) {
-        if (this.icon instanceof TurboIconSwitch)
-            this.icon.appendStateToIconName = value;
-        if (value)
-            this.rotateIconBasedOnSide = false;
-    }
-    set rotateIconBasedOnSide(value) {
-        if (value)
-            this.attachSideToIconName = false;
-        if (this.icon instanceof TurboIconSwitch)
-            this.icon.switchReifect.styles = {
-                top: "transform: rotate(180deg)",
-                bottom: "transform: rotate(0deg)",
-                left: "transform: rotate(90deg)",
-                right: "transform: rotate(270deg)",
-            };
-    }
     set side(value) {
         this.toggleClass("top-drawer", value == Side.top);
         this.toggleClass("bottom-drawer", value == Side.bottom);
         this.toggleClass("left-drawer", value == Side.left);
         this.toggleClass("right-drawer", value == Side.right);
-        this.refresh();
     }
     get offset() {
         return this._offset;
@@ -64906,25 +63614,16 @@ let TurboDrawer = class TurboDrawer extends TurboElement {
         }
         if (this.hideOverflow)
             this.panel.setStyle("position", "absolute", true);
-        if (this.icon instanceof TurboIconSwitch)
-            this.icon.switchReifect.apply(this.open ? this.getOppositeSide() : this.side);
         requestAnimationFrame(() => {
             this.translation = (this.open ? this.offset.open : this.offset.closed)
                 + (this.open ? (this.isVertical ? this.panel.offsetHeight : this.panel.offsetWidth) : 0);
+            if (this.icon instanceof TurboIconSwitch)
+                this.icon.switchReifect.apply(this.open ? this.getOppositeSide() : this.side);
             if (this.hideOverflow)
                 this.panel.setStyle("position", "relative", true);
         });
     }
 };
-__decorate([
-    auto()
-], TurboDrawer.prototype, "hideOverflow", null);
-__decorate([
-    auto()
-], TurboDrawer.prototype, "attachSideToIconName", null);
-__decorate([
-    auto()
-], TurboDrawer.prototype, "rotateIconBasedOnSide", null);
 __decorate([
     auto()
 ], TurboDrawer.prototype, "side", null);
@@ -65668,12 +64367,6 @@ let TurboSelectWheel = class TurboSelectWheel extends TurboSelect {
             this.setOpenTimer();
     }
     addEntry(entry, index = this.entries.length) {
-        entry = this.createEntry(entry);
-        entry.onDetach.add(() => this.reifect?.detach(entry));
-        entry.onAttach.add(() => {
-            this.reifect?.attach(entry);
-            this.reloadEntrySizes();
-        });
         entry = super.addEntry(entry, index);
         entry.setStyles({ position: "absolute" });
         entry.addListener(DefaultEventName.dragStart, (e) => {
@@ -65693,6 +64386,11 @@ let TurboSelectWheel = class TurboSelectWheel extends TurboSelect {
             if (showTimer)
                 clearTimeout(showTimer);
             showTimer = null;
+        });
+        entry.onDetach.add(() => this.reifect?.detach(entry));
+        entry.onAttach.add(() => {
+            this.reifect?.attach(entry);
+            this.reloadEntrySizes();
         });
         this.refresh();
         return entry;

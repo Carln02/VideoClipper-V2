@@ -9,9 +9,3 @@ export type YPersistenceConnectionOptions = {
     docName?: string,
     gc?: boolean
 };
-
-declare module "http" {
-    interface IncomingMessage {
-        user?: any;
-    }
-}

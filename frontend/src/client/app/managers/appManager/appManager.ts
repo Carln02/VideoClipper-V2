@@ -4,17 +4,14 @@ import {ScreenManager} from "../screenManager/screenManager";
 import {ScreenManagerProperties} from "../screenManager/screenManager.types";
 import {DocumentManager} from "../documentManager/documentManager";
 import {AppScreens} from "./appManager.types";
-import {AuthenticationManager} from "../authenticationManager/authenticationManager";
 
 @define()
 export class AppManager extends ScreenManager<AppScreens> {
     private readonly _eventManager: TurboEventManager;
     private readonly _cursorManager: CursorManager;
-    private readonly _authenticationManager: AuthenticationManager;
 
     public constructor(properties: ScreenManagerProperties) {
         super(properties);
-        this._authenticationManager = new AuthenticationManager();
         this._eventManager = new TurboEventManager();
         this._cursorManager = new CursorManager();
         this.addScreen(new DocumentManager({screenManager: this}), AppScreens.document);
