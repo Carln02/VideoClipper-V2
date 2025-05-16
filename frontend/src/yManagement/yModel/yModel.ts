@@ -2,13 +2,17 @@ import {YAbstractType, YMap, YArray, YEvent, YDataBlock} from "../yManagement.ty
 import {auto, MvcBlockKeyType, TurboModel} from "turbodombuilder";
 
 /**
- * @class YComponent
- * @extends TurboElement
- * @description A general class representing a component attached to a Ywrapped data object. It takes as a
- * generic the datatype of the data that is shared through Yjs. Components that extend this class would ideally
- * include defined callbacks that will be triggered by Thibaut's Ywrapper accordingly when the attached data changes.
- * @template DataType
- */
+ * @class YModel
+ * @abstract
+ * @extends TurboModel
+ * @template DataType - The plain shape of the shared data.
+ * @template {YMap | YArray} YType - The Yjs type used (YMap or YArray).
+ * @template {string | number} KeyType - The type of keys used to access values.
+ * @template {string | number} IdType - The type of block identifiers.
+ * @template {"array" | "map"} BlocksType - Either 'array' or 'map' depending on the block storage format.
+ * @template {YDataBlock<YType, IdType>} BlockType - The structure of each block including observer.
+ * @description A model that wraps and manages Yjs data structures (YMap/YArray), adding automatic observer support.
+ *  */
 export abstract class YModel<
     DataType = any,
     YType extends YMap | YArray = YMap | YArray,
@@ -18,7 +22,16 @@ export abstract class YModel<
     BlockType extends YDataBlock<YType, IdType> = YDataBlock<YType, IdType>,
 > extends TurboModel<YType, KeyType, IdType, BlocksType, BlockType> {
     /**
-     * @description The observed data. When it is set, this component will set again all the defined setters.
+     * @constructor
+     * @param {DataType} [data] - Initial data. Not initialized if provided.
+     * @param {BlocksType} [dataBlocksType] - Type of data blocks (array or map).
+     */
+    public constructor(data?: YType, dataBlocksType?: BlocksType) {
+        super(data, dataBlocksType);
+    }
+
+    /**
+     * @description The data of the default block.
      */
     public get data(): DataType & YType {
         return super.data as DataType & YType;
@@ -29,10 +42,9 @@ export abstract class YModel<
         super.data = value;
     }
 
-    public constructor(data?: YType, dataBlocksType?: BlocksType) {
-        super(data, dataBlocksType);
-    }
-
+    /**
+     * @description Whether callbacks are enabled or disabled.
+     */
     @auto()
     public set enabledCallbacks(value: boolean) {
         this.getAllBlocks().forEach(block => {
@@ -42,6 +54,14 @@ export abstract class YModel<
         });
     }
 
+    /**
+     * @function getData
+     * @description Retrieves the value associated with a given key in the specified block.
+     * @param {KeyType} key - The key to retrieve.
+     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block from which to retrieve the
+     * data.
+     * @returns {unknown} The value associated with the key, or null if not found.
+     */
     public getData(key: KeyType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey): any {
         const data = this.getBlockData(blockKey);
         if (data instanceof YMap) return data.get(key.toString());
@@ -52,6 +72,13 @@ export abstract class YModel<
         return null;
     }
 
+    /**
+     * @function setData
+     * @description Sets the value for a given key in the specified block and triggers callbacks (if enabled).
+     * @param {KeyType} key - The key to update.
+     * @param {unknown} value - The value to assign.
+     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block to update.
+     */
     public setData(key: KeyType, value: unknown, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey) {
         const data = this.getBlockData(blockKey);
         if (data instanceof YMap) data.set(key.toString(), value);
@@ -63,12 +90,27 @@ export abstract class YModel<
         }
     }
 
+    /**
+     * @function getSize
+     * @description Returns the size of the specified block.
+     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block to check.
+     * @returns {number} The size.
+     */
     public getSize(blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey): number {
         const data = this.getBlockData(blockKey);
         if (data instanceof YMap || data instanceof YArray) return (data instanceof YArray) ? data.length : data.size;
         return 0;
     }
 
+    /**
+     * @function createBlock
+     * @description Creates a data block entry.
+     * @param {YType} value - The data of the block.
+     * @param {IdType} [id] - The optional ID of the data.
+     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The key of the block.
+     * @protected
+     * @return {BlockType} - The created block.
+     */
     public createBlock(value: YType, id?: IdType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey): BlockType {
         return {
             ...super.createBlock(value, id),
@@ -76,6 +118,14 @@ export abstract class YModel<
         } as BlockType;
     }
 
+    /**
+     * @function setBlock
+     * @description Creates and sets a data block at the specified key.
+     * @param {YType} value - The data to set.
+     * @param {IdType} [id] - Optional block ID.
+     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The key of the block.
+     * @param {boolean} [initialize = true] - Whether to initialize the block after setting.
+     */
     public setBlock(value: YType, id?: IdType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey, initialize: boolean = true) {
         if (this.enabledCallbacks) {
             const block = this.getBlock(blockKey);
@@ -86,6 +136,11 @@ export abstract class YModel<
         super.setBlock(value, id, blockKey, initialize);
     }
 
+    /**
+     * @function initialize
+     * @description Initializes the block at the given key, and triggers callbacks for all the keys in its data.
+     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block key.
+     */
     public initialize(blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey) {
         super.initialize(blockKey);
         const block = this.getBlock(blockKey);
@@ -94,6 +149,12 @@ export abstract class YModel<
 
     protected abstract observeChanges(event: YEvent, blockKey?: MvcBlockKeyType<BlocksType>): void;
 
+    /**
+     * @function getAllKeys
+     * @description Retrieves all keys within the given block(s).
+     * @param {MvcBlockKeyType<BlocksType>} [blockKey=this.defaultComputationBlockKey] - The block key.
+     * @returns {KeyType[]} Array of keys.
+     */
     public getAllKeys(blockKey: MvcBlockKeyType<BlocksType> = this.defaultComputationBlockKey): KeyType[] {
         const output: KeyType[] = [];
         for (const block of this.getAllBlocks(blockKey)) {
@@ -106,6 +167,12 @@ export abstract class YModel<
         return output;
     }
 
+    /**
+     * @function getAllObservers
+     * @description Retrieves all observers within the given block(s).
+     * @param {MvcBlockKeyType<BlocksType>} [blockKey=this.defaultComputationBlockKey] - The block key.
+     * @returns {((event: YEvent) => void)[]} Array of observers.
+     */
     protected getAllObservers(blockKey: MvcBlockKeyType<BlocksType> = this.defaultComputationBlockKey): ((event: YEvent) => void)[] {
         return this.getAllBlocks(blockKey).map(block => block.observer);
     }

@@ -1,13 +1,32 @@
 import {YAbstractType, YArray, YMap, YEvent, YMapEvent, YArrayEvent} from "./yManagement.types";
 import {generate_unique_id} from "../client/sync/datastore";
 
+/**
+ * @class YUtilities
+ * @description Static utility functions for working with Yjs collaborative types (YMap, YArray, etc).
+ */
 export class YUtilities {
+    /**
+     * @function createYMap
+     * @static
+     * @description Creates a YMap and populates it with key-value pairs from a plain object.
+     * @param {object} data - The initial data to populate the YMap with.
+     * @returns {YMap} A new YMap instance.
+     */
     public static createYMap<DataType = object>(data: DataType): YMap {
         const map = new YMap();
         for (const [key, value] of Object.entries(data)) map.set(key, value);
         return map;
     }
 
+    /**
+     * @function createYArray
+     * @static
+     * @template DataType - The type of the array's content.
+     * @description Creates a YArray and populates it with elements from a plain array.
+     * @param {DataType[]} data - The array of data to populate the YArray with.
+     * @returns {YArray} A new YArray instance.
+     */
     public static createYArray<DataType = object>(data: DataType[]): YArray {
         const array = new YArray();
         array.push(data);
@@ -18,13 +37,11 @@ export class YUtilities {
      * @function addInYMap
      * @static
      * @async
-     * @description Adds the provided data in the provided parent in the Yjs document, with a unique ID as its field
-     * name.
+     * @description Adds the provided data in the provided parent in the Yjs document, with a unique ID as its field name.
      * @param {object} data - The data to append to the Yjs document.
-     * @param parentYMap
-     * @param id
-     * document.
-     * @returns {Promise<string>} - The ID of the data in its parent.
+     * @param {YMap} parentYMap - The YMap to add the data to.
+     * @param {string} [id] - Optional ID to use. If not provided, a unique ID is generated.
+     * @returns {Promise<string>} The ID of the inserted data.
      */
     public static async addInYMap(data: object, parentYMap: YMap, id?: string): Promise<string> {
         if (!id) id = await generate_unique_id(parentYMap) as string;
@@ -37,11 +54,9 @@ export class YUtilities {
      * @static
      * @description Adds the provided data in the provided parent array in the Yjs document.
      * @param {object} data - The data to append to the Yjs document.
-     * @param {YArray} parentYArray - The pointer to the parent array to which the data should be appended in
-     * the Yjs document.
-     * @param {number} [index] - The index position in the array where the data should be added. By default, the data
-     * is pushed at the end of the array.
-     * @returns {number} - The index of the data in its parent.
+     * @param {YArray} parentYArray - The YArray to which the data should be appended.
+     * @param {number} [index] - The index to insert the data at. If omitted or invalid, it is appended at the end.
+     * @returns {number} The index where the data was inserted.
      */
     public static addInYArray(data: object, parentYArray: YArray, index?: number): number {
         if (index == undefined || index > parentYArray.length) {
@@ -54,6 +69,14 @@ export class YUtilities {
         return index;
     }
 
+    /**
+     * @function removeFromYArray
+     * @static
+     * @description Removes the first occurrence of the given entry from the YArray.
+     * @param {unknown} entry - The entry to remove.
+     * @param {YArray} parentYArray - The parent YArray.
+     * @returns {boolean} True if removed, false otherwise.
+     */
     public static removeFromYArray(entry: unknown, parentYArray: YArray): boolean {
         for (const [index, child] of parentYArray.toArray()) {
             if (entry != child) continue;
@@ -63,6 +86,16 @@ export class YUtilities {
         return false;
     }
 
+    /**
+     * @function deepObserveAny
+     * @static
+     * @description Observes deeply for changes to any of the specified fields and invokes callback when any field
+     * changes.
+     * @param {YAbstractType} data - The Yjs type to observe.
+     * @param {(fieldChanged: string, event: YEvent, target: YAbstractType) => void} callback - The function to call
+     * when a matching field changes.
+     * @param {...string} fieldNames - List of field names to observe.
+     */
     public static deepObserveAny(
         data: YAbstractType,
         callback: (fieldChanged: string, event: YEvent, target: YAbstractType) => void,
@@ -90,6 +123,15 @@ export class YUtilities {
         });
     }
 
+    /**
+     * @function deepObserveAll
+     * @static
+     * @description Observes deeply for changes to all specified fields and invokes callback only when all fields
+     * have changed.
+     * @param {YAbstractType} data - The Yjs type to observe.
+     * @param {(event: YEvent, target: YAbstractType) => void} callback - The function to call when all fields change.
+     * @param {...string} fieldNames - List of field names to observe.
+     */
     public static deepObserveAll(
         data: YAbstractType,
         callback: (event: YEvent, target: YAbstractType) => void,

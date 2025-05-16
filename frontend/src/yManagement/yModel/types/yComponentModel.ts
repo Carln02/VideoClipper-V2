@@ -3,12 +3,10 @@ import {YModel} from "../yModel";
 import {MvcBlockKeyType} from "turbodombuilder";
 
 /**
- * @class YComponent
- * @extends TurboElement
- * @description A general class representing a component attached to a Ywrapped data object. It takes as a
- * generic the datatype of the data that is shared through Yjs. Components that extend this class would ideally
- * include defined callbacks that will be triggered by Thibaut's Ywrapper accordingly when the attached data changes.
- * @template DataType
+ * @class YComponentModel
+ * @extends YModel
+ * @description An MVC model that handles a Yjs map and observes changes on its direct fields, firing change
+ * callbacks at the keys that changed through the emitter.
  */
 export class YComponentModel extends YModel<any, YMap, string> {
     protected observeChanges(event: YMapEvent, blockKey?: MvcBlockKeyType<"map">): void {

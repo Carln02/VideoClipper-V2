@@ -2,6 +2,18 @@ import {YMap, YArray, YManagerDataBlock, YArrayEvent, YMapEvent,YEvent} from "..
 import {YModel} from "../yModel";
 import {MvcBlockKeyType, TurboElement, TurboProxiedElement} from "turbodombuilder";
 
+/**
+ * @class YManagerModel
+ * @template DataType - The type of the data stored in each block.
+ * @template ComponentType - The type of component that corresponds to each entry/field of the data.
+ * @template {string | number | symbol} KeyType - The type of the keys used to access data in blocks.
+ * @template {YMap | YArray} YType - The type of the Yjs data (YMap or YArray).
+ * @template {string | number | symbol} IdType - The type of the block IDs.
+ * @template {"array" | "map"} BlocksType - Whether data blocks are stored as an array or a map.
+ * @template {YManagerDataBlock<YType, IdType, ComponentType, KeyType>} BlockType - The structure of each data block.
+ * @description MVC model that manages Yjs data and synchronizes it with a map or array of components, each attached to
+ * one entry of the data object.
+ */
 export class YManagerModel<
     DataType,
     ComponentType,
@@ -26,6 +38,15 @@ export class YManagerModel<
             this.getBlock(blockKey).instances?.delete(id);
         };
 
+    /**
+     * @function createBlock
+     * @description Creates a data block entry.
+     * @param {YType} value - The data of the block.
+     * @param {IdType} [id] - The optional ID of the data.
+     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The key of the block.
+     * @protected
+     * @return {BlockType} - The created block.
+     */
     public createBlock(value: YType, id?: IdType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey): BlockType {
         return {
             ...super.createBlock(value, id, blockKey),
@@ -61,6 +82,11 @@ export class YManagerModel<
 
     }
 
+    /**
+     * @function clear
+     * @description Clears the block data at the given key.
+     * @param {MvcBlockKeyType<BlocksType>} [blockKey = this.defaultBlockKey] - The block key.
+     */
     public clear(blockKey: MvcBlockKeyType<BlocksType> = this.defaultComputationBlockKey) {
         super.clear(blockKey);
         this.getAllBlocks(blockKey).forEach(block => {
@@ -69,6 +95,13 @@ export class YManagerModel<
         });
     }
 
+    /**
+     * @function fireKeyChangedCallback
+     * @description Fires the emitter's change callback for the given key in a block, passing it the data at the key's value.
+     * @param {KeyType} key - The key that changed.
+     * @param {MvcBlockKeyType<BlocksType>} [blockKey=this.defaultBlockKey] - The block where the change occurred.
+     * @param {boolean} [deleted=false] - Whether the key was deleted.
+     */
     protected fireKeyChangedCallback(key: KeyType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey, deleted: boolean = false) {
         if (!this.getAllKeys(blockKey).includes(key)) {
             return super.fireKeyChangedCallback(key, blockKey, deleted);

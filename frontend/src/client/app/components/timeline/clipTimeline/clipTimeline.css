@@ -1,6 +1,8 @@
-.vc-clip-timeline {
+.vc-timeline.vc-clip-timeline {
     height: 100%;
     display: flex;
+    width: 0;
+    right: 0;
 }
 
 .vc-timeline.vc-clip-timeline .scrubber-container {
