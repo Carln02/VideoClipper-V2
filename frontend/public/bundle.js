@@ -8068,6 +8068,7 @@ function start() {
 let contents;
 _managers_appManager_appManager__WEBPACK_IMPORTED_MODULE_8__.AppManager.initialize();
 const app = new _managers_appManager_appManager__WEBPACK_IMPORTED_MODULE_8__.AppManager({ parent: document.body });
+app.currentType = _managers_appManager_appManager_types__WEBPACK_IMPORTED_MODULE_9__.AppScreens.home;
 function show_groups() {
     contents === null || contents === void 0 ? void 0 : contents.remove();
     contents = new _views_grouplist_grouplist__WEBPACK_IMPORTED_MODULE_1__.GroupList();
@@ -8162,6 +8163,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _documentManager_documentManager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../documentManager/documentManager */ "./frontend/src/client/app/managers/documentManager/documentManager.ts");
 /* harmony import */ var _appManager_types__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./appManager.types */ "./frontend/src/client/app/managers/appManager/appManager.types.ts");
 /* harmony import */ var _authenticationManager_authenticationManager__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../authenticationManager/authenticationManager */ "./frontend/src/client/app/managers/authenticationManager/authenticationManager.ts");
+/* harmony import */ var _screens_home_home__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../screens/home/home */ "./frontend/src/client/app/screens/home/home.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8174,13 +8176,16 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
+
 let AppManager = class AppManager extends _screenManager_screenManager__WEBPACK_IMPORTED_MODULE_2__.ScreenManager {
     constructor(properties) {
         super(properties);
         this._authenticationManager = new _authenticationManager_authenticationManager__WEBPACK_IMPORTED_MODULE_5__.AuthenticationManager();
         this._eventManager = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventManager();
         this._cursorManager = new _cursorManager_cursorManager__WEBPACK_IMPORTED_MODULE_1__.CursorManager();
+        this.addScreen(new _screens_home_home__WEBPACK_IMPORTED_MODULE_6__.Home({ screenManager: this }), _appManager_types__WEBPACK_IMPORTED_MODULE_4__.AppScreens.home);
         this.addScreen(new _documentManager_documentManager__WEBPACK_IMPORTED_MODULE_3__.DocumentManager({ screenManager: this }), _appManager_types__WEBPACK_IMPORTED_MODULE_4__.AppScreens.document);
+        this.authenticationManager.init();
     }
     static initialize() {
         (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.turbofy)();
@@ -8192,6 +8197,9 @@ let AppManager = class AppManager extends _screenManager_screenManager__WEBPACK_
     }
     get cursorManager() {
         return this._cursorManager;
+    }
+    get authenticationManager() {
+        return this._authenticationManager;
     }
     get documentManager() {
         return this.getScreen(_appManager_types__WEBPACK_IMPORTED_MODULE_4__.AppScreens.document);
@@ -8229,6 +8237,7 @@ __webpack_require__.r(__webpack_exports__);
 var AppScreens;
 (function (AppScreens) {
     AppScreens["document"] = "document";
+    AppScreens["home"] = "home";
 })(AppScreens || (AppScreens = {}));
 
 
@@ -8245,6 +8254,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   AuthenticationManager: () => (/* binding */ AuthenticationManager)
 /* harmony export */ });
+/* harmony import */ var _requestManager_requestManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../requestManager/requestManager */ "./frontend/src/client/app/managers/requestManager/requestManager.ts");
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8254,66 +8265,95 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-class AuthenticationManager {
+
+
+class AuthenticationManager extends _requestManager_requestManager__WEBPACK_IMPORTED_MODULE_0__.RequestManager {
     constructor() {
+        super();
+        this.googleClientID = "494682680465-p2mlm6q6aefp7lu45qe8f5lcl9kj5j8t.apps.googleusercontent.com";
+        this._user = null;
+        this.onLogin = new turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Delegate();
+        this.onGoogleLogin = (response) => __awaiter(this, void 0, void 0, function* () {
+            const res = yield fetch(this.url + "google", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ idToken: response.credential }),
+            });
+            if (res.ok && (yield this.isLoggedIn()))
+                this.onLogin.fire(true);
+            else
+                alert("Login failed.");
+        });
         window.addEventListener("load", () => __awaiter(this, void 0, void 0, function* () { return yield this.setup(); }));
+    }
+    get url() {
+        return this.serverUrl + "api/auth/";
+    }
+    /**
+     * The current user's info (email, name, etc.).
+     */
+    get user() {
+        return this._user;
+    }
+    set user(value) {
+        this._user = value;
+    }
+    init() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.setup();
+        });
     }
     setup() {
         return __awaiter(this, void 0, void 0, function* () {
-            const isLoggedIn = yield this.checkLoginStatus();
-            if (isLoggedIn) {
-                console.log("User already logged in");
-                return;
+            const loggedIn = yield this.isLoggedIn();
+            if (!loggedIn) {
+                if (!window.google)
+                    console.error("Google API not loaded");
+                else
+                    window.google.accounts.id.initialize({ client_id: this.googleClientID, callback: this.onGoogleLogin });
             }
-            if (!this.isGoogleDefined()) {
-                console.error("Google script not loaded");
-                return;
-            }
-            this.initialize();
-            this.render();
+            this.onLogin.fire(loggedIn);
         });
     }
-    isGoogleDefined() {
-        return !!window.google;
+    /**
+     * Logs the user out (backend + UI).
+     */
+    logout() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield fetch(this.url + "logout", { method: "POST", credentials: "include" });
+                this.onLogin.fire(false);
+                this.user = null;
+                window.location.reload(); //TODO
+            }
+            catch (err) {
+                console.error("Logout failed:", err);
+            }
+        });
     }
-    checkLoginStatus() {
+    /**
+     * Checks if the user is currently logged in (session valid).
+     */
+    isLoggedIn() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const res = yield fetch("/api/auth/me", { credentials: "include" });
                 if (!res.ok)
                     return false;
                 const data = yield res.json();
-                return data.loggedIn === true;
+                this._user = data.user;
+                return (data === null || data === void 0 ? void 0 : data.loggedIn) === true;
             }
-            catch (_a) {
+            catch (err) {
+                console.warn("Session check failed:", err);
                 return false;
             }
         });
     }
-    initialize() {
+    renderGoogleButton(parentElement, options = { theme: "outline", size: "large" }) {
         var _a;
-        (_a = window.google) === null || _a === void 0 ? void 0 : _a.accounts.id.initialize({
-            client_id: "494682680465-p2mlm6q6aefp7lu45qe8f5lcl9kj5j8t.apps.googleusercontent.com",
-            callback: (response) => __awaiter(this, void 0, void 0, function* () {
-                var _a;
-                const result = yield fetch("/api/auth/google", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ idToken: response.credential }),
-                });
-                if (result.ok) {
-                    console.log("Logged in successfully");
-                    (_a = document.getElementById("google-login")) === null || _a === void 0 ? void 0 : _a.remove();
-                }
-                else {
-                    alert("Login failed.");
-                }
-            })
-        });
-    }
-    render() {
-        var _a;
-        (_a = window.google) === null || _a === void 0 ? void 0 : _a.accounts.id.renderButton(document.getElementById("google-login"), { theme: "outline", size: "large" });
+        (_a = window.google) === null || _a === void 0 ? void 0 : _a.accounts.id.renderButton(parentElement, options);
     }
 }
 
@@ -11067,6 +11107,49 @@ let Canvas = class Canvas extends _components_component_component__WEBPACK_IMPOR
 Canvas = __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-canvas")
 ], Canvas);
+
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/app/screens/home/home.ts":
+/*!******************************************************!*\
+  !*** ./frontend/src/client/app/screens/home/home.ts ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Home: () => (/* binding */ Home)
+/* harmony export */ });
+/* harmony import */ var _components_component_component__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../components/component/component */ "./frontend/src/client/app/components/component/component.ts");
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+let Home = class Home extends _components_component_component__WEBPACK_IMPORTED_MODULE_0__.VcComponent {
+    constructor(properties) {
+        super(properties);
+        this.googleLoginParent = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.div)({ parent: this });
+        this.screenManager.authenticationManager.onLogin.add((loggedIn) => {
+            if (!loggedIn) {
+                this.screenManager.authenticationManager.renderGoogleButton(this.googleLoginParent);
+                this.addChild(this.googleLoginParent);
+            }
+            else
+                this.googleLoginParent.remove();
+        });
+    }
+};
+Home = __decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.define)("vc-home")
+], Home);
 
 
 

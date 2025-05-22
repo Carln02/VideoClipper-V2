@@ -5,10 +5,10 @@ import * as mutex from "lib0/mutex";
 import * as encoding from "lib0/encoding";
 import debounce from "lodash.debounce";
 import * as awarenessProtocol from "y-protocols/awareness";
-import {YWebSocketUtils} from "./yWebSocketUtils";
+import {WebSocketYUtils} from "./webSocket.yUtils";
 
-export class WSSharedDoc extends Y.Doc {
-    public readonly yWebSocketUtils: YWebSocketUtils;
+export class WebSocketSharedDoc extends Y.Doc {
+    public readonly yWebSocketUtils: WebSocketYUtils;
 
     public name: string;
     public mux: mutex.mutex;
@@ -45,7 +45,7 @@ export class WSSharedDoc extends Y.Doc {
      * @param yWebSocketUtils
      * @param gc
      */
-    public constructor(name: string, yWebSocketUtils: YWebSocketUtils, gc: boolean = true) {
+    public constructor(name: string, yWebSocketUtils: WebSocketYUtils, gc: boolean = true) {
         super({gc: gc});
         this.yWebSocketUtils = yWebSocketUtils;
         this.name = name;

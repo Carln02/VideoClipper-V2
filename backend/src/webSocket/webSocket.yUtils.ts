@@ -8,10 +8,10 @@ import * as encoding from "lib0/encoding";
 import * as decoding from "lib0/decoding";
 import * as map from "lib0/map";
 import {LeveldbPersistence} from "y-leveldb";
-import {YPersistence, YPersistenceConnectionOptions} from "./utils.types";
-import {WSSharedDoc} from "./wsSharedDoc";
+import {YPersistence, YPersistenceConnectionOptions} from "./webSocket.types";
+import {WebSocketSharedDoc} from "./webSocket.sharedDoc";
 
-export class YWebSocketUtils {
+export class WebSocketYUtils {
     private readonly CALLBACK_URL = process.env.CALLBACK_URL ? new URL(process.env.CALLBACK_URL) : null;
     private readonly CALLBACK_TIMEOUT = Number.parseInt(process.env.CALLBACK_TIMEOUT || "5000");
     private readonly CALLBACK_OBJECTS = process.env.CALLBACK_OBJECTS ? JSON.parse(process.env.CALLBACK_OBJECTS) : {};
@@ -22,6 +22,8 @@ export class YWebSocketUtils {
     private readonly wsReadyStateOpen = 1;
     private readonly wsReadyStateClosing = 2;
     private readonly wsReadyStateClosed = 3;
+
+    private readonly pingTimeout = 30000;
 
     // disable gc when using snapshots!
     private readonly persistenceDir = process.env.YPERSISTENCE;
@@ -59,9 +61,9 @@ export class YWebSocketUtils {
     /**
      * @param {Uint8Array} update
      * @param {any} origin
-     * @param {WSSharedDoc} doc
+     * @param {WebSocketSharedDoc} doc
      */
-    public callbackHandler = (update: Uint8Array, origin: any, doc: WSSharedDoc) => {
+    public callbackHandler = (update: Uint8Array, origin: any, doc: WebSocketSharedDoc) => {
         const room = doc.name;
         const dataToSend = {
             room: room,
@@ -112,9 +114,9 @@ export class YWebSocketUtils {
     /**
      * @param {string} objName
      * @param {string} objType
-     * @param {WSSharedDoc} doc
+     * @param {WebSocketSharedDoc} doc
      */
-    private getContent = (objName: string, objType: string, doc: WSSharedDoc): Y.AbstractType<any> => {
+    private getContent = (objName: string, objType: string, doc: WebSocketSharedDoc): Y.AbstractType<any> => {
         switch (objType) {
             case "Array":
                 return doc.getArray(objName);
@@ -134,9 +136,9 @@ export class YWebSocketUtils {
     /**
      * @param {Uint8Array} update
      * @param {any} origin
-     * @param {WSSharedDoc} doc
+     * @param {WebSocketSharedDoc} doc
      */
-    public updateHandler = (update: Uint8Array, origin: any, doc: WSSharedDoc) => {
+    public updateHandler = (update: Uint8Array, origin: any, doc: WebSocketSharedDoc) => {
         const encoder = encoding.createEncoder()
         encoding.writeVarUint(encoder, this.messageSync)
         syncProtocol.writeUpdate(encoder, update)
@@ -149,12 +151,12 @@ export class YWebSocketUtils {
      *
      * @param {string} docName - the name of the Y.Doc to find or create
      * @param {boolean} gc - whether to allow gc on the doc (applies only when created)
-     * @return {WSSharedDoc}
+     * @return {WebSocketSharedDoc}
      */
     public getYDoc = (docName: string, gc: boolean =
-    process.env.GC !== "false" && process.env.GC !== "0"): WSSharedDoc => {
+    process.env.GC !== "false" && process.env.GC !== "0"): WebSocketSharedDoc => {
         return map.setIfUndefined(this.docs, docName, () => {
-            const doc = new WSSharedDoc(docName, this, gc);
+            const doc = new WebSocketSharedDoc(docName, this, gc);
             if (this.persistence !== null) this.persistence.bindState(docName, doc);
             this.docs.set(docName, doc);
             return doc;
@@ -163,10 +165,10 @@ export class YWebSocketUtils {
 
     /**
      * @param {any} conn
-     * @param {WSSharedDoc} doc
+     * @param {WebSocketSharedDoc} doc
      * @param {Uint8Array} message
      */
-    private messageListener = (conn: any, doc: WSSharedDoc, message: Uint8Array) => {
+    private messageListener = (conn: any, doc: WebSocketSharedDoc, message: Uint8Array) => {
         try {
             const encoder = encoding.createEncoder()
             const decoder = decoding.createDecoder(message)
@@ -189,10 +191,10 @@ export class YWebSocketUtils {
     }
 
     /**
-     * @param {WSSharedDoc} doc
+     * @param {WebSocketSharedDoc} doc
      * @param {any} conn
      */
-    private closeConn = (doc: WSSharedDoc, conn: any) => {
+    private closeConn = (doc: WebSocketSharedDoc, conn: any) => {
         if (doc.conns.has(conn)) {
             const controlledIds: Set<number> = doc.conns.get(conn) as Set<number>;
             doc.conns.delete(conn);
@@ -207,11 +209,11 @@ export class YWebSocketUtils {
     }
 
     /**
-     * @param {WSSharedDoc} doc
+     * @param {WebSocketSharedDoc} doc
      * @param {any} conn
      * @param {Uint8Array} m
      */
-    public send = (doc: WSSharedDoc, conn: any, m: Uint8Array) => {
+    public send = (doc: WebSocketSharedDoc, conn: any, m: Uint8Array) => {
         if (conn.readyState !== this.wsReadyStateConnecting && conn.readyState !== this.wsReadyStateOpen) this.closeConn(doc, conn);
         try {
             conn.send(m, (err: any) => { err != null && this.closeConn(doc, conn) });
@@ -251,7 +253,7 @@ export class YWebSocketUtils {
                     clearInterval(pingInterval);
                 }
             }
-        }, pingTimeout)
+        }, this.pingTimeout)
         conn.on("close", () => {
             this.closeConn(doc, conn);
             clearInterval(pingInterval);
@@ -275,7 +277,3 @@ export class YWebSocketUtils {
         }
     }
 }
-
-
-const pingTimeout = 30000
-

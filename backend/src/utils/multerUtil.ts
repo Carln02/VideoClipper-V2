@@ -1,8 +1,8 @@
-import multer, {StorageEngine} from 'multer';
-import path from 'path';
-import fs from 'fs';
+import multer, {StorageEngine} from "multer";
+import path from "path";
+import fs from "fs";
 
-export class MulterConfig {
+export class MulterUtil {
     private readonly storagePath: string;
     private storage?: StorageEngine;
 

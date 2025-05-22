@@ -13,12 +13,12 @@ import {AppScreens} from "./managers/appManager/appManager.types";
 
 //  Initialize login manager
 
-async function start() {
-    await logman.init();
-    await logman.wait_public_index();
-    console.log("Logged in");
-    show_groups();
-}
+// async function start() {
+//     await logman.init();
+//     await logman.wait_public_index();
+//     console.log("Logged in");
+//     show_groups();
+// }
 
 //  Basic functions
 
@@ -26,6 +26,8 @@ let contents: Element;
 
 AppManager.initialize();
 const app = new AppManager({parent: document.body});
+app.currentType = AppScreens.home;
+
 
 export function show_groups() {
     contents?.remove();
@@ -50,4 +52,4 @@ export function show_project() {
 
 //  Populate page
 
-start();
+// start();

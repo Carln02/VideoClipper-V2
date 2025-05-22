@@ -1,5 +1,4 @@
 import {
-    ClickMode,
     define, Delegate,
     Shown,
     StatefulReifect,
@@ -10,7 +9,6 @@ import {
 import {ScreenManagerProperties} from "./screenManager.types";
 import "./screenManager.css";
 import {VcComponent} from "../../components/component/component";
-import {Tool} from "../../tools/tool/tool";
 
 @define()
 export class ScreenManager<
@@ -78,8 +76,8 @@ export class ScreenManager<
 
     public addScreen(screen: VcComponent, type: ScreenType) {
         this.screens.set(type, screen);
-        this.screensParent.addChild(screen);
-        this.showReifect.apply(Shown.hidden, screen);
+        // this.screensParent.addChild(screen);
+        // this.showReifect.apply(Shown.hidden, screen);
     }
 
     public removeScreen(type: ScreenType) {
@@ -92,6 +90,9 @@ export class ScreenManager<
     }
 
     protected switchScreens(oldScreen: VcComponent, newScreen: VcComponent) {
+        if (oldScreen) oldScreen.remove();
+        if (newScreen) this.screensParent.addChild(newScreen);
+        return;
         if (oldScreen) this.showReifect.apply(Shown.hidden, oldScreen);
         if (newScreen) this.showReifect.apply(Shown.visible, newScreen);
     }

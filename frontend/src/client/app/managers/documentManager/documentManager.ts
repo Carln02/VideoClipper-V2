@@ -3,7 +3,7 @@ import {Card} from "../../components/card/card";
 import {auto, Coordinate, define, Point} from "turbodombuilder";
 import {YUtilities} from "../../../../yManagement/yUtilities";
 import {DocumentManagerModel} from "./documentManager.model";
-import {YDoc, YMap} from "../../../../yManagement/yManagement.types";
+import {YDoc} from "../../../../yManagement/yManagement.types";
 import {Flow} from "../../components/flow/flow";
 import {FlowBranch} from "../../components/flowBranch/flowBranch";
 import {DocumentManagerView} from "./documentManager.view";

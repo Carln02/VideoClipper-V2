@@ -1,9 +1,10 @@
 import fs from "fs";
 import path from "path";
 import {FileInfo} from "./media.types";
+import {AppRepositories} from "../app/app.repositories";
 
-export class MediaService {
-    public constructor(private mediaStoragePath: string) {}
+export class MediaRepository {
+    public constructor(private mediaStoragePath: string, private repos: AppRepositories) {}
 
     public getFileInfo(id: string): Promise<FileInfo> {
         return new Promise((resolve, reject) => {

@@ -1,7 +1,5 @@
 import {TurboHandler} from "turbodombuilder";
 import {CameraModel} from "./camera.model";
-import {add_video} from "../../../sync/videostore";
-import {SyncedMedia} from "../../managers/mediaManager/mediaManager.types";
 
 export class CameraRecordingHandler extends TurboHandler<CameraModel> {
     public setupMediaRecorder() {
