@@ -14,12 +14,12 @@ export enum ProjectScreens {
     camera = "camera",
 }
 
-export type DocumentProperties = ScreenManagerProperties<ProjectScreens,
-    ProjectView, SyncedDocument, ProjectModel, App> & {
+export type ProjectProperties = ScreenManagerProperties<ProjectScreens,
+    ProjectView, SyncedProject, ProjectModel, App> & {
     document?: YDoc
 };
 
-export type SyncedDocument = YMap & {
+export type SyncedProject = YMap & {
     cards?: YMap<SyncedCard>,
     branchingNodes?: YMap<SyncedBranchingNode>,
     flows?: YMap<SyncedFlow>,

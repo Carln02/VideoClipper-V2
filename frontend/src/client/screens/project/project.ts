@@ -17,20 +17,20 @@ import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {SyncedMedia} from "../../managers/mediaManager/mediaManager.types";
 import {Canvas} from "../canvas/canvas";
 import {Camera} from "../camera/camera";
-import {DocumentProperties, ProjectScreens, SyncedDocument} from "./project.types";
+import {ProjectProperties, ProjectScreens, SyncedProject} from "./project.types";
 import {ProjectView} from "./project.view";
 import {ProjectModel} from "./project.model";
 import {YUtilities} from "../../../yManagement/yUtilities";
 import { YDoc } from "../../../yManagement/yManagement.types";
 
 @define("vc-project")
-export class Project extends ScreenManager<ProjectScreens, ProjectView, SyncedDocument,
+export class Project extends ScreenManager<ProjectScreens, ProjectView, SyncedProject,
     ProjectModel, App> {
     private readonly _mediaManager: MediaManager;
     private readonly _contextManager: ContextManager;
     private readonly _toolManager: ToolManager;
 
-    public constructor(properties: DocumentProperties) {
+    public constructor(properties: ProjectProperties) {
         super(properties);
         if (properties.document) this.document = properties.document;
 

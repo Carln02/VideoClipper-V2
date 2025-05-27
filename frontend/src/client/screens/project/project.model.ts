@@ -8,7 +8,7 @@ import {SyncedMedia} from "../../managers/mediaManager/mediaManager.types";
 import { YComponentModel } from "../../../yManagement/yModel/types/yComponentModel";
 import {ProjectCardsModel} from "./project.cardsModel";
 import {ProjectFlowsModel} from "./project.flowsModel";
-import {SyncedDocument} from "./project.types";
+import {SyncedProject} from "./project.types";
 import { YMap } from "../../../yManagement/yManagement.types";
 
 export class ProjectModel extends YComponentModel {
@@ -19,7 +19,7 @@ export class ProjectModel extends YComponentModel {
     public onBranchingNodeAdded: (data: SyncedBranchingNode, id: string, blockKey: string) => BranchingNode;
     public onFlowAdded: (data: SyncedFlow, id: string, blockKey: string) => Flow;
 
-    public constructor(data: SyncedDocument) {
+    public constructor(data: SyncedProject) {
         super(data);
         this.enabledCallbacks = false;
 
