@@ -12,6 +12,7 @@ export type SyncedFlow = {
     branches?: YMap<SyncedFlowBranch> | Record<string, SyncedFlowBranch>;
     tags?: YArray<SyncedFlowTag> | SyncedFlowTag[];
     defaultName?: string;
+    color?: string;
 };
 
 /**

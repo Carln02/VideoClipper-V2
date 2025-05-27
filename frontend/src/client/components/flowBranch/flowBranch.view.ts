@@ -57,6 +57,7 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
             .attr("d", pathData)
             .attr("stroke-dasharray", isOverwriting ? "5, 5" : null)
             .attr("opacity", isOverwriting ? 0.6 : 1)
+            .attr("stroke", this.model.flow.color ?? "black")
             .attr("stroke-width", this.model.strokeWidth);
 
         this.drawChevronsDelayed();
@@ -80,7 +81,7 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
                 .attr("class", "chevron")
                 .attr("d", this.model.chevronShape)
                 .attr("transform", `translate(${point.x}, ${point.y}) rotate(${angle})`)
-                .attr("fill", isOverwriting ? "grey" : "black")
+                .attr("stroke", this.model.flow.color ?? "black")
                 .attr("stroke-linecap", "round")
                 .attr("stroke-linejoin", "round")
                 .attr("opacity", isOverwriting ? 0.6 : 1)

@@ -3200,6 +3200,12 @@ class FlowModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
     get defaultName() {
         return this.getData("defaultName");
     }
+    get color() {
+        return this.getData("color");
+    }
+    set color(value) {
+        this.setData("color", value);
+    }
     get branches() {
         return this.branchesModel.getAllComponents();
     }
@@ -10977,7 +10983,7 @@ let Project = class Project extends _screenManager_screenManager__WEBPACK_IMPORT
             }), this.model.cardsData);
         });
     }
-    createNewFlow(position, nodeId) {
+    createNewFlow(position, nodeId, color) {
         return __awaiter(this, void 0, void 0, function* () {
             this.model.incrementFlowsCount();
             const defaultName = "Flow " + this.model.flowsCount;
@@ -10998,7 +11004,8 @@ let Project = class Project extends _screenManager_screenManager__WEBPACK_IMPORT
                                 branchIds: ["0"]
                             }]
                     }],
-                defaultName: defaultName
+                defaultName: defaultName,
+                color: color
             }), this.model.flowsData);
         });
     }
@@ -12061,7 +12068,7 @@ let ConnectionTool = class ConnectionTool extends _tool_tool__WEBPACK_IMPORTED_M
                     return yield this.currentFlow.branchAtPoint(intersection, e.scaledPosition, this.lastNodeId);
                 }
                 //Otherwise --> create a new flow
-                this.currentFlowId = yield this.project.createNewFlow(e.scaledPosition, this.lastNodeId);
+                this.currentFlowId = yield this.project.createNewFlow(e.scaledPosition, this.lastNodeId, "#439045");
                 return;
             }
             //Otherwise --> get the point data (if any) that the user initiated the drag from

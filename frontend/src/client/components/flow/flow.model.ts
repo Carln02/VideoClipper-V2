@@ -98,6 +98,14 @@ export class FlowModel extends YComponentModel {
         return this.getData("defaultName");
     }
 
+    public get color(): string {
+        return this.getData("color");
+    }
+
+    public set color(value: string) {
+        this.setData("color", value);
+    }
+
     public get branches(): FlowBranch[] {
         return this.branchesModel.getAllComponents();
     }

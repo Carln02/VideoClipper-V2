@@ -64,7 +64,7 @@ export class ConnectionTool extends Tool {
             }
 
             //Otherwise --> create a new flow
-            this.currentFlowId = await this.project.createNewFlow(e.scaledPosition, this.lastNodeId);
+            this.currentFlowId = await this.project.createNewFlow(e.scaledPosition, this.lastNodeId,"#439045");
             return;
         }
 

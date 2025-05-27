@@ -34,6 +34,7 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
         this.model.onFlowBranchAdded = (data) => new FlowBranch({flow: this, data: data});
         this.model.onFlowTagAdded = (data) => new FlowTag({flow: this, data: data, screenManager: this.screenManager});
         this.mvc.initialize();
+        console.log(this.model.color)
     }
 
     public static createData(data?: SyncedFlow): YMap & SyncedFlow {
@@ -51,6 +52,10 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
 
     public get svg(): SVGSVGElement {
         return this.view.svg;
+    }
+
+    public get color(): string {
+        return this.model.color;
     }
 
     public get branches(): FlowBranch[] {

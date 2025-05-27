@@ -150,7 +150,7 @@ export class Project extends ScreenManager<ProjectScreens, ProjectView, SyncedPr
         }), this.model.cardsData);
     }
 
-    public async createNewFlow(position: Point, nodeId: string): Promise<string> {
+    public async createNewFlow(position: Point, nodeId: string, color: string): Promise<string> {
         this.model.incrementFlowsCount();
         const defaultName = "Flow " + this.model.flowsCount;
         return await YUtilities.addInYMap(Flow.createData({
@@ -170,7 +170,8 @@ export class Project extends ScreenManager<ProjectScreens, ProjectView, SyncedPr
                     branchIds: ["0"]
                 }]
             }],
-            defaultName: defaultName
+            defaultName: defaultName,
+            color: color
         }), this.model.flowsData);
     }
 
