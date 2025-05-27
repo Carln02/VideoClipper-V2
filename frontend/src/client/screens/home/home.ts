@@ -13,8 +13,7 @@ export class Home extends VcComponent<HomeView, any, any, App> {
             viewConstructor: HomeView,
         });
 
-        // this.view.onLogin(true);
-        // this.screenManager.authenticationManager.onLogin.add(this.view.onLogin);
-        // this.screenManager.groupsManager.onGroupsChanged.add(this.view.generateGroups);
+        this.screenManager.authenticationManager.onLogin.add(this.view.onLogin);
+        this.screenManager.groupsManager.onGroupsChanged.add(this.view.generateGroups);
     }
 }

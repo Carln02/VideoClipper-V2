@@ -54,8 +54,7 @@ export class App {
 
         this.app.use(cookieParser());
         this.app.use(express.static(this.FRONTEND_PUBLIC_PATH));
-        //TODO uncomment this
-        // this.app.use(authenticate(this.sessions));
+        this.app.use(authenticate(this.sessions));
         this.app.use(checkOrigin(this.allowedOrigins));
     }
 

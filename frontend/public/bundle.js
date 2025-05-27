@@ -8035,17 +8035,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _styles_drawer_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./styles/drawer.css */ "./frontend/src/client/styles/drawer.css");
 /* harmony import */ var _screens_app_app__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./screens/app/app */ "./frontend/src/client/screens/app/app.ts");
 /* harmony import */ var _screens_app_app_types__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./screens/app/app.types */ "./frontend/src/client/screens/app/app.types.ts");
-/* harmony import */ var _sync_logman__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./sync/logman */ "./frontend/src/client/sync/logman.ts");
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
 
 
 
@@ -8056,14 +8045,12 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 //  Initialize login manager
-function start() {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield _sync_logman__WEBPACK_IMPORTED_MODULE_9__.init();
-        yield _sync_logman__WEBPACK_IMPORTED_MODULE_9__.wait_public_index();
-        console.log("Logged in");
-        show_groups();
-    });
-}
+// async function start() {
+//     await logman.init();
+//     await logman.wait_public_index();
+//     console.log("Logged in");
+//     show_groups();
+// }
 //  Basic functions
 let contents;
 _screens_app_app__WEBPACK_IMPORTED_MODULE_7__.App.initialize();
@@ -8088,7 +8075,7 @@ function show_project() {
     }, 1000);
 }
 //  Populate page
-start();
+// start();
 
 
 /***/ }),
@@ -8142,6 +8129,127 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
        /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_main_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_main_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_main_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/managers/authenticationManager/authenticationManager.ts":
+/*!*************************************************************************************!*\
+  !*** ./frontend/src/client/managers/authenticationManager/authenticationManager.ts ***!
+  \*************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   AuthenticationManager: () => (/* binding */ AuthenticationManager)
+/* harmony export */ });
+/* harmony import */ var _requestManager_requestManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../requestManager/requestManager */ "./frontend/src/client/managers/requestManager/requestManager.ts");
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+class AuthenticationManager extends _requestManager_requestManager__WEBPACK_IMPORTED_MODULE_0__.RequestManager {
+    constructor() {
+        super();
+        this.googleClientID = "494682680465-p2mlm6q6aefp7lu45qe8f5lcl9kj5j8t.apps.googleusercontent.com";
+        this._user = null;
+        this.onLogin = new turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Delegate();
+        this.onGoogleLogin = (response) => __awaiter(this, void 0, void 0, function* () {
+            const res = yield fetch(this.url + "google", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ idToken: response.credential }),
+            });
+            if (res.ok && (yield this.isLoggedIn()))
+                this.onLogin.fire(true);
+            else
+                alert("Login failed.");
+        });
+        this.onLogin.add((l) => console.log("LOGGED IN CLLED WITH", l));
+        window.addEventListener("load", () => __awaiter(this, void 0, void 0, function* () { return yield this.setup(); }));
+    }
+    get url() {
+        return this.serverUrl + "api/auth/";
+    }
+    /**
+     * The current user's info (email, name, etc.).
+     */
+    get user() {
+        return this._user;
+    }
+    set user(value) {
+        this._user = value;
+    }
+    get userId() {
+        return this.user._id;
+    }
+    init() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.setup();
+        });
+    }
+    setup() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const loggedIn = yield this.isLoggedIn();
+            if (!loggedIn) {
+                if (!window.google)
+                    console.error("Google API not loaded");
+                else
+                    window.google.accounts.id.initialize({ client_id: this.googleClientID, callback: this.onGoogleLogin });
+            }
+            this.onLogin.fire(loggedIn);
+        });
+    }
+    /**
+     * Logs the user out (backend + UI).
+     */
+    logout() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield fetch(this.url + "logout", { method: "POST", credentials: "include" });
+                this.onLogin.fire(false);
+                this.user = null;
+                window.location.reload(); //TODO
+            }
+            catch (err) {
+                console.error("Logout failed:", err);
+            }
+        });
+    }
+    /**
+     * Checks if the user is currently logged in (session valid).
+     */
+    isLoggedIn() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const res = yield fetch("/api/auth/me", { credentials: "include" });
+                if (!res.ok)
+                    return false;
+                const data = yield res.json();
+                this._user = data.user;
+                return (data === null || data === void 0 ? void 0 : data.loggedIn) === true;
+            }
+            catch (err) {
+                console.warn("Session check failed:", err);
+                return false;
+            }
+        });
+    }
+    renderGoogleButton(parentElement, options = { theme: "outline", size: "large" }) {
+        var _a;
+        (_a = window.google) === null || _a === void 0 ? void 0 : _a.accounts.id.renderButton(parentElement, options);
+    }
+}
 
 
 /***/ }),
@@ -9799,8 +9907,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _screenManager_screenManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../screenManager/screenManager */ "./frontend/src/client/screens/screenManager/screenManager.ts");
 /* harmony import */ var _app_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./app.types */ "./frontend/src/client/screens/app/app.types.ts");
 /* harmony import */ var _managers_cursorManager_cursorManager__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../managers/cursorManager/cursorManager */ "./frontend/src/client/managers/cursorManager/cursorManager.ts");
-/* harmony import */ var _managers_groupsManager_groupsManager__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../managers/groupsManager/groupsManager */ "./frontend/src/client/managers/groupsManager/groupsManager.ts");
-/* harmony import */ var _project_project__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../project/project */ "./frontend/src/client/screens/project/project.ts");
+/* harmony import */ var _managers_authenticationManager_authenticationManager__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../managers/authenticationManager/authenticationManager */ "./frontend/src/client/managers/authenticationManager/authenticationManager.ts");
+/* harmony import */ var _managers_groupsManager_groupsManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../managers/groupsManager/groupsManager */ "./frontend/src/client/managers/groupsManager/groupsManager.ts");
+/* harmony import */ var _project_project__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../project/project */ "./frontend/src/client/screens/project/project.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -9814,19 +9923,21 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
+
 let App = class App extends _screenManager_screenManager__WEBPACK_IMPORTED_MODULE_2__.ScreenManager {
     constructor(properties) {
         super(properties);
-        // this._authenticationManager = new AuthenticationManager();
+        this._authenticationManager = new _managers_authenticationManager_authenticationManager__WEBPACK_IMPORTED_MODULE_5__.AuthenticationManager();
         this._eventManager = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventManager();
         this._cursorManager = new _managers_cursorManager_cursorManager__WEBPACK_IMPORTED_MODULE_4__.CursorManager();
-        this._groupsManager = new _managers_groupsManager_groupsManager__WEBPACK_IMPORTED_MODULE_5__.GroupManager();
+        this._groupsManager = new _managers_groupsManager_groupsManager__WEBPACK_IMPORTED_MODULE_6__.GroupManager();
         this.addScreen(new _home_home__WEBPACK_IMPORTED_MODULE_1__.Home({ screenManager: this }), _app_types__WEBPACK_IMPORTED_MODULE_3__.AppScreens.home);
-        this.addScreen(new _project_project__WEBPACK_IMPORTED_MODULE_6__.Project({ screenManager: this }), _app_types__WEBPACK_IMPORTED_MODULE_3__.AppScreens.document);
-        // this.authenticationManager.onLogin.add((loggedIn) => {
-        //     if (loggedIn) this.groupsManager.loadGroups(this.authenticationManager.userId);
-        // });
-        // this.authenticationManager.init();
+        this.addScreen(new _project_project__WEBPACK_IMPORTED_MODULE_7__.Project({ screenManager: this }), _app_types__WEBPACK_IMPORTED_MODULE_3__.AppScreens.document);
+        this.authenticationManager.onLogin.add((loggedIn) => {
+            if (loggedIn)
+                this.groupsManager.loadGroups(this.authenticationManager.userId);
+        });
+        this.authenticationManager.init();
     }
     static initialize() {
         (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.turbofy)();
@@ -10614,9 +10725,8 @@ let Home = class Home extends _components_component_component__WEBPACK_IMPORTED_
         this.mvc.generate({
             viewConstructor: _home_view__WEBPACK_IMPORTED_MODULE_2__.HomeView,
         });
-        // this.view.onLogin(true);
-        // this.screenManager.authenticationManager.onLogin.add(this.view.onLogin);
-        // this.screenManager.groupsManager.onGroupsChanged.add(this.view.generateGroups);
+        this.screenManager.authenticationManager.onLogin.add(this.view.onLogin);
+        this.screenManager.groupsManager.onGroupsChanged.add(this.view.generateGroups);
     }
 };
 Home = __decorate([
