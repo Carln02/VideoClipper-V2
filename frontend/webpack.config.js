@@ -3,7 +3,7 @@ const path = require("path");
 module.exports = {
     mode: process.env.NODE_ENV || "development",
     target: "web",
-    entry: path.resolve(__dirname, "src/client/app/index.ts"), // ✅ resolves full path
+    entry: path.resolve(__dirname, "src/client/index.ts"), // ✅ resolves full path
     output: {
         path: path.resolve(__dirname, "public"),
         filename: "bundle.js"
