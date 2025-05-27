@@ -17,7 +17,7 @@ export class App extends ScreenManager<AppScreens> {
 
     public constructor(properties: ScreenManagerProperties) {
         super(properties);
-        this._authenticationManager = new AuthenticationManager();
+        // this._authenticationManager = new AuthenticationManager();
         this._eventManager = new TurboEventManager();
         this._cursorManager = new CursorManager();
         this._groupsManager = new GroupManager();
@@ -25,10 +25,10 @@ export class App extends ScreenManager<AppScreens> {
         this.addScreen(new Home({screenManager: this}), AppScreens.home);
         this.addScreen(new Project({screenManager: this}), AppScreens.document);
 
-        this.authenticationManager.onLogin.add((loggedIn) => {
-            if (loggedIn) this.groupsManager.loadGroups(this.authenticationManager.userId);
-        });
-        this.authenticationManager.init();
+        // this.authenticationManager.onLogin.add((loggedIn) => {
+        //     if (loggedIn) this.groupsManager.loadGroups(this.authenticationManager.userId);
+        // });
+        // this.authenticationManager.init();
     }
 
     @callOnce

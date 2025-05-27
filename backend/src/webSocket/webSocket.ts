@@ -27,11 +27,12 @@ export class VcWebSocket {
                     .map(c => c.trim().split("=").map(decodeURIComponent))
             );
             const sessionId = cookies.session;
-            if (!sessionId || !this.app.sessions.has(sessionId)) {
-                socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
-                socket.destroy();
-                return;
-            }
+            //TODO uncomment this
+            // if (!sessionId || !this.app.sessions.has(sessionId)) {
+            //     socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+            //     socket.destroy();
+            //     return;
+            // }
 
             (req as any).user = this.app.sessions.get(sessionId);
             this.wss.handleUpgrade(req, socket, head, ws => {

@@ -8,16 +8,17 @@ import "./styles/markingMenu.css";
 import "./styles/drawer.css";
 import {App} from "./screens/app/app";
 import {AppScreens} from "./screens/app/app.types";
+import * as logman from "./sync/logman";
 
 
 //  Initialize login manager
 
-// async function start() {
-//     await logman.init();
-//     await logman.wait_public_index();
-//     console.log("Logged in");
-//     show_groups();
-// }
+async function start() {
+    await logman.init();
+    await logman.wait_public_index();
+    console.log("Logged in");
+    show_groups();
+}
 
 //  Basic functions
 
@@ -51,4 +52,4 @@ export function show_project() {
 
 //  Populate page
 
-// start();
+start();
