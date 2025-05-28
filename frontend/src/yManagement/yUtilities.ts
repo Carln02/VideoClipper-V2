@@ -1,5 +1,5 @@
 import {YAbstractType, YArray, YMap, YEvent, YMapEvent, YArrayEvent} from "./yManagement.types";
-import {generate_unique_id} from "../client/sync/datastore";
+import {hashString, randomId} from "../client/utils/crypto";
 
 /**
  * @class YUtilities
@@ -44,7 +44,14 @@ export class YUtilities {
      * @returns {Promise<string>} The ID of the inserted data.
      */
     public static async addInYMap(data: object, parentYMap: YMap, id?: string): Promise<string> {
-        if (!id) id = await generate_unique_id(parentYMap) as string;
+        const generateId = async () =>
+            await hashString(parentYMap?.doc?.clientID?.toString(32) + randomId());
+
+        if (!id) {
+            id = await generateId();
+            while(parentYMap?.get(id) !== undefined) id = await generateId();
+        }
+
         parentYMap.set(id, data);
         return id;
     }

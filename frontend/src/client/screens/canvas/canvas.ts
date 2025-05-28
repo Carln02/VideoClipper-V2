@@ -1,7 +1,6 @@
 import {ClickMode, css, define, div, Point} from "turbodombuilder";
 import "./canvas.css";
 import {Toolbar} from "../../components/toolbar/toolbar";
-import {AppBar} from "../../components/appBar/appBar";
 import {SelectionTool} from "../../tools/selection/selection";
 import {NavigatorTool} from "../../tools/navigator/navigator";
 import {CreateCardTool} from "../../tools/createCard/createCard";
@@ -20,8 +19,6 @@ import {ProjectScreens} from "../project/project.types";
  */
 @define("vc-canvas")
 export class Canvas extends VcComponent<any, any, any, Project> {
-    private appBar: AppBar;
-
     //Canvas parent --> contains the main components that are translated/scaled
     public readonly content: HTMLDivElement;
 
@@ -33,8 +30,6 @@ export class Canvas extends VcComponent<any, any, any, Project> {
 
     public constructor(document: Project) {
         super({screenManager: document});
-
-        this.appBar = new AppBar({parent: this});
 
         this.content = div({parent: this, id: "canvas-content"});
 

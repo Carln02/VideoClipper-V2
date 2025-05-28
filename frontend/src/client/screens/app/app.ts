@@ -7,6 +7,8 @@ import {AuthenticationManager} from "../../managers/authenticationManager/authen
 import {GroupManager} from "../../managers/groupsManager/groupsManager";
 import {ScreenManagerProperties} from "../screenManager/screenManager.types";
 import {Project} from "../project/project";
+import {AppView} from "./app.view";
+import "./app.css";
 
 @define("vc-app")
 export class App extends ScreenManager<AppScreens> {
@@ -21,6 +23,8 @@ export class App extends ScreenManager<AppScreens> {
         this._eventManager = new TurboEventManager();
         this._cursorManager = new CursorManager();
         this._groupsManager = new GroupManager();
+
+        this.mvc.generate({viewConstructor: AppView});
 
         this.addScreen(new Home({screenManager: this}), AppScreens.home);
         this.addScreen(new Project({screenManager: this}), AppScreens.document);

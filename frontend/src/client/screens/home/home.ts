@@ -3,6 +3,7 @@ import {define} from "turbodombuilder";
 import {VcComponentProperties} from "../../components/component/component.types";
 import {HomeView} from "./home.view";
 import {App} from "../app/app";
+import "./home.css";
 
 @define("vc-home")
 export class Home extends VcComponent<HomeView, any, any, App> {

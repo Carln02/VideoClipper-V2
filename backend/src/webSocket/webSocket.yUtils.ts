@@ -26,7 +26,7 @@ export class WebSocketYUtils {
     private readonly pingTimeout = 30000;
 
     // disable gc when using snapshots!
-    private readonly persistenceDir = process.env.YPERSISTENCE;
+    private readonly persistenceDir = process.env.PERSISTENCE_PATH;
 
     public readonly messageSync = 0;
     public readonly messageAwareness = 1;
@@ -37,7 +37,7 @@ export class WebSocketYUtils {
     public persistence: YPersistence | null = null;
 
     public constructor(persistenceDir?: string) {
-        this.persistenceDir = persistenceDir ?? process.env.YPERSISTENCE ?? "";
+        this.persistenceDir = persistenceDir ?? process.env.PERSISTENCE_PATH ?? "";
         if (this.persistenceDir) {
             console.info("Persisting documents to \"" + this.persistenceDir + '"');
             const ldb = new LeveldbPersistence(this.persistenceDir);
@@ -153,15 +153,15 @@ export class WebSocketYUtils {
      * @param {boolean} gc - whether to allow gc on the doc (applies only when created)
      * @return {WebSocketSharedDoc}
      */
-    public getYDoc = (docName: string, gc: boolean =
-    process.env.GC !== "false" && process.env.GC !== "0"): WebSocketSharedDoc => {
-        return map.setIfUndefined(this.docs, docName, () => {
-            const doc = new WebSocketSharedDoc(docName, this, gc);
-            if (this.persistence !== null) this.persistence.bindState(docName, doc);
-            this.docs.set(docName, doc);
-            return doc;
-        });
+    public async getYDoc(docName: string): Promise<WebSocketSharedDoc> {
+        if (this.docs.has(docName)) return this.docs.get(docName);
+
+        const doc = new WebSocketSharedDoc(docName, this);
+        if (this.persistence) await this.persistence.bindState(docName, doc);
+        this.docs.set(docName, doc);
+        return doc;
     }
+
 
     /**
      * @param {any} conn
@@ -227,13 +227,13 @@ export class WebSocketYUtils {
      * @param {any} req
      * @param {any} opts
      */
-    public setupWSConnection(conn: any, req: any, opts: YPersistenceConnectionOptions = {}) {
+    public async setupWSConnection(conn: any, req: any, opts: YPersistenceConnectionOptions = {}) {
         if (!opts.docName) opts.docName = req.url.slice(1).split("?")[0];
         if (!opts.gc) opts.gc = true;
         conn.binaryType = "arraybuffer";
 
         // get doc, initialize if it does not exist yet
-        const doc = this.getYDoc(opts.docName as string, opts.gc);
+        const doc = await this.getYDoc(opts.docName as string);
         doc.conns.set(conn, new Set());
         // listen and reply to events
         conn.on("message", (message: ArrayBuffer) => this.messageListener(conn, doc, new Uint8Array(message)));

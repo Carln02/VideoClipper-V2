@@ -10,6 +10,7 @@ import {ProjectCardsModel} from "./project.cardsModel";
 import {ProjectFlowsModel} from "./project.flowsModel";
 import {SyncedDocument} from "./project.types";
 import { YMap } from "../../../yManagement/yManagement.types";
+import {YUtilities} from "../../../yManagement/yUtilities";
 
 export class ProjectModel extends YComponentModel {
     public readonly cardsModel: ProjectCardsModel;
@@ -25,6 +26,8 @@ export class ProjectModel extends YComponentModel {
 
         this.cardsModel = new ProjectCardsModel();
         this.cardsModel.onAdded = (data, id, blockKey) => {
+            console.log(data);
+            console.log("CARD ADDED")
             if ((data as YMap).get("type") == BranchingNodeType.node) return this.onBranchingNodeAdded(data, id, blockKey);
             else return this.onCardAdded(data, id, blockKey);
         };
@@ -34,6 +37,13 @@ export class ProjectModel extends YComponentModel {
     }
 
     public initialize(blockKey: string = this.defaultBlockKey) {
+        if (!this.getData("cards")) this.setData("cards", new YMap());
+        if (!this.getData("branchingNodes")) this.setData("branchingNodes", new YMap());
+        if (!this.getData("flows")) this.setData("flows", new YMap());
+        if (!this.getData("media")) this.setData("media", new YMap());
+        if (!this.getData("counters")) this.setData("counters", YUtilities.createYMap({cards: 0, flows: 0}));
+
+        console.log(this.data?.toJSON());
         super.initialize(blockKey);
 
         this.cardsModel.cards = this.getData("cards");

@@ -17,7 +17,7 @@ export class WebsocketManager {
     private readonly handleDisconnect = () => this.provider.disconnect();
 
     public constructor(room: string, ydoc: YDoc, websocketOptions?: WebsocketOptions) {
-        if (!websocketOptions) websocketOptions = {};
+        if (!websocketOptions) websocketOptions = {debug: true};
         if (!websocketOptions.options) websocketOptions.options = {};
 
         this.room = room;
@@ -35,8 +35,15 @@ export class WebsocketManager {
         if (websocketOptions.debug) console.log(`[Yjs] Connected to ${this.serverUrl}, room: ${room}`);
 
         this.provider.on("status", (event: { status: string }) => {
-            if (event.status === "connected" && this.onConnect) this.onConnect.fire();
-            else if (event.status === "disconnected" && this.onDisconnect) this.onDisconnect.fire();
+            if (event.status === "disconnected" && this.onDisconnect) this.onDisconnect.fire();
+            console.log("Status:", this.provider.wsconnected, this.provider.synced);
+        });
+
+        this.provider.on("sync", (isSynced: boolean) => {
+            console.log(`[Yjs] Sync: ${isSynced}`);
+            if (isSynced) {
+                this.onConnect.fire(); // only now do you allow use
+            }
         });
     }
 

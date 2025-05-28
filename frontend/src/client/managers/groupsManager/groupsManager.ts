@@ -1,6 +1,6 @@
 import {YDoc} from "../../../yManagement/yManagement.types";
 import {RequestManager} from "../requestManager/requestManager";
-import {Group, Project} from "./groupsManager.types";
+import {Group, PersistedDoc, ProjectData} from "./groupsManager.types";
 import {WebsocketManager} from "../websocketManager/websocketManager";
 import {ObjectId} from "mongodb";
 import {Delegate} from "turbodombuilder";
@@ -8,6 +8,13 @@ import {Delegate} from "turbodombuilder";
 export class GroupManager extends RequestManager {
     private _groups: Group[] = [];
     public readonly onGroupsChanged: Delegate<(groups: Group[]) => void> = new Delegate();
+
+    private readonly docs = new Map<string, YDoc>();
+
+    private getOrCreateYDoc(id: string): YDoc {
+        if (!this.docs.has(id)) this.docs.set(id, new YDoc());
+        return this.docs.get(id)!;
+    }
 
     public async loadGroups(userId: ObjectId): Promise<void> {
         const res = await fetch(`${this.serverUrl}api/groups?userId=${userId}`, {credentials: "include"});
@@ -20,14 +27,26 @@ export class GroupManager extends RequestManager {
         return this._groups;
     }
 
-    public async getProjectsForGroup(groupId: ObjectId): Promise<Project[]> {
+    public async getProjectsForGroup(groupId: ObjectId): Promise<ProjectData[]> {
         const res = await fetch(`${this.serverUrl}api/projects?groupId=${groupId}`, {credentials: "include",});
         if (!res.ok) throw new Error("Failed to load projects for group");
         return await res.json();
     }
 
-    public async openProject(projectId: ObjectId): Promise<YDoc | null> {
-        const res = await fetch(`${this.serverUrl}api/projects/${projectId}`, {credentials: "include"});
+    public async createProject(projectName: string, groupId: ObjectId): Promise<ProjectData> {
+        const res = await fetch(`${this.serverUrl}api/projects`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            credentials: "include",
+            body: JSON.stringify({name: projectName, groupId}),
+        });
+
+        if (!res.ok) throw new Error("Failed to create project");
+        return await res.json();
+    }
+
+    public async openProject(projectId: ObjectId): Promise<PersistedDoc | null> {
+        const res = await fetch(`${this.serverUrl}project/${projectId}`, {credentials: "include"});
 
         if (!res.ok) {
             if (res.status === 403) throw new Error("Access denied");
@@ -36,9 +55,12 @@ export class GroupManager extends RequestManager {
         }
 
         const project = await res.json();
+        console.log("ROOM", `PROJECT:${project._id}`);
 
-        const doc = new YDoc();
-        new WebsocketManager(project.yjsRoomId, doc);
-        return doc;
+        const doc = this.getOrCreateYDoc(project._id);
+        doc.on("update", () => console.log("🟢 Local update fired"));
+        doc.on("updateV2", () => console.log("🟢 V2 update fired"));
+
+        return {doc: doc, websocket: new WebsocketManager(`PROJECT:${project._id}`, doc)};
     }
 }

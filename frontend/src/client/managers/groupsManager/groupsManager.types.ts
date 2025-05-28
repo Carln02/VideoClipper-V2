@@ -1,4 +1,6 @@
 import {ObjectId} from "mongodb";
+import { YDoc } from "../../../yManagement/yManagement.types";
+import {WebsocketManager} from "../websocketManager/websocketManager";
 
 export type Group = {
     _id: ObjectId,
@@ -15,9 +17,14 @@ export type GroupMember = {
 
 export type GroupRole = "owner" | "editor" | "viewer";
 
-export type Project = {
+export type ProjectData = {
     _id: ObjectId,
     name: string,
     groupId: ObjectId,
     createdAt: Date
+};
+
+export type PersistedDoc = {
+    doc: YDoc,
+    websocket: WebsocketManager
 };

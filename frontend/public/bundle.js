@@ -8507,6 +8507,12 @@ class GroupManager extends _requestManager_requestManager__WEBPACK_IMPORTED_MODU
         super(...arguments);
         this._groups = [];
         this.onGroupsChanged = new turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.Delegate();
+        this.docs = new Map();
+    }
+    getOrCreateYDoc(id) {
+        if (!this.docs.has(id))
+            this.docs.set(id, new _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_0__.YDoc());
+        return this.docs.get(id);
     }
     loadGroups(userId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -8528,9 +8534,22 @@ class GroupManager extends _requestManager_requestManager__WEBPACK_IMPORTED_MODU
             return yield res.json();
         });
     }
+    createProject(projectName, groupId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield fetch(`${this.serverUrl}api/projects`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ name: projectName, groupId }),
+            });
+            if (!res.ok)
+                throw new Error("Failed to create project");
+            return yield res.json();
+        });
+    }
     openProject(projectId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield fetch(`${this.serverUrl}api/projects/${projectId}`, { credentials: "include" });
+            const res = yield fetch(`${this.serverUrl}project/${projectId}`, { credentials: "include" });
             if (!res.ok) {
                 if (res.status === 403)
                     throw new Error("Access denied");
@@ -8539,9 +8558,11 @@ class GroupManager extends _requestManager_requestManager__WEBPACK_IMPORTED_MODU
                 throw new Error("Unknown error");
             }
             const project = yield res.json();
-            const doc = new _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_0__.YDoc();
-            new _websocketManager_websocketManager__WEBPACK_IMPORTED_MODULE_2__.WebsocketManager(project.yjsRoomId, doc);
-            return doc;
+            console.log("ROOM", `PROJECT:${project._id}`);
+            const doc = this.getOrCreateYDoc(project._id);
+            doc.on("update", () => console.log("🟢 Local update fired"));
+            doc.on("updateV2", () => console.log("🟢 V2 update fired"));
+            return { doc: doc, websocket: new _websocketManager_websocketManager__WEBPACK_IMPORTED_MODULE_2__.WebsocketManager(`PROJECT:${project._id}`, doc) };
         });
     }
 }
@@ -9042,7 +9063,7 @@ class WebsocketManager {
         this.handleConnect = () => this.provider.connect();
         this.handleDisconnect = () => this.provider.disconnect();
         if (!websocketOptions)
-            websocketOptions = {};
+            websocketOptions = { debug: true };
         if (!websocketOptions.options)
             websocketOptions.options = {};
         this.room = room;
@@ -9057,10 +9078,15 @@ class WebsocketManager {
         if (websocketOptions.debug)
             console.log(`[Yjs] Connected to ${this.serverUrl}, room: ${room}`);
         this.provider.on("status", (event) => {
-            if (event.status === "connected" && this.onConnect)
-                this.onConnect.fire();
-            else if (event.status === "disconnected" && this.onDisconnect)
+            if (event.status === "disconnected" && this.onDisconnect)
                 this.onDisconnect.fire();
+            console.log("Status:", this.provider.wsconnected, this.provider.synced);
+        });
+        this.provider.on("sync", (isSynced) => {
+            console.log(`[Yjs] Sync: ${isSynced}`);
+            if (isSynced) {
+                this.onConnect.fire(); // only now do you allow use
+            }
         });
     }
     get defaultUrl() {
@@ -10749,6 +10775,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   HomeView: () => (/* binding */ HomeView)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _app_app_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../app/app.types */ "./frontend/src/client/screens/app/app.types.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
 
 class HomeView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
     constructor() {
@@ -10765,7 +10802,7 @@ class HomeView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
         };
         this.generateGroups = (groups) => {
             groups.forEach((group) => {
-                const entry = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelectEntry({ value: group.name });
+                const entry = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelectEntry({ value: group.name, secondaryValue: group._id });
                 entry.onSelected = (value) => {
                     if (value)
                         this.generateProjects(group._id);
@@ -10777,14 +10814,44 @@ class HomeView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
     setupUIElements() {
         super.setupUIElements();
         this.groupsSelect = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelect({});
+        this.projectsSelect = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelect({});
         this.groupsPanel = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)();
         this.mainPanel = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)();
+        this.addProjectButton = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.button)({ text: "Add Project" });
     }
     setupUILayout() {
         super.setupUILayout();
         this.element.addChild([this.groupsPanel, this.mainPanel]);
+        this.mainPanel.addChild([this.addProjectButton, this.projectsSelect]);
+    }
+    setupUIListeners() {
+        super.setupUIListeners();
+        this.addProjectButton.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, () => __awaiter(this, void 0, void 0, function* () {
+            const project = yield this.element.screenManager.groupsManager.createProject("P1111", this.groupsSelect.selectedSecondaryValue);
+            yield this.element.screenManager.groupsManager.openProject(project._id);
+        }));
     }
     generateProjects(groupId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.projectsSelect.clear();
+            const projects = yield this.element.screenManager.groupsManager.getProjectsForGroup(groupId);
+            projects.forEach((project) => {
+                const entry = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelectEntry({ value: project.name, secondaryValue: project._id });
+                entry.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, () => __awaiter(this, void 0, void 0, function* () {
+                    console.log("CLICKKKKKKKKK");
+                    console.log(project._id);
+                    const persistedDoc = yield this.element.screenManager.groupsManager.openProject(project._id);
+                    persistedDoc.websocket.onConnect.add(() => {
+                        this.element.screenManager.documentManager.document = persistedDoc.doc;
+                        this.element.screenManager.currentType = _app_app_types__WEBPACK_IMPORTED_MODULE_1__.AppScreens.document;
+                    });
+                }));
+                entry.onSelected = (value) => {
+                    //TODO
+                };
+                this.projectsSelect.addEntry(entry);
+            });
+        });
     }
 }
 
@@ -10862,6 +10929,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../yManagement/yModel/types/yComponentModel */ "./frontend/src/yManagement/yModel/types/yComponentModel.ts");
 /* harmony import */ var _project_cardsModel__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./project.cardsModel */ "./frontend/src/client/screens/project/project.cardsModel.ts");
 /* harmony import */ var _project_flowsModel__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./project.flowsModel */ "./frontend/src/client/screens/project/project.flowsModel.ts");
+/* harmony import */ var _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../yManagement/yManagement.types */ "./frontend/src/yManagement/yManagement.types.ts");
+/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+
+
 
 
 
@@ -10872,6 +10943,8 @@ class ProjectModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IM
         this.enabledCallbacks = false;
         this.cardsModel = new _project_cardsModel__WEBPACK_IMPORTED_MODULE_2__.ProjectCardsModel();
         this.cardsModel.onAdded = (data, id, blockKey) => {
+            console.log(data);
+            console.log("CARD ADDED");
             if (data.get("type") == _components_branchingNode_branchingNode_types__WEBPACK_IMPORTED_MODULE_0__.BranchingNodeType.node)
                 return this.onBranchingNodeAdded(data, id, blockKey);
             else
@@ -10881,6 +10954,18 @@ class ProjectModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IM
         this.flowsModel.onAdded = (data, id, blockKey) => this.onFlowAdded(data, id, blockKey);
     }
     initialize(blockKey = this.defaultBlockKey) {
+        var _a;
+        if (!this.getData("cards"))
+            this.setData("cards", new _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_4__.YMap());
+        if (!this.getData("branchingNodes"))
+            this.setData("branchingNodes", new _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_4__.YMap());
+        if (!this.getData("flows"))
+            this.setData("flows", new _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_4__.YMap());
+        if (!this.getData("media"))
+            this.setData("media", new _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_4__.YMap());
+        if (!this.getData("counters"))
+            this.setData("counters", _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_5__.YUtilities.createYMap({ cards: 0, flows: 0 }));
+        console.log((_a = this.data) === null || _a === void 0 ? void 0 : _a.toJSON());
         super.initialize(blockKey);
         this.cardsModel.cards = this.getData("cards");
         this.cardsModel.branchingNodes = this.getData("branchingNodes");
@@ -12925,6 +13010,49 @@ ToolView = __decorate([
 
 /***/ }),
 
+/***/ "./frontend/src/client/utils/crypto.ts":
+/*!*********************************************!*\
+  !*** ./frontend/src/client/utils/crypto.ts ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   hashString: () => (/* binding */ hashString),
+/* harmony export */   randomId: () => (/* binding */ randomId)
+/* harmony export */ });
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+function hashString(input) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(input);
+        const hashBuffer = yield crypto.subtle.digest("SHA-256", data);
+        return Array.from(new Uint8Array(hashBuffer))
+            .map(byte => byte.toString(16).padStart(2, "0"))
+            .join("");
+    });
+}
+function randomId(length = 8) {
+    const array = new Uint8Array(length);
+    crypto.getRandomValues(array);
+    return Array.from(array)
+        .map(b => b.toString(36).padStart(2, "0"))
+        .join("")
+        .slice(0, length);
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/utils/random.ts":
 /*!*********************************************!*\
   !*** ./frontend/src/client/utils/random.ts ***!
@@ -13802,7 +13930,11 @@ class YComponentModel extends _yModel__WEBPACK_IMPORTED_MODULE_0__.YModel {
     observeChanges(event, blockKey) {
         event.keysChanged.forEach(key => {
             const change = event.changes.keys.get(key);
-            this.fireKeyChangedCallback(key, blockKey, change.action == "delete");
+            if (!change) {
+                console.warn(`No change info for key "${key}". Event:`, event);
+                return;
+            }
+            this.fireKeyChangedCallback(key, blockKey, (change === null || change === void 0 ? void 0 : change.action) === "delete");
         });
     }
 }
@@ -14211,7 +14343,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   YUtilities: () => (/* binding */ YUtilities)
 /* harmony export */ });
 /* harmony import */ var _yManagement_types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./yManagement.types */ "./frontend/src/yManagement/yManagement.types.ts");
-/* harmony import */ var _client_sync_datastore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../client/sync/datastore */ "./frontend/src/client/sync/datastore.ts");
+/* harmony import */ var _client_utils_crypto__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../client/utils/crypto */ "./frontend/src/client/utils/crypto.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -14266,8 +14398,12 @@ class YUtilities {
      */
     static addInYMap(data, parentYMap, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!id)
-                id = (yield (0,_client_sync_datastore__WEBPACK_IMPORTED_MODULE_1__.generate_unique_id)(parentYMap));
+            const generateId = () => __awaiter(this, void 0, void 0, function* () { var _a, _b; return yield (0,_client_utils_crypto__WEBPACK_IMPORTED_MODULE_1__.hashString)(((_b = (_a = parentYMap === null || parentYMap === void 0 ? void 0 : parentYMap.doc) === null || _a === void 0 ? void 0 : _a.clientID) === null || _b === void 0 ? void 0 : _b.toString(32)) + (0,_client_utils_crypto__WEBPACK_IMPORTED_MODULE_1__.randomId)()); });
+            if (!id) {
+                id = yield generateId();
+                while ((parentYMap === null || parentYMap === void 0 ? void 0 : parentYMap.get(id)) !== undefined)
+                    id = yield generateId();
+            }
             parentYMap.set(id, data);
             return id;
         });

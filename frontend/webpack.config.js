@@ -17,14 +17,15 @@ module.exports = {
         open: true,
         hot: true,
         historyApiFallback: true,
-        proxy: [{
-            '/api': {
+        proxy: [
+            {
+                context: ['/api'],
                 target: 'http://localhost:3000',
                 changeOrigin: true,
-                secure: false,
-                credentials: 'include',
+                secure: false
+                // Do NOT put credentials here. Handle CORS on the server side.
             }
-        }]
+        ]
     },
     resolve: {
         extensions: [".ts", ".js"]
