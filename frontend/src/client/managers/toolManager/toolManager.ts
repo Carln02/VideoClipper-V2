@@ -62,6 +62,7 @@ export class ToolManager {
         document.addEventListener(TurboEventName.dragStart, (e: TurboDragEvent) => this.getFiredTool(e)?.dragStart(e));
         document.addEventListener(TurboEventName.drag, (e: TurboDragEvent) => this.getFiredTool(e)?.dragAction(e));
         document.addEventListener(TurboEventName.dragEnd, (e: TurboDragEvent) => this.getFiredTool(e)?.dragEnd(e));
+        document.addEventListener(TurboEventName.longPress, (e: TurboDragEvent) => this.getFiredTool(e)?.longPressAction(e));
     }
 
     /**

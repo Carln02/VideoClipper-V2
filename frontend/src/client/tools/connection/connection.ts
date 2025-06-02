@@ -131,6 +131,10 @@ export class ConnectionTool extends Tool {
         this.endAndClear();
     }
 
+    public longPressAction(e: TurboDragEvent) {
+        console.log("Long press action triggered in connection tool");
+    }
+
     private endAndClear() {
         this.currentFlow.endFlow();
         this.currentFlowId = null;

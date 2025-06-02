@@ -96,6 +96,12 @@ export class Tool {
     public dragEnd(e: TurboDragEvent) {}
 
     /**
+     * @description Fired on long press
+     * @param e
+     */
+    public longPressAction(e: TurboDragEvent) {}
+
+    /**
      * Fired when tool is put down (deselected)
      */
     public deactivate() {}
