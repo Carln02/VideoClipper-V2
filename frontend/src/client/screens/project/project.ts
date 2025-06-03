@@ -22,6 +22,7 @@ import {ProjectView} from "./project.view";
 import {ProjectModel} from "./project.model";
 import {YUtilities} from "../../../yManagement/yUtilities";
 import { YDoc } from "../../../yManagement/yManagement.types";
+import "./project.css";
 
 @define("vc-project")
 export class Project extends ScreenManager<ProjectScreens, ProjectView, SyncedDocument,
@@ -41,7 +42,7 @@ export class Project extends ScreenManager<ProjectScreens, ProjectView, SyncedDo
         this.mvc.generate({
             modelConstructor: ProjectModel,
             viewConstructor: ProjectView,
-            data: this.document?.getMap("document_content"),
+            data: properties.document?.getMap("document_content"),
             initialize: false
         });
 
@@ -64,6 +65,7 @@ export class Project extends ScreenManager<ProjectScreens, ProjectView, SyncedDo
         });
 
         this.mvc.initialize();
+
         this.currentType = ProjectScreens.canvas;
 
         this.toolPanel.addPanel(new ShootingPanel({

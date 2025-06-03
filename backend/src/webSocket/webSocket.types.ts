@@ -1,7 +1,7 @@
 import {WebSocketSharedDoc} from "./webSocket.sharedDoc";
 
 export type YPersistence = {
-    bindState: (str: string, doc: WebSocketSharedDoc) => void,
+    bindState: (str: string, doc: WebSocketSharedDoc) => Promise<void>,
     writeState: (str: string, doc: WebSocketSharedDoc) => Promise<any>, provider: any
 };
 

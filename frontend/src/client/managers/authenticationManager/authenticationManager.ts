@@ -12,8 +12,7 @@ export class AuthenticationManager extends RequestManager {
 
     public constructor() {
         super();
-        this.onLogin.add((l) => console.log("LOGGED IN CLLED WITH", l))
-        window.addEventListener("load", async () => await this.setup());
+        this.onLogin.add((l) => console.log("LOGGED IN CLLED WITH", l));
     }
 
     private get url(): string {
@@ -36,10 +35,6 @@ export class AuthenticationManager extends RequestManager {
     }
 
     public async init(): Promise<void> {
-        await this.setup();
-    }
-
-    private async setup(): Promise<void> {
         const loggedIn = await this.isLoggedIn();
 
         if (!loggedIn) {
@@ -48,7 +43,6 @@ export class AuthenticationManager extends RequestManager {
         }
 
         this.onLogin.fire(loggedIn);
-
     }
 
     private onGoogleLogin = async (response: { credential: string }) => {

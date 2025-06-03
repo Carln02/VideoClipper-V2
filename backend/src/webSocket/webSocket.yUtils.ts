@@ -6,12 +6,13 @@ import * as syncProtocol from "y-protocols/sync";
 import * as awarenessProtocol from "y-protocols/awareness";
 import * as encoding from "lib0/encoding";
 import * as decoding from "lib0/decoding";
-import * as map from "lib0/map";
 import {LeveldbPersistence} from "y-leveldb";
 import {YPersistence, YPersistenceConnectionOptions} from "./webSocket.types";
 import {WebSocketSharedDoc} from "./webSocket.sharedDoc";
 
 export class WebSocketYUtils {
+    public readonly DEBUG: boolean = true;
+
     private readonly CALLBACK_URL = process.env.CALLBACK_URL ? new URL(process.env.CALLBACK_URL) : null;
     private readonly CALLBACK_TIMEOUT = Number.parseInt(process.env.CALLBACK_TIMEOUT || "5000");
     private readonly CALLBACK_OBJECTS = process.env.CALLBACK_OBJECTS ? JSON.parse(process.env.CALLBACK_OBJECTS) : {};
@@ -45,14 +46,28 @@ export class WebSocketYUtils {
                 provider: ldb,
                 bindState: async (docName, ydoc) => {
                     const persistedYdoc = await ldb.getYDoc(docName);
-                    Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc)); // Apply first
-                    ydoc.on("update", (update: any) => {
-                        ldb.storeUpdate(docName, update); // Save future changes
+                    const persistedContent = persistedYdoc.getMap("document_content");
+                    Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc))
+
+                    ydoc.on("update", async (update: any) => {
+                        console.log("💾 STORING UPDATE")
+                        await ldb.storeUpdate(docName, update);
+                        // await this.persistence?.provider.storeUpdate(docName, update);
                     });
+
+                    // if (persistedContent.size === 0) {
+                    //     // Only initialize if no persisted state exists
+                    //     console.log("🆕 Initializing new document content");
+                    //     const content = ydoc.getMap("document_content");
+                    //     content.set("cards", new Y.Map());
+                    //     content.set("branchingNodes", new Y.Map());
+                    //     content.set("flows", new Y.Map());
+                    //     content.set("media", new Y.Map());
+                    //     content.set("counters", new Y.Map([["cards", 0], ["flows", 0]]));
+                    // }
                 },
                 writeState: async (docName, ydoc) => {
-                    const state = Y.encodeStateAsUpdate(ydoc);
-                    await ldb.storeUpdate(docName, state);
+                    await ldb.storeUpdate(docName, Y.encodeStateAsUpdateV2(ydoc));
                 }
             }
         }
@@ -153,15 +168,14 @@ export class WebSocketYUtils {
      * @param {boolean} gc - whether to allow gc on the doc (applies only when created)
      * @return {WebSocketSharedDoc}
      */
-    public async getYDoc(docName: string): Promise<WebSocketSharedDoc> {
-        if (this.docs.has(docName)) return this.docs.get(docName);
+    public getYDoc = async (docName: string, gc: boolean = true): Promise<WebSocketSharedDoc> => {
+        if (this.docs.has(docName)) return this.docs.get(docName)!;
+        const doc = new WebSocketSharedDoc(docName, this, gc);
 
-        const doc = new WebSocketSharedDoc(docName, this);
-        if (this.persistence) await this.persistence.bindState(docName, doc);
+        if (this.persistence !== null) await this.persistence.bindState(docName, doc);
         this.docs.set(docName, doc);
         return doc;
-    }
-
+    };
 
     /**
      * @param {any} conn
@@ -173,20 +187,35 @@ export class WebSocketYUtils {
             const encoder = encoding.createEncoder()
             const decoder = decoding.createDecoder(message)
             const messageType = decoding.readVarUint(decoder)
+
+            if (this.DEBUG) console.log(`📨 Processing message type: ${messageType} for doc: ${doc.name} with length: ${message.length}`);
+
             switch (messageType) {
                 case this.messageSync:
                     encoding.writeVarUint(encoder, this.messageSync)
-                    syncProtocol.readSyncMessage(decoder, encoder, doc, null)
-                    if (encoding.length(encoder) > 1) this.send(doc, conn, encoding.toUint8Array(encoder))
+                    if (this.DEBUG) console.log(`🔄 Processing sync message for ${doc.name}`);
+                    if (this.DEBUG) this.debugDocState(doc, "BEFORE_SYNC");
+                    syncProtocol.readSyncMessage(decoder, encoder, doc, null);
+                    if (this.DEBUG) this.debugDocState(doc, "AFTER_SYNC");
+
+                    if (encoding.length(encoder) > 1) {
+                        if (this.DEBUG) console.log(`📤 Sending sync response for ${doc.name}, length: ${encoding.length(encoder)}`);
+                        this.send(doc, conn, encoding.toUint8Array(encoder))
+                    } else {
+                        if (this.DEBUG) console.log(`📭 No sync response needed for ${doc.name}`);
+                    }
                     break
-                case this.messageAwareness: {
+
+                case this.messageAwareness:
+                    if (this.DEBUG) console.log(`👥 Processing awareness update for ${doc.name}`);
                     awarenessProtocol.applyAwarenessUpdate(doc.awareness, decoding.readVarUint8Array(decoder), conn)
                     break
-                }
+
+                default:
+                    if (this.DEBUG) console.warn(`❓ Unknown message type: ${messageType} for doc: ${doc.name}`);
             }
         } catch (err) {
-            console.error(err)
-            // doc.emit('error', [err])
+            if (this.DEBUG) console.error(`❌ Error processing message for ${doc.name}:`, err)
         }
     }
 
@@ -195,6 +224,7 @@ export class WebSocketYUtils {
      * @param {any} conn
      */
     private closeConn = (doc: WebSocketSharedDoc, conn: any) => {
+        console.log("CLOSING CONN...");
         if (doc.conns.has(conn)) {
             const controlledIds: Set<number> = doc.conns.get(conn) as Set<number>;
             doc.conns.delete(conn);
@@ -214,8 +244,11 @@ export class WebSocketYUtils {
      * @param {Uint8Array} m
      */
     public send = (doc: WebSocketSharedDoc, conn: any, m: Uint8Array) => {
-        if (conn.readyState !== this.wsReadyStateConnecting && conn.readyState !== this.wsReadyStateOpen) this.closeConn(doc, conn);
+        if (conn.readyState !== this.wsReadyStateConnecting && conn.readyState !== this.wsReadyStateOpen) {
+            this.closeConn(doc, conn);
+        }
         try {
+            console.log("SENDING CONN", m);
             conn.send(m, (err: any) => { err != null && this.closeConn(doc, conn) });
         } catch (e) {
             this.closeConn(doc, conn)
@@ -228,52 +261,95 @@ export class WebSocketYUtils {
      * @param {any} opts
      */
     public async setupWSConnection(conn: any, req: any, opts: YPersistenceConnectionOptions = {}) {
-        if (!opts.docName) opts.docName = req.url.slice(1).split("?")[0];
-        if (!opts.gc) opts.gc = true;
+        // 1. Get doc name and GC flag
+        const docName = opts.docName ?? req.url?.slice(1).split("?")[0];
+        const gc = opts.gc ?? (process.env.GC !== "false" && process.env.GC !== "0");
+
+        if (!docName) {
+            console.warn("❌ No docName in setupWSConnection");
+            conn.close();
+            return;
+        }
+
         conn.binaryType = "arraybuffer";
 
-        // get doc, initialize if it does not exist yet
-        const doc = await this.getYDoc(opts.docName as string);
-        doc.conns.set(conn, new Set());
-        // listen and reply to events
-        conn.on("message", (message: ArrayBuffer) => this.messageListener(conn, doc, new Uint8Array(message)));
+        // 2. Await the doc to be loaded and bound (persistence-aware)
+        const doc = await this.getYDoc(docName, gc);
+        if (this.DEBUG) console.log("📄 Y.Doc ready for:", docName);
 
-        // Check if connection is still alive
-        let pongReceived = true
+        // 3. Register connection before sending sync
+        doc.conns.set(conn, new Set());
+
+        // 4. Listen for incoming messages
+        conn.on("message", (message: ArrayBuffer) => {
+            if (this.DEBUG) console.log(`📩 Received ${message.byteLength} bytes from client for ${doc.name}`);
+            this.messageListener(conn, doc, new Uint8Array(message));
+        });
+
+        // 5. Heartbeat ping-pong (prevents stale connections)
+        let pongReceived = true;
         const pingInterval = setInterval(() => {
             if (!pongReceived) {
-                if (doc.conns.has(conn)) this.closeConn(doc, conn);
+                console.warn("❌ Ping timeout, closing connection for", doc.name);
+                this.closeConn(doc, conn);
                 clearInterval(pingInterval);
             } else if (doc.conns.has(conn)) {
                 pongReceived = false;
                 try {
                     conn.ping();
                 } catch (e) {
+                    console.warn("❌ Ping failed, closing connection for", doc.name);
                     this.closeConn(doc, conn);
                     clearInterval(pingInterval);
                 }
             }
-        }, this.pingTimeout)
+        }, this.pingTimeout);
+
+        conn.on("pong", () => pongReceived = true);
         conn.on("close", () => {
+            console.log("🔌 Connection closed for", doc.name);
             this.closeConn(doc, conn);
             clearInterval(pingInterval);
         });
-        conn.on("pong", () => pongReceived = true);
-        // put the following in a variables in a block so the interval handlers don't keep in in
-        // scope
-        {
-            // send sync step 1
-            const encoder = encoding.createEncoder()
-            encoding.writeVarUint(encoder, this.messageSync)
-            syncProtocol.writeSyncStep1(encoder, doc)
-            this.send(doc, conn, encoding.toUint8Array(encoder))
-            const awarenessStates = doc.awareness.getStates()
-            if (awarenessStates.size > 0) {
-                const encoder = encoding.createEncoder()
-                encoding.writeVarUint(encoder, this.messageAwareness)
-                encoding.writeVarUint8Array(encoder, awarenessProtocol.encodeAwarenessUpdate(doc.awareness, Array.from(awarenessStates.keys())))
-                this.send(doc, conn, encoding.toUint8Array(encoder))
-            }
+
+        // 6. Send sync step 1
+
+        if (this.DEBUG) console.log(`📤 Sending sync step 1 for ${doc.name}`);
+        if (this.DEBUG) this.debugDocState(doc, "BEFORE_SYNC_STEP1");
+
+        const encoder = encoding.createEncoder();
+        encoding.writeVarUint(encoder, this.messageSync);
+        syncProtocol.writeSyncStep1(encoder, doc);
+        const syncMessage = encoding.toUint8Array(encoder);
+
+        if (this.DEBUG) console.log(`📤 Sync step 1 message size: ${syncMessage.length} bytes`);
+        this.send(doc, conn, syncMessage);
+
+        // 7. Send awareness states if any exist
+        const awarenessStates = doc.awareness.getStates();
+        if (awarenessStates.size > 0) {
+            const encoder = encoding.createEncoder();
+            encoding.writeVarUint(encoder, this.messageAwareness);
+            encoding.writeVarUint8Array(
+                encoder,
+                awarenessProtocol.encodeAwarenessUpdate(doc.awareness, Array.from(awarenessStates.keys()))
+            );
+            if (this.DEBUG) console.log("📤 Sending initial awareness state for", doc.name);
+            this.send(doc, conn, encoding.toUint8Array(encoder));
         }
+
+        if (this.DEBUG) console.log("✅ setupWSConnection complete for", doc.name);
+    }
+
+    private debugDocState(doc: WebSocketSharedDoc, label: string) {
+        const content = doc.getMap("document_content");
+        console.log(`🔍 [${label}] Doc state for ${doc.name}:`, {
+            clientId: doc.clientID,
+            contentKeys: Array.from(content.keys()),
+            contentSize: content.size,
+            stateVector: Array.from(Y.encodeStateVector(doc)),
+            state: doc.getMap("document_content")?.toJSON(),
+            connections: doc.conns.size
+        });
     }
 }

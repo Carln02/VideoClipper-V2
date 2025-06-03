@@ -4,7 +4,7 @@ import {ScreenManager} from "../screenManager/screenManager";
 import {AppScreens} from "./app.types";
 import {CursorManager} from "../../managers/cursorManager/cursorManager";
 import {AuthenticationManager} from "../../managers/authenticationManager/authenticationManager";
-import {GroupManager} from "../../managers/groupsManager/groupsManager";
+import {GroupsManager} from "../../managers/groupsManager/groupsManager";
 import {ScreenManagerProperties} from "../screenManager/screenManager.types";
 import {Project} from "../project/project";
 import {AppView} from "./app.view";
@@ -15,14 +15,14 @@ export class App extends ScreenManager<AppScreens> {
     private readonly _eventManager: TurboEventManager;
     private readonly _cursorManager: CursorManager;
     private readonly _authenticationManager: AuthenticationManager;
-    private readonly _groupsManager: GroupManager;
+    private readonly _groupsManager: GroupsManager;
 
     public constructor(properties: ScreenManagerProperties) {
         super(properties);
         this._authenticationManager = new AuthenticationManager();
         this._eventManager = new TurboEventManager();
         this._cursorManager = new CursorManager();
-        this._groupsManager = new GroupManager();
+        this._groupsManager = new GroupsManager();
 
         this.mvc.generate({viewConstructor: AppView});
 

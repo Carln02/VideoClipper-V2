@@ -1,4 +1,4 @@
-import {Coordinate, Point, TurboDragEvent, TurboEventName, TurboWheelEvent} from "turbodombuilder";
+import {Point, TurboDragEvent, TurboEventName, TurboWheelEvent} from "turbodombuilder";
 import {Canvas} from "../../screens/canvas/canvas";
 
 /**
@@ -113,7 +113,14 @@ export class NavigationManager {
         //Save old scale value
         const oldScale: number = this.scale;
         //Init zoom origin to the center of the screen
-        let zoomOrigin = new Point(window.innerWidth / 2, window.innerHeight / 2).sub(this.translation);
+        let zoomOrigin: Point;
+
+        // if (e.position) zoomOrigin = e.position.sub(this.translation);
+        // else {
+            const rect = this.canvas.screenManager.getBoundingClientRect();
+            const canvasCenter = new Point(rect.left + rect.width / 2, rect.top + rect.height / 2);
+            zoomOrigin = canvasCenter.sub(this.translation);
+        // }
 
         //Touch Event
         if (e instanceof TurboDragEvent) {
@@ -152,6 +159,8 @@ export class NavigationManager {
      * @param {Point} screenPosition
      */
     public computePositionRelativeToCanvas(screenPosition: Point) {
-        return screenPosition?.sub(this.translation as Coordinate).div(this.scale);
+        const rect = this.canvas.screenManager.getBoundingClientRect();
+        const localPos = screenPosition.sub(new Point(rect.left, rect.top));
+        return localPos.sub(this.translation).div(this.scale);
     }
 }

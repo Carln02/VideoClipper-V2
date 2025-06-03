@@ -34,7 +34,7 @@ export class HomeView extends TurboView<Home> {
         super.setupUIListeners();
         this.addProjectButton.addListener(DefaultEventName.click, async () => {
             const project = await this.element.screenManager.groupsManager.createProject("P1111", this.groupsSelect.selectedSecondaryValue);
-            await this.element.screenManager.groupsManager.openProject(project._id);
+            await this.openProject(project);
         });
     }
 
@@ -64,20 +64,20 @@ export class HomeView extends TurboView<Home> {
         const projects = await this.element.screenManager.groupsManager.getProjectsForGroup(groupId);
         projects.forEach((project: ProjectData) => {
             const entry = new TurboSelectEntry({value: project.name, secondaryValue: project._id});
-            entry.addListener(DefaultEventName.click, async () => {
-                console.log("CLICKKKKKKKKK")
-                console.log(project._id);
-                const persistedDoc = await this.element.screenManager.groupsManager.openProject(project._id);
-
-                persistedDoc.websocket.onConnect.add(() => {
-                    this.element.screenManager.documentManager.document = persistedDoc.doc;
-                    this.element.screenManager.currentType = AppScreens.document;
-                });
-            })
-            entry.onSelected = (value) => {
-               //TODO
-            }
+            entry.addListener(DefaultEventName.click, async () => await this.openProject(project));
             this.projectsSelect.addEntry(entry);
         });
+    }
+
+    private async openProject(project: ProjectData) {
+        const persistedDoc = await this.element.screenManager.groupsManager.openProject(project._id);
+
+        const onConnection = () => {
+            console.log("CHANGING TO DOC VIEWWW")
+            this.element.screenManager.documentManager.document = persistedDoc.doc;
+            this.element.screenManager.currentType = AppScreens.document;
+        };
+
+        persistedDoc.websocket.onConnect.add(onConnection);
     }
 }

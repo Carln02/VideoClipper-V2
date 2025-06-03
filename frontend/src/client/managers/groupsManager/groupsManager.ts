@@ -5,15 +5,16 @@ import {WebsocketManager} from "../websocketManager/websocketManager";
 import {ObjectId} from "mongodb";
 import {Delegate} from "turbodombuilder";
 
-export class GroupManager extends RequestManager {
+export class GroupsManager extends RequestManager {
     private _groups: Group[] = [];
     public readonly onGroupsChanged: Delegate<(groups: Group[]) => void> = new Delegate();
 
     private readonly docs = new Map<string, YDoc>();
 
-    private getOrCreateYDoc(id: string): YDoc {
-        if (!this.docs.has(id)) this.docs.set(id, new YDoc());
-        return this.docs.get(id)!;
+    private getOrCreateYDoc(id: ObjectId): YDoc {
+        const str = id.toString();
+        if (!this.docs.has(str)) this.docs.set(str, new YDoc());
+        return this.docs.get(str)!;
     }
 
     public async loadGroups(userId: ObjectId): Promise<void> {
@@ -58,9 +59,6 @@ export class GroupManager extends RequestManager {
         console.log("ROOM", `PROJECT:${project._id}`);
 
         const doc = this.getOrCreateYDoc(project._id);
-        doc.on("update", () => console.log("🟢 Local update fired"));
-        doc.on("updateV2", () => console.log("🟢 V2 update fired"));
-
         return {doc: doc, websocket: new WebsocketManager(`PROJECT:${project._id}`, doc)};
     }
 }
