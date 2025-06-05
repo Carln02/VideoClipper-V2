@@ -1,10 +1,11 @@
 import {Tool} from "../tool/tool";
-import {ClosestOrigin, define, TurboDragEvent, TurboEvent} from "turbodombuilder";
+import {ClosestOrigin, define, TurboDragEvent, TurboEvent, Point} from "turbodombuilder";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {Flow} from "../../components/flow/flow";
 import {FlowPoint} from "../../components/flow/flow.types";
 import {Project} from "../../screens/project/project";
+import {FlowColorSelector} from "../../components/flowColorSelector/flowColorSelector";
 
 /**
  * @description Tool that handles creating flows and connecting nodes
@@ -14,6 +15,8 @@ export class ConnectionTool extends Tool {
     private _currentFlow: Flow;
     private _currentFlowId: string;
     private lastNodeId: string = null;
+    private currentColor: string = "#439045";
+    private colorSelector: FlowColorSelector;
 
     //Interval indicating the frequency at which points are permanently added to the flow
     //A higher value will increase the smoothing effect of the flow
@@ -23,6 +26,18 @@ export class ConnectionTool extends Tool {
 
     public constructor(project: Project) {
         super(project, ToolType.connection);
+        
+        // Create the color selector
+        this.colorSelector = new FlowColorSelector({
+            connectionTool: this, 
+            initialColor: this.currentColor,
+        });
+        this.colorSelector.setOnColorSelected((color: string) => {
+            this.currentColor = color;
+        });
+        
+        // Add the color selector to the document body
+        document.body.appendChild(this.colorSelector.element);
     }
 
     private get currentFlowId(): string {
@@ -64,7 +79,7 @@ export class ConnectionTool extends Tool {
             }
 
             //Otherwise --> create a new flow
-            this.currentFlowId = await this.project.createNewFlow(e.scaledPosition, this.lastNodeId,"#439045");
+            this.currentFlowId = await this.project.createNewFlow(e.scaledPosition, this.lastNodeId, this.currentColor);
             return;
         }
 
@@ -79,10 +94,13 @@ export class ConnectionTool extends Tool {
         // //Branch (temporarily) at point to later update the original path
         // return this.currentFlow.branchingHandler.branchAtPoint(closestPoint, e.scaledPosition,
         //     undefined, true, true);
-    }
-
+    }    
+    
     //On click --> create a point if the click is inside a node, otherwise cancel flow
     public clickAction(e: TurboEvent) {
+        // Hide color selector if showing
+        this.colorSelector.hide();
+        
         //Get the closest node to the event's target
         const closestNode = e.closest(BranchingNode);
         //Otherwise --> store last node ID
@@ -93,9 +111,10 @@ export class ConnectionTool extends Tool {
         if (!closestNode) return this.endAndClear();
         //Add a point to this flow, with the closestNode's ID
         this.currentFlow.addPoint(e.scaledPosition, this.lastNodeId);
-    }
-
-    public dragStart(e: TurboDragEvent) {
+    }    public dragStart(e: TurboDragEvent) {
+        // Hide color selector if showing
+        this.colorSelector.hide();
+        
         //Return if already creating/editing a flow
         if (this.currentFlowId) return;
         this.initializeFlow(e);
@@ -129,15 +148,24 @@ export class ConnectionTool extends Tool {
     public dragEnd() {
         //Drag end --> end the flow and clear current reference
         this.endAndClear();
-    }
-
+    }    
+    
     public longPressAction(e: TurboDragEvent) {
-        console.log("Long press action triggered in connection tool");
-    }
-
+        // Show the color selector at the position of the long press
+        this.colorSelector.showView(e.position);
+    }    
+    
     private endAndClear() {
         this.currentFlow.endFlow();
         this.currentFlowId = null;
         this.lastNodeId = null;
+        
+        // Hide color selector if showing
+        this.colorSelector.hide();
+    }
+    
+    public deactivate() {
+        // Hide color selector when tool is deactivated
+        this.colorSelector.hide();
     }
 }
