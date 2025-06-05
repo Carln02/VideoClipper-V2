@@ -1,4 +1,4 @@
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 import {VcComponentProperties} from "../component/component.types";
 import {PlaybackView} from "./playback.view";
 import {PlaybackModel} from "./playback.model";

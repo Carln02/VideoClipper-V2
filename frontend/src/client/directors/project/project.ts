@@ -6,36 +6,34 @@ import {FlowBranch} from "../../components/flowBranch/flowBranch";
 import {ToolPanel} from "../../panels/toolPanel/toolPanel";
 import {ShootingPanel} from "../../panels/shootingPanel/shootingPanel";
 import {TextPanel} from "../../panels/textPanel/textPanel";
-import {ScreenManager} from "../screenManager/screenManager";
-import {App} from "../app/app";
 import {VcComponent} from "../../components/component/component";
 import {SyncedBranchingNode} from "../../components/branchingNode/branchingNode.types";
-import { MediaManager } from "../../managers/mediaManager/mediaManager";
 import { ContextManager } from "../../managers/contextManager/contextManager";
 import { ToolManager } from "../../managers/toolManager/toolManager";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
-import {SyncedMedia} from "../../managers/mediaManager/mediaManager.types";
-import {Canvas} from "../canvas/canvas";
-import {Camera} from "../camera/camera";
-import {DocumentProperties, ProjectScreens, SyncedDocument} from "./project.types";
+import {ProjectProperties, ProjectScreens, SyncedDocument} from "./project.types";
 import {ProjectView} from "./project.view";
 import {ProjectModel} from "./project.model";
 import {YUtilities} from "../../../yManagement/yUtilities";
 import { YDoc } from "../../../yManagement/yManagement.types";
 import "./project.css";
+import {RootDirector} from "../rootDirector/rootDirector";
+import {Canvas} from "../../screens/canvas/canvas";
+import {Camera} from "../../screens/camera/camera";
+import {MediaHandler} from "../../handlers/mediaHandler/mediaHandler";
+import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
 
 @define("vc-project")
-export class Project extends ScreenManager<ProjectScreens, ProjectView, SyncedDocument,
-    ProjectModel, App> {
-    private readonly _mediaManager: MediaManager;
+export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDocument, ProjectModel> {
+    private readonly _mediaHandler: MediaHandler;
     private readonly _contextManager: ContextManager;
     private readonly _toolManager: ToolManager;
 
-    public constructor(properties: DocumentProperties) {
+    public constructor(properties: ProjectProperties) {
         super(properties);
         if (properties.document) this.document = properties.document;
 
-        this._mediaManager = new MediaManager(this);
+        this._mediaHandler = new MediaHandler(this);
         this._contextManager = new ContextManager();
         this._toolManager = new ToolManager();
 
@@ -49,19 +47,19 @@ export class Project extends ScreenManager<ProjectScreens, ProjectView, SyncedDo
         this.model.onBranchingNodeAdded = data => new BranchingNode({
             parent: this.view.cardsParent,
             data: data,
-            screenManager: this
+            director: this
         });
 
         this.model.onCardAdded = data => new Card({
             parent: this.view.cardsParent,
             data: data,
-            screenManager: this
+            director: this
         });
 
         this.model.onFlowAdded = data => new Flow({
             parent: this.view.flowsParent,
             data: data,
-            screenManager: this
+            director: this
         });
 
         this.mvc.initialize();
@@ -70,20 +68,20 @@ export class Project extends ScreenManager<ProjectScreens, ProjectView, SyncedDo
 
         this.toolPanel.addPanel(new ShootingPanel({
             toolPanel: this.toolPanel,
-            screenManager: this
+            director: this
         }), ToolType.shoot, ProjectScreens.camera);
         this.toolPanel.addPanel(new TextPanel({
             toolPanel: this.toolPanel,
-            screenManager: this
+            director: this
         }), ToolType.text, ProjectScreens.camera);
 
-        this.screenManager.eventManager.authorizeEventScaling = () => this.currentType == ProjectScreens.canvas;
-        this.screenManager.eventManager.scaleEventPosition = (position: Point) =>
+        this.eventManager.authorizeEventScaling = () => this.currentType == ProjectScreens.canvas;
+        this.eventManager.scaleEventPosition = (position: Point) =>
             this.canvas.navigationManager.computePositionRelativeToCanvas(position);
     }
 
-    public get mediaManager(): MediaManager {
-        return this._mediaManager;
+    public get mediaHandler(): MediaHandler {
+        return this._mediaHandler;
     }
 
     public get contextManager(): ContextManager {

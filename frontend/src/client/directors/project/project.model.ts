@@ -4,13 +4,13 @@ import {BranchingNodeType, SyncedBranchingNode} from "../../components/branching
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {Card} from "../../components/card/card";
 import {Flow} from "../../components/flow/flow";
-import {SyncedMedia} from "../../managers/mediaManager/mediaManager.types";
 import { YComponentModel } from "../../../yManagement/yModel/types/yComponentModel";
 import {ProjectCardsModel} from "./project.cardsModel";
 import {ProjectFlowsModel} from "./project.flowsModel";
 import {SyncedDocument} from "./project.types";
 import { YMap } from "../../../yManagement/yManagement.types";
 import {YUtilities} from "../../../yManagement/yUtilities";
+import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
 
 export class ProjectModel extends YComponentModel {
     public readonly cardsModel: ProjectCardsModel;
@@ -37,7 +37,6 @@ export class ProjectModel extends YComponentModel {
     }
 
     public initialize(blockKey: string = this.defaultBlockKey) {
-        console.log(":) INITIALIZING DATA BLOCK IN PROJECTTT")
         if (!this.getData("cards")) this.setData("cards", new YMap());
         if (!this.getData("branchingNodes")) this.setData("branchingNodes", new YMap());
         if (!this.getData("flows")) this.setData("flows", new YMap());

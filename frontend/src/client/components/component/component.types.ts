@@ -1,11 +1,11 @@
 import {TurboCustomProperties, TurboModel, TurboView} from "turbodombuilder";
-import {ScreenManager} from "../../screens/screenManager/screenManager";
+import {Director} from "../../directors/director/director";
 
 export type VcComponentProperties<
     ViewType extends TurboView = TurboView,
     DataType extends object = object,
     ModelType extends TurboModel = TurboModel,
-    ManagerType extends ScreenManager = ScreenManager
+    DirectorType extends Director = Director
 > = TurboCustomProperties<ViewType, DataType, ModelType> & {
-    screenManager?: ManagerType
+    director?: DirectorType
 };

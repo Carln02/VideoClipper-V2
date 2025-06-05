@@ -9,8 +9,8 @@ import {Timeline} from "../../components/timeline/timeline";
 import {MovableComponent} from "../../components/basicComponents/movableComponent/movableComponent";
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import { YMap } from "../../../yManagement/yManagement.types";
-import {Project} from "../../screens/project/project";
-import {ProjectScreens} from "../../screens/project/project.types";
+import {Project} from "../../directors/project/project";
+import {ProjectScreens} from "../../directors/project/project.types";
 
 /**
  * @description Tool that allows user to select elements and move them around

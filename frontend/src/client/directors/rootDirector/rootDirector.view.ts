@@ -1,10 +1,13 @@
-import {div, TurboView} from "turbodombuilder";
+import {div, TurboModel, TurboView} from "turbodombuilder";
 import {AppBar} from "../../components/appBar/appBar";
-import {App} from "./app";
+import {RootDirector} from "./rootDirector";
 
-export class AppView extends TurboView<App> {
-    private appBar: AppBar;
-    private content: HTMLElement;
+export class RootDirectorView<
+    Element extends RootDirector = RootDirector,
+    Model extends TurboModel = TurboModel
+> extends TurboView<Element, Model> {
+    protected appBar: AppBar;
+    protected content: HTMLElement;
 
     protected setupUIElements() {
         super.setupUIElements();

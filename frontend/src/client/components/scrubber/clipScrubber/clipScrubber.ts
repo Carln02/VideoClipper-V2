@@ -17,7 +17,7 @@ export class ClipScrubber extends Scrubber {
 
         if (!ClipScrubber.markingMenu) {
             ClipScrubber.markingMenu = new ScrubberMarkingMenu({});
-            this.screenManager.canvas.content.addChild(ClipScrubber.markingMenu);
+            this.director.canvas.content.addChild(ClipScrubber.markingMenu);
         }
 
         if (properties.initialize) this.initializeUI();

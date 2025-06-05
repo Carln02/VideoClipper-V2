@@ -6,18 +6,18 @@ import {
     TurboModel,
     TurboView
 } from "turbodombuilder";
-import {ScreenManagerProperties} from "./screenManager.types";
-import "./screenManager.css";
+import "./director.css";
 import {VcComponent} from "../../components/component/component";
+import {DirectorProperties} from "./director.types";
 
-@define()
-export class ScreenManager<
+@define("vc-director")
+export class Director<
     ScreenType extends string | number | symbol = string | number | symbol,
     ViewType extends TurboView = TurboView<any, any>,
     DataType extends object = object,
     ModelType extends TurboModel<DataType> = TurboModel,
-    ManagerType extends ScreenManager = any
-> extends VcComponent<ViewType, DataType, ModelType, ManagerType> {
+    DirectorType extends Director = any
+> extends VcComponent<ViewType, DataType, ModelType, DirectorType> {
     private readonly screens: Map<ScreenType, VcComponent> = new Map();
 
     public screensParent: Node = this;
@@ -31,7 +31,7 @@ export class ScreenManager<
     public readonly onScreenChange: Delegate<(oldScreen: VcComponent, newScreen: VcComponent, type: ScreenType) => void>;
 
 
-    public constructor(properties: ScreenManagerProperties<ScreenType, ViewType, DataType, ModelType, ManagerType>) {
+    public constructor(properties: DirectorProperties<ScreenType, ViewType, DataType, ModelType, DirectorType>) {
         super(properties);
         this.onScreenChange = new Delegate<(oldScreen: VcComponent, newScreen: VcComponent, type: ScreenType) => void>();
         this.showReifect = properties.showReifect;

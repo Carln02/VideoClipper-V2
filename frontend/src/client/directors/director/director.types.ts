@@ -8,15 +8,15 @@ import {
 } from "turbodombuilder";
 import {VcComponent} from "../../components/component/component";
 import {VcComponentProperties} from "../../components/component/component.types";
-import {ScreenManager} from "./screenManager";
+import {Director} from "./director";
 
-export type ScreenManagerProperties<
+export type DirectorProperties<
     ScreenType extends string | number | symbol = string | number | symbol,
     ViewType extends TurboView = TurboView<any, any>,
     DataType extends object = object,
     ModelType extends TurboModel<DataType> = TurboModel,
-    ManagerType extends ScreenManager = ScreenManager
-> = VcComponentProperties<ViewType, DataType, ModelType, ManagerType> & {
+    DirectorType extends Director = Director
+> = VcComponentProperties<ViewType, DataType, ModelType, DirectorType> & {
     showReifect?: StatefulReifect<Shown> | StatefulReifectProperties<Shown>,
     screens?: PartialRecord<ScreenType, VcComponent>,
     screensParent?: Node

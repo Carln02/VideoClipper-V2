@@ -1,4 +1,4 @@
-export class RequestManager {
+export class RequestHandler {
     protected readonly isSecure = window.location.protocol === "https:";
     protected readonly protocol = this.isSecure ? "https" : "http";
     protected readonly hostname = window.location.hostname;
@@ -33,5 +33,4 @@ export class RequestManager {
 
         request.send(body);
     }
-
 }

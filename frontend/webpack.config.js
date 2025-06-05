@@ -3,27 +3,31 @@ const path = require("path");
 module.exports = {
     mode: process.env.NODE_ENV || "development",
     target: "web",
-    entry: path.resolve(__dirname, "src/client/index.ts"), // ✅ resolves full path
+    entry: {
+        app: path.resolve(__dirname, "src/client/app.ts"),
+        project: path.resolve(__dirname, "src/client/project.ts"),
+    },
     output: {
+        filename: "[name].bundle.js",
         path: path.resolve(__dirname, "public"),
-        filename: "bundle.js"
     },
     devServer: {
-        static: {
-            directory: path.resolve(__dirname, "public")
-        },
         compress: true,
         port: 9000,
         open: true,
         hot: true,
-        historyApiFallback: true,
+        historyApiFallback: {
+            rewrites: [
+                { from: /^\/project\/.*$/, to: '/project.html' },
+                { from: /^\/$/, to: '/app.html' }
+            ]
+        },
         proxy: [
             {
-                context: ['/api'],
+                context: () => true,
                 target: 'http://localhost:3000',
                 changeOrigin: true,
                 secure: false
-                // Do NOT put credentials here. Handle CORS on the server side.
             }
         ]
     },

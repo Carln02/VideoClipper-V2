@@ -1,8 +1,8 @@
 import {button, DefaultEventName, div, TurboButton, TurboSelect, TurboSelectEntry, TurboView} from "turbodombuilder";
 import {Home} from "./home";
-import {Group, ProjectData} from "../../managers/groupsManager/groupsManager.types";
 import {ObjectId} from "mongodb";
-import {AppScreens} from "../app/app.types";
+import {AppScreens} from "../../directors/app/app.types";
+import {Group, ProjectData} from "../../handlers/groupsHandler/groupsHandler.types";
 
 export class HomeView extends TurboView<Home> {
     private groupsPanel: HTMLElement;
@@ -33,7 +33,7 @@ export class HomeView extends TurboView<Home> {
     protected setupUIListeners() {
         super.setupUIListeners();
         this.addProjectButton.addListener(DefaultEventName.click, async () => {
-            const project = await this.element.screenManager.groupsManager.createProject("P1111", this.groupsSelect.selectedSecondaryValue);
+            const project = await this.element.director.groupsHandler.createProject("P1111", this.groupsSelect.selectedSecondaryValue);
             await this.openProject(project);
         });
     }
@@ -41,7 +41,7 @@ export class HomeView extends TurboView<Home> {
     public onLogin = (loggedIn: boolean) => {
         this.groupsPanel.removeAllChildren();
         if (!loggedIn) {
-            this.element.screenManager.authenticationManager.renderGoogleButton(this.groupsPanel);
+            this.element.director.authenticationHandler.renderGoogleButton(this.groupsPanel);
         } else {
             this.groupsPanel.addChild(this.groupsSelect);
             //TODO this.googleLoginParent.remove();
@@ -61,7 +61,7 @@ export class HomeView extends TurboView<Home> {
 
     public async generateProjects(groupId: ObjectId) {
         this.projectsSelect.clear();
-        const projects = await this.element.screenManager.groupsManager.getProjectsForGroup(groupId);
+        const projects = await this.element.director.groupsHandler.getProjectsForGroup(groupId);
         projects.forEach((project: ProjectData) => {
             const entry = new TurboSelectEntry({value: project.name, secondaryValue: project._id});
             entry.addListener(DefaultEventName.click, async () => await this.openProject(project));
@@ -70,12 +70,13 @@ export class HomeView extends TurboView<Home> {
     }
 
     private async openProject(project: ProjectData) {
-        const persistedDoc = await this.element.screenManager.groupsManager.openProject(project._id);
+        window.location.href = `${window.location.origin}/project/${project._id}`;
+        return;
+        const persistedDoc = await this.element.director.groupsHandler.openProject(project._id);
 
         const onConnection = () => {
-            console.log("CHANGING TO DOC VIEWWW")
-            this.element.screenManager.documentManager.document = persistedDoc.doc;
-            this.element.screenManager.currentType = AppScreens.document;
+            this.element.director.documentManager.document = persistedDoc.doc;
+            this.element.director.currentType = AppScreens.document;
         };
 
         persistedDoc.websocket.onConnect.add(onConnection);

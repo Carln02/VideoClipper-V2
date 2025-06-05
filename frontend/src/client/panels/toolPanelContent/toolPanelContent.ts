@@ -6,7 +6,7 @@ import {ToolManager} from "../../managers/toolManager/toolManager";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {VcComponent} from "../../components/component/component";
 import "./toolPanelContent.css";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 
 export class ToolPanelContent<
     ViewType extends ToolPanelContentView = ToolPanelContentView<any, any>,

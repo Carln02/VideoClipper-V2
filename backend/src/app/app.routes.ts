@@ -5,7 +5,7 @@ import {MediaController} from "../media/media.controller";
 import {mediaRoutes} from "../media/media.routes";
 import {userRoutes} from "../user/user.routes";
 import {groupRoutes} from "../group/group.routes";
-import {projectApiRoutes, projectRoutes} from "../project/project.routes";
+import {projectApiRoutes} from "../project/project.routes";
 import path from "path";
 import {App} from "./app";
 import {authenticationRoutes} from "../authentication/authentication.routes";
@@ -21,16 +21,21 @@ export function appRoutes(app: App): Router {
     const projectController = new ProjectController(app.repositories.projectRepository);
     const mediaController = new MediaController(app.repositories.mediaRepository);
 
+    //API
     router.use("/api/auth", authenticationRoutes(authenticationController));
     router.use("/api/media", mediaRoutes(mediaController, app.multerUtil));
     router.use("/api/users", userRoutes(userController));
     router.use("/api/groups", groupRoutes(groupController));
     router.use("/api/projects", projectApiRoutes(projectController));
-    router.use("/project", projectRoutes(projectController));
 
-    // --- SPA fallback
+    //Project
+    router.get("/project/:id", (_req, res) => {
+        res.sendFile(path.join(app.FRONTEND_PUBLIC_PATH, "project.html"));
+    })
+
+    //Home
     router.get("*", (_req, res) => {
-        res.sendFile(path.join(app.FRONTEND_PUBLIC_PATH, "index.html"));
+        res.sendFile(path.join(app.FRONTEND_PUBLIC_PATH, "app.html"));
     });
 
     return router;

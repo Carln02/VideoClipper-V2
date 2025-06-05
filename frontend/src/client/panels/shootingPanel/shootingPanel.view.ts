@@ -11,7 +11,7 @@ import {
 } from "../../components/animationComponents/animatedContentSwitchingDiv/animatedContentSwitchingDiv";
 import {ClipRendererVisibility} from "../../components/clipRenderer/clipRenderer.types";
 import {CaptureModeSlider} from "../../components/captureModeSlider/captureModeSlider";
-import {ProjectScreens} from "../../screens/project/project.types";
+import {ProjectScreens} from "../../directors/project/project.types";
 
 export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, ShootingPanelModel> {
     private captureButton: CaptureButton;
@@ -107,7 +107,7 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
             if (b) this.model.mode = entry.value as CaptureMode;
         });
 
-        this.backButton.addListener(DefaultEventName.click, () => this.element.screenManager.currentType = ProjectScreens.canvas);
+        this.backButton.addListener(DefaultEventName.click, () => this.element.director.currentType = ProjectScreens.canvas);
     }
 
     protected setupChangedCallbacks() {

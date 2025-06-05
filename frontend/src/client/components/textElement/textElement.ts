@@ -7,7 +7,7 @@ import {Card} from "../card/card";
 import {TextElementView} from "./textElement.view";
 import {TextElementModel} from "./textElement.model";
 import {VcComponent} from "../component/component";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 import {YUtilities} from "../../../yManagement/yUtilities";
 import {YMap} from "../../../yManagement/yManagement.types";
 
@@ -76,7 +76,7 @@ export class TextElement extends VcComponent<TextElementView, SyncedText, TextEl
 
     public translateBy(deltaPosition: Point) {
         this.model.origin = deltaPosition
-            .div(this.screenManager.camera.frameWidth, this.screenManager.camera.frameHeight)
+            .div(this.director.camera.frameWidth, this.director.camera.frameHeight)
             .add(this.model.origin)
             .object;
     }

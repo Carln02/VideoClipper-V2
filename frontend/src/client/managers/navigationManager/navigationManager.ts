@@ -117,7 +117,7 @@ export class NavigationManager {
 
         // if (e.position) zoomOrigin = e.position.sub(this.translation);
         // else {
-            const rect = this.canvas.screenManager.getBoundingClientRect();
+            const rect = this.canvas.director.getBoundingClientRect();
             const canvasCenter = new Point(rect.left + rect.width / 2, rect.top + rect.height / 2);
             zoomOrigin = canvasCenter.sub(this.translation);
         // }
@@ -159,7 +159,7 @@ export class NavigationManager {
      * @param {Point} screenPosition
      */
     public computePositionRelativeToCanvas(screenPosition: Point) {
-        const rect = this.canvas.screenManager.getBoundingClientRect();
+        const rect = this.canvas.director.getBoundingClientRect();
         const localPos = screenPosition.sub(new Point(rect.left, rect.top));
         return localPos.sub(this.translation).div(this.scale);
     }

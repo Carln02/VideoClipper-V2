@@ -1,6 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+@import "./input.css";
+@import "./markingMenu.css";
+@import "./colors.css";
+@import "./drawer.css";
 
 body {
+    width: 100vw;
+    height: 100vh;
+
     touch-action: pan-x pan-y;
     user-select: none;
     overflow: hidden;

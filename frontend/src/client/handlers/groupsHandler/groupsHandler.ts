@@ -1,11 +1,11 @@
 import {YDoc} from "../../../yManagement/yManagement.types";
-import {RequestManager} from "../requestManager/requestManager";
-import {Group, PersistedDoc, ProjectData} from "./groupsManager.types";
-import {WebsocketManager} from "../websocketManager/websocketManager";
+import {RequestHandler} from "../requestHandler/requestHandler";
 import {ObjectId} from "mongodb";
 import {Delegate} from "turbodombuilder";
+import {Group, PersistedDoc, ProjectData} from "./groupsHandler.types";
+import {WebsocketManager} from "../../managers/websocketManager/websocketManager";
 
-export class GroupsManager extends RequestManager {
+export class GroupsHandler extends RequestHandler {
     private _groups: Group[] = [];
     public readonly onGroupsChanged: Delegate<(groups: Group[]) => void> = new Delegate();
 
@@ -47,7 +47,7 @@ export class GroupsManager extends RequestManager {
     }
 
     public async openProject(projectId: ObjectId): Promise<PersistedDoc | null> {
-        const res = await fetch(`${this.serverUrl}project/${projectId}`, {credentials: "include"});
+        const res = await fetch(`${this.serverUrl}api/projects/${projectId}`, {credentials: "include"});
 
         if (!res.ok) {
             if (res.status === 403) throw new Error("Access denied");

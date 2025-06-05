@@ -7,15 +7,15 @@ import {ClipThumbnailController} from "./clipThumbnailController";
 import {MovableComponent} from "../basicComponents/movableComponent/movableComponent";
 import {ClipTextHandler} from "./clip.textHandler";
 import {Card} from "../card/card";
-import {SyncedMedia} from "../../managers/mediaManager/mediaManager.types";
 import {TextElement} from "../textElement/textElement";
 import {YMap} from "../../../yManagement/yManagement.types";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 import {VcComponent} from "../component/component";
 import {randomColor} from "../../utils/random";
 import {YUtilities} from "../../../yManagement/yUtilities";
 import {SyncedText} from "../textElement/textElement.types";
 import {ClipView} from "./clip.view";
+import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
 
 @define("vc-clip")
 export class Clip<
@@ -38,7 +38,7 @@ export class Clip<
         });
 
         this.mvc.emitter.add("mediaId", async (value: string) => {
-            this.model.updateMediaData(await this.screenManager.mediaManager.getMedia(value));
+            this.model.updateMediaData(await this.director.mediaHandler.getMedia(value));
 
             //TODO maybe remove this? idk
             // if (media.metadata?.thumbnail) {
@@ -156,7 +156,7 @@ export class Clip<
             timeline: this.timeline,
             data: this.data,
             viewConstructor: this.view?.constructor as any,
-            screenManager: this.screenManager
+            director: this.director
         });
 
         clone.setStyle("width", this.offsetWidth + "px");
@@ -177,7 +177,7 @@ export class Clip<
         const clone = this.clone();
         this.setStyle("opacity", "0.4");
 
-        const moveableClone = new MovableComponent(clone, this, {parent: this.screenManager.canvas.content});
+        const moveableClone = new MovableComponent(clone, this, {parent: this.director.canvas.content});
         moveableClone.translation = this.timeline.scaled ? e.scaledPosition : e.position;
         return moveableClone;
     }

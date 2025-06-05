@@ -1,17 +1,17 @@
 import {TurboElement, TurboModel, TurboView} from "turbodombuilder";
-import {ScreenManager} from "../../screens/screenManager/screenManager";
 import {VcComponentProperties} from "./component.types";
+import {Director} from "../../directors/director/director";
 
 export class VcComponent<
     ViewType extends TurboView = TurboView<any, any>,
     DataType extends object = object,
     ModelType extends TurboModel = TurboModel,
-    ManagerType extends ScreenManager = ScreenManager
+    DirectorType extends Director = Director
 > extends TurboElement<ViewType, DataType, ModelType> {
-    public screenManager: ManagerType;
+    public director: DirectorType;
 
-    public constructor(properties: VcComponentProperties<ViewType, DataType, ModelType, ManagerType> = {}) {
+    public constructor(properties: VcComponentProperties<ViewType, DataType, ModelType, DirectorType> = {}) {
         super(properties);
-        this.screenManager = properties.screenManager;
+        this.director = properties.director;
     }
 }

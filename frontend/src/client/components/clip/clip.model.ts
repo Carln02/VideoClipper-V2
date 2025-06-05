@@ -1,9 +1,9 @@
 import {YUtilities} from "../../../yManagement/yUtilities";
-import {SyncedMedia} from "../../managers/mediaManager/mediaManager.types";
 import {YComponentModel} from "../../../yManagement/yModel/types/yComponentModel";
 import {ClipTextHandler} from "./clip.textHandler";
 import { YArray } from "../../../yManagement/yManagement.types";
 import { SyncedText } from "../textElement/textElement.types";
+import { SyncedMedia } from "../../handlers/mediaHandler/mediaHandler.types";
 
 export class ClipModel extends YComponentModel {
     private _metadata: SyncedMedia;

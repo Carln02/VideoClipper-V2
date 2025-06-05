@@ -1,6 +1,6 @@
 import {ObjectId} from "mongodb";
 import { YDoc } from "../../../yManagement/yManagement.types";
-import {WebsocketManager} from "../websocketManager/websocketManager";
+import {WebsocketManager} from "../../managers/websocketManager/websocketManager";
 
 export type Group = {
     _id: ObjectId,

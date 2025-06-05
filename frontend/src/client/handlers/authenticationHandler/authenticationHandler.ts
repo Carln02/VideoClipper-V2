@@ -1,9 +1,9 @@
-import {User} from "./authenticationManager.types";
-import {RequestManager} from "../requestManager/requestManager";
+import {RequestHandler} from "../requestHandler/requestHandler";
 import {Delegate} from "turbodombuilder";
 import {ObjectId} from "mongodb";
+import {User} from "./authenticationHandler.types";
 
-export class AuthenticationManager extends RequestManager {
+export class AuthenticationHandler extends RequestHandler {
     private readonly googleClientID: string = "494682680465-p2mlm6q6aefp7lu45qe8f5lcl9kj5j8t.apps.googleusercontent.com";
 
     private _user: User = null;

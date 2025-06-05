@@ -4,12 +4,12 @@ import {ClipRenderer} from "../../components/clipRenderer/clipRenderer";
 import {Point, TurboEvent} from "turbodombuilder";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {Clip} from "../../components/clip/clip";
-import {Project} from "../../screens/project/project";
-import {ProjectScreens} from "../../screens/project/project.types";
+import {Project} from "../../directors/project/project";
+import {ProjectScreens} from "../../directors/project/project.types";
 
 export class TextTool extends Tool {
-    public constructor(document: Project) {
-        super(document, ToolType.text);
+    public constructor(project: Project) {
+        super(project, ToolType.text);
     }
 
     public clickAction(e: TurboEvent) {

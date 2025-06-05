@@ -1,9 +1,9 @@
-import {RequestManager} from "../requestManager/requestManager";
+import {RequestHandler} from "../requestHandler/requestHandler";
 import {IDBPDatabase, openDB} from "idb";
-import {SyncedMedia, MediaData } from "./mediaManager.types";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
+import {MediaData, SyncedMedia} from "./mediaHandler.types";
 
-export class MediaManager extends RequestManager {
+export class MediaHandler extends RequestHandler {
     private document: Project;
     private localDatabase: IDBPDatabase;
 

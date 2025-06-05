@@ -10,7 +10,7 @@ import {FlowBranch} from "../flowBranch/flowBranch";
 import {FlowCleaningHandler} from "./flow.cleaningHandler";
 import {VcComponent} from "../component/component";
 import {VcComponentProperties} from "../component/component.types";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 import {FlowIntersectionHandler} from "./flow.intersectionHandler";
 import {YMap} from "../../../yManagement/yManagement.types";
 import {YUtilities} from "../../../yManagement/yUtilities";
@@ -32,7 +32,7 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
         });
 
         this.model.onFlowBranchAdded = (data) => new FlowBranch({flow: this, data: data});
-        this.model.onFlowTagAdded = (data) => new FlowTag({flow: this, data: data, screenManager: this.screenManager});
+        this.model.onFlowTagAdded = (data) => new FlowTag({flow: this, data: data, director: this.director});
         this.mvc.initialize();
     }
 

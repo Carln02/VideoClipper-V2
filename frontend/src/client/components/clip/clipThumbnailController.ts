@@ -31,7 +31,7 @@ export class ClipThumbnailController extends TurboController<Clip, ClipView, Cli
     private initializeSnapshotRenderer() {
         if (ClipThumbnailController.rendererInitialized) return;
         ClipThumbnailController.renderer = new ClipRenderer({
-            screenManager: this.element.screenManager,
+            director: this.element.director,
             id: "snapshot-renderer",
             videoProperties: {muted: true, playsInline: true}
         });

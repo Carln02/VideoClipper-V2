@@ -31,7 +31,7 @@ export class ClipTimeline extends Timeline<ClipTimelineView> {
     }
 
     public get width() {
-        return this.model.totalDuration * this.pixelsPerSecondUnit * ((this.scaled ? this.screenManager.canvas.scale : 1) || 1);
+        return this.model.totalDuration * this.pixelsPerSecondUnit * ((this.scaled ? this.director.canvas.scale : 1) || 1);
     }
 
     public reloadTime() {

@@ -31,18 +31,11 @@ export class WebsocketManager {
         window.addEventListener("online", this.handleConnect, {once: true});
         window.addEventListener("offline", this.handleDisconnect, {once: true});
 
-        this.onConnect.add(() => {
-            setTimeout(() => console.log(ydoc.getMap("document_content")?.get("testKey")), 1000);
-            // setTimeout(() =>ydoc.getMap("document_content").set("testKey", Math.random()), 2000);
-            // setTimeout(() => console.log(ydoc.getMap("document_content")?.get("testKey")), 3000);
-        });
-
         const tempProvider = new WebsocketProvider(this.serverUrl, this.room, this.ydoc, websocketOptions.options);
         this.provider = new WebsocketProvider(this.serverUrl, this.room, this.ydoc, websocketOptions.options);
         if (websocketOptions.debug) this.setupDebug();
 
         this.provider.on("status", (event: { status: string }) => {
-            // if (event.status === "connected" && this.onConnect) this.onConnect.fire();
             if (event.status === "disconnected" && this.onDisconnect) this.onDisconnect.fire();
         });
 
