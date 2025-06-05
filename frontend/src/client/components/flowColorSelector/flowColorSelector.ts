@@ -12,11 +12,11 @@ import { FlowColorSelectorProperties } from "./flowColorSelector.types";
 @define("vc-flow-color-selector")
 export class FlowColorSelector extends VcComponent<FlowColorSelectorView, any, FlowColorSelectorModel> {
     public constructor(properties: FlowColorSelectorProperties) {
-            super(properties as any);
+            super(properties);
             this.mvc.generate({
                 viewConstructor: FlowColorSelectorView,
                 modelConstructor: FlowColorSelectorModel,
-                data: null, // No initial data needed
+                data: null, 
                 initialize: false
             });
     
@@ -32,7 +32,6 @@ export class FlowColorSelector extends VcComponent<FlowColorSelectorView, any, F
             this.hide();
     }
     
-    // private mvc = { view: null as FlowColorSelectorView, model: null as FlowColorSelectorModel };
     private connectionTool: ConnectionTool;
     private onColorSelected: (color: string) => void;
     

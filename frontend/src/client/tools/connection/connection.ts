@@ -32,6 +32,7 @@ export class ConnectionTool extends Tool {
             connectionTool: this, 
             initialColor: this.currentColor,
         });
+
         this.colorSelector.setOnColorSelected((color: string) => {
             this.currentColor = color;
         });
