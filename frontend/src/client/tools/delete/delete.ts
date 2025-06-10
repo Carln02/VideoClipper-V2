@@ -4,7 +4,7 @@ import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {Clip} from "../../components/clip/clip";
 import {TextElement} from "../../components/textElement/textElement";
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 
 @define("delete-tool")
 export class DeleteTool extends Tool {

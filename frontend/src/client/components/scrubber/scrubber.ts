@@ -8,7 +8,7 @@ import "./scrubber.css";
 import {ScrubberProperties} from "./scrubber.types";
 import {Timeline} from "../timeline/timeline";
 import {VcComponent} from "../component/component";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 
 @define("vc-scrubber")
 export class Scrubber extends VcComponent<any, any, any, Project> {
@@ -63,7 +63,7 @@ export class Scrubber extends VcComponent<any, any, any, Project> {
      */
     @auto()
     public set translation(value: number) {
-        const basis = this.scaled ? this.screenManager.canvas.scale : 1;
+        const basis = this.scaled ? this.director.canvas.scale : 1;
         this.style.transform = `translate(calc(${value / basis}px - 50%), 0)`;
     }
 }

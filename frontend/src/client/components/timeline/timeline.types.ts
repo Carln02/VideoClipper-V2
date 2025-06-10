@@ -4,7 +4,7 @@ import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {TimelineModel} from "./timeline.model";
 import {TimelineView} from "./timeline.view";
 import {YArray} from "../../../yManagement/yManagement.types";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 import {VcComponentProperties} from "../component/component.types";
 
 export type TimelineIndexInfo = {

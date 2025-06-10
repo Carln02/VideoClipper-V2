@@ -7,8 +7,8 @@ import {VcComponent} from "../../components/component/component";
 import {ToolManager} from "../../managers/toolManager/toolManager";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {VcComponentProperties} from "../../components/component/component.types";
-import {Project} from "../../screens/project/project";
-import {ProjectScreens} from "../../screens/project/project.types";
+import {Project} from "../../directors/project/project";
+import { ProjectScreens } from "../../directors/project/project.types";
 
 @define()
 export class ToolPanel extends VcComponent<any, any, any, Project> {
@@ -30,7 +30,7 @@ export class ToolPanel extends VcComponent<any, any, any, Project> {
             this.changePanel(newTool.name);
         });
 
-        this.screenManager.onScreenChange.add(() => {
+        this.director.onScreenChange.add(() => {
             this.changePanel();
         });
 
@@ -40,14 +40,14 @@ export class ToolPanel extends VcComponent<any, any, any, Project> {
     }
 
     public get toolManager(): ToolManager {
-        return this.screenManager.toolManager;
+        return this.director.toolManager;
     }
 
     public get contextManager(): ContextManager {
-        return this.screenManager.contextManager;
+        return this.director.contextManager;
     }
 
-    public getPanel(tool: ToolType, context: ProjectScreens = this.screenManager.currentType): ToolPanelContent {
+    public getPanel(tool: ToolType, context: ProjectScreens = this.director.currentType): ToolPanelContent {
         return this.panels.get(tool)?.get(context);
     }
 
@@ -69,7 +69,7 @@ export class ToolPanel extends VcComponent<any, any, any, Project> {
     }
 
     public changePanel(toolName: ToolType = this.toolManager.getTool(ClickMode.left).name,
-                       context: ProjectScreens = this.screenManager.currentType) {
+                       context: ProjectScreens = this.director.currentType) {
         this.currentPanel?.detach();
         this.removeChild(this.currentPanel);
 

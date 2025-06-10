@@ -1,7 +1,6 @@
 import {ClickMode, css, define, div, Point} from "turbodombuilder";
 import "./canvas.css";
 import {Toolbar} from "../../components/toolbar/toolbar";
-import {AppBar} from "../../components/appBar/appBar";
 import {SelectionTool} from "../../tools/selection/selection";
 import {NavigatorTool} from "../../tools/navigator/navigator";
 import {CreateCardTool} from "../../tools/createCard/createCard";
@@ -12,16 +11,14 @@ import {DeleteTool} from "../../tools/delete/delete";
 import {NavigationManager} from "../../managers/navigationManager/navigationManager";
 import {ToolManager} from "../../managers/toolManager/toolManager";
 import {VcComponent} from "../../components/component/component";
-import {Project} from "../project/project";
-import {ProjectScreens} from "../project/project.types";
+import {Project} from "../../directors/project/project";
+import {ProjectScreens} from "../../directors/project/project.types";
 
 /**
  * @description Class representing a canvas on which the user can add cards, connect them, move them around, etc.
  */
 @define("vc-canvas")
 export class Canvas extends VcComponent<any, any, any, Project> {
-    private appBar: AppBar;
-
     //Canvas parent --> contains the main components that are translated/scaled
     public readonly content: HTMLDivElement;
 
@@ -32,9 +29,7 @@ export class Canvas extends VcComponent<any, any, any, Project> {
     private readonly toolbar: Toolbar;
 
     public constructor(document: Project) {
-        super({screenManager: document});
-
-        this.appBar = new AppBar({parent: this});
+        super({director: document});
 
         this.content = div({parent: this, id: "canvas-content"});
 
@@ -42,24 +37,24 @@ export class Canvas extends VcComponent<any, any, any, Project> {
         this.navigationManager = new NavigationManager(this);
 
         //Init toolbar
-        this.toolbar = new Toolbar({parent: this, classes: "bottom-toolbar", screenManager: this.screenManager});
+        this.toolbar = new Toolbar({parent: this, classes: "bottom-toolbar", director: this.director});
 
         this.initTools();
     }
 
     public get toolManager(): ToolManager {
-        return this.screenManager.toolManager;
+        return this.director.toolManager;
     }
 
     private initTools() {
         //Create all tools
-        this.toolManager.addTool(new SelectionTool(this.screenManager), "Shift");
-        this.toolManager.addTool(new NavigatorTool(this.screenManager), "Control");
-        this.toolManager.addTool(new CreateCardTool(this.screenManager));
-        this.toolManager.addTool(new ConnectionTool(this.screenManager));
-        this.toolManager.addTool(new TextTool(this.screenManager));
-        this.toolManager.addTool(new ShootTool(this.screenManager));
-        this.toolManager.addTool(new DeleteTool(this.screenManager));
+        this.toolManager.addTool(new SelectionTool(this.director), "Shift");
+        this.toolManager.addTool(new NavigatorTool(this.director), "Control");
+        this.toolManager.addTool(new CreateCardTool(this.director));
+        this.toolManager.addTool(new ConnectionTool(this.director));
+        this.toolManager.addTool(new TextTool(this.director));
+        this.toolManager.addTool(new ShootTool(this.director));
+        this.toolManager.addTool(new DeleteTool(this.director));
 
         //Init default tools at hand
         this.toolManager.setTool(this.toolManager.getToolByKey("Shift"), ClickMode.left);
@@ -69,12 +64,11 @@ export class Canvas extends VcComponent<any, any, any, Project> {
 
     public remove(): this {
         super.remove();
-        // this.screenManager.currentType = ProjectScreens.home;
         return this;
     }
 
     public get scale() {
-        if (this.screenManager.currentType !== ProjectScreens.canvas) return 1;
+        if (this.director.currentType !== ProjectScreens.canvas) return 1;
         return this.navigationManager.scale;
     }
 

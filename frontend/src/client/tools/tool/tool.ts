@@ -2,7 +2,7 @@ import "./tool.css";
 import {ToolView} from "./toolView";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {auto, TurboDragEvent, TurboEvent} from "turbodombuilder";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {ToolManager} from "../../managers/toolManager/toolManager";
 import {CursorManager} from "../../managers/cursorManager/cursorManager";
@@ -36,7 +36,7 @@ export class Tool {
     }
 
     public get cursorManager(): CursorManager {
-        return this.project.screenManager.cursorManager;
+        return this.project.director.cursorManager;
     }
 
     /**

@@ -20,6 +20,6 @@ export class ShootingPanel extends ToolPanelContent<ShootingPanelView, object, S
     public detach() {}
 
     public get camera(): Camera {
-        return this.screenManager.camera;
+        return this.director.camera;
     }
 }

@@ -5,7 +5,7 @@ import {BranchingNodeModel} from "./branchingNode.model";
 import {BranchingNodeView} from "./branchingNode.view";
 import {VcComponentProperties} from "../component/component.types";
 import {VcComponent} from "../component/component";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 import {YUtilities} from "../../../yManagement/yUtilities";
 import { YMap } from "../../../yManagement/yManagement.types";
 
@@ -53,7 +53,7 @@ export class BranchingNode<
      * amd updates the attached flows accordingly.
      */
     public delete() {
-        this.screenManager.flows.forEach(flow => flow.updateOnDetachingNode(this.dataId));
-        this.screenManager.delete(this);
+        this.director.flows.forEach(flow => flow.updateOnDetachingNode(this.dataId));
+        this.director.delete(this);
     }
 }

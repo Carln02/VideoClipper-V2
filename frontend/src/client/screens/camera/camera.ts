@@ -8,14 +8,14 @@ import {CameraRecordingHandler} from "./camera.recordingHandler";
 import {CameraCaptureHandler} from "./camera.captureHandler";
 import {VcComponent} from "../../components/component/component";
 import {Clip} from "../../components/clip/clip";
-import {SyncedMedia} from "../../managers/mediaManager/mediaManager.types";
-import {Project} from "../project/project";
-import {ProjectScreens} from "../project/project.types";
+import {Project} from "../../directors/project/project";
+import {ProjectScreens} from "../../directors/project/project.types";
+import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
 
 @define("vc-camera")
 export class Camera extends VcComponent<CameraView, object, CameraModel, Project> {
     public constructor(document: Project) {
-        super({screenManager: document});
+        super({director: document});
 
         this.mvc.generate({
             viewConstructor: CameraView,
@@ -26,7 +26,7 @@ export class Camera extends VcComponent<CameraView, object, CameraModel, Project
         this.model.ghosting = true;
 
         this.mvc.emitter.add("recordedMedia", async (media: SyncedMedia) => {
-            media.id = await this.screenManager.mediaManager.saveMedia(media);
+            media.id = await this.director.mediaHandler.saveMedia(media);
             // this.model.lastSavedMedia = {...this.model.lastRecordedMedia, blob: undefined};
             await this.card.addClip(Clip.createData({endTime: (media?.duration ?? 5), mediaId: media.id,}),
                 this.view.timeline.currentClipInfo.closestIntersection);
@@ -57,7 +57,7 @@ export class Camera extends VcComponent<CameraView, object, CameraModel, Project
 
     public clear() {
         this.view.timeline.data = undefined; //TODO idk if gd idea
-        this.screenManager.currentType = ProjectScreens.canvas;
+        this.director.currentType = ProjectScreens.canvas;
     }
 
     public async startStream() {

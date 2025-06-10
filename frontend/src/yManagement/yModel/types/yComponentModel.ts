@@ -12,7 +12,11 @@ export class YComponentModel extends YModel<any, YMap, string> {
     protected observeChanges(event: YMapEvent, blockKey?: MvcBlockKeyType<"map">): void {
         event.keysChanged.forEach(key => {
             const change = event.changes.keys.get(key);
-            this.fireKeyChangedCallback(key, blockKey, change.action == "delete");
+            if (!change) {
+                console.warn(`No change info for key "${key}". Event:`, event);
+                return;
+            }
+            this.fireKeyChangedCallback(key, blockKey, change?.action === "delete");
         });
     }
 }

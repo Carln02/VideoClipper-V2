@@ -3,16 +3,16 @@ import {define, TurboEvent} from "turbodombuilder";
 import {Card} from "../../components/card/card";
 import {Clip} from "../../components/clip/clip";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
-import {ProjectScreens} from "../../screens/project/project.types";
-import {Project} from "../../screens/project/project";
+import {ProjectScreens} from "../../directors/project/project.types";
+import {Project} from "../../directors/project/project";
 
 /**
  * @description Tool that allows the user to shoot video clips into a card
  */
 @define("shoot-tool")
 export class ShootTool extends Tool {
-    public constructor(document: Project) {
-        super(document, ToolType.shoot);
+    public constructor(project: Project) {
+        super(project, ToolType.shoot);
     }
 
     public activate() {

@@ -11,7 +11,7 @@ import {SyncedCardMetadata} from "../metadataDrawer/metadataDrawer.types";
 import { YArray, YMap } from "../../../yManagement/yManagement.types";
 import {SyncedClip} from "../clip/clip.types";
 import {VcComponentProperties} from "../component/component.types";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 import {Clip} from "../clip/clip";
 import {YUtilities} from "../../../yManagement/yUtilities";
 
@@ -101,8 +101,8 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
      * amd updates the attached flows accordingly.
      */
     public async delete() {
-        await this.screenManager.createNewNode(this.model.origin, this.dataId);
-        this.screenManager.delete(this);
+        await this.director.createNewNode(this.model.origin, this.dataId);
+        this.director.delete(this);
     }
 
     public async addClip(clip: SyncedClip & YMap, index?: number): Promise<number> {

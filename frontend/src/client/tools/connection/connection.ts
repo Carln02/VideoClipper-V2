@@ -4,7 +4,7 @@ import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {Flow} from "../../components/flow/flow";
 import {FlowPoint} from "../../components/flow/flow.types";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 
 /**
  * @description Tool that handles creating flows and connecting nodes

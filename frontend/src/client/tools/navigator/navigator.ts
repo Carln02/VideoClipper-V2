@@ -3,7 +3,7 @@ import {ClickMode, define, TurboDragEvent, TurboEvent} from "turbodombuilder";
 import {Cursor} from "../../managers/cursorManager/cursorManager.types";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {NavigationManager} from "../../managers/navigationManager/navigationManager";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 
 /**
  * @description Tool that allows the user to pan the canvas

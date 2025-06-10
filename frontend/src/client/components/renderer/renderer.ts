@@ -5,7 +5,7 @@ import {RendererProperties} from "./renderer.types";
 import {RendererCanvasController} from "./renderer.canvasController";
 import {RendererDrawingController} from "./renderer.drawingController";
 import {VcComponent} from "../component/component";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 import {RendererVideoController} from "./renderer.videoController";
 import {define} from "turbodombuilder";
 

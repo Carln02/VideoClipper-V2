@@ -1,7 +1,7 @@
 import {TurboModel, TurboView} from "turbodombuilder";
 import {ToolPanel} from "../toolPanel/toolPanel";
 import {VcComponentProperties} from "../../components/component/component.types";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 
 export type ToolPanelContentProperties<
     ViewType extends TurboView = TurboView,

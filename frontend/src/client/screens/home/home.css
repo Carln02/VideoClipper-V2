@@ -1,0 +1,29 @@
+vc-home {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+}
+
+vc-home > #groups-panel {
+    min-width: 200px;
+    width: 20%;
+    background-color: var(--white);
+    border-right: 0.2em solid var(--grey-2);
+}
+
+vc-home #groups-select {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+
+    width: calc(100% - 4em);
+    margin: 2em;
+}
+
+vc-home #groups-select > * {
+    padding: 0.8em 1.6em;
+    border-radius: 0.4em;
+    border: 0.1em solid var(--grey-2);
+}

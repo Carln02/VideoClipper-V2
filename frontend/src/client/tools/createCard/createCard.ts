@@ -2,7 +2,7 @@ import {Tool} from "../tool/tool";
 import {define, TurboEvent} from "turbodombuilder";
 import {Card} from "../../components/card/card";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 
 /**
  * @description Tool that creates cards

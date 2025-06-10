@@ -14,7 +14,7 @@ import {TimelineClipHandler} from "./timeline.clipHandler";
 import {TimelineTimeHandler} from "./timeline.timeHandler";
 import {YArray, YMap} from "../../../yManagement/yManagement.types";
 import {VcComponent} from "../component/component";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 
 @define("vc-timeline")
 export class Timeline<
@@ -25,7 +25,7 @@ export class Timeline<
     public constructor(properties: TimelineProperties<View>) {
         super(properties);
         this.addClass("vc-timeline");
-        this.screenManager = properties.screenManager;
+        this.director = properties.director;
         this.renderer = properties.renderer;
 
         this.mvc.generate({
@@ -38,7 +38,7 @@ export class Timeline<
             initialize: false
         });
 
-        this.model.onCardAdded = (cardId) => this.screenManager.getNode(cardId) as Card;
+        this.model.onCardAdded = (cardId) => this.director.getNode(cardId) as Card;
         this.model.onClipAdded = (syncedClip, id, blockKey) => this.onClipAdded(syncedClip, id, blockKey);
         this.model.onClipChanged = () => this.reloadTime();
 
@@ -48,7 +48,7 @@ export class Timeline<
     }
 
     protected onClipAdded(syncedClip: SyncedClip, id: number, blockKey: number, clipProperties: ClipProperties = {}): Clip {
-        const clip = new Clip({...clipProperties, timeline: this, screenManager: this.screenManager});
+        const clip = new Clip({...clipProperties, timeline: this, director: this.director});
         const snapToNext = id === this.model.indexInfo?.closestIntersection;
 
         clip.onMediaDataChanged = (clip: Clip) => {
@@ -101,7 +101,7 @@ export class Timeline<
 
     protected onCardsChanged() {
         if (!this.card) return;
-        const selectedClip = this.screenManager.contextManager.getContext(2);
+        const selectedClip = this.director.contextManager.getContext(2);
         if (selectedClip && selectedClip[0] instanceof Clip) this.clipController.snapToClosest();
         else this.clipController.snapAtEnd();
         this.clipController.reloadCurrentClip();
@@ -128,7 +128,8 @@ export class Timeline<
     }
 
     public get width() {
-        return this.offsetWidth;
+        const basis = this.scaled ? this.director.canvas.scale : 1;
+        return this.offsetWidth * basis;
     }
 
     public async addClip(clip: SyncedClip & YMap, index?: number): Promise<number> {

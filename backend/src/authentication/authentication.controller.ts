@@ -2,6 +2,7 @@ import {Request, Response} from "express";
 import {OAuth2Client} from "google-auth-library";
 import crypto from "crypto";
 import {UserRepository} from "../user/user.repository";
+import {GroupRepository} from "../group/group.repository";
 
 export class AuthenticationController {
     private readonly clientId: string = process.env.GOOGLE_CLIENT_ID!;
@@ -9,7 +10,7 @@ export class AuthenticationController {
 
     public constructor(
         private sessions: Map<string, any>,
-        private userRepository: UserRepository
+        private userRepository: UserRepository,
     ) {}
 
     public getCurrentUser = (req: Request, res: Response) => {
