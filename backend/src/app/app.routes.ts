@@ -11,6 +11,7 @@ import {App} from "./app";
 import {authenticationRoutes} from "../authentication/authentication.routes";
 import {AuthenticationController} from "../authentication/authentication.controller";
 import {Router} from "express";
+import {redirectIfAuthenticated} from "./app.middlewares";
 
 export function appRoutes(app: App): Router {
     const router = Router();
@@ -28,14 +29,19 @@ export function appRoutes(app: App): Router {
     router.use("/api/groups", groupRoutes(groupController));
     router.use("/api/projects", projectApiRoutes(projectController));
 
+    //Login
+    router.get("/login", redirectIfAuthenticated(app.sessions), (_req, res) => {
+        res.sendFile(path.join(app.FRONTEND_PUBLIC_PATH, "login/login.html"));
+    });
+
     //Project
     router.get("/project/:id", (_req, res) => {
-        res.sendFile(path.join(app.FRONTEND_PUBLIC_PATH, "project.html"));
-    })
+        res.sendFile(path.join(app.FRONTEND_PUBLIC_PATH, "project/project.html"));
+    });
 
     //Home
     router.get("*", (_req, res) => {
-        res.sendFile(path.join(app.FRONTEND_PUBLIC_PATH, "app.html"));
+        res.sendFile(path.join(app.FRONTEND_PUBLIC_PATH, "app/app.html"));
     });
 
     return router;

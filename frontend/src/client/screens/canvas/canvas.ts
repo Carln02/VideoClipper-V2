@@ -64,7 +64,6 @@ export class Canvas extends VcComponent<any, any, any, Project> {
 
     public remove(): this {
         super.remove();
-        this.director.currentType = ProjectScreens.home;
         return this;
     }
 

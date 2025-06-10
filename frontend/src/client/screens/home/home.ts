@@ -14,7 +14,6 @@ export class Home extends VcComponent<HomeView, any, any, App> {
             viewConstructor: HomeView,
         });
 
-        this.director.authenticationHandler.onLogin.add(this.view.onLogin);
         this.director.groupsHandler.onGroupsChanged.add(this.view.generateGroups);
     }
 }

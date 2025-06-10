@@ -1965,7 +1965,7 @@ let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MO
             controllerConstructors: [_clipThumbnailController__WEBPACK_IMPORTED_MODULE_3__.ClipThumbnailController]
         });
         this.mvc.emitter.add("mediaId", (value) => __awaiter(this, void 0, void 0, function* () {
-            this.model.updateMediaData(yield this.director.mediaManager.getMedia(value));
+            this.model.updateMediaData(yield this.director.mediaHandler.getMedia(value));
             //TODO maybe remove this? idk
             // if (media.metadata?.thumbnail) {
             //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
@@ -7884,127 +7884,6 @@ Toolbar = __decorate([
 
 /***/ }),
 
-/***/ "./frontend/src/client/directors/app/app.ts":
-/*!**************************************************!*\
-  !*** ./frontend/src/client/directors/app/app.ts ***!
-  \**************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   App: () => (/* binding */ App)
-/* harmony export */ });
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _app_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./app.types */ "./frontend/src/client/directors/app/app.types.ts");
-/* harmony import */ var _rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../rootDirector/rootDirector */ "./frontend/src/client/directors/rootDirector/rootDirector.ts");
-/* harmony import */ var _rootDirector_rootDirector_view__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../rootDirector/rootDirector.view */ "./frontend/src/client/directors/rootDirector/rootDirector.view.ts");
-/* harmony import */ var _screens_home_home__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../screens/home/home */ "./frontend/src/client/screens/home/home.ts");
-/* harmony import */ var _project_project__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../project/project */ "./frontend/src/client/directors/project/project.ts");
-var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-
-
-
-
-
-
-let App = class App extends _rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_2__.RootDirector {
-    constructor(properties) {
-        super(properties);
-        this.mvc.generate({ viewConstructor: _rootDirector_rootDirector_view__WEBPACK_IMPORTED_MODULE_3__.RootDirectorView });
-        this.addScreen(new _screens_home_home__WEBPACK_IMPORTED_MODULE_4__.Home({ director: this }), _app_types__WEBPACK_IMPORTED_MODULE_1__.AppScreens.home);
-        this.addScreen(new _project_project__WEBPACK_IMPORTED_MODULE_5__.Project({ director: this }), _app_types__WEBPACK_IMPORTED_MODULE_1__.AppScreens.document);
-    }
-    get documentManager() {
-        return this.getScreen(_app_types__WEBPACK_IMPORTED_MODULE_1__.AppScreens.document);
-    }
-};
-App = __decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-app")
-], App);
-
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/directors/app/app.types.ts":
-/*!********************************************************!*\
-  !*** ./frontend/src/client/directors/app/app.types.ts ***!
-  \********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   AppScreens: () => (/* binding */ AppScreens)
-/* harmony export */ });
-var AppScreens;
-(function (AppScreens) {
-    AppScreens["document"] = "document";
-    AppScreens["home"] = "home";
-})(AppScreens || (AppScreens = {}));
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/directors/director/director.css":
-/*!*************************************************************!*\
-  !*** ./frontend/src/client/directors/director/director.css ***!
-  \*************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "./node_modules/style-loader/dist/runtime/styleDomAPI.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "./node_modules/style-loader/dist/runtime/insertBySelector.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "./node_modules/style-loader/dist/runtime/insertStyleElement.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_director_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../../../node_modules/css-loader/dist/cjs.js!./director.css */ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/directors/director/director.css");
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var options = {};
-
-options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
-options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
-options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
-options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
-options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_director_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
-
-
-
-
-       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_director_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_director_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_director_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
-
-
-/***/ }),
-
 /***/ "./frontend/src/client/directors/director/director.ts":
 /*!************************************************************!*\
   !*** ./frontend/src/client/directors/director/director.ts ***!
@@ -8017,8 +7896,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Director: () => (/* binding */ Director)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _director_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./director.css */ "./frontend/src/client/directors/director/director.css");
-/* harmony import */ var _components_component_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../components/component/component */ "./frontend/src/client/components/component/component.ts");
+/* harmony import */ var _components_component_component__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../components/component/component */ "./frontend/src/client/components/component/component.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8027,12 +7905,12 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 };
 
 
-
-let Director = class Director extends _components_component_component__WEBPACK_IMPORTED_MODULE_2__.VcComponent {
+let Director = class Director extends _components_component_component__WEBPACK_IMPORTED_MODULE_1__.VcComponent {
     constructor(properties) {
         super(properties);
         this.screens = new Map();
         this.screensParent = this;
+        this.addClass("director");
         this.onScreenChange = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Delegate();
         this.showReifect = properties.showReifect;
         if (properties.screensParent)
@@ -8328,16 +8206,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_flow_flow__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/flow/flow */ "./frontend/src/client/components/flow/flow.ts");
 /* harmony import */ var _panels_shootingPanel_shootingPanel__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../panels/shootingPanel/shootingPanel */ "./frontend/src/client/panels/shootingPanel/shootingPanel.ts");
 /* harmony import */ var _panels_textPanel_textPanel__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../panels/textPanel/textPanel */ "./frontend/src/client/panels/textPanel/textPanel.ts");
-/* harmony import */ var _managers_mediaManager_mediaManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../managers/mediaManager/mediaManager */ "./frontend/src/client/managers/mediaManager/mediaManager.ts");
-/* harmony import */ var _managers_contextManager_contextManager__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../managers/contextManager/contextManager */ "./frontend/src/client/managers/contextManager/contextManager.ts");
-/* harmony import */ var _managers_toolManager_toolManager__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../managers/toolManager/toolManager */ "./frontend/src/client/managers/toolManager/toolManager.ts");
-/* harmony import */ var _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../managers/toolManager/toolManager.types */ "./frontend/src/client/managers/toolManager/toolManager.types.ts");
-/* harmony import */ var _project_types__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./project.types */ "./frontend/src/client/directors/project/project.types.ts");
-/* harmony import */ var _project_view__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./project.view */ "./frontend/src/client/directors/project/project.view.ts");
-/* harmony import */ var _project_model__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./project.model */ "./frontend/src/client/directors/project/project.model.ts");
-/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
-/* harmony import */ var _project_css__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./project.css */ "./frontend/src/client/directors/project/project.css");
-/* harmony import */ var _rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../rootDirector/rootDirector */ "./frontend/src/client/directors/rootDirector/rootDirector.ts");
+/* harmony import */ var _managers_contextManager_contextManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../managers/contextManager/contextManager */ "./frontend/src/client/managers/contextManager/contextManager.ts");
+/* harmony import */ var _managers_toolManager_toolManager__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../managers/toolManager/toolManager */ "./frontend/src/client/managers/toolManager/toolManager.ts");
+/* harmony import */ var _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../managers/toolManager/toolManager.types */ "./frontend/src/client/managers/toolManager/toolManager.types.ts");
+/* harmony import */ var _project_types__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./project.types */ "./frontend/src/client/directors/project/project.types.ts");
+/* harmony import */ var _project_view__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./project.view */ "./frontend/src/client/directors/project/project.view.ts");
+/* harmony import */ var _project_model__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./project.model */ "./frontend/src/client/directors/project/project.model.ts");
+/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+/* harmony import */ var _project_css__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./project.css */ "./frontend/src/client/directors/project/project.css");
+/* harmony import */ var _rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../rootDirector/rootDirector */ "./frontend/src/client/directors/rootDirector/rootDirector.ts");
+/* harmony import */ var _handlers_mediaHandler_mediaHandler__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../handlers/mediaHandler/mediaHandler */ "./frontend/src/client/handlers/mediaHandler/mediaHandler.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8369,18 +8247,18 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_15__.RootDirector {
+let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_14__.RootDirector {
     constructor(properties) {
         var _a;
         super(properties);
         if (properties.document)
             this.document = properties.document;
-        this._mediaManager = new _managers_mediaManager_mediaManager__WEBPACK_IMPORTED_MODULE_6__.MediaManager(this);
-        this._contextManager = new _managers_contextManager_contextManager__WEBPACK_IMPORTED_MODULE_7__.ContextManager();
-        this._toolManager = new _managers_toolManager_toolManager__WEBPACK_IMPORTED_MODULE_8__.ToolManager();
+        this._mediaHandler = new _handlers_mediaHandler_mediaHandler__WEBPACK_IMPORTED_MODULE_15__.MediaHandler(this);
+        this._contextManager = new _managers_contextManager_contextManager__WEBPACK_IMPORTED_MODULE_6__.ContextManager();
+        this._toolManager = new _managers_toolManager_toolManager__WEBPACK_IMPORTED_MODULE_7__.ToolManager();
         this.mvc.generate({
-            modelConstructor: _project_model__WEBPACK_IMPORTED_MODULE_12__.ProjectModel,
-            viewConstructor: _project_view__WEBPACK_IMPORTED_MODULE_11__.ProjectView,
+            modelConstructor: _project_model__WEBPACK_IMPORTED_MODULE_11__.ProjectModel,
+            viewConstructor: _project_view__WEBPACK_IMPORTED_MODULE_10__.ProjectView,
             data: (_a = properties.document) === null || _a === void 0 ? void 0 : _a.getMap("document_content"),
             initialize: false
         });
@@ -8400,20 +8278,20 @@ let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED
             director: this
         });
         this.mvc.initialize();
-        this.currentType = _project_types__WEBPACK_IMPORTED_MODULE_10__.ProjectScreens.canvas;
+        this.currentType = _project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.canvas;
         this.toolPanel.addPanel(new _panels_shootingPanel_shootingPanel__WEBPACK_IMPORTED_MODULE_4__.ShootingPanel({
             toolPanel: this.toolPanel,
             director: this
-        }), _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_9__.ToolType.shoot, _project_types__WEBPACK_IMPORTED_MODULE_10__.ProjectScreens.camera);
+        }), _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_8__.ToolType.shoot, _project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.camera);
         this.toolPanel.addPanel(new _panels_textPanel_textPanel__WEBPACK_IMPORTED_MODULE_5__.TextPanel({
             toolPanel: this.toolPanel,
             director: this
-        }), _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_9__.ToolType.text, _project_types__WEBPACK_IMPORTED_MODULE_10__.ProjectScreens.camera);
-        this.eventManager.authorizeEventScaling = () => this.currentType == _project_types__WEBPACK_IMPORTED_MODULE_10__.ProjectScreens.canvas;
+        }), _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_8__.ToolType.text, _project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.camera);
+        this.eventManager.authorizeEventScaling = () => this.currentType == _project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.canvas;
         this.eventManager.scaleEventPosition = (position) => this.canvas.navigationManager.computePositionRelativeToCanvas(position);
     }
-    get mediaManager() {
-        return this._mediaManager;
+    get mediaHandler() {
+        return this._mediaHandler;
     }
     get contextManager() {
         return this._contextManager;
@@ -8458,7 +8336,7 @@ let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED
             if (position instanceof turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.Point)
                 position = position.object;
             if (!id)
-                return yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_13__.YUtilities.addInYMap(_components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_0__.BranchingNode.createData({ origin: position }), this.model.branchingNodesData);
+                return yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_12__.YUtilities.addInYMap(_components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_0__.BranchingNode.createData({ origin: position }), this.model.branchingNodesData);
             this.model.branchingNodesData.set(id, _components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_0__.BranchingNode.createData({ origin: position }));
             return id;
         });
@@ -8466,7 +8344,7 @@ let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED
     createNewCard(position) {
         return __awaiter(this, void 0, void 0, function* () {
             this.model.incrementCardsCount();
-            return yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_13__.YUtilities.addInYMap(_components_card_card__WEBPACK_IMPORTED_MODULE_1__.Card.createData({
+            return yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_12__.YUtilities.addInYMap(_components_card_card__WEBPACK_IMPORTED_MODULE_1__.Card.createData({
                 origin: position.object,
                 title: "Card - " + this.model.cardsCount
             }), this.model.cardsData);
@@ -8476,7 +8354,7 @@ let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED
         return __awaiter(this, void 0, void 0, function* () {
             this.model.incrementFlowsCount();
             const defaultName = "Flow " + this.model.flowsCount;
-            return yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_13__.YUtilities.addInYMap(_components_flow_flow__WEBPACK_IMPORTED_MODULE_3__.Flow.createData({
+            return yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_12__.YUtilities.addInYMap(_components_flow_flow__WEBPACK_IMPORTED_MODULE_3__.Flow.createData({
                 branches: {
                     "0": {
                         entries: [{
@@ -8501,10 +8379,10 @@ let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED
         this.model.clear();
     }
     get canvas() {
-        return this.getScreen(_project_types__WEBPACK_IMPORTED_MODULE_10__.ProjectScreens.canvas);
+        return this.getScreen(_project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.canvas);
     }
     get camera() {
-        return this.getScreen(_project_types__WEBPACK_IMPORTED_MODULE_10__.ProjectScreens.camera);
+        return this.getScreen(_project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.camera);
     }
     delete(element) {
         if (element instanceof _components_card_card__WEBPACK_IMPORTED_MODULE_1__.Card)
@@ -8660,10 +8538,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 /* harmony import */ var _managers_cursorManager_cursorManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../managers/cursorManager/cursorManager */ "./frontend/src/client/managers/cursorManager/cursorManager.ts");
-/* harmony import */ var _managers_authenticationManager_authenticationManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../managers/authenticationManager/authenticationManager */ "./frontend/src/client/managers/authenticationManager/authenticationManager.ts");
-/* harmony import */ var _managers_groupsManager_groupsManager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../managers/groupsManager/groupsManager */ "./frontend/src/client/managers/groupsManager/groupsManager.ts");
-/* harmony import */ var _rootDirector_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./rootDirector.css */ "./frontend/src/client/directors/rootDirector/rootDirector.css");
-/* harmony import */ var _director_director__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../director/director */ "./frontend/src/client/directors/director/director.ts");
+/* harmony import */ var _rootDirector_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./rootDirector.css */ "./frontend/src/client/directors/rootDirector/rootDirector.css");
+/* harmony import */ var _director_director__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../director/director */ "./frontend/src/client/directors/director/director.ts");
+/* harmony import */ var _handlers_authenticationHandler_authenticationHandler__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../handlers/authenticationHandler/authenticationHandler */ "./frontend/src/client/handlers/authenticationHandler/authenticationHandler.ts");
+/* harmony import */ var _handlers_groupsHandler_groupsHandler__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../handlers/groupsHandler/groupsHandler */ "./frontend/src/client/handlers/groupsHandler/groupsHandler.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8676,23 +8554,23 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
-let RootDirector = class RootDirector extends _director_director__WEBPACK_IMPORTED_MODULE_5__.Director {
+let RootDirector = class RootDirector extends _director_director__WEBPACK_IMPORTED_MODULE_3__.Director {
     constructor(properties) {
         super(properties);
         this.addClass("vc-root-director");
-        this._authenticationManager = new _managers_authenticationManager_authenticationManager__WEBPACK_IMPORTED_MODULE_2__.AuthenticationManager();
+        this._authenticationHandler = new _handlers_authenticationHandler_authenticationHandler__WEBPACK_IMPORTED_MODULE_4__.AuthenticationHandler();
         this._eventManager = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventManager();
         this._cursorManager = new _managers_cursorManager_cursorManager__WEBPACK_IMPORTED_MODULE_1__.CursorManager();
-        this._groupsManager = new _managers_groupsManager_groupsManager__WEBPACK_IMPORTED_MODULE_3__.GroupsManager();
-        this.authenticationManager.onLogin.add((loggedIn) => {
+        this._groupsHandler = new _handlers_groupsHandler_groupsHandler__WEBPACK_IMPORTED_MODULE_5__.GroupsHandler();
+        this.authenticationHandler.onLogin.add((loggedIn) => {
             if (loggedIn)
-                this.groupsManager.loadGroups(this.authenticationManager.userId);
+                this.groupsHandler.loadGroups(this.authenticationHandler.userId);
         });
-        this.authenticationManager.init();
+        this.authenticationHandler.init();
     }
     static initialize() {
         (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.turbofy)();
-        turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboIcon.config.defaultDirectory = "assets/icons";
+        turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboIcon.config.defaultDirectory = "/assets/icons";
         turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboIcon.config.defaultClasses = "icon";
     }
     get eventManager() {
@@ -8701,11 +8579,11 @@ let RootDirector = class RootDirector extends _director_director__WEBPACK_IMPORT
     get cursorManager() {
         return this._cursorManager;
     }
-    get authenticationManager() {
-        return this._authenticationManager;
+    get authenticationHandler() {
+        return this._authenticationHandler;
     }
-    get groupsManager() {
-        return this._groupsManager;
+    get groupsHandler() {
+        return this._groupsHandler;
     }
     set preventDefaultEvents(value) {
         this.eventManager.defaultState.preventDefaultTouch = value;
@@ -8757,18 +8635,18 @@ class RootDirectorView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Turb
 
 /***/ }),
 
-/***/ "./frontend/src/client/managers/authenticationManager/authenticationManager.ts":
+/***/ "./frontend/src/client/handlers/authenticationHandler/authenticationHandler.ts":
 /*!*************************************************************************************!*\
-  !*** ./frontend/src/client/managers/authenticationManager/authenticationManager.ts ***!
+  !*** ./frontend/src/client/handlers/authenticationHandler/authenticationHandler.ts ***!
   \*************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   AuthenticationManager: () => (/* binding */ AuthenticationManager)
+/* harmony export */   AuthenticationHandler: () => (/* binding */ AuthenticationHandler)
 /* harmony export */ });
-/* harmony import */ var _requestManager_requestManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../requestManager/requestManager */ "./frontend/src/client/managers/requestManager/requestManager.ts");
+/* harmony import */ var _requestHandler_requestHandler__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../requestHandler/requestHandler */ "./frontend/src/client/handlers/requestHandler/requestHandler.ts");
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -8781,7 +8659,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 
-class AuthenticationManager extends _requestManager_requestManager__WEBPACK_IMPORTED_MODULE_0__.RequestManager {
+class AuthenticationHandler extends _requestHandler_requestHandler__WEBPACK_IMPORTED_MODULE_0__.RequestHandler {
     constructor() {
         super();
         this.googleClientID = "494682680465-p2mlm6q6aefp7lu45qe8f5lcl9kj5j8t.apps.googleusercontent.com";
@@ -8866,6 +8744,248 @@ class AuthenticationManager extends _requestManager_requestManager__WEBPACK_IMPO
     renderGoogleButton(parentElement, options = { theme: "outline", size: "large" }) {
         var _a;
         (_a = window.google) === null || _a === void 0 ? void 0 : _a.accounts.id.renderButton(parentElement, options);
+    }
+}
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/handlers/groupsHandler/groupsHandler.ts":
+/*!*********************************************************************!*\
+  !*** ./frontend/src/client/handlers/groupsHandler/groupsHandler.ts ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   GroupsHandler: () => (/* binding */ GroupsHandler)
+/* harmony export */ });
+/* harmony import */ var _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../yManagement/yManagement.types */ "./frontend/src/yManagement/yManagement.types.ts");
+/* harmony import */ var _requestHandler_requestHandler__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../requestHandler/requestHandler */ "./frontend/src/client/handlers/requestHandler/requestHandler.ts");
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _managers_websocketManager_websocketManager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../managers/websocketManager/websocketManager */ "./frontend/src/client/managers/websocketManager/websocketManager.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+class GroupsHandler extends _requestHandler_requestHandler__WEBPACK_IMPORTED_MODULE_1__.RequestHandler {
+    constructor() {
+        super(...arguments);
+        this._groups = [];
+        this.onGroupsChanged = new turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.Delegate();
+        this.docs = new Map();
+    }
+    getOrCreateYDoc(id) {
+        const str = id.toString();
+        if (!this.docs.has(str))
+            this.docs.set(str, new _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_0__.YDoc());
+        return this.docs.get(str);
+    }
+    loadGroups(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield fetch(`${this.serverUrl}api/groups?userId=${userId}`, { credentials: "include" });
+            if (!res.ok)
+                throw new Error("Failed to load groups");
+            this._groups = yield res.json();
+            this.onGroupsChanged.fire(this.groups);
+        });
+    }
+    get groups() {
+        return this._groups;
+    }
+    getProjectsForGroup(groupId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield fetch(`${this.serverUrl}api/projects?groupId=${groupId}`, { credentials: "include", });
+            if (!res.ok)
+                throw new Error("Failed to load projects for group");
+            return yield res.json();
+        });
+    }
+    createProject(projectName, groupId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield fetch(`${this.serverUrl}api/projects`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ name: projectName, groupId }),
+            });
+            if (!res.ok)
+                throw new Error("Failed to create project");
+            return yield res.json();
+        });
+    }
+    openProject(projectId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield fetch(`${this.serverUrl}api/projects/${projectId}`, { credentials: "include" });
+            if (!res.ok) {
+                if (res.status === 403)
+                    throw new Error("Access denied");
+                if (res.status === 404)
+                    throw new Error("Project not found");
+                throw new Error("Unknown error");
+            }
+            const project = yield res.json();
+            console.log("ROOM", `PROJECT:${project._id}`);
+            const doc = this.getOrCreateYDoc(project._id);
+            return { doc: doc, websocket: new _managers_websocketManager_websocketManager__WEBPACK_IMPORTED_MODULE_3__.WebsocketManager(`PROJECT:${project._id}`, doc) };
+        });
+    }
+}
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/handlers/mediaHandler/mediaHandler.ts":
+/*!*******************************************************************!*\
+  !*** ./frontend/src/client/handlers/mediaHandler/mediaHandler.ts ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   MediaHandler: () => (/* binding */ MediaHandler)
+/* harmony export */ });
+/* harmony import */ var _requestHandler_requestHandler__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../requestHandler/requestHandler */ "./frontend/src/client/handlers/requestHandler/requestHandler.ts");
+/* harmony import */ var idb__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! idb */ "./node_modules/idb/build/index.js");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+class MediaHandler extends _requestHandler_requestHandler__WEBPACK_IMPORTED_MODULE_0__.RequestHandler {
+    constructor(document) {
+        super();
+        this.document = document;
+    }
+    get url() {
+        return this.serverUrl + "media/";
+    }
+    initializeLocalDatabase() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.localDatabase)
+                this.localDatabase = yield (0,idb__WEBPACK_IMPORTED_MODULE_1__.openDB)("myVideoDB", 1, {
+                    upgrade(db) {
+                        if (!db.objectStoreNames.contains("videos"))
+                            db.createObjectStore("videos", { keyPath: "id" });
+                        if (!db.objectStoreNames.contains("images"))
+                            db.createObjectStore("images", { keyPath: "id" });
+                    }
+                });
+            return this.localDatabase;
+        });
+    }
+    getMedia(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            if (id == undefined)
+                return undefined;
+            const type = id.split("-")[0] == "image" ? "image" : "video";
+            const metadata = this.document.getMedia(id);
+            const db = yield this.initializeLocalDatabase();
+            const storeName = type + "s";
+            const cachedMedia = yield ((_a = db.transaction(storeName, "readonly").objectStore(storeName)) === null || _a === void 0 ? void 0 : _a.get(id));
+            if (cachedMedia)
+                return Object.assign(Object.assign({}, metadata), { blob: cachedMedia.blob });
+            return new Promise((resolve) => {
+                this.makeRequest(this.url + id, "GET", id, response => resolve(response), error => console.error("Upload failed", error), false, "blob");
+            }).then(blob => {
+                console.log(blob);
+                return Object.assign(Object.assign({}, metadata), { blob: blob });
+            });
+        });
+    }
+    updateMedia(data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const id = data === null || data === void 0 ? void 0 : data.id;
+            const blob = data === null || data === void 0 ? void 0 : data.blob;
+            if (!id || !blob)
+                return undefined;
+            const type = (_a = data.type) !== null && _a !== void 0 ? _a : "video";
+            this.document.setMedia(id, Object.assign(Object.assign({}, data), { blob: undefined }));
+            const formData = new FormData();
+            const extension = blob.type === "video/mp4" ? ".mp4"
+                : blob.type === "video/webm" ? ".webm"
+                    : blob.type === "image/png" ? ".png"
+                        : blob.type === "image/jpeg" ? ".jpg"
+                            : "";
+            formData.append("media", blob, id + extension);
+            this.makeRequest(this.url + id, "POST", formData, response => console.log("Upload success", response), error => console.error("Upload failed", error), false);
+            const db = yield this.initializeLocalDatabase();
+            const storeName = type + "s";
+            yield db.transaction(storeName, "readwrite").objectStore(storeName).put({ id, blob });
+            return id;
+        });
+    }
+    saveMedia(data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            if (!(data === null || data === void 0 ? void 0 : data.blob))
+                return undefined;
+            const type = (_a = data.type) !== null && _a !== void 0 ? _a : "video";
+            data.id = `${type}-${Math.floor(Math.random() * 1000)}-${Date.now()}`;
+            return this.updateMedia(data);
+        });
+    }
+}
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/handlers/requestHandler/requestHandler.ts":
+/*!***********************************************************************!*\
+  !*** ./frontend/src/client/handlers/requestHandler/requestHandler.ts ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   RequestHandler: () => (/* binding */ RequestHandler)
+/* harmony export */ });
+class RequestHandler {
+    constructor() {
+        this.isSecure = window.location.protocol === "https:";
+        this.protocol = this.isSecure ? "https" : "http";
+        this.hostname = window.location.hostname;
+        this.port = this.hostname == "localhost" || this.hostname == "127.0.0.1" ? ":3000" : "";
+        this.serverUrl = `${this.protocol}://${this.hostname}${this.port}/`;
+    }
+    makeRequest(url, method, body, onSuccess = () => { }, onFailure = () => { }, parse = false, responseType = "text") {
+        const request = new XMLHttpRequest();
+        request.responseType = responseType;
+        request.onreadystatechange = _ => {
+            if (request.readyState !== 4)
+                return;
+            if (request.status < 200 || request.status >= 300) {
+                onFailure(request.responseText);
+                return;
+            }
+            parse ? onSuccess(JSON.parse(request.responseText)) : onSuccess(request.response);
+        };
+        request.open(method, url, true);
+        if (!(body instanceof FormData)) {
+            request.setRequestHeader("Content-Type", "application/json");
+            body = JSON.stringify(body);
+        }
+        request.send(body);
     }
 }
 
@@ -9092,205 +9212,6 @@ var Cursor;
 
 /***/ }),
 
-/***/ "./frontend/src/client/managers/groupsManager/groupsManager.ts":
-/*!*********************************************************************!*\
-  !*** ./frontend/src/client/managers/groupsManager/groupsManager.ts ***!
-  \*********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   GroupsManager: () => (/* binding */ GroupsManager)
-/* harmony export */ });
-/* harmony import */ var _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../yManagement/yManagement.types */ "./frontend/src/yManagement/yManagement.types.ts");
-/* harmony import */ var _requestManager_requestManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../requestManager/requestManager */ "./frontend/src/client/managers/requestManager/requestManager.ts");
-/* harmony import */ var _websocketManager_websocketManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../websocketManager/websocketManager */ "./frontend/src/client/managers/websocketManager/websocketManager.ts");
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-
-
-class GroupsManager extends _requestManager_requestManager__WEBPACK_IMPORTED_MODULE_1__.RequestManager {
-    constructor() {
-        super(...arguments);
-        this._groups = [];
-        this.onGroupsChanged = new turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.Delegate();
-        this.docs = new Map();
-    }
-    getOrCreateYDoc(id) {
-        const str = id.toString();
-        if (!this.docs.has(str))
-            this.docs.set(str, new _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_0__.YDoc());
-        return this.docs.get(str);
-    }
-    loadGroups(userId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const res = yield fetch(`${this.serverUrl}api/groups?userId=${userId}`, { credentials: "include" });
-            if (!res.ok)
-                throw new Error("Failed to load groups");
-            this._groups = yield res.json();
-            this.onGroupsChanged.fire(this.groups);
-        });
-    }
-    get groups() {
-        return this._groups;
-    }
-    getProjectsForGroup(groupId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const res = yield fetch(`${this.serverUrl}api/projects?groupId=${groupId}`, { credentials: "include", });
-            if (!res.ok)
-                throw new Error("Failed to load projects for group");
-            return yield res.json();
-        });
-    }
-    createProject(projectName, groupId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const res = yield fetch(`${this.serverUrl}api/projects`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({ name: projectName, groupId }),
-            });
-            if (!res.ok)
-                throw new Error("Failed to create project");
-            return yield res.json();
-        });
-    }
-    openProject(projectId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const res = yield fetch(`${this.serverUrl}api/projects/${projectId}`, { credentials: "include" });
-            if (!res.ok) {
-                if (res.status === 403)
-                    throw new Error("Access denied");
-                if (res.status === 404)
-                    throw new Error("Project not found");
-                throw new Error("Unknown error");
-            }
-            const project = yield res.json();
-            console.log("ROOM", `PROJECT:${project._id}`);
-            const doc = this.getOrCreateYDoc(project._id);
-            return { doc: doc, websocket: new _websocketManager_websocketManager__WEBPACK_IMPORTED_MODULE_2__.WebsocketManager(`PROJECT:${project._id}`, doc) };
-        });
-    }
-}
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/managers/mediaManager/mediaManager.ts":
-/*!*******************************************************************!*\
-  !*** ./frontend/src/client/managers/mediaManager/mediaManager.ts ***!
-  \*******************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   MediaManager: () => (/* binding */ MediaManager)
-/* harmony export */ });
-/* harmony import */ var _requestManager_requestManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../requestManager/requestManager */ "./frontend/src/client/managers/requestManager/requestManager.ts");
-/* harmony import */ var idb__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! idb */ "./node_modules/idb/build/index.js");
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-class MediaManager extends _requestManager_requestManager__WEBPACK_IMPORTED_MODULE_0__.RequestManager {
-    constructor(document) {
-        super();
-        this.document = document;
-    }
-    get url() {
-        return this.serverUrl + "media/";
-    }
-    initializeLocalDatabase() {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!this.localDatabase)
-                this.localDatabase = yield (0,idb__WEBPACK_IMPORTED_MODULE_1__.openDB)("myVideoDB", 1, {
-                    upgrade(db) {
-                        if (!db.objectStoreNames.contains("videos"))
-                            db.createObjectStore("videos", { keyPath: "id" });
-                        if (!db.objectStoreNames.contains("images"))
-                            db.createObjectStore("images", { keyPath: "id" });
-                    }
-                });
-            return this.localDatabase;
-        });
-    }
-    getMedia(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            var _a;
-            if (id == undefined)
-                return undefined;
-            const type = id.split("-")[0] == "image" ? "image" : "video";
-            const metadata = this.document.getMedia(id);
-            const db = yield this.initializeLocalDatabase();
-            const storeName = type + "s";
-            const cachedMedia = yield ((_a = db.transaction(storeName, "readonly").objectStore(storeName)) === null || _a === void 0 ? void 0 : _a.get(id));
-            if (cachedMedia)
-                return Object.assign(Object.assign({}, metadata), { blob: cachedMedia.blob });
-            return new Promise((resolve) => {
-                this.makeRequest(this.url + id, "GET", id, response => resolve(response), error => console.error("Upload failed", error), false, "blob");
-            }).then(blob => {
-                console.log(blob);
-                return Object.assign(Object.assign({}, metadata), { blob: blob });
-            });
-        });
-    }
-    updateMedia(data) {
-        return __awaiter(this, void 0, void 0, function* () {
-            var _a;
-            const id = data === null || data === void 0 ? void 0 : data.id;
-            const blob = data === null || data === void 0 ? void 0 : data.blob;
-            if (!id || !blob)
-                return undefined;
-            const type = (_a = data.type) !== null && _a !== void 0 ? _a : "video";
-            this.document.setMedia(id, Object.assign(Object.assign({}, data), { blob: undefined }));
-            const formData = new FormData();
-            const extension = blob.type === "video/mp4" ? ".mp4"
-                : blob.type === "video/webm" ? ".webm"
-                    : blob.type === "image/png" ? ".png"
-                        : blob.type === "image/jpeg" ? ".jpg"
-                            : "";
-            formData.append("media", blob, id + extension);
-            this.makeRequest(this.url + id, "POST", formData, response => console.log("Upload success", response), error => console.error("Upload failed", error), false);
-            const db = yield this.initializeLocalDatabase();
-            const storeName = type + "s";
-            yield db.transaction(storeName, "readwrite").objectStore(storeName).put({ id, blob });
-            return id;
-        });
-    }
-    saveMedia(data) {
-        return __awaiter(this, void 0, void 0, function* () {
-            var _a;
-            if (!(data === null || data === void 0 ? void 0 : data.blob))
-                return undefined;
-            const type = (_a = data.type) !== null && _a !== void 0 ? _a : "video";
-            data.id = `${type}-${Math.floor(Math.random() * 1000)}-${Date.now()}`;
-            return this.updateMedia(data);
-        });
-    }
-}
-
-
-/***/ }),
-
 /***/ "./frontend/src/client/managers/navigationManager/navigationManager.ts":
 /*!*****************************************************************************!*\
   !*** ./frontend/src/client/managers/navigationManager/navigationManager.ts ***!
@@ -9403,7 +9324,7 @@ class NavigationManager {
         let zoomOrigin;
         // if (e.position) zoomOrigin = e.position.sub(this.translation);
         // else {
-        const rect = this.canvas.director.getBoundingClientRect();
+        const rect = this.canvas.getBoundingClientRect();
         const canvasCenter = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point(rect.left + rect.width / 2, rect.top + rect.height / 2);
         zoomOrigin = canvasCenter.sub(this.translation);
         // }
@@ -9440,52 +9361,9 @@ class NavigationManager {
      * @param {Point} screenPosition
      */
     computePositionRelativeToCanvas(screenPosition) {
-        const rect = this.canvas.director.getBoundingClientRect();
+        const rect = this.canvas.getBoundingClientRect();
         const localPos = screenPosition.sub(new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point(rect.left, rect.top));
         return localPos.sub(this.translation).div(this.scale);
-    }
-}
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/managers/requestManager/requestManager.ts":
-/*!***********************************************************************!*\
-  !*** ./frontend/src/client/managers/requestManager/requestManager.ts ***!
-  \***********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   RequestManager: () => (/* binding */ RequestManager)
-/* harmony export */ });
-class RequestManager {
-    constructor() {
-        this.isSecure = window.location.protocol === "https:";
-        this.protocol = this.isSecure ? "https" : "http";
-        this.hostname = window.location.hostname;
-        this.port = this.hostname == "localhost" || this.hostname == "127.0.0.1" ? ":3000" : "";
-        this.serverUrl = `${this.protocol}://${this.hostname}${this.port}/`;
-    }
-    makeRequest(url, method, body, onSuccess = () => { }, onFailure = () => { }, parse = false, responseType = "text") {
-        const request = new XMLHttpRequest();
-        request.responseType = responseType;
-        request.onreadystatechange = _ => {
-            if (request.readyState !== 4)
-                return;
-            if (request.status < 200 || request.status >= 300) {
-                onFailure(request.responseText);
-                return;
-            }
-            parse ? onSuccess(JSON.parse(request.responseText)) : onSuccess(request.response);
-        };
-        request.open(method, url, true);
-        if (!(body instanceof FormData)) {
-            request.setRequestHeader("Content-Type", "application/json");
-            body = JSON.stringify(body);
-        }
-        request.send(body);
     }
 }
 
@@ -10993,7 +10871,7 @@ let Camera = class Camera extends _components_component_component__WEBPACK_IMPOR
         this.model.ghosting = true;
         this.mvc.emitter.add("recordedMedia", (media) => __awaiter(this, void 0, void 0, function* () {
             var _a;
-            media.id = yield this.director.mediaManager.saveMedia(media);
+            media.id = yield this.director.mediaHandler.saveMedia(media);
             // this.model.lastSavedMedia = {...this.model.lastRecordedMedia, blob: undefined};
             yield this.card.addClip(_components_clip_clip__WEBPACK_IMPORTED_MODULE_8__.Clip.createData({ endTime: ((_a = media === null || media === void 0 ? void 0 : media.duration) !== null && _a !== void 0 ? _a : 5), mediaId: media.id, }), this.view.timeline.currentClipInfo.closestIntersection);
         }));
@@ -11286,7 +11164,6 @@ let Canvas = class Canvas extends _components_component_component__WEBPACK_IMPOR
     }
     remove() {
         super.remove();
-        this.director.currentType = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_12__.ProjectScreens.home;
         return this;
     }
     get scale() {
@@ -11307,199 +11184,6 @@ Canvas = __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-canvas")
 ], Canvas);
 
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/screens/home/home.css":
-/*!***************************************************!*\
-  !*** ./frontend/src/client/screens/home/home.css ***!
-  \***************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "./node_modules/style-loader/dist/runtime/styleDomAPI.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "./node_modules/style-loader/dist/runtime/insertBySelector.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "./node_modules/style-loader/dist/runtime/insertStyleElement.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_home_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../../../node_modules/css-loader/dist/cjs.js!./home.css */ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/screens/home/home.css");
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var options = {};
-
-options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
-options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
-options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
-options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
-options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_home_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
-
-
-
-
-       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_home_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_home_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_home_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/screens/home/home.ts":
-/*!**************************************************!*\
-  !*** ./frontend/src/client/screens/home/home.ts ***!
-  \**************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Home: () => (/* binding */ Home)
-/* harmony export */ });
-/* harmony import */ var _components_component_component__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../components/component/component */ "./frontend/src/client/components/component/component.ts");
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _home_view__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./home.view */ "./frontend/src/client/screens/home/home.view.ts");
-/* harmony import */ var _home_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./home.css */ "./frontend/src/client/screens/home/home.css");
-var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-
-
-
-
-let Home = class Home extends _components_component_component__WEBPACK_IMPORTED_MODULE_0__.VcComponent {
-    constructor(properties) {
-        super(properties);
-        this.mvc.generate({
-            viewConstructor: _home_view__WEBPACK_IMPORTED_MODULE_2__.HomeView,
-        });
-        this.director.authenticationManager.onLogin.add(this.view.onLogin);
-        this.director.groupsManager.onGroupsChanged.add(this.view.generateGroups);
-    }
-};
-Home = __decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.define)("vc-home")
-], Home);
-
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/screens/home/home.view.ts":
-/*!*******************************************************!*\
-  !*** ./frontend/src/client/screens/home/home.view.ts ***!
-  \*******************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   HomeView: () => (/* binding */ HomeView)
-/* harmony export */ });
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _directors_app_app_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../directors/app/app.types */ "./frontend/src/client/directors/app/app.types.ts");
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-class HomeView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
-    constructor() {
-        super(...arguments);
-        this.onLogin = (loggedIn) => {
-            this.groupsPanel.removeAllChildren();
-            if (!loggedIn) {
-                this.element.director.authenticationManager.renderGoogleButton(this.groupsPanel);
-            }
-            else {
-                this.groupsPanel.addChild(this.groupsSelect);
-                //TODO this.googleLoginParent.remove();
-            }
-        };
-        this.generateGroups = (groups) => {
-            this.groupsSelect.clear();
-            groups.forEach((group) => {
-                const entry = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelectEntry({ value: group.name, secondaryValue: group._id });
-                entry.onSelected = (value) => {
-                    if (value)
-                        this.generateProjects(group._id);
-                };
-                this.groupsSelect.addEntry(entry);
-            });
-        };
-    }
-    setupUIElements() {
-        super.setupUIElements();
-        this.groupsSelect = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelect({ id: "groups-select" });
-        this.projectsSelect = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelect({});
-        this.groupsPanel = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ id: "groups-panel" });
-        this.mainPanel = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)();
-        this.addProjectButton = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.button)({ text: "Add Project" });
-    }
-    setupUILayout() {
-        super.setupUILayout();
-        this.element.addChild([this.groupsPanel, this.mainPanel]);
-        this.mainPanel.addChild([this.addProjectButton, this.projectsSelect]);
-    }
-    setupUIListeners() {
-        super.setupUIListeners();
-        this.addProjectButton.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, () => __awaiter(this, void 0, void 0, function* () {
-            const project = yield this.element.director.groupsManager.createProject("P1111", this.groupsSelect.selectedSecondaryValue);
-            yield this.openProject(project);
-        }));
-    }
-    generateProjects(groupId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.projectsSelect.clear();
-            const projects = yield this.element.director.groupsManager.getProjectsForGroup(groupId);
-            projects.forEach((project) => {
-                const entry = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelectEntry({ value: project.name, secondaryValue: project._id });
-                entry.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, () => __awaiter(this, void 0, void 0, function* () { return yield this.openProject(project); }));
-                this.projectsSelect.addEntry(entry);
-            });
-        });
-    }
-    openProject(project) {
-        return __awaiter(this, void 0, void 0, function* () {
-            window.location.href = `${window.location.origin}/project/${project._id}`;
-            return;
-            const persistedDoc = yield this.element.director.groupsManager.openProject(project._id);
-            const onConnection = () => {
-                this.element.director.documentManager.document = persistedDoc.doc;
-                this.element.director.currentType = AppScreens.document;
-            };
-            persistedDoc.websocket.onConnect.add(onConnection);
-        });
-    }
-}
 
 
 /***/ }),
@@ -14862,40 +14546,6 @@ vc-toolbar.left-toolbar {
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/directors/director/director.css":
-/*!***************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/directors/director/director.css ***!
-  \***************************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
-// Imports
-
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, `.screen-manager {
-    position: relative;
-    display: block;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/directors/director/director.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,cAAc;IACd,WAAW;IACX,YAAY;IACZ,SAAS;IACT,UAAU;AACd","sourcesContent":[".screen-manager {\r\n    position: relative;\r\n    display: block;\r\n    width: 100%;\r\n    height: 100%;\r\n    margin: 0;\r\n    padding: 0;\r\n}"],"sourceRoot":""}]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
 /***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/directors/project/project.css":
 /*!*************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/directors/project/project.css ***!
@@ -15305,61 +14955,6 @@ vc-canvas > #canvas-content * {
     -moz-backface-visibility: hidden;
     backface-visibility: hidden;
 }`, "",{"version":3,"sources":["webpack://./frontend/src/client/screens/canvas/canvas.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,cAAc;;IAEd,gBAAgB;IAChB,WAAW;IACX,YAAY;AAChB;;AAEA;IACI,kBAAkB;IAClB,iBAAiB;IACjB,kBAAkB,EAAE,uDAAuD;;IAE3E,sBAAsB;IACtB,mCAAmC;IACnC,gCAAgC;IAChC,2BAA2B;AAC/B;;AAEA;IACI,sBAAsB;IACtB,mCAAmC;IACnC,gCAAgC;IAChC,2BAA2B;AAC/B","sourcesContent":["vc-canvas {\r\n    position: relative;\r\n    display: block;\r\n    \r\n    overflow: hidden;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\nvc-canvas > #canvas-content {\r\n    position: absolute;\r\n    overflow: visible;\r\n    touch-action: none; /* To disable default touch actions on iOS and iPadOS */\r\n\r\n    /* GPU optimizations */\r\n    -webkit-backface-visibility: hidden;\r\n    -moz-backface-visibility: hidden;\r\n    backface-visibility: hidden;\r\n}\r\n\r\nvc-canvas > #canvas-content * {\r\n    /* GPU optimizations */\r\n    -webkit-backface-visibility: hidden;\r\n    -moz-backface-visibility: hidden;\r\n    backface-visibility: hidden;\r\n}"],"sourceRoot":""}]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/screens/home/home.css":
-/*!*****************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/screens/home/home.css ***!
-  \*****************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
-// Imports
-
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, `vc-home {
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 100%;
-}
-
-vc-home > #groups-panel {
-    min-width: 200px;
-    width: 20%;
-    background-color: var(--white);
-    border-right: 0.2em solid var(--grey-2);
-}
-
-vc-home #groups-select {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6em;
-
-    width: calc(100% - 4em);
-    margin: 2em;
-}
-
-vc-home #groups-select > * {
-    padding: 0.8em 1.6em;
-    border-radius: 0.4em;
-    border: 0.1em solid var(--grey-2);
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/screens/home/home.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,aAAa;IACb,mBAAmB;IACnB,WAAW;IACX,YAAY;AAChB;;AAEA;IACI,gBAAgB;IAChB,UAAU;IACV,8BAA8B;IAC9B,uCAAuC;AAC3C;;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,UAAU;;IAEV,uBAAuB;IACvB,WAAW;AACf;;AAEA;IACI,oBAAoB;IACpB,oBAAoB;IACpB,iCAAiC;AACrC","sourcesContent":["vc-home {\r\n    position: relative;\r\n    display: flex;\r\n    flex-direction: row;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\nvc-home > #groups-panel {\r\n    min-width: 200px;\r\n    width: 20%;\r\n    background-color: var(--white);\r\n    border-right: 0.2em solid var(--grey-2);\r\n}\r\n\r\nvc-home #groups-select {\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 0.6em;\r\n\r\n    width: calc(100% - 4em);\r\n    margin: 2em;\r\n}\r\n\r\nvc-home #groups-select > * {\r\n    padding: 0.8em 1.6em;\r\n    border-radius: 0.4em;\r\n    border: 0.1em solid var(--grey-2);\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -76396,7 +75991,7 @@ glo[importIdentifier] = true;
 /******/ 		// or pass an empty string ("") and set the __webpack_public_path__ variable from your code to use your own logic.
 /******/ 		if (!scriptUrl) throw new Error("Automatic publicPath is not supported in this browser");
 /******/ 		scriptUrl = scriptUrl.replace(/^blob:/, "").replace(/#.*$/, "").replace(/\?.*$/, "").replace(/\/[^\/]+$/, "/");
-/******/ 		__webpack_require__.p = scriptUrl;
+/******/ 		__webpack_require__.p = scriptUrl + "../";
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/jsonp chunk loading */
@@ -76407,7 +76002,7 @@ glo[importIdentifier] = true;
 /******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
 /******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
 /******/ 		var installedChunks = {
-/******/ 			"app": 0
+/******/ 			"project": 0
 /******/ 		};
 /******/ 		
 /******/ 		// no chunk on demand loading
@@ -76435,24 +76030,34 @@ var __webpack_exports__ = {};
 // This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
 (() => {
 "use strict";
-/*!************************************!*\
-  !*** ./frontend/src/client/app.ts ***!
-  \************************************/
+/*!****************************************!*\
+  !*** ./frontend/src/client/project.ts ***!
+  \****************************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _styles_main_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./styles/main.css */ "./frontend/src/client/styles/main.css");
-/* harmony import */ var _directors_app_app__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./directors/app/app */ "./frontend/src/client/directors/app/app.ts");
-/* harmony import */ var _directors_app_app_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./directors/app/app.types */ "./frontend/src/client/directors/app/app.types.ts");
-/* harmony import */ var _directors_rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./directors/rootDirector/rootDirector */ "./frontend/src/client/directors/rootDirector/rootDirector.ts");
+/* harmony import */ var _directors_rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./directors/rootDirector/rootDirector */ "./frontend/src/client/directors/rootDirector/rootDirector.ts");
+/* harmony import */ var _directors_project_project__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./directors/project/project */ "./frontend/src/client/directors/project/project.ts");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
 
 
 
 
-_directors_rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_3__.RootDirector.initialize();
-const app = new _directors_app_app__WEBPACK_IMPORTED_MODULE_1__.App({ parent: document.body });
-app.currentType = _directors_app_app_types__WEBPACK_IMPORTED_MODULE_2__.AppScreens.home;
+_directors_rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_1__.RootDirector.initialize();
+const project = new _directors_project_project__WEBPACK_IMPORTED_MODULE_2__.Project({ parent: document.body });
+console.log("HIIII");
+const segments = window.location.pathname.split("/").filter(Boolean);
+const projectId = segments[segments.length - 1];
+if (!Number.parseInt(projectId))
+    throw new Error("Invalid project ID in URL.");
+project.groupsHandler.openProject(projectId).then(({ doc, websocket }) => {
+    websocket.onConnect.add(() => {
+        project.document = doc;
+        project.currentType = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_3__.ProjectScreens.canvas;
+    });
+});
 
 })();
 
 /******/ })()
 ;
-//# sourceMappingURL=app.bundle.js.map
+//# sourceMappingURL=project.bundle.js.map

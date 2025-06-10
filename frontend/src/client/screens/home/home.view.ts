@@ -1,7 +1,15 @@
-import {button, DefaultEventName, div, TurboButton, TurboSelect, TurboSelectEntry, TurboView} from "turbodombuilder";
+import {
+    button,
+    DefaultEventName,
+    div, h3,
+    TurboButton, TurboInput,
+    TurboPopup,
+    TurboSelect,
+    TurboSelectEntry,
+    TurboView
+} from "turbodombuilder";
 import {Home} from "./home";
 import {ObjectId} from "mongodb";
-import {AppScreens} from "../../directors/app/app.types";
 import {Group, ProjectData} from "../../handlers/groupsHandler/groupsHandler.types";
 
 export class HomeView extends TurboView<Home> {
@@ -12,6 +20,18 @@ export class HomeView extends TurboView<Home> {
     private projectsSelect: TurboSelect<string, ObjectId>;
 
     private addProjectButton: TurboButton;
+    private addProjectPopup: TurboPopup;
+
+    private popupCreateButton: TurboButton;
+    private popupNameField: TurboInput;
+
+    private openProject = (project: ProjectData) =>
+        window.location.href = `${window.location.origin}/project/${project._id}`;
+
+    public initialize() {
+        super.initialize();
+        this.groupsSelect?.select(this.groupsSelect.enabledEntries?.[0]);
+    }
 
     protected setupUIElements() {
         super.setupUIElements();
@@ -22,41 +42,55 @@ export class HomeView extends TurboView<Home> {
         this.mainPanel = div();
 
         this.addProjectButton = button({text: "Add Project"});
+
+        this.addProjectPopup = new TurboPopup({classes: "popup-card"});
+        this.popupNameField = new TurboInput({type: "text", label: "Project Name", value: "name"});
+        this.popupCreateButton = new TurboButton({text: "Create"});
     }
 
     protected setupUILayout() {
         super.setupUILayout();
-        this.element.addChild([this.groupsPanel, this.mainPanel]);
+        this.groupsPanel.addChild(this.groupsSelect);
         this.mainPanel.addChild([this.addProjectButton, this.projectsSelect]);
+
+        this.element.addChild([this.groupsPanel, this.mainPanel]);
+
+        this.addProjectButton.addChild(this.addProjectPopup);
+        this.addProjectPopup.addChild([
+            this.popupNameField,
+            this.popupCreateButton,
+        ]);
     }
 
     protected setupUIListeners() {
         super.setupUIListeners();
-        this.addProjectButton.addListener(DefaultEventName.click, async () => {
-            const project = await this.element.director.groupsHandler.createProject("P1111", this.groupsSelect.selectedSecondaryValue);
-            await this.openProject(project);
+        this.addProjectButton.addListener(DefaultEventName.click, async () => this.addProjectPopup.show(true));
+
+        this.popupNameField.addListener(DefaultEventName.click, () => this.popupNameField.inputElement.focus());
+
+        this.popupCreateButton.addListener(DefaultEventName.click, async () => {
+            const name = this.popupNameField.value as string;
+            if (!name || name.length === 0) return;
+            const project = await this.element.director.groupsHandler.createProject(name, this.groupsSelect.selectedSecondaryValue);
+            this.openProject(project);
         });
     }
 
-    public onLogin = (loggedIn: boolean) => {
-        this.groupsPanel.removeAllChildren();
-        if (!loggedIn) {
-            this.element.director.authenticationHandler.renderGoogleButton(this.groupsPanel);
-        } else {
-            this.groupsPanel.addChild(this.groupsSelect);
-            //TODO this.googleLoginParent.remove();
-        }
-    };
-
     public generateGroups = (groups: Group[]) => {
         this.groupsSelect.clear();
+        let myProjectsId = null;
+
         groups.forEach((group: Group) => {
+            if (group.name === "My Projects" && group.members.length < 2) myProjectsId = group.name;
             const entry = new TurboSelectEntry({value: group.name, secondaryValue: group._id});
             entry.onSelected = (value) => {
+                console.log(value);
                 if (value) this.generateProjects(group._id);
             }
             this.groupsSelect.addEntry(entry);
         });
+
+        this.groupsSelect.select(myProjectsId);
     };
 
     public async generateProjects(groupId: ObjectId) {
@@ -64,21 +98,10 @@ export class HomeView extends TurboView<Home> {
         const projects = await this.element.director.groupsHandler.getProjectsForGroup(groupId);
         projects.forEach((project: ProjectData) => {
             const entry = new TurboSelectEntry({value: project.name, secondaryValue: project._id});
-            entry.addListener(DefaultEventName.click, async () => await this.openProject(project));
+            entry.addListener(DefaultEventName.click, async () => this.openProject(project));
             this.projectsSelect.addEntry(entry);
         });
     }
 
-    private async openProject(project: ProjectData) {
-        window.location.href = `${window.location.origin}/project/${project._id}`;
-        return;
-        const persistedDoc = await this.element.director.groupsHandler.openProject(project._id);
 
-        const onConnection = () => {
-            this.element.director.documentManager.document = persistedDoc.doc;
-            this.element.director.currentType = AppScreens.document;
-        };
-
-        persistedDoc.websocket.onConnect.add(onConnection);
-    }
 }

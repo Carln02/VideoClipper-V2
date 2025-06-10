@@ -3,6 +3,7 @@
 @import "./markingMenu.css";
 @import "./colors.css";
 @import "./drawer.css";
+@import "./popup.css";
 
 body {
     width: 100vw;

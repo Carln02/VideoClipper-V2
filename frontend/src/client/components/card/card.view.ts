@@ -60,6 +60,8 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
 
         this.playback = new Playback({director: this.element.director, card: this.element, classes: "card-playback"});
 
+        this.playback.timeline.scaled = true;
+
         this._metadataDrawer = new MetadataDrawer({
             card: this.element,
             icon: "chevron",

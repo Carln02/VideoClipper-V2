@@ -6,7 +6,6 @@ import {
     TurboModel,
     TurboView
 } from "turbodombuilder";
-import "./director.css";
 import {VcComponent} from "../../components/component/component";
 import {DirectorProperties} from "./director.types";
 
@@ -33,6 +32,8 @@ export class Director<
 
     public constructor(properties: DirectorProperties<ScreenType, ViewType, DataType, ModelType, DirectorType>) {
         super(properties);
+        this.addClass("director");
+
         this.onScreenChange = new Delegate<(oldScreen: VcComponent, newScreen: VcComponent, type: ScreenType) => void>();
         this.showReifect = properties.showReifect;
         if (properties.screensParent) this.screensParent = properties.screensParent;

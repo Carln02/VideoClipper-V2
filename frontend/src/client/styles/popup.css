@@ -1,0 +1,9 @@
+.popup-card {
+    background-color: white;
+    padding: 1em;
+    border-radius: 0.6em;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}

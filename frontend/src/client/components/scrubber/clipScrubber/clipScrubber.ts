@@ -25,7 +25,7 @@ export class ClipScrubber extends Scrubber {
 
     protected setupUIElements() {
         super.setupUIElements();
-        this.head = icon({icon: "scrubber-head", directory: "assets/misc"});
+        this.head = icon({icon: "scrubber-head", directory: "/assets/misc"});
         this.markingMenuHandle = div();
     }
 

@@ -1,4 +1,4 @@
-import {auto, define} from "turbodombuilder";
+import {auto, define, Side, TurboIconSwitch} from "turbodombuilder";
 import {ClipRenderer} from "../../clipRenderer/clipRenderer";
 import {Clip} from "../../clip/clip";
 import "./clipTimeline.css";
@@ -17,6 +17,11 @@ export class ClipTimeline extends Timeline<ClipTimelineView> {
         this.addClass("vc-clip-timeline");
         this.scaled = true;
         if (properties.drawerProperties) this.view.drawer.setProperties(properties.drawerProperties);
+        //TODO FIX THIS IN TURBO DRAWER
+        requestAnimationFrame(() => {
+            (this.view.drawer.icon as TurboIconSwitch<Side>).switchReifect.apply(this.view.drawer.getOppositeSide());
+            requestAnimationFrame(() => (this.view.drawer.icon as TurboIconSwitch<Side>).switchReifect.apply(this.view.drawer.side));
+        });
     }
 
     protected onClipAdded(syncedClip: SyncedClip, id: number, blockKey: number): Clip {

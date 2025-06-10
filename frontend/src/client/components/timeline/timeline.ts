@@ -128,7 +128,8 @@ export class Timeline<
     }
 
     public get width() {
-        return this.offsetWidth;
+        const basis = this.scaled ? this.director.canvas.scale : 1;
+        return this.offsetWidth * basis;
     }
 
     public async addClip(clip: SyncedClip & YMap, index?: number): Promise<number> {

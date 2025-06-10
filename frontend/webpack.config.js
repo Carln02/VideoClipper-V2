@@ -6,9 +6,10 @@ module.exports = {
     entry: {
         app: path.resolve(__dirname, "src/client/app.ts"),
         project: path.resolve(__dirname, "src/client/project.ts"),
+        login: path.resolve(__dirname, "src/client/login.ts"),
     },
     output: {
-        filename: "[name].bundle.js",
+        filename: ({ chunk }) => `${chunk.name}/${chunk.name}.bundle.js`,
         path: path.resolve(__dirname, "public"),
     },
     devServer: {
@@ -16,12 +17,7 @@ module.exports = {
         port: 9000,
         open: true,
         hot: true,
-        historyApiFallback: {
-            rewrites: [
-                { from: /^\/project\/.*$/, to: '/project.html' },
-                { from: /^\/$/, to: '/app.html' }
-            ]
-        },
+        historyApiFallback: true,
         proxy: [
             {
                 context: () => true,

@@ -13,7 +13,6 @@ export class App extends RootDirector<AppScreens> {
 
         this.mvc.generate({viewConstructor: RootDirectorView});
         this.addScreen(new Home({director: this}), AppScreens.home);
-        this.addScreen(new Project({director: this}), AppScreens.document);
     }
 
     public get documentManager(): Project {
