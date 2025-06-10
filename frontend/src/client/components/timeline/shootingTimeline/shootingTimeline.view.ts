@@ -10,7 +10,7 @@ export class ShootingTimelineView extends TimelineView<ShootingTimeline> {
         super.setupUIElements();
 
         this.drawer = new TurboDrawer({icon: "chevron", side: Side.right});
-        this.scrubber = new ClipScrubber({timeline: this.element, screenManager: this.element.screenManager, initialize: true});
+        this.scrubber = new ClipScrubber({timeline: this.element, director: this.element.director, initialize: true});
     }
 
     protected setupUILayout() {

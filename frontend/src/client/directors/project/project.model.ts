@@ -7,10 +7,10 @@ import {Flow} from "../../components/flow/flow";
 import { YComponentModel } from "../../../yManagement/yModel/types/yComponentModel";
 import {ProjectCardsModel} from "./project.cardsModel";
 import {ProjectFlowsModel} from "./project.flowsModel";
-import {SyncedProject} from "./project.types";
 import { YMap } from "../../../yManagement/yManagement.types";
 import {YUtilities} from "../../../yManagement/yUtilities";
 import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
+import {SyncedDocument} from "./project.types";
 
 export class ProjectModel extends YComponentModel {
     public readonly cardsModel: ProjectCardsModel;
@@ -20,7 +20,7 @@ export class ProjectModel extends YComponentModel {
     public onBranchingNodeAdded: (data: SyncedBranchingNode, id: string, blockKey: string) => BranchingNode;
     public onFlowAdded: (data: SyncedFlow, id: string, blockKey: string) => Flow;
 
-    public constructor(data: SyncedProject) {
+    public constructor(data: SyncedDocument) {
         super(data);
         this.enabledCallbacks = false;
 
