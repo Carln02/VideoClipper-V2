@@ -8,14 +8,14 @@ import {ShootingPanel} from "../../panels/shootingPanel/shootingPanel";
 import {TextPanel} from "../../panels/textPanel/textPanel";
 import {VcComponent} from "../../components/component/component";
 import {SyncedBranchingNode} from "../../components/branchingNode/branchingNode.types";
-import { ContextManager } from "../../managers/contextManager/contextManager";
-import { ToolManager } from "../../managers/toolManager/toolManager";
+import {ContextManager} from "../../managers/contextManager/contextManager";
+import {ToolManager} from "../../managers/toolManager/toolManager";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {ProjectProperties, ProjectScreens, SyncedDocument} from "./project.types";
 import {ProjectView} from "./project.view";
 import {ProjectModel} from "./project.model";
 import {YUtilities} from "../../../yManagement/yUtilities";
-import { YDoc } from "../../../yManagement/yManagement.types";
+import {YDoc} from "../../../yManagement/yManagement.types";
 import "./project.css";
 import {RootDirector} from "../rootDirector/rootDirector";
 import {Canvas} from "../../screens/canvas/canvas";
@@ -78,6 +78,8 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
         this.eventManager.authorizeEventScaling = () => this.currentType == ProjectScreens.canvas;
         this.eventManager.scaleEventPosition = (position: Point) =>
             this.canvas.navigationManager.computePositionRelativeToCanvas(position);
+
+        this.onScreenChange.add(() => this.view.showAppBar(this.currentType !== ProjectScreens.camera));
     }
 
     public get mediaHandler(): MediaHandler {

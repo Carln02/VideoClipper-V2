@@ -3,4 +3,5 @@ tool-panel {
     height: calc(100% - 4em);
     right: 0;
     transition: width 0.3s ease-out;
+    z-index: 1;
 }

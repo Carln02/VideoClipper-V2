@@ -62,4 +62,6 @@ export class RootDirector<
         this.eventManager.defaultState.preventDefaultTouch = value;
         this.eventManager.defaultState.preventDefaultMouse = value;
     }
+
+    publ
 }
