@@ -10,6 +10,10 @@ capture-button {
     transition: all 0.1s ease-out;
 }
 
+capture-button:hover {
+    cursor: pointer;
+}
+
 capture-button > div {
     position: absolute;
     width: 100%;

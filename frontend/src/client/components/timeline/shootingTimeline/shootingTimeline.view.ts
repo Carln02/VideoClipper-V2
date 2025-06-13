@@ -1,15 +1,16 @@
 import {Side, TurboDrawer} from "turbodombuilder";
+import { ShootingTimelineDrawer } from "../../shootingTimelineDrawer/shootingTimelineDrawer";
 import {TimelineView} from "../timeline.view";
 import {ShootingTimeline} from "./shootingTimeline";
 import {ClipScrubber} from "../../scrubber/clipScrubber/clipScrubber";
 
 export class ShootingTimelineView extends TimelineView<ShootingTimeline> {
-    public drawer: TurboDrawer;
+    public drawer: ShootingTimelineDrawer;
 
     protected setupUIElements() {
         super.setupUIElements();
 
-        this.drawer = new TurboDrawer({icon: "chevron", side: Side.right});
+        this.drawer = new ShootingTimelineDrawer({icon: "chevron", side: Side.right});
         this.scrubber = new ClipScrubber({timeline: this.element, director: this.element.director, initialize: true});
     }
 

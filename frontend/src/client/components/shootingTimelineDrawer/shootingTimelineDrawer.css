@@ -1,0 +1,37 @@
+shooting-timeline-drawer {
+    color:white;
+}
+
+shooting-timeline-drawer animated-content-switch {
+    min-width: 100%;
+}
+
+shooting-timeline-drawer.turbo-drawer {
+    height: 100%;
+    display: flex;
+}
+
+shooting-timeline-drawer.turbo-drawer.top-drawer > .turbo-drawer-thumb {
+    background-color: black;
+}
+shooting-timeline-drawer.turbo-drawer.bottom-drawer > .turbo-drawer-thumb {
+    background-color: black;
+}
+
+shooting-timeline-drawer.turbo-drawer.top-drawer > .turbo-drawer-thumb > turbo-icon-switch {
+    color:red
+}
+shooting-timeline-drawer.turbo-drawer.bottom-drawer > .turbo-drawer-thumb > turbo-icon-switch {
+    color:red
+}
+
+shooting-timeline-drawer.turbo-drawer.top-drawer .turbo-drawer-panel-container .turbo-drawer-panel{
+    background-color: black;
+}
+shooting-timeline-drawer.turbo-drawer.bottom-drawer .turbo-drawer-panel-container .turbo-drawer-panel{
+    background-color: black;
+}
+
+shooting-timeline-drawer .turbo-drawer-panel .play-button.icon>svg {
+    fill:white;
+}

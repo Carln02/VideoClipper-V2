@@ -1,8 +1,21 @@
+/*
 .vc-timeline.vc-shooting-timeline {
     height: 100%;
     display: flex;
     width: 0;
     right: 0;
+    /*left: calc(2 * var(--base-padding));//
+    left:0px;
+    top: 50%;
+    transform: translate(0, -50%);
+    rotate:-90deg;
+}
+*/
+
+vc-shooting-timeline {
+    position: fixed;
+    rotate: -90deg;
+    left: -40%;
 }
 
 .vc-timeline.vc-shooting-timeline .scrubber-container {
@@ -15,24 +28,23 @@
     flex-direction: row;
 }
 
-.vc-shooting-timeline .turbo-drawer {
+.vc-shooting-timeline .shooting-timeline-drawer {
     height: 120%;
     align-items: center;
 }
 
-.vc-shooting-timeline .turbo-drawer .turbo-drawer-panel-container {
+.vc-shooting-timeline .shooting-timeline-drawer .shooting-timeline-drawer-panel-container {
     height: 100%;
     display: flex;
-    background-color: transparent;
 }
 
-.vc-shooting-timeline .turbo-drawer .turbo-drawer-panel {
+.vc-shooting-timeline .shooting-timeline-drawer .shooting-timeline-drawer-panel {
     display: flex !important;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.vc-shooting-timeline .turbo-drawer .clips-container {
+.vc-shooting-timeline .shooting-timeline-drawer .clips-container {
     position: relative;
     border-radius: 0.35em;
     height: calc(6em - 2.4em);
@@ -49,12 +61,14 @@
     bottom: 1em;
 }
 
+/*
 .vc-shooting-timeline .right-drawer {
     position: absolute;
     left: 100%;
     top: 50%;
     transform: translateY(-50%);
 }
+*/
 
 .vc-shooting-timeline .play-button {
     height: 1.5em;
