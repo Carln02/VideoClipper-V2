@@ -1,5 +1,4 @@
-import {Tool} from "../tool/tool";
-import {ClosestOrigin, define, div, TurboDragEvent, TurboEvent} from "turbodombuilder";
+import {ClosestOrigin, define, div, Tool, ToolModel, ToolView, TurboDragEvent, TurboEvent} from "turbodombuilder";
 import {Card} from "../../components/card/card";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {TextElement} from "../../components/textElement/textElement";
@@ -24,7 +23,11 @@ export class SelectionTool extends Tool {
     private currentTarget: Element;
 
     public constructor(project: Project) {
-        super(project, ToolType.selection);
+        super({toolManager: project.toolManager, director: project, name: ToolType.selection});
+        this.mvc.generate({
+            viewConstructor: ToolView,
+            modelConstructor: ToolModel
+        });
         this.timelineIndicator = div({style: "background-color: pink; width: 5px; border: 2px solid cyan"});
     }
 

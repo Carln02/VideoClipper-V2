@@ -1,6 +1,6 @@
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {Card} from "../../components/card/card";
-import {auto, Coordinate, define, Point} from "turbodombuilder";
+import {auto, Coordinate, define, Point, ToolManager} from "turbodombuilder";
 import {Flow} from "../../components/flow/flow";
 import {FlowBranch} from "../../components/flowBranch/flowBranch";
 import {ToolPanel} from "../../panels/toolPanel/toolPanel";
@@ -8,10 +8,8 @@ import {ShootingPanel} from "../../panels/shootingPanel/shootingPanel";
 import {TextPanel} from "../../panels/textPanel/textPanel";
 import {VcComponent} from "../../components/component/component";
 import {SyncedBranchingNode} from "../../components/branchingNode/branchingNode.types";
-import {ContextManager} from "../../managers/contextManager/contextManager";
-import {ToolManager} from "../../managers/toolManager/toolManager";
-import {ToolType} from "../../managers/toolManager/toolManager.types";
-import {ProjectProperties, ProjectScreens, SyncedDocument} from "./project.types";
+import {ProjectProperties, ProjectScreens, SyncedDocument, ToolType} from "./project.types";
+import { ContextManager } from "../../managers/contextManager/contextManager";
 import {ProjectView} from "./project.view";
 import {ProjectModel} from "./project.model";
 import {YUtilities} from "../../../yManagement/yUtilities";
@@ -27,7 +25,7 @@ import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
 export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDocument, ProjectModel> {
     private readonly _mediaHandler: MediaHandler;
     private readonly _contextManager: ContextManager;
-    private readonly _toolManager: ToolManager;
+    private readonly _toolManager: ToolManager<ToolType>;
 
     public constructor(properties: ProjectProperties) {
         super(properties);

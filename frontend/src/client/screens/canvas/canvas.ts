@@ -1,4 +1,4 @@
-import {ClickMode, css, define, div, Point} from "turbodombuilder";
+import {ClickMode, css, define, div, Point, ToolManager} from "turbodombuilder";
 import "./canvas.css";
 import {Toolbar} from "../../components/toolbar/toolbar";
 import {SelectionTool} from "../../tools/selection/selection";
@@ -9,7 +9,6 @@ import {TextTool} from "../../tools/text/text";
 import {ShootTool} from "../../tools/shoot/shoot";
 import {DeleteTool} from "../../tools/delete/delete";
 import {NavigationManager} from "../../managers/navigationManager/navigationManager";
-import {ToolManager} from "../../managers/toolManager/toolManager";
 import {VcComponent} from "../../components/component/component";
 import {Project} from "../../directors/project/project";
 import {ProjectScreens} from "../../directors/project/project.types";
@@ -58,7 +57,7 @@ export class Canvas extends VcComponent<any, any, any, Project> {
 
         //Init default tools at hand
         this.toolManager.setTool(this.toolManager.getToolByKey("Shift"), ClickMode.left);
-        this.toolManager.setTool(this.toolManager.getToolByKey("Control"), ClickMode.middle, {select: false, activate: false});
+        // this.toolManager.setTool(this.toolManager.getToolByKey("Control"), ClickMode.middle, {select: false, activate: false});
         this.toolbar.populateWithAllTools();
     }
 

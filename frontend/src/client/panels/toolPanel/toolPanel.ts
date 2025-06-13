@@ -1,10 +1,9 @@
-import {ClickMode, define, Shown, StatefulReifect} from "turbodombuilder";
+import {ClickMode, define, Shown, StatefulReifect, ToolManager} from "turbodombuilder";
 import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {ToolPanelContent} from "../toolPanelContent/toolPanelContent";
 import "./toolPanel.css";
 import {ContextEntry} from "../../managers/contextManager/contextManager.types";
 import {VcComponent} from "../../components/component/component";
-import {ToolManager} from "../../managers/toolManager/toolManager";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {VcComponentProperties} from "../../components/component/component.types";
 import {Project} from "../../directors/project/project";

@@ -1,8 +1,7 @@
-import {TurboModel} from "turbodombuilder";
+import {ToolManager, TurboModel} from "turbodombuilder";
 import {ToolPanelContentProperties} from "./toolPanelContent.types";
 import {ToolPanel} from "../toolPanel/toolPanel";
 import {ToolPanelContentView} from "./toolPanelContent.view";
-import {ToolManager} from "../../managers/toolManager/toolManager";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {VcComponent} from "../../components/component/component";
 import "./toolPanelContent.css";

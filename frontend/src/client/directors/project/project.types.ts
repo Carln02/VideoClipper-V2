@@ -27,3 +27,13 @@ export type SyncedDocument = YMap & {
 
     counters?: { cards: number, flows: number }
 };
+
+export enum ToolType {
+    connection = "Connect",
+    createCard = "Create Card",
+    delete = "Delete",
+    navigator = "Navigator",
+    selection = "Selection",
+    shoot = "Shoot",
+    text = "Text",
+}
