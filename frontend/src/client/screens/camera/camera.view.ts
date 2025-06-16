@@ -5,9 +5,7 @@ import {ClipRenderer} from "../../components/clipRenderer/clipRenderer";
 import {Toolbar} from "../../components/toolbar/toolbar";
 import {Timeline} from "../../components/timeline/timeline";
 import {MetadataDrawer} from "../../components/metadataDrawer/metadataDrawer";
-import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {Renderer} from "../../components/renderer/renderer";
-import {ClipTimeline} from "../../components/timeline/clipTimeline/clipTimeline";
 import {ShootingTimeline} from "../../components/timeline/shootingTimeline/shootingTimeline";
 
 
@@ -34,7 +32,7 @@ export class CameraView extends TurboView<Camera, CameraModel> {
         //TODO this.sidePanel = new SidePanel(this.element, this.captureManager);
 
         this.toolbar = new Toolbar({classes: "right-toolbar", director: this.element.director});
-        this.toolbar.populateWith(ToolType.selection, ToolType.shoot, ToolType.text, ToolType.delete);
+        // this.toolbar.populateWith(ToolType.selection, ToolType.shoot, ToolType.text, ToolType.delete);
 
         this.timeline = new ShootingTimeline({
             drawerProperties: {

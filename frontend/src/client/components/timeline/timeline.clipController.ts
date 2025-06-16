@@ -5,8 +5,8 @@ import {Timeline} from "./timeline";
 import {TurboController, TurboEvent} from "turbodombuilder";
 import {TimelineView} from "./timeline.view";
 import {TimelineModel} from "./timeline.model";
-import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {TimelineClipHandler} from "./timeline.clipHandler";
+import {ToolType} from "../../directors/project/project.types";
 
 export class TimelineClipController extends TurboController<Timeline, TimelineView, TimelineModel> {
     protected setupChangedCallbacks() {

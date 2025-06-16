@@ -16,6 +16,9 @@ import {YUtilities} from "../../../yManagement/yUtilities";
 import {SyncedText} from "../textElement/textElement.types";
 import {ClipView} from "./clip.view";
 import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
+import {ClipSelectionInteractor} from "./clip.selectionInteractor";
+import {ClipDeleteInteractor} from "./clip.deleteInteractor";
+import {ClipShootingInteractor} from "./clip.shootingInteractor";
 
 @define("vc-clip")
 export class Clip<
@@ -34,7 +37,8 @@ export class Clip<
             modelConstructor: ClipModel as unknown as new () => Model,
             data: properties.data,
             handlerConstructors: [ClipTextHandler],
-            controllerConstructors: [ClipThumbnailController]
+            controllerConstructors: [ClipThumbnailController],
+            interactorConstructors: [ClipSelectionInteractor, ClipDeleteInteractor, ClipShootingInteractor]
         });
 
         this.mvc.emitter.add("mediaId", async (value: string) => {

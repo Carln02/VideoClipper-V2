@@ -15,6 +15,8 @@ import {Project} from "../../directors/project/project";
 import {Clip} from "../clip/clip";
 import {YUtilities} from "../../../yManagement/yUtilities";
 import {BranchingNodeSelectionInteractor} from "../branchingNode/branchingNode.selectionInteractor";
+import {CardShootingInteractor} from "./card.shootingInteractor";
+import {CardCreateCardInteractor} from "./card.createCardInteractor";
 
 /**
  * @description Class representing a card
@@ -27,7 +29,7 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
             viewConstructor: CardView,
             modelConstructor: CardModel,
             data: properties.data,
-            interactorConstructors: [BranchingNodeSelectionInteractor]
+            interactorConstructors: [BranchingNodeSelectionInteractor, CardShootingInteractor, CardCreateCardInteractor]
         });
         this.renderer.card = this;
     }

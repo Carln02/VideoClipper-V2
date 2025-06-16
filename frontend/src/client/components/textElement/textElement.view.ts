@@ -3,8 +3,7 @@ import {TextElement} from "./textElement";
 import {TextType} from "./textElement.types";
 import {Coordinate, span, TurboEvent, TurboEventName, TurboView} from "turbodombuilder";
 import {Resizer} from "../basicComponents/resizer/resizer";
-import {ToolType} from "../../managers/toolManager/toolManager.types";
-import {ProjectScreens} from "../../directors/project/project.types";
+import {ProjectScreens, ToolType} from "../../directors/project/project.types";
 
 export class TextElementView extends TurboView<TextElement, TextElementModel> {
     private content: HTMLSpanElement;
@@ -66,7 +65,7 @@ export class TextElementView extends TurboView<TextElement, TextElementModel> {
 
         this.element.addEventListener(TurboEventName.click, (e: TurboEvent) => {
             if (this.element.director.currentType != ProjectScreens.camera) return;
-            if (this.element.director.toolManager.getFiredTool(e).name != ToolType.text) return;
+            if (this.element.director.toolManager.getFiredTool(e).name != ToolType.createText) return;
             this.content.focus();
             e.stopImmediatePropagation();
         });

@@ -35,5 +35,5 @@ export enum ToolType {
     navigator = "Navigator",
     selection = "Selection",
     shoot = "Shoot",
-    text = "Text",
+    createText = "Create Text",
 }

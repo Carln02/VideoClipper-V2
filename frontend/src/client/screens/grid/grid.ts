@@ -1,23 +1,18 @@
-import {ClickMode, css, define, div, Point, ToolManager} from "turbodombuilder";
-import "./canvas.css";
-import {Toolbar} from "../../components/toolbar/toolbar";
-import {NavigatorTool} from "../../tools/navigator/navigator";
-import {NavigationManager} from "../../managers/navigationManager/navigationManager";
 import {VcComponent} from "../../components/component/component";
 import {Project} from "../../directors/project/project";
+import {ClickMode, css, define, div, Point, ToolManager} from "turbodombuilder";
+import { NavigationManager } from "../../managers/navigationManager/navigationManager";
+import { Toolbar } from "../../components/toolbar/toolbar";
+import { NavigatableElement } from "../../managers/navigationManager/navigationManager.types";
 import {ProjectScreens, ToolType} from "../../directors/project/project.types";
 import {ShootTool} from "../../tools/shoot/shoot";
-import {NavigatableElement} from "../../managers/navigationManager/navigationManager.types";
+import {NavigatorTool} from "../../tools/navigator/navigator";
 
-/**
- * @description Class representing a canvas on which the user can add cards, connect them, move them around, etc.
- */
-@define("vc-canvas")
-export class Canvas extends VcComponent<any, any, any, Project>  implements NavigatableElement {
-    //Canvas parent --> contains the main components that are translated/scaled
+@define("vc-grid")
+export class Grid extends VcComponent<any, any, any, Project> implements NavigatableElement {
+    //Grid parent --> contains the main components that are translated/scaled
     public readonly content: HTMLDivElement;
 
-    //Canvas's attached navigation manager
     public readonly navigationManager: NavigationManager;
 
     //Main toolbar
@@ -26,7 +21,7 @@ export class Canvas extends VcComponent<any, any, any, Project>  implements Navi
     public constructor(document: Project) {
         super({director: document});
 
-        this.content = div({parent: this, id: "canvas-content"});
+        this.content = div({parent: this, id: "grid-content"});
 
         //Init navigation manager
         this.navigationManager = new NavigationManager(this);
@@ -71,7 +66,7 @@ export class Canvas extends VcComponent<any, any, any, Project>  implements Navi
         if (this.director.currentType !== ProjectScreens.canvas) return 1;
         return this.navigationManager.scale;
     }
-
+    
     /**
      * @description Translate and scale the canvas by the given values
      * @param translation

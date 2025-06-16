@@ -1,16 +1,17 @@
-import {Tool} from "../tool/tool";
 import {ClosestOrigin, define, TurboDragEvent, TurboEvent} from "turbodombuilder";
-import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {Flow} from "../../components/flow/flow";
 import {FlowPoint} from "../../components/flow/flow.types";
-import {Project} from "../../directors/project/project";
+import {VcTool} from "../tool/tool";
+import {ToolType} from "../../directors/project/project.types";
+
+//TODO WITH JUNE
 
 /**
  * @description Tool that handles creating flows and connecting nodes
  */
 @define("connection-tool")
-export class ConnectionTool extends Tool {
+export class ConnectionTool extends VcTool<ToolType> {
     private _currentFlow: Flow;
     private _currentFlowId: string;
     private lastNodeId: string = null;
@@ -20,10 +21,6 @@ export class ConnectionTool extends Tool {
     private readonly drawingInterval: number = 150 as const;
     //The last time a point was added permanently (used for when drawing flows)
     private lastDrawnTime: number = 0;
-
-    public constructor(project: Project) {
-        super(project, ToolType.connection);
-    }
 
     private get currentFlowId(): string {
         return this._currentFlowId;
@@ -35,7 +32,7 @@ export class ConnectionTool extends Tool {
     }
 
     private get currentFlow(): Flow {
-        if (!this._currentFlow) this._currentFlow = this.project.getFlow(this.currentFlowId);
+        if (!this._currentFlow) this._currentFlow = this.director.getFlow(this.currentFlowId);
         return this._currentFlow;
     }
 
@@ -50,7 +47,7 @@ export class ConnectionTool extends Tool {
             this.lastNodeId = closestNode.dataId;
             //Find first flow intersection with this node
             let intersection: FlowPoint;
-            for (const flow of this.project.flows) {
+            for (const flow of this.director.flows) {
                 intersection = flow.findNodeEntry(this.lastNodeId);
                 if (intersection) break;
             }
@@ -64,7 +61,7 @@ export class ConnectionTool extends Tool {
             }
 
             //Otherwise --> create a new flow
-            this.currentFlowId = await this.project.createNewFlow(e.scaledPosition, this.lastNodeId,"#439045");
+            this.currentFlowId = await this.director.createNewFlow(e.scaledPosition, this.lastNodeId,"#439045");
             return;
         }
 

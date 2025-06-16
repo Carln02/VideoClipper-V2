@@ -1,7 +1,7 @@
 import {div} from "turbodombuilder";
 import {Project} from "./project";
 import {ProjectModel} from "./project.model";
-import {ProjectScreens} from "./project.types";
+import {ProjectScreens, ToolType} from "./project.types";
 import {RootDirectorView} from "../rootDirector/rootDirector.view";
 import {ToolPanel} from "../../panels/toolPanel/toolPanel";
 import {Canvas} from "../../screens/canvas/canvas";
@@ -13,7 +13,7 @@ export class ProjectView extends RootDirectorView<Project, ProjectModel> {
     public cardsParent: HTMLElement;
     public flowsParent: HTMLElement;
 
-    public toolPanel: ToolPanel;
+    public toolPanel: ToolPanel<ToolType>;
 
     public initialize() {
         super.initialize();

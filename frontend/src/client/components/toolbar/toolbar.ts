@@ -1,35 +1,29 @@
-import {define, DefaultEventName, ClickMode} from "turbodombuilder";
+import {define, ToolManager, ToolProperties, Tool} from "turbodombuilder";
 import "./toolbar.css";
-import {ToolView} from "../../tools/tool/toolView";
-import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {VcComponent} from "../component/component";
-import {VcComponentProperties} from "../component/component.types";
 import {Project} from "../../directors/project/project";
+import {ToolbarProperties} from "./toolbar.types";
+import {VcTool} from "../../tools/tool/tool";
 
 @define("vc-toolbar")
-export class Toolbar extends VcComponent<any, any, any, Project> {
-    public constructor(properties: VcComponentProperties<any, any, any, Project> = {}) {
+export class Toolbar<ToolType = string> extends VcComponent<any, any, any, Project> {
+    public constructor(properties: ToolbarProperties<ToolType> = {}) {
         super(properties);
+        properties.tools?.forEach(tool => this.addTool(tool));
     }
 
-    public get toolManager() {
-        return this.director.toolManager;
+    public get toolManager(): ToolManager<ToolType> {
+        return this.director.toolManager as ToolManager<ToolType>;
     }
 
-    public populateWith(...names: ToolType[]) {
-        names.forEach(name => this.addToolInstance(this.toolManager.getToolByName(name)?.createInstance()));
+    private createTool(tool: ToolType | ToolProperties<ToolType> | Tool<ToolType>): Tool<ToolType> {
+        if (tool instanceof Tool) return tool;
+        if (typeof tool === "object") return new VcTool<ToolType>({...tool, toolManager: this.toolManager, director: this.director});
+        if (typeof tool === "string") return new VcTool<ToolType>({name: tool, toolManager: this.toolManager, director: this.director});
     }
 
-    public populateWithAllTools() {
-        this.toolManager.getToolsArray().forEach(tool => this.addToolInstance(tool.createInstance()));
-    }
-
-    private addToolInstance(tool: ToolView) {
-        tool?.addEventListener(DefaultEventName.click, (e) => {
-            this.toolManager.setTool(tool.tool, ClickMode.left);
-            e.stopImmediatePropagation();
-        });
-
-        this.addChild(tool);
+    public addTool(tool: ToolType | ToolProperties<ToolType> | Tool<ToolType>) {
+        const genTool = this.createTool(tool);
+        this.addChild(genTool);
     }
 }

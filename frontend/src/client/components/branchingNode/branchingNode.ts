@@ -9,6 +9,7 @@ import {Project} from "../../directors/project/project";
 import {YUtilities} from "../../../yManagement/yUtilities";
 import { YMap } from "../../../yManagement/yManagement.types";
 import {BranchingNodeSelectionInteractor} from "./branchingNode.selectionInteractor";
+import {BranchingNodeDeleteInteractor} from "./branchingNode.deleteInteractor";
 
 /**
  * @class BranchingNode
@@ -29,7 +30,7 @@ export class BranchingNode<
             viewConstructor: BranchingNodeView as new () => View,
             modelConstructor: BranchingNodeModel as new () => Model,
             data: properties.data,
-            interactorConstructors: [BranchingNodeSelectionInteractor]
+            interactorConstructors: [BranchingNodeSelectionInteractor, BranchingNodeDeleteInteractor]
         });
     }
 

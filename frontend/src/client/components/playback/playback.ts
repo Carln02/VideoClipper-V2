@@ -11,6 +11,7 @@ import {Card} from "../card/card";
 import {Timeline} from "../timeline/timeline";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {ProjectScreens} from "../../directors/project/project.types";
+import {PlaybackAddTextInteractor} from "./playback.addTextInteractor";
 
 @define("vc-playback")
 export class Playback extends VcComponent<PlaybackView, object, PlaybackModel, Project> {
@@ -19,7 +20,8 @@ export class Playback extends VcComponent<PlaybackView, object, PlaybackModel, P
 
         this.mvc.generate({
             viewConstructor: PlaybackView,
-            modelConstructor: PlaybackModel
+            modelConstructor: PlaybackModel,
+            interactorConstructors: [PlaybackAddTextInteractor]
         });
         if (properties.path) this.path = properties.path;
         if (properties.card) this.card = properties.card;

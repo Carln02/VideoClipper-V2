@@ -5,10 +5,11 @@ import {ShootingPanelView} from "./shootingPanel.view";
 import {ShootingPanelModel} from "./shootingPanel.model";
 import {Camera} from "../../screens/camera/camera";
 import {ToolPanelContentProperties} from "../toolPanelContent/toolPanelContent.types";
+import {ToolType} from "../../directors/project/project.types";
 
 @define()
-export class ShootingPanel extends ToolPanelContent<ShootingPanelView, object, ShootingPanelModel> {
-    public constructor(properties: ToolPanelContentProperties<ShootingPanelView, object, ShootingPanelModel>) {
+export class ShootingPanel extends ToolPanelContent<ToolType, ShootingPanelView, object, ShootingPanelModel> {
+    public constructor(properties: ToolPanelContentProperties<ToolType, ShootingPanelView, object, ShootingPanelModel>) {
         super(properties);
         this.mvc.generate({
             modelConstructor: ShootingPanelModel,

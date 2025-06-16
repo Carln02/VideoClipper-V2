@@ -6,12 +6,12 @@ import {SyncedText} from "../../components/textElement/textElement.types";
 import {ToolPanelContent} from "../toolPanelContent/toolPanelContent";
 import {TextElement} from "../../components/textElement/textElement";
 import {ContextEntry} from "../../managers/contextManager/contextManager.types";
-import {ToolType} from "../../managers/toolManager/toolManager.types";
 import {ToolPanelContentProperties} from "../toolPanelContent/toolPanelContent.types";
+import {ToolType} from "../../directors/project/project.types";
 
 @define()
-export class TextPanel extends ToolPanelContent<TextPanelView, SyncedText, TextPanelModel> {
-    public constructor(properties: ToolPanelContentProperties<TextPanelView, SyncedText, TextPanelModel>) {
+export class TextPanel extends ToolPanelContent<ToolType, TextPanelView, SyncedText, TextPanelModel> {
+    public constructor(properties: ToolPanelContentProperties<ToolType, TextPanelView, SyncedText, TextPanelModel>) {
         super(properties);
         this.mvc.generate({
             viewConstructor: TextPanelView,
@@ -41,7 +41,7 @@ export class TextPanel extends ToolPanelContent<TextPanelView, SyncedText, TextP
 
     private onContextChange = (entry: ContextEntry) => {
         if (entry.element instanceof TextElement) {
-            if (entry.changed == "added") this.toolPanel.changePanel(ToolType.text);
+            if (entry.changed == "added") this.toolPanel.changePanel(ToolType.createText);
             else this.toolPanel.changePanel(this.toolManager.getTool(ClickMode.left).name);
         }
     }

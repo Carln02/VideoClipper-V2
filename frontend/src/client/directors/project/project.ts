@@ -20,6 +20,9 @@ import {Canvas} from "../../screens/canvas/canvas";
 import {Camera} from "../../screens/camera/camera";
 import {MediaHandler} from "../../handlers/mediaHandler/mediaHandler";
 import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
+import {ProjectSelectionInteractor} from "./project.selectionInteractor";
+import {ProjectCreateCardInteractor} from "./project.createCardInteractor";
+import {ProjectNavigationInteractor} from "./project.navigationInteractor";
 
 @define("vc-project")
 export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDocument, ProjectModel> {
@@ -33,12 +36,13 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
 
         this._mediaHandler = new MediaHandler(this);
         this._contextManager = new ContextManager();
-        this._toolManager = new ToolManager();
+        this._toolManager = new ToolManager<ToolType>();
 
         this.mvc.generate({
             modelConstructor: ProjectModel,
             viewConstructor: ProjectView,
             data: properties.document?.getMap("document_content"),
+            interactorConstructors: [ProjectSelectionInteractor, ProjectCreateCardInteractor, ProjectNavigationInteractor],
             initialize: false
         });
 
@@ -71,7 +75,7 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
         this.toolPanel.addPanel(new TextPanel({
             toolPanel: this.toolPanel,
             director: this
-        }), ToolType.text, ProjectScreens.camera);
+        }), ToolType.createText, ProjectScreens.camera);
 
         this.eventManager.authorizeEventScaling = () => this.currentType == ProjectScreens.canvas;
         this.eventManager.scaleEventPosition = (position: Point) =>
@@ -88,7 +92,7 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
         return this._contextManager;
     }
 
-    public get toolManager(): ToolManager {
+    public get toolManager(): ToolManager<ToolType> {
         return this._toolManager;
     }
 
@@ -97,7 +101,7 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
         if (this.model) this.model.data = value.getMap("document_content");
     }
 
-    public get toolPanel(): ToolPanel {
+    public get toolPanel(): ToolPanel<ToolType> {
         return this.view.toolPanel;
     }
 
