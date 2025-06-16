@@ -66,7 +66,7 @@ export class Grid extends VcComponent<any, any, any, Project> implements Navigat
         if (this.director.currentType !== ProjectScreens.canvas) return 1;
         return this.navigationManager.scale;
     }
-    
+
     /**
      * @description Translate and scale the canvas by the given values
      * @param translation

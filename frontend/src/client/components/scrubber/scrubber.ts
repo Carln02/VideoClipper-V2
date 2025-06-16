@@ -44,14 +44,14 @@ export class Scrubber extends VcComponent<any, any, any, Project> {
         });
 
         //On drag and if scrubbing --> stop propagation and move scrubber by delta position
-        document.addListener(TurboEventName.drag, (e: TurboDragEvent) => {
+        this.director.addListener(TurboEventName.drag, (e: TurboDragEvent) => {
             if (!this.scrubbing) return;
             e.stopImmediatePropagation();
             if (this.onScrubbing) this.onScrubbing(e);
         });
 
         //Drag end and if scrubbing --> end scrubbing and stop propagation
-        document.addListener(TurboEventName.dragEnd, (e: TurboDragEvent) => {
+        this.director.addListener(TurboEventName.dragEnd, (e: TurboDragEvent) => {
             if (!this.scrubbing) return;
             this.scrubbing = false;
             if (this.onScrubbingEnd) this.onScrubbingEnd(e);
