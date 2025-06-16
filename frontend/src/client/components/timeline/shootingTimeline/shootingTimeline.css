@@ -73,6 +73,11 @@ vc-shooting-timeline {
 .vc-shooting-timeline .play-button {
     height: 1.5em;
     padding: 0.2em;
+    rotate: 90deg;
+}
+
+.vc-shooting-timeline p {
+    rotate: 90deg;
 }
 
 .vc-shooting-timeline vc-clip .vc-clip-content {
