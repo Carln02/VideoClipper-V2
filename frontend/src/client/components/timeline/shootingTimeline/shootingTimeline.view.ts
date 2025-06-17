@@ -51,14 +51,13 @@ export class ShootingTimelineView  extends TimelineView<ShootingTimeline> {
     protected setupUILayout() {
 
         this.scrubberContainer.addChild(this.scrubber, 0);
-        //this.element.addChild([this.scrubberContainer, this.shootingTimelineContainer]);
 
         this.shootingTimelineContainer.addChild([
             this.playButton,
             spacer(),
             this.scrubberContainer,
             spacer(),
-            this.currentTimeText
+            this.currentTimeText,
             //this.totalDurationText
         ]);
 

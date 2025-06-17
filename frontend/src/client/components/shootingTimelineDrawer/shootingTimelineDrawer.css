@@ -1,5 +1,8 @@
 shooting-timeline-drawer {
     color:white;
+    position: absolute;
+    left:0;
+    rotate: -90deg;
 }
 
 shooting-timeline-drawer animated-content-switch {
@@ -30,6 +33,9 @@ shooting-timeline-drawer.turbo-drawer.top-drawer .turbo-drawer-panel-container .
 }
 shooting-timeline-drawer.turbo-drawer.bottom-drawer .turbo-drawer-panel-container .turbo-drawer-panel{
     background-color: black;
+    width: 100vh;
+    padding-left:5em;
+    padding-right:5em;
 }
 
 shooting-timeline-drawer .turbo-drawer-panel .play-button.icon>svg {

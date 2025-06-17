@@ -14,8 +14,9 @@
 
 vc-shooting-timeline {
     position: fixed;
+    /*
     rotate: -90deg;
-    left: -40%;
+    left: -40%;*/
 }
 
 .vc-timeline.vc-shooting-timeline .scrubber-container {
