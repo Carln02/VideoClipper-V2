@@ -1,6 +1,5 @@
 import {Side, TurboDrawer} from "turbodombuilder";
 import { ShootingTimelineDrawer } from "../../shootingTimelineDrawer/shootingTimelineDrawer";
-import {TimelineView} from "../timeline.view";
 import {ShootingTimeline} from "./shootingTimeline";
 import {
     auto,
@@ -17,21 +16,18 @@ import {
 import {formatMMSS} from "../../../utils/time";
 import {ClipScrubber} from "../../scrubber/clipScrubber/clipScrubber";
 import {Scrubber} from "../../scrubber/scrubber";
-import { TimelineModel } from "../timeline.model";
+import {TimelineView} from "../timeline.view";
 
-export class ShootingTimelineView<
-    Element extends ShootingTimeline = ShootingTimeline,
-    Model extends TimelineModel = TimelineModel
-> extends TurboView<Element, Model> {
+export class ShootingTimelineView  extends TimelineView<ShootingTimeline> {
     
     public drawer: ShootingTimelineDrawer;
     private shootingTimelineContainer: HTMLElement;
     public scrubberContainer: HTMLDivElement;
     public scrubber: Scrubber;
 
-    private currentTimeText: HTMLParagraphElement;
-    private totalDurationText: HTMLParagraphElement;
-    private playButton: TurboIcon;
+    protected currentTimeText: HTMLParagraphElement;
+    protected totalDurationText: HTMLParagraphElement;
+    protected playButton: TurboIcon;
 
     protected setupUIElements() {
         super.setupUIElements();
@@ -66,8 +62,10 @@ export class ShootingTimelineView<
             //this.totalDurationText
         ]);
 
-        this.element.addChild([this.drawer, this.shootingTimelineContainer]);
+        this.element.addChild([this.drawer]);
         this.element.childHandler = this.drawer.childHandler;
-        super.setupUILayout();
+
+        this.scrubberContainer.addChild(this.scrubber, 0);
+        this.element.addChild([this.shootingTimelineContainer]);
     }
 }
