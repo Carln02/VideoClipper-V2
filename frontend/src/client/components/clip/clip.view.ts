@@ -1,6 +1,6 @@
 import {ClipModel} from "./clip.model";
 import {Clip} from "./clip";
-import {DefaultEventName, div, icon, img, TurboDragEvent, TurboView} from "turbodombuilder";
+import {DefaultEventName, Direction, div, icon, img, TurboDragEvent, TurboView} from "turbodombuilder";
 
 export class ClipView extends TurboView<Clip, ClipModel> {
     private clipContent: HTMLDivElement;
@@ -13,8 +13,9 @@ export class ClipView extends TurboView<Clip, ClipModel> {
      * @function reloadSize
      * @description Reloads the size of the clip element and thus, reloads as well the timeline.
      */
-    private reloadSize() {
-        this.element.setStyle("width", this.element.timeline?.pixelsPerSecondUnit * this.element.duration + "px");
+    protected reloadSize() {
+        this.element.setStyle(this.element.orientation == Direction.horizontal ? "width" : "height",
+            this.element.timeline?.pixelsPerSecondUnit * this.element.duration + "px");
         this.element.timeline.reloadTime();
     }
 

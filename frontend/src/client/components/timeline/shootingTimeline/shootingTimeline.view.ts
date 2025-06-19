@@ -1,11 +1,11 @@
-import {Side, TurboDrawer} from "turbodombuilder";
+import {Direction, Side, TurboDrawer} from "turbodombuilder";
 import { ShootingTimelineDrawer } from "../../shootingTimelineDrawer/shootingTimelineDrawer";
 import {ShootingTimeline} from "./shootingTimeline";
 import {
     auto,
     DefaultEventName,
     div,
-    flexRowCenter,
+    flexColCenter,
     icon,
     p,
     spacer,
@@ -33,9 +33,8 @@ export class ShootingTimelineView  extends TimelineView<ShootingTimeline> {
         super.setupUIElements();
 
         this.scrubberContainer = div({classes: "scrubber-container"});
-        this.scrubber = new Scrubber({timeline: this.element, director: this.element.director, initialize: true});
 
-        this.shootingTimelineContainer = flexRowCenter();
+        this.shootingTimelineContainer = flexColCenter();
         this.currentTimeText = p({style: "min-width: 3em"});
         this.totalDurationText = p({style: "min-width: 3em; text-align: right"});
 
@@ -45,7 +44,9 @@ export class ShootingTimelineView  extends TimelineView<ShootingTimeline> {
         });
 
         this.drawer = new ShootingTimelineDrawer({icon: "chevron", side: Side.right});
-        this.scrubber = new ClipScrubber({timeline: this.element, director: this.element.director, initialize: true});
+        this.scrubber = new ClipScrubber({timeline: this.element, director: this.element.director, initialize: true},
+                                          Direction.horizontal
+        );
     }
 
     protected setupUILayout() {
@@ -53,11 +54,11 @@ export class ShootingTimelineView  extends TimelineView<ShootingTimeline> {
         this.scrubberContainer.addChild(this.scrubber, 0);
 
         this.shootingTimelineContainer.addChild([
-            this.playButton,
+            this.currentTimeText,
             spacer(),
             this.scrubberContainer,
             spacer(),
-            this.currentTimeText,
+            this.playButton
             //this.totalDurationText
         ]);
 

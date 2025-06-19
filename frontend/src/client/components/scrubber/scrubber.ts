@@ -1,6 +1,7 @@
 import {
     auto,
     define,
+    Direction,
     TurboDragEvent,
     TurboEventName,
 } from "turbodombuilder";
@@ -17,6 +18,8 @@ export class Scrubber extends VcComponent<any, any, any, Project> {
 
     public scaled: boolean = false;
 
+    public orientation: Direction;
+
     //Whether it is currently scrubbing (fired by the user's action)
     private scrubbing: boolean = false;
 
@@ -24,9 +27,12 @@ export class Scrubber extends VcComponent<any, any, any, Project> {
     public onScrubbing: (e: TurboDragEvent) => void;
     public onScrubbingEnd: (e: TurboDragEvent) => void;
 
-    public constructor(properties: ScrubberProperties = {}) {
+    public constructor(properties: ScrubberProperties = {}, orientation: Direction = Direction.vertical) {
         super(properties);
         this.addClass("vc-scrubber");
+
+        this.orientation = orientation;
+        this.orientation == Direction.vertical ? this.addClass("vc-scrubber-v") : this.addClass("vc-scrubber-h");
 
         this.timeline = properties.timeline;
         this.scaled = properties.scaled ?? true;
@@ -64,6 +70,9 @@ export class Scrubber extends VcComponent<any, any, any, Project> {
     @auto()
     public set translation(value: number) {
         const basis = this.scaled ? this.director.canvas.scale : 1;
-        this.style.transform = `translate(calc(${value / basis}px - 50%), 0)`;
+        if (this.orientation == Direction.horizontal)
+            this.style.transform = `translate(0, calc(${value / basis}px - 50%))`;
+        else
+            this.style.transform = `translate(calc(${value / basis}px - 50%), 0)`;
     }
 }

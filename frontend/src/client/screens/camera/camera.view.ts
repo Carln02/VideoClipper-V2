@@ -38,7 +38,7 @@ export class CameraView extends TurboView<Camera, CameraModel> {
 
         this.timeline = new ShootingTimeline({
             drawerProperties: {
-                side: Side.bottom,
+                side: Side.right,
                 icon: "chevron",
                 offset: {[Open.open]: -4},
                 initiallyOpen: true

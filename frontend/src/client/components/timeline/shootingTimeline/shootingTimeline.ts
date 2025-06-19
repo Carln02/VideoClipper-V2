@@ -1,4 +1,4 @@
-import {auto, define} from "turbodombuilder";
+import {auto, define, Direction} from "turbodombuilder";
 import {ClipRenderer} from "../../clipRenderer/clipRenderer";
 import {Clip} from "../../clip/clip";
 import "./shootingTimeline.css";
@@ -21,6 +21,7 @@ export class ShootingTimeline extends Timeline<ShootingTimelineView> {
 
     protected onClipAdded(syncedClip: SyncedClip, id: number, blockKey: number): Clip {
         const clip = super.onClipAdded(syncedClip, id, blockKey, {viewConstructor: ClipView});
+        clip.orientation = Direction.vertical;
         this.view.scrubberContainer.addChild(clip, this.model.clipHandler.convertBlockScopeToIndex(id + 1, blockKey));
         return clip;
     }

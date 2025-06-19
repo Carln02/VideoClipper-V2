@@ -1,5 +1,5 @@
 import "./clip.css";
-import {Coordinate, define, TurboDragEvent, TurboView} from "turbodombuilder";
+import {Coordinate, define, Direction, SideH, TurboDragEvent, TurboView} from "turbodombuilder";
 import {Timeline} from "../timeline/timeline";
 import {ClipProperties, SyncedClip} from "./clip.types";
 import {ClipModel} from "./clip.model";
@@ -24,9 +24,11 @@ export class Clip<
 > extends VcComponent<View, SyncedClip, Model, Project>  {
     public readonly timeline: Timeline;
 
+    public orientation: Direction = Direction.horizontal;
+
     public onMediaDataChanged: (clip: this) => void = () => {};
 
-    public constructor(properties: ClipProperties<View, SyncedClip, Model>) {
+    public constructor(properties: ClipProperties<View, SyncedClip, Model>, orientation: Direction = Direction.horizontal) {
         super({...properties, generate: false});
         this.timeline = properties.timeline;
         this.mvc.generate({
@@ -36,6 +38,9 @@ export class Clip<
             handlerConstructors: [ClipTextHandler],
             controllerConstructors: [ClipThumbnailController]
         });
+
+        this.orientation = orientation;
+        this.orientation == Direction.horizontal ? this.addClass("vc-clip-h") : this.addClass("vc-clip-v");
 
         this.mvc.emitter.add("mediaId", async (value: string) => {
             this.model.updateMediaData(await this.director.mediaHandler.getMedia(value));

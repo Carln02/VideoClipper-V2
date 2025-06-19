@@ -1,5 +1,5 @@
 import {ClipProperties, SyncedClip} from "../clip/clip.types";
-import {auto, define, TurboEvent} from "turbodombuilder";
+import {auto, define, TurboEvent, Direction} from "turbodombuilder";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {Clip} from "../clip/clip";
 import "./timeline.css";

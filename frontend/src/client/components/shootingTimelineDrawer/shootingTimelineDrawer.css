@@ -2,7 +2,6 @@ shooting-timeline-drawer {
     color:white;
     position: absolute;
     left:0;
-    rotate: -90deg;
 }
 
 shooting-timeline-drawer animated-content-switch {
@@ -20,11 +19,17 @@ shooting-timeline-drawer.turbo-drawer.top-drawer > .turbo-drawer-thumb {
 shooting-timeline-drawer.turbo-drawer.bottom-drawer > .turbo-drawer-thumb {
     background-color: black;
 }
+shooting-timeline-drawer.turbo-drawer.right-drawer > .turbo-drawer-thumb {
+    background-color: black;
+}
 
 shooting-timeline-drawer.turbo-drawer.top-drawer > .turbo-drawer-thumb > .icon > svg{
     fill:white
 }
 shooting-timeline-drawer.turbo-drawer.bottom-drawer > .turbo-drawer-thumb > .icon > svg {
+    fill:white
+}
+shooting-timeline-drawer.turbo-drawer.right-drawer > .turbo-drawer-thumb > .icon > svg {
     fill:white
 }
 
@@ -36,6 +41,12 @@ shooting-timeline-drawer.turbo-drawer.bottom-drawer .turbo-drawer-panel-containe
     width: 100vh;
     padding-left:5em;
     padding-right:5em;
+}
+shooting-timeline-drawer.turbo-drawer.right-drawer .turbo-drawer-panel-container .turbo-drawer-panel{
+    background-color: black;
+    height: 100vh;
+    padding-top:5em;
+    padding-bottom:5em;
 }
 
 shooting-timeline-drawer .turbo-drawer-panel .play-button.icon>svg {

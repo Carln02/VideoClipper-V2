@@ -1,4 +1,4 @@
-import {define, div, icon, TurboDragEvent, TurboEvent, TurboIcon} from "turbodombuilder";
+import {define, Direction, div, icon, TurboDragEvent, TurboEvent, TurboIcon} from "turbodombuilder";
 import "./clipScrubber.css";
 import {ScrubberProperties} from "../scrubber.types";
 import {ScrubberMarkingMenu} from "../../scrubberMarkingMenu/scrubberMarkingMenu";
@@ -11,9 +11,12 @@ export class ClipScrubber extends Scrubber {
     protected head: TurboIcon;
     protected markingMenuHandle: HTMLDivElement;
 
-    public constructor(properties: ScrubberProperties = {}) {
+    public constructor(properties: ScrubberProperties = {}, orientation: Direction = Direction.vertical) {
         super({...properties, initialize: false});
         this.addClass("vc-clip-scrubber");
+
+        this.orientation = orientation;
+        this.orientation == Direction.vertical ? this.addClass("vc-scrubber-v") : this.addClass("vc-scrubber-h");
 
         if (!ClipScrubber.markingMenu) {
             ClipScrubber.markingMenu = new ScrubberMarkingMenu({});
