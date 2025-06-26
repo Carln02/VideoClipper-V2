@@ -13,7 +13,7 @@ import { ContextManager } from "../../managers/contextManager/contextManager";
 import {ProjectView} from "./project.view";
 import {ProjectModel} from "./project.model";
 import {YUtilities} from "../../../yManagement/yUtilities";
-import {YDoc} from "../../../yManagement/yManagement.types";
+import {YDoc, YMap} from "../../../yManagement/yManagement.types";
 import "./project.css";
 import {RootDirector} from "../rootDirector/rootDirector";
 import {Canvas} from "../../screens/canvas/canvas";
@@ -23,6 +23,7 @@ import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
 import {ProjectSelectionInteractor} from "./project.selectionInteractor";
 import {ProjectCreateCardInteractor} from "./project.createCardInteractor";
 import {ProjectNavigationInteractor} from "./project.navigationInteractor";
+import {ProjectConnectionInteractor} from "./project.connectionInteractor";
 
 @define("vc-project")
 export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDocument, ProjectModel> {
@@ -42,7 +43,8 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
             modelConstructor: ProjectModel,
             viewConstructor: ProjectView,
             data: properties.document?.getMap("document_content"),
-            interactorConstructors: [ProjectSelectionInteractor, ProjectCreateCardInteractor, ProjectNavigationInteractor],
+            interactorConstructors: [ProjectSelectionInteractor, ProjectCreateCardInteractor,
+                ProjectNavigationInteractor, ProjectConnectionInteractor],
             initialize: false
         });
 
@@ -125,12 +127,12 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
         return ids.map(id => this.getNodeData(id));
     }
 
-    public getMedia(id: string): SyncedMedia {
-        return this.model.media.get(id);
+    public getMedia(id: string): SyncedMedia & YMap {
+        return this.model.media.get(id) as YMap;
     }
 
     public setMedia(id: string, media: SyncedMedia) {
-        this.model.media.set(id, media);
+        this.model.media.set(id, YUtilities.createYMap(media) as SyncedMedia);
     }
 
     public forEachBranch(callback: (branch: FlowBranch, flow: Flow) => void) {

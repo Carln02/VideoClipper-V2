@@ -32,8 +32,8 @@ export class ClipRendererView extends RendererView<ClipRenderer, ClipRendererMod
         this.textParent.addChild(element, id);
     }
 
-    public showCurrentVideo() {
-        this.videos.forEach((video: HTMLVideoElement, index: number) => video.show(index == this.model.currentIndex));
+    public showVideo(index: number = this.model.currentIndex) {
+        this.videos.forEach((video: HTMLVideoElement, i: number) => video.show(index == i));
     }
 
     public resize(aspectRatio: number = 1.33, width: number = this.element.offsetWidth, height: number = this.element.offsetHeight) {

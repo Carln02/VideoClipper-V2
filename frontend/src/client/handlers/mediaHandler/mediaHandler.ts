@@ -2,6 +2,7 @@ import {RequestHandler} from "../requestHandler/requestHandler";
 import {IDBPDatabase, openDB} from "idb";
 import {Project} from "../../directors/project/project";
 import {MediaData, SyncedMedia} from "./mediaHandler.types";
+import { YMap } from "../../../yManagement/yManagement.types";
 
 export class MediaHandler extends RequestHandler {
     private document: Project;
@@ -13,7 +14,7 @@ export class MediaHandler extends RequestHandler {
     }
 
     private get url(): string {
-        return this.serverUrl + "media/";
+        return this.serverUrl + "api/media/";
     }
 
     private async initializeLocalDatabase() {
@@ -26,41 +27,45 @@ export class MediaHandler extends RequestHandler {
         return this.localDatabase;
     }
 
-    public async getMedia(id: string): Promise<SyncedMedia | undefined> {
+    public getMediaMetadata(id: string): SyncedMedia & YMap {
+        return this.document.getMedia(id);
+    }
+
+    public setMediaMetadata(id: string, media: SyncedMedia) {
+        this.document.setMedia(id, media);
+    }
+
+    public async getMedia(id: string): Promise<Blob | undefined> {
         if (id == undefined) return undefined;
         const type = id.split("-")[0] == "image" ? "image" : "video";
-
-        const metadata = this.document.getMedia(id);
 
         const db = await this.initializeLocalDatabase();
         const storeName = type + "s";
         const cachedMedia = await db.transaction(storeName, "readonly").objectStore(storeName)?.get(id) as MediaData | undefined;
-        if (cachedMedia) return {...metadata, blob: cachedMedia.blob};
+        if (cachedMedia) return cachedMedia.blob;
 
         return new Promise<Blob | undefined>((resolve) => {
             this.makeRequest(this.url + id, "GET", id, response => resolve(response),
-                error => console.error("Upload failed", error), false, "blob");
-        }).then(blob => {
-            console.log(blob);
-            return {...metadata, blob: blob};});
+                error => console.error("Download failed", error), false, "blob");
+        });
     }
 
-    public async updateMedia(data: SyncedMedia): Promise<string> {
+    public async updateMedia(data: SyncedMedia, blob: Blob): Promise<string> {
         const id = data?.id;
-        const blob = data?.blob;
-        if (!id || !blob) return undefined;
+        if (!id) return undefined;
+        this.setMediaMetadata(id, data);
+
+        if (!blob) return id;
+        console.log("SAVING BLOB", blob)
 
         const type = data.type ?? "video";
-        this.document.setMedia(id, {...data, blob: undefined});
-
-        const formData = new FormData();
-
         const extension = blob.type === "video/mp4" ? ".mp4"
             : blob.type === "video/webm" ? ".webm"
                 : blob.type === "image/png" ? ".png"
                     : blob.type === "image/jpeg" ? ".jpg"
                         : "";
 
+        const formData = new FormData();
         formData.append("media", blob, id + extension);
         this.makeRequest(this.url + id, "POST", formData, response => console.log("Upload success", response),
             error => console.error("Upload failed", error), false);
@@ -72,10 +77,23 @@ export class MediaHandler extends RequestHandler {
         return id;
     }
 
-    public async saveMedia(data: SyncedMedia): Promise<string> {
-        if (!data?.blob) return undefined;
-        const type = data.type ?? "video";
-        data.id = `${type}-${Math.floor(Math.random() * 1000)}-${Date.now()}`;
-        return this.updateMedia(data);
+    public async saveMedia(data: SyncedMedia, blob: Blob): Promise<string> {
+        if (!data) return undefined;
+        if (!data.id) {
+            const type = data.type ?? "video";
+            data.id = `${type}-${Math.floor(Math.random() * 1000)}-${Date.now()}`;
+        }
+        return this.updateMedia(data, blob);
+    }
+
+    public async convertMedia(data: MediaData): Promise<boolean> {
+        const formData = new FormData();
+        formData.append("id", String(data.id));
+        formData.append("video", data.blob, `${data.id}.webm`);
+
+        return new Promise<boolean | undefined>((resolve) => {
+            this.makeRequest(this.url + "convert/", "POST", formData, () => resolve(true),
+                    error => console.error("Failed to convert video", error), false);
+        });
     }
 }

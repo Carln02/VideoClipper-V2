@@ -11,7 +11,7 @@ import {YPersistence, YPersistenceConnectionOptions} from "./webSocket.types";
 import {WebSocketSharedDoc} from "./webSocket.sharedDoc";
 
 export class WebSocketYUtils {
-    public readonly DEBUG: boolean = true;
+    public readonly DEBUG: boolean = false;
 
     private readonly CALLBACK_URL = process.env.CALLBACK_URL ? new URL(process.env.CALLBACK_URL) : null;
     private readonly CALLBACK_TIMEOUT = Number.parseInt(process.env.CALLBACK_TIMEOUT || "5000");
@@ -50,7 +50,7 @@ export class WebSocketYUtils {
                     Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc))
 
                     ydoc.on("update", async (update: any) => {
-                        console.log("💾 STORING UPDATE")
+                        // console.log("💾 STORING UPDATE")
                         await ldb.storeUpdate(docName, update);
                         // await this.persistence?.provider.storeUpdate(docName, update);
                     });
@@ -224,8 +224,7 @@ export class WebSocketYUtils {
      * @param {any} conn
      */
     private closeConn = (doc: WebSocketSharedDoc, conn: any) => {
-        console.log("CLOSING CONN...");
-        if (doc.conns.has(conn)) {
+       if (doc.conns.has(conn)) {
             const controlledIds: Set<number> = doc.conns.get(conn) as Set<number>;
             doc.conns.delete(conn);
             awarenessProtocol.removeAwarenessStates(doc.awareness, Array.from(controlledIds), null);
@@ -248,7 +247,6 @@ export class WebSocketYUtils {
             this.closeConn(doc, conn);
         }
         try {
-            console.log("SENDING CONN", m);
             conn.send(m, (err: any) => { err != null && this.closeConn(doc, conn) });
         } catch (e) {
             this.closeConn(doc, conn)

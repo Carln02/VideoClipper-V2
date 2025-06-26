@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 import {FileInfo} from "./media.types";
 import {AppRepositories} from "../app/app.repositories";
+import "./media.conversionWorker";
+import {Worker} from "worker_threads";
 
 export class MediaRepository {
     public constructor(private mediaStoragePath: string, private repos: AppRepositories) {}
@@ -43,5 +45,38 @@ export class MediaRepository {
 
     public createReadStream(filePath: string): fs.ReadStream {
         return fs.createReadStream(filePath);
+    }
+
+    public spawnConversionWorker({id, inputPath}: { id: string, inputPath: string }) {
+        return new Promise<void>((resolve, reject) => {
+
+            const worker = new Worker(path.resolve(process.cwd(), "backend/dist/media/media.conversionWorker.js"), {
+                workerData: {inputPath}
+            });
+
+            worker.on("message", (msg) => {
+                if (msg.type === "log") {
+                    console.log("[Worker]", msg.message);
+                } else if (msg.type === "error") {
+                    console.error("[Worker Error]", msg.message);
+                    reject(new Error(msg.message));
+                } else if (msg.type === "done") {
+                    console.log("[Worker] Conversion finished");
+                    resolve();
+                }
+            });
+
+            worker.on("error", (err) => {
+                console.error("[Worker Internal Error]", err);
+                reject(err);
+            });
+
+            worker.on("exit", (code) => {
+                if (code !== 0) {
+                    console.error(`[Worker] Exited with code ${code}`);
+                    reject(new Error(`Worker exited with code ${code}`));
+                }
+            });
+        });
     }
 }

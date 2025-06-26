@@ -37,17 +37,6 @@ export class VcWebSocket {
             return;
         }
 
-        // if (docName.startsWith("PROJECT:")) {
-        //     const projectId = new ObjectId(docName.slice("PROJECT:".length));
-        //     const userCanAccess = await this.app.repositories.projectRepository.userHasAccessToProject(user._id, projectId);
-        //     if (!userCanAccess) {
-        //         console.warn(`User ${user._id} attempted to access unauthorized project ${projectId}`);
-        //         ws.close();
-        //         return;
-        //     }
-        // }
-
-        console.log("SETTING UP CONNECTION NOW....")
         await this.yUtils.setupWSConnection(ws, req, {docName: docName});
     }
 

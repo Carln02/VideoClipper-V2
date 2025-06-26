@@ -4,10 +4,10 @@ export type SyncedMedia = {
     timestamp?: number,
     duration?: number,
     media?: string,
-    blob?: Blob
+    converting?: boolean
 };
 
 export type MediaData = {
-    id: number,
+    id: string,
     blob: Blob
 }

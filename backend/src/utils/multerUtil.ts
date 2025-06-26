@@ -18,7 +18,7 @@ export class MulterUtil {
                 cb(null, this.storagePath);
             },
             filename: (req, file, cb) => {
-                const id = req.params.id;
+                const id = req.params.id || req.body.id;
                 const ext = path.extname(file.originalname);
                 cb(null, `${id}${ext}`);
             }

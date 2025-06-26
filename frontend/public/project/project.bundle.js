@@ -857,6 +857,34 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
+/***/ "./frontend/src/client/components/branchingNode/branchingNode.deleteInteractor.ts":
+/*!****************************************************************************************!*\
+  !*** ./frontend/src/client/components/branchingNode/branchingNode.deleteInteractor.ts ***!
+  \****************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   BranchingNodeDeleteInteractor: () => (/* binding */ BranchingNodeDeleteInteractor)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+
+
+class BranchingNodeDeleteInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
+    constructor() {
+        super(...arguments);
+        this.tool = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.delete;
+    }
+    click() {
+        this.element.delete();
+    }
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/components/branchingNode/branchingNode.model.ts":
 /*!*****************************************************************************!*\
   !*** ./frontend/src/client/components/branchingNode/branchingNode.model.ts ***!
@@ -882,6 +910,39 @@ class BranchingNodeModel extends _yManagement_yModel_types_yComponentModel__WEBP
 
 /***/ }),
 
+/***/ "./frontend/src/client/components/branchingNode/branchingNode.selectionInteractor.ts":
+/*!*******************************************************************************************!*\
+  !*** ./frontend/src/client/components/branchingNode/branchingNode.selectionInteractor.ts ***!
+  \*******************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   BranchingNodeSelectionInteractor: () => (/* binding */ BranchingNodeSelectionInteractor)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+
+
+class BranchingNodeSelectionInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
+    constructor() {
+        super(...arguments);
+        this.tool = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.selection;
+    }
+    clickStart() {
+        this.element.director.contextManager.setContext(this.element, 1);
+    }
+    drag(e) {
+        //TODO CHECK SUBSTRATE
+        this.model.origin = e.scaledDeltaPosition.add(this.model.origin).object;
+        this.element.director.forEachBranch((branch) => branch.updateAfterMovingNode(this.element.dataId, e.scaledDeltaPosition));
+    }
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/components/branchingNode/branchingNode.ts":
 /*!***********************************************************************!*\
   !*** ./frontend/src/client/components/branchingNode/branchingNode.ts ***!
@@ -900,12 +961,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _branchingNode_view__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./branchingNode.view */ "./frontend/src/client/components/branchingNode/branchingNode.view.ts");
 /* harmony import */ var _component_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../component/component */ "./frontend/src/client/components/component/component.ts");
 /* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+/* harmony import */ var _branchingNode_selectionInteractor__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./branchingNode.selectionInteractor */ "./frontend/src/client/components/branchingNode/branchingNode.selectionInteractor.ts");
+/* harmony import */ var _branchingNode_deleteInteractor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./branchingNode.deleteInteractor */ "./frontend/src/client/components/branchingNode/branchingNode.deleteInteractor.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
+
 
 
 
@@ -927,7 +992,8 @@ let BranchingNode = class BranchingNode extends _component_component__WEBPACK_IM
             this.mvc.generate({
                 viewConstructor: _branchingNode_view__WEBPACK_IMPORTED_MODULE_4__.BranchingNodeView,
                 modelConstructor: _branchingNode_model__WEBPACK_IMPORTED_MODULE_3__.BranchingNodeModel,
-                data: properties.data
+                data: properties.data,
+                interactorConstructors: [_branchingNode_selectionInteractor__WEBPACK_IMPORTED_MODULE_7__.BranchingNodeSelectionInteractor, _branchingNode_deleteInteractor__WEBPACK_IMPORTED_MODULE_8__.BranchingNodeDeleteInteractor]
             });
     }
     static createData(data) {
@@ -996,12 +1062,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   BranchingNodeView: () => (/* binding */ BranchingNodeView)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+
 
 class BranchingNodeView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
     setupChangedCallbacks() {
         super.setupChangedCallbacks();
         this.emitter.add("origin", (value) => {
-            this.element.setStyle("transform", `translate3d(calc(${value.x}px - 50%), calc(${value.y}px - 50%), 0)`);
+            if (this.element.director.currentType === _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ProjectScreens.canvas)
+                this.element.setStyle("transform", `translate3d(calc(${value.x}px - 50%), calc(${value.y}px - 50%), 0)`);
         });
     }
 }
@@ -1337,6 +1406,34 @@ CaptureTimer = __decorate([
 
 /***/ }),
 
+/***/ "./frontend/src/client/components/card/card.createCardInteractor.ts":
+/*!**************************************************************************!*\
+  !*** ./frontend/src/client/components/card/card.createCardInteractor.ts ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   CardCreateCardInteractor: () => (/* binding */ CardCreateCardInteractor)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+
+
+class CardCreateCardInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
+    constructor() {
+        super(...arguments);
+        this.tool = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.createCard;
+    }
+    click() {
+        return;
+    }
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/components/card/card.css":
 /*!******************************************************!*\
   !*** ./frontend/src/client/components/card/card.css ***!
@@ -1421,6 +1518,40 @@ class CardModel extends _branchingNode_branchingNode_model__WEBPACK_IMPORTED_MOD
 
 /***/ }),
 
+/***/ "./frontend/src/client/components/card/card.shootingInteractor.ts":
+/*!************************************************************************!*\
+  !*** ./frontend/src/client/components/card/card.shootingInteractor.ts ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   CardShootingInteractor: () => (/* binding */ CardShootingInteractor)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+
+
+class CardShootingInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
+    constructor() {
+        super(...arguments);
+        this.tool = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.shoot;
+    }
+    clickStart() {
+        this.element.director.contextManager.setContext(this.element, 1);
+    }
+    click() {
+        this.element.director.currentType = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ProjectScreens.camera;
+        this.element.director.camera.card = this.element;
+        this.element.director.toolPanel.changePanel(_directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.shoot);
+        this.element.director.camera.startStream();
+    }
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/components/card/card.ts":
 /*!*****************************************************!*\
   !*** ./frontend/src/client/components/card/card.ts ***!
@@ -1440,6 +1571,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../branchingNode/branchingNode */ "./frontend/src/client/components/branchingNode/branchingNode.ts");
 /* harmony import */ var _clip_clip__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../clip/clip */ "./frontend/src/client/components/clip/clip.ts");
 /* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+/* harmony import */ var _branchingNode_branchingNode_selectionInteractor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../branchingNode/branchingNode.selectionInteractor */ "./frontend/src/client/components/branchingNode/branchingNode.selectionInteractor.ts");
+/* harmony import */ var _card_shootingInteractor__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./card.shootingInteractor */ "./frontend/src/client/components/card/card.shootingInteractor.ts");
+/* harmony import */ var _card_createCardInteractor__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./card.createCardInteractor */ "./frontend/src/client/components/card/card.createCardInteractor.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1463,6 +1597,9 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
+
+
 /**
  * @description Class representing a card
  */
@@ -1473,6 +1610,7 @@ let Card = class Card extends _branchingNode_branchingNode__WEBPACK_IMPORTED_MOD
             viewConstructor: _card_view__WEBPACK_IMPORTED_MODULE_4__.CardView,
             modelConstructor: _card_model__WEBPACK_IMPORTED_MODULE_3__.CardModel,
             data: properties.data,
+            interactorConstructors: [_branchingNode_branchingNode_selectionInteractor__WEBPACK_IMPORTED_MODULE_8__.BranchingNodeSelectionInteractor, _card_shootingInteractor__WEBPACK_IMPORTED_MODULE_9__.CardShootingInteractor, _card_createCardInteractor__WEBPACK_IMPORTED_MODULE_10__.CardCreateCardInteractor]
         });
         this.renderer.card = this;
     }
@@ -1611,6 +1749,7 @@ class CardView extends _branchingNode_branchingNode_view__WEBPACK_IMPORTED_MODUL
         this.titleElement = new turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboInput({ selectTextOnFocus: true });
         this.durationElement = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.div)();
         this.playback = new _playback_playback__WEBPACK_IMPORTED_MODULE_5__.Playback({ director: this.element.director, card: this.element, classes: "card-playback" });
+        this.playback.timeline.scaled = true;
         this._metadataDrawer = new _metadataDrawer_metadataDrawer__WEBPACK_IMPORTED_MODULE_3__.MetadataDrawer({
             card: this.element,
             icon: "chevron",
@@ -1707,6 +1846,34 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
+/***/ "./frontend/src/client/components/clip/clip.deleteInteractor.ts":
+/*!**********************************************************************!*\
+  !*** ./frontend/src/client/components/clip/clip.deleteInteractor.ts ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ClipDeleteInteractor: () => (/* binding */ ClipDeleteInteractor)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+
+
+class ClipDeleteInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
+    constructor() {
+        super(...arguments);
+        this.tool = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.delete;
+    }
+    click() {
+        this.element.card.removeClip(this.element);
+    }
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/components/clip/clip.model.ts":
 /*!***********************************************************!*\
   !*** ./frontend/src/client/components/clip/clip.model.ts ***!
@@ -1720,15 +1887,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
 /* harmony import */ var _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../yManagement/yModel/types/yComponentModel */ "./frontend/src/yManagement/yModel/types/yComponentModel.ts");
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
 
 
 class ClipModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_1__.YComponentModel {
@@ -1745,24 +1911,18 @@ class ClipModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
         //TODO MAKE IT TOGGLEABLE
         _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__.YUtilities.deepObserveAny(this.data, () => this.fireCallback("reload_thumbnail"), "startTime", "endTime", "backgroundFill", "mediaId", "content");
     }
-    get metadata() {
-        return this._metadata;
+    set metadata(value) {
+    }
+    set blob(value) {
+        var _a, _b;
+        this._uri = value ? URL.createObjectURL(value) : null;
+        this._videoDuration = ((_a = this.metadata) === null || _a === void 0 ? void 0 : _a.type) == "video" ? (_b = this.metadata) === null || _b === void 0 ? void 0 : _b.duration : null;
     }
     get uri() {
         return this._uri;
     }
     get videoDuration() {
         return this._videoDuration;
-    }
-    updateMediaData(media) {
-        return __awaiter(this, void 0, void 0, function* () {
-            this._metadata = media;
-            if ((media === null || media === void 0 ? void 0 : media.blob) instanceof Blob)
-                this._uri = URL.createObjectURL(media.blob);
-            else
-                this._uri = null;
-            this._videoDuration = (media === null || media === void 0 ? void 0 : media.type) == "video" ? media === null || media === void 0 ? void 0 : media.duration : null;
-        });
     }
     get startTime() {
         return this.getData("startTime");
@@ -1835,6 +1995,100 @@ class ClipModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
     }
     get textHandler() {
         return this.getHandler("text");
+    }
+}
+__decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.auto)()
+], ClipModel.prototype, "metadata", null);
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/components/clip/clip.selectionInteractor.ts":
+/*!*************************************************************************!*\
+  !*** ./frontend/src/client/components/clip/clip.selectionInteractor.ts ***!
+  \*************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ClipSelectionInteractor: () => (/* binding */ ClipSelectionInteractor)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+/* harmony import */ var _timeline_clipTimeline_clipTimeline__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../timeline/clipTimeline/clipTimeline */ "./frontend/src/client/components/timeline/clipTimeline/clipTimeline.ts");
+
+
+
+class ClipSelectionInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
+    constructor() {
+        super(...arguments);
+        this.tool = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.selection;
+        this.propagateUp = {
+            [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.clickStart]: true,
+        };
+    }
+    get contextManager() {
+        return this.element.director.contextManager;
+    }
+    clickStart() {
+        this.contextManager.setContext(this.element, 2);
+    }
+    click() {
+        this.contextManager.setContext(this.element, 2, true);
+    }
+    dragStart(e, tool) {
+        tool.clipClone = this.element.cloneAndMove(e);
+        tool.director.canvas.content.addChild(tool.clipClone);
+    }
+    drag(e, tool) {
+        if (!tool.clipClone)
+            return;
+        tool.clipClone.translateBy(e.scaledDeltaPosition);
+        tool.insertIndicatorAfterClosestClip(e, this.getClosestTimeline(e));
+    }
+    dragEnd(e, tool) {
+        if (tool.clipClone)
+            tool.moveClip(this.getClosestTimeline(e));
+    }
+    getClosestTimeline(e) {
+        const timeline = e.closest(_timeline_clipTimeline_clipTimeline__WEBPACK_IMPORTED_MODULE_2__.ClipTimeline, false, turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.ClosestOrigin.position);
+        if (!timeline)
+            return undefined;
+        return e.closest(_timeline_clipTimeline_clipTimeline__WEBPACK_IMPORTED_MODULE_2__.ClipTimeline, timeline.clipsContainer, turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.ClosestOrigin.position);
+    }
+}
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/components/clip/clip.shootingInteractor.ts":
+/*!************************************************************************!*\
+  !*** ./frontend/src/client/components/clip/clip.shootingInteractor.ts ***!
+  \************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ClipShootingInteractor: () => (/* binding */ ClipShootingInteractor)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+
+
+class ClipShootingInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
+    constructor() {
+        super(...arguments);
+        this.tool = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.shoot;
+        this.propagateUp = true;
+    }
+    clickStart() {
+        this.element.director.contextManager.setContext(this.element, 2);
+    }
+    click() {
+        this.element.director.camera.snapToClip(this.element);
     }
 }
 
@@ -1925,6 +2179,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_random__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../utils/random */ "./frontend/src/client/utils/random.ts");
 /* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
 /* harmony import */ var _clip_view__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./clip.view */ "./frontend/src/client/components/clip/clip.view.ts");
+/* harmony import */ var _clip_selectionInteractor__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./clip.selectionInteractor */ "./frontend/src/client/components/clip/clip.selectionInteractor.ts");
+/* harmony import */ var _clip_deleteInteractor__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./clip.deleteInteractor */ "./frontend/src/client/components/clip/clip.deleteInteractor.ts");
+/* harmony import */ var _clip_shootingInteractor__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./clip.shootingInteractor */ "./frontend/src/client/components/clip/clip.shootingInteractor.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1952,6 +2209,9 @@ var Clip_1;
 
 
 
+
+
+
 let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MODULE_7__.VcComponent {
     constructor(properties) {
         super(Object.assign(Object.assign({}, properties), { generate: false }));
@@ -1962,10 +2222,12 @@ let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MO
             modelConstructor: _clip_model__WEBPACK_IMPORTED_MODULE_2__.ClipModel,
             data: properties.data,
             handlerConstructors: [_clip_textHandler__WEBPACK_IMPORTED_MODULE_5__.ClipTextHandler],
-            controllerConstructors: [_clipThumbnailController__WEBPACK_IMPORTED_MODULE_3__.ClipThumbnailController]
+            controllerConstructors: [_clipThumbnailController__WEBPACK_IMPORTED_MODULE_3__.ClipThumbnailController],
+            interactorConstructors: [_clip_selectionInteractor__WEBPACK_IMPORTED_MODULE_11__.ClipSelectionInteractor, _clip_deleteInteractor__WEBPACK_IMPORTED_MODULE_12__.ClipDeleteInteractor, _clip_shootingInteractor__WEBPACK_IMPORTED_MODULE_13__.ClipShootingInteractor]
         });
         this.mvc.emitter.add("mediaId", (value) => __awaiter(this, void 0, void 0, function* () {
-            this.model.updateMediaData(yield this.director.mediaHandler.getMedia(value));
+            this.model.metadata = this.director.mediaHandler.getMediaMetadata(value);
+            // this.model.blob = await this.director.mediaHandler.getMedia(value);
             //TODO maybe remove this? idk
             // if (media.metadata?.thumbnail) {
             //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
@@ -2147,6 +2409,7 @@ class ClipView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
         this.generateHandleEvents(this.rightHandle, "right");
     }
     generateHandleEvents(handle, side) {
+        handle.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.clickStart, (e) => e.stopImmediatePropagation());
         handle.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.dragStart, (e) => e.stopImmediatePropagation());
         handle.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.drag, (e) => this.dragHandle(side, e));
         handle.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.dragEnd, () => this.model.normalizeTime());
@@ -2382,7 +2645,7 @@ class ClipRendererModel extends _renderer_renderer_model__WEBPACK_IMPORTED_MODUL
         const prevOffset = this.offsets[index];
         if (offset != prevOffset)
             this.offsets[index] = offset;
-        if (index == this.currentIndex)
+        if (index === this.currentIndex)
             this.currentIndex = index;
         this.fireCallback("clipChanged", index);
     }
@@ -2597,8 +2860,10 @@ class ClipRendererVideoController extends _renderer_renderer_videoController__WE
             const video = this.videos[index];
             if (!video)
                 return;
+            this.view.showVideo();
             if (clip === null || clip === void 0 ? void 0 : clip.uri) {
-                video.src = clip.uri;
+                if (clip.uri !== video.src)
+                    video.src = clip.uri;
                 yield _renderer_renderer_videoController__WEBPACK_IMPORTED_MODULE_0__.RendererVideoController.waitForVideoLoad(video, offset);
             }
             else {
@@ -2622,7 +2887,7 @@ class ClipRendererVideoController extends _renderer_renderer_videoController__WE
             if (!clip)
                 return;
             if (((_a = clip.metadata) === null || _a === void 0 ? void 0 : _a.type) == "video") {
-                this.view.showCurrentVideo();
+                this.view.showVideo();
                 yield this.play();
             }
             else
@@ -2683,8 +2948,8 @@ class ClipRendererView extends _renderer_renderer_view__WEBPACK_IMPORTED_MODULE_
     addTextElement(element, id) {
         this.textParent.addChild(element, id);
     }
-    showCurrentVideo() {
-        this.videos.forEach((video, index) => video.show(index == this.model.currentIndex));
+    showVideo(index = this.model.currentIndex) {
+        this.videos.forEach((video, i) => video.show(index == i));
     }
     resize(aspectRatio = 1.33, width = this.element.offsetWidth, height = this.element.offsetHeight) {
         super.resize(aspectRatio, width, height);
@@ -3197,6 +3462,12 @@ class FlowModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
     get defaultName() {
         return this.getData("defaultName");
     }
+    get color() {
+        return this.getData("color");
+    }
+    set color(value) {
+        this.setData("color", value);
+    }
     get branches() {
         return this.branchesModel.getAllComponents();
     }
@@ -3373,6 +3644,7 @@ let Flow = class Flow extends _component_component__WEBPACK_IMPORTED_MODULE_8__.
         this.model.onFlowBranchAdded = (data) => new _flowBranch_flowBranch__WEBPACK_IMPORTED_MODULE_6__.FlowBranch({ flow: this, data: data });
         this.model.onFlowTagAdded = (data) => new _flowTag_flowTag__WEBPACK_IMPORTED_MODULE_11__.FlowTag({ flow: this, data: data, director: this.director });
         this.mvc.initialize();
+        console.log(this.model.color);
     }
     static createData(data) {
         if (!data)
@@ -3390,6 +3662,9 @@ let Flow = class Flow extends _component_component__WEBPACK_IMPORTED_MODULE_8__.
     }
     get svg() {
         return this.view.svg;
+    }
+    get color() {
+        return this.model.color;
     }
     get branches() {
         return this.model.branches;
@@ -4433,6 +4708,7 @@ class FlowBranchView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboV
      * @private
      */
     drawPath() {
+        var _a;
         const points = this.model.points;
         this.clearChevrons();
         if (points.length < 2)
@@ -4450,6 +4726,7 @@ class FlowBranchView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboV
             .attr("d", pathData)
             .attr("stroke-dasharray", isOverwriting ? "5, 5" : null)
             .attr("opacity", isOverwriting ? 0.6 : 1)
+            .attr("stroke", (_a = this.model.flow.color) !== null && _a !== void 0 ? _a : "black")
             .attr("stroke-width", this.model.strokeWidth);
         this.drawChevronsDelayed();
     }
@@ -4458,6 +4735,7 @@ class FlowBranchView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboV
         this.model.chevronTimer = setTimeout(() => this.drawChevrons(), delay);
     }
     drawChevrons() {
+        var _a;
         const isOverwriting = this.model.isOverwriting;
         const pathLength = this.model.path.getTotalLength();
         for (let distance = this.model.chevronInterval; distance < pathLength; distance += this.model.chevronInterval) {
@@ -4469,7 +4747,7 @@ class FlowBranchView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboV
                 .attr("class", "chevron")
                 .attr("d", this.model.chevronShape)
                 .attr("transform", `translate(${point.x}, ${point.y}) rotate(${angle})`)
-                .attr("fill", isOverwriting ? "grey" : "black")
+                .attr("stroke", (_a = this.model.flow.color) !== null && _a !== void 0 ? _a : "black")
                 .attr("stroke-linecap", "round")
                 .attr("stroke-linejoin", "round")
                 .attr("opacity", isOverwriting ? 0.6 : 1)
@@ -5246,6 +5524,10 @@ let MetadataDrawer = class MetadataDrawer extends turbodombuilder__WEBPACK_IMPOR
             modelConstructor: _metadataDrawer_model__WEBPACK_IMPORTED_MODULE_3__.MetadataDrawerModel,
             data: properties.card ? properties.card.metadata : undefined
         });
+        requestAnimationFrame(() => {
+            this.icon.switchReifect.apply(this.getOppositeSide());
+            requestAnimationFrame(() => this.icon.switchReifect.apply(this.side));
+        });
     }
     static createData(data) {
         return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_4__.YUtilities.createYMap({});
@@ -5348,6 +5630,37 @@ class MetadataDrawerView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Tu
 
 /***/ }),
 
+/***/ "./frontend/src/client/components/playback/playback.addTextInteractor.ts":
+/*!*******************************************************************************!*\
+  !*** ./frontend/src/client/components/playback/playback.addTextInteractor.ts ***!
+  \*******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   PlaybackAddTextInteractor: () => (/* binding */ PlaybackAddTextInteractor)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+/* harmony import */ var _clip_clip__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../clip/clip */ "./frontend/src/client/components/clip/clip.ts");
+
+
+
+class PlaybackAddTextInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
+    constructor() {
+        super(...arguments);
+        this.tool = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.createText;
+    }
+    click(e) {
+        const rendererBounds = this.element.renderer.getBoundingClientRect();
+        this.element.director.contextManager.getOfType(_clip_clip__WEBPACK_IMPORTED_MODULE_2__.Clip).addText(new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point((e.position.x - rendererBounds.left) / rendererBounds.width, (e.position.y - rendererBounds.top) / rendererBounds.height));
+    }
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/components/playback/playback.css":
 /*!**************************************************************!*\
   !*** ./frontend/src/client/components/playback/playback.css ***!
@@ -5441,6 +5754,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _playback_model__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./playback.model */ "./frontend/src/client/components/playback/playback.model.ts");
 /* harmony import */ var _component_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../component/component */ "./frontend/src/client/components/component/component.ts");
 /* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+/* harmony import */ var _playback_addTextInteractor__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./playback.addTextInteractor */ "./frontend/src/client/components/playback/playback.addTextInteractor.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -5453,12 +5767,14 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
+
 let Playback = class Playback extends _component_component__WEBPACK_IMPORTED_MODULE_4__.VcComponent {
     constructor(properties) {
         super(properties);
         this.mvc.generate({
             viewConstructor: _playback_view__WEBPACK_IMPORTED_MODULE_2__.PlaybackView,
-            modelConstructor: _playback_model__WEBPACK_IMPORTED_MODULE_3__.PlaybackModel
+            modelConstructor: _playback_model__WEBPACK_IMPORTED_MODULE_3__.PlaybackModel,
+            interactorConstructors: [_playback_addTextInteractor__WEBPACK_IMPORTED_MODULE_6__.PlaybackAddTextInteractor]
         });
         if (properties.path)
             this.path = properties.path;
@@ -5944,32 +6260,32 @@ class RendererVideoController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
     }
     static waitForVideoLoad(video, seekTime = 0, delay = 60) {
         return new Promise((resolve, reject) => {
-            const done = () => setTimeout(resolve, delay);
-            const initialLoad = () => {
-                if (video.readyState >= 2)
-                    handleSeek();
-                else
-                    video.addEventListener("canplay", loadListener);
-            };
             const loadListener = () => {
                 video.removeEventListener("canplay", loadListener);
                 handleSeek();
             };
             const handleSeek = () => {
+                console.log("SEEKINGGGG");
                 video.addEventListener("seeked", seekListener);
-                //TODO SEEK IS NOT WORKINGGGGGG
                 setTimeout(() => video.currentTime = Math.round(seekTime * 100) / 100, delay);
+                console.log(video.indexInParent());
             };
             const seekListener = () => {
                 video.removeEventListener("seeked", seekListener);
-                done();
+                setTimeout(resolve, delay);
             };
             const onError = (err) => {
                 video.removeEventListener("error", onError);
                 reject(err);
             };
             video.addEventListener("error", onError);
-            initialLoad();
+            if (video.readyState >= 2)
+                handleSeek();
+            else
+                video.addEventListener("canplay", loadListener);
+            video.addEventListener("timeupdate", () => {
+                console.log("Time:", video.currentTime);
+            });
         });
     }
 }
@@ -6157,7 +6473,7 @@ let ClipScrubber = ClipScrubber_1 = class ClipScrubber extends _scrubber__WEBPAC
     }
     setupUIElements() {
         super.setupUIElements();
-        this.head = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({ icon: "scrubber-head", directory: "assets/misc" });
+        this.head = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({ icon: "scrubber-head", directory: "/assets/misc" });
         this.markingMenuHandle = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)();
     }
     setupUILayout() {
@@ -6282,7 +6598,7 @@ let Scrubber = class Scrubber extends _component_component__WEBPACK_IMPORTED_MOD
                 this.onScrubbingStart(e);
         });
         //On drag and if scrubbing --> stop propagation and move scrubber by delta position
-        document.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.drag, (e) => {
+        this.director.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.drag, (e) => {
             if (!this.scrubbing)
                 return;
             e.stopImmediatePropagation();
@@ -6290,7 +6606,7 @@ let Scrubber = class Scrubber extends _component_component__WEBPACK_IMPORTED_MOD
                 this.onScrubbing(e);
         });
         //Drag end and if scrubbing --> end scrubbing and stop propagation
-        document.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.dragEnd, (e) => {
+        this.director.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.dragEnd, (e) => {
             if (!this.scrubbing)
                 return;
             this.scrubbing = false;
@@ -6561,6 +6877,34 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
+/***/ "./frontend/src/client/components/textElement/textElement.deleteInteractor.ts":
+/*!************************************************************************************!*\
+  !*** ./frontend/src/client/components/textElement/textElement.deleteInteractor.ts ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   TextElementDeleteInteractor: () => (/* binding */ TextElementDeleteInteractor)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+
+
+class TextElementDeleteInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
+    constructor() {
+        super(...arguments);
+        this.tool = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.delete;
+    }
+    click() {
+        this.element.clip.removeText(this.element);
+    }
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/components/textElement/textElement.model.ts":
 /*!*************************************************************************!*\
   !*** ./frontend/src/client/components/textElement/textElement.model.ts ***!
@@ -6620,6 +6964,47 @@ class TextElementModel extends _yManagement_yModel_types_yComponentModel__WEBPAC
 
 /***/ }),
 
+/***/ "./frontend/src/client/components/textElement/textElement.selectionInteractor.ts":
+/*!***************************************************************************************!*\
+  !*** ./frontend/src/client/components/textElement/textElement.selectionInteractor.ts ***!
+  \***************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   TextElementSelectionInteractor: () => (/* binding */ TextElementSelectionInteractor)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+/* harmony import */ var _textElement__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./textElement */ "./frontend/src/client/components/textElement/textElement.ts");
+
+
+
+class TextElementSelectionInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
+    constructor() {
+        super(...arguments);
+        this.tool = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.selection;
+        this.propagateUp = {
+            [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.clickStart]: true
+        };
+    }
+    clickStart() {
+        this.element.director.contextManager.setContext(this.element, 3, true);
+    }
+    drag(e) {
+        this.element.translateBy(e.scaledDeltaPosition);
+        this.element.director.contextManager.getAllOfType(_textElement__WEBPACK_IMPORTED_MODULE_2__.TextElement).forEach(entry => {
+            if (!(entry instanceof _textElement__WEBPACK_IMPORTED_MODULE_2__.TextElement))
+                return;
+            entry.translateBy(e.scaledDeltaPosition);
+        });
+    }
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/components/textElement/textElement.ts":
 /*!*******************************************************************!*\
   !*** ./frontend/src/client/components/textElement/textElement.ts ***!
@@ -6638,12 +7023,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _textElement_model__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./textElement.model */ "./frontend/src/client/components/textElement/textElement.model.ts");
 /* harmony import */ var _component_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../component/component */ "./frontend/src/client/components/component/component.ts");
 /* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+/* harmony import */ var _textElement_selectionInteractor__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./textElement.selectionInteractor */ "./frontend/src/client/components/textElement/textElement.selectionInteractor.ts");
+/* harmony import */ var _textElement_deleteInteractor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./textElement.deleteInteractor */ "./frontend/src/client/components/textElement/textElement.deleteInteractor.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
+
 
 
 
@@ -6658,7 +7047,8 @@ let TextElement = class TextElement extends _component_component__WEBPACK_IMPORT
         this.mvc.generate({
             viewConstructor: _textElement_view__WEBPACK_IMPORTED_MODULE_3__.TextElementView,
             modelConstructor: _textElement_model__WEBPACK_IMPORTED_MODULE_4__.TextElementModel,
-            data: properties.data
+            data: properties.data,
+            interactorConstructors: [_textElement_selectionInteractor__WEBPACK_IMPORTED_MODULE_7__.TextElementSelectionInteractor, _textElement_deleteInteractor__WEBPACK_IMPORTED_MODULE_8__.TextElementDeleteInteractor]
         });
     }
     static createData(data) {
@@ -6764,9 +7154,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _textElement_types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./textElement.types */ "./frontend/src/client/components/textElement/textElement.types.ts");
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 /* harmony import */ var _basicComponents_resizer_resizer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../basicComponents/resizer/resizer */ "./frontend/src/client/components/basicComponents/resizer/resizer.ts");
-/* harmony import */ var _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../managers/toolManager/toolManager.types */ "./frontend/src/client/managers/toolManager/toolManager.types.ts");
-/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
-
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
 
 
 
@@ -6818,9 +7206,9 @@ class TextElementView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Turbo
     setupUIListeners() {
         super.setupUIListeners();
         this.element.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboEventName.click, (e) => {
-            if (this.element.director.currentType != _directors_project_project_types__WEBPACK_IMPORTED_MODULE_4__.ProjectScreens.camera)
+            if (this.element.director.currentType != _directors_project_project_types__WEBPACK_IMPORTED_MODULE_3__.ProjectScreens.camera)
                 return;
-            if (this.element.director.toolManager.getFiredTool(e).name != _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_3__.ToolType.text)
+            if (this.element.director.toolManager.getFiredTool(e).name != _directors_project_project_types__WEBPACK_IMPORTED_MODULE_3__.ToolType.createText)
                 return;
             this.content.focus();
             e.stopImmediatePropagation();
@@ -6928,6 +7316,11 @@ let ClipTimeline = class ClipTimeline extends _timeline__WEBPACK_IMPORTED_MODULE
         this.scaled = true;
         if (properties.drawerProperties)
             this.view.drawer.setProperties(properties.drawerProperties);
+        //TODO FIX THIS IN TURBO DRAWER
+        requestAnimationFrame(() => {
+            this.view.drawer.icon.switchReifect.apply(this.view.drawer.getOppositeSide());
+            requestAnimationFrame(() => this.view.drawer.icon.switchReifect.apply(this.view.drawer.side));
+        });
     }
     onClipAdded(syncedClip, id, blockKey) {
         const clip = super.onClipAdded(syncedClip, id, blockKey, { viewConstructor: _clip_clip_view__WEBPACK_IMPORTED_MODULE_3__.ClipView });
@@ -6948,6 +7341,9 @@ let ClipTimeline = class ClipTimeline extends _timeline__WEBPACK_IMPORTED_MODULE
     addIndicatorAt(indicator, index) {
         indicator.remove();
         this.view.scrubberContainer.addChild(indicator, index);
+    }
+    get clipsContainer() {
+        return this.view.scrubberContainer;
     }
 };
 __decorate([
@@ -6994,6 +7390,159 @@ class ClipTimelineView extends _timeline_view__WEBPACK_IMPORTED_MODULE_1__.Timel
 
 /***/ }),
 
+/***/ "./frontend/src/client/components/timeline/shootingTimeline/shootingTimeline.css":
+/*!***************************************************************************************!*\
+  !*** ./frontend/src/client/components/timeline/shootingTimeline/shootingTimeline.css ***!
+  \***************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../../../../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "./node_modules/style-loader/dist/runtime/styleDomAPI.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "./node_modules/style-loader/dist/runtime/insertBySelector.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../../../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "./node_modules/style-loader/dist/runtime/insertStyleElement.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_shootingTimeline_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../../../../node_modules/css-loader/dist/cjs.js!./shootingTimeline.css */ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/timeline/shootingTimeline/shootingTimeline.css");
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_shootingTimeline_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_shootingTimeline_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_shootingTimeline_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_shootingTimeline_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/components/timeline/shootingTimeline/shootingTimeline.ts":
+/*!**************************************************************************************!*\
+  !*** ./frontend/src/client/components/timeline/shootingTimeline/shootingTimeline.ts ***!
+  \**************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ShootingTimeline: () => (/* binding */ ShootingTimeline)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _shootingTimeline_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./shootingTimeline.css */ "./frontend/src/client/components/timeline/shootingTimeline/shootingTimeline.css");
+/* harmony import */ var _timeline__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../timeline */ "./frontend/src/client/components/timeline/timeline.ts");
+/* harmony import */ var _clip_clip_view__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../clip/clip.view */ "./frontend/src/client/components/clip/clip.view.ts");
+/* harmony import */ var _shootingTimeline_view__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./shootingTimeline.view */ "./frontend/src/client/components/timeline/shootingTimeline/shootingTimeline.view.ts");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+
+
+
+let ShootingTimeline = class ShootingTimeline extends _timeline__WEBPACK_IMPORTED_MODULE_2__.Timeline {
+    constructor(properties) {
+        super(Object.assign(Object.assign({}, properties), { viewConstructor: _shootingTimeline_view__WEBPACK_IMPORTED_MODULE_4__.ShootingTimelineView }));
+        this.addClass("vc-shooting-timeline");
+        this.scaled = true;
+        if (properties.drawerProperties)
+            this.view.drawer.setProperties(properties.drawerProperties);
+    }
+    onClipAdded(syncedClip, id, blockKey) {
+        const clip = super.onClipAdded(syncedClip, id, blockKey, { viewConstructor: _clip_clip_view__WEBPACK_IMPORTED_MODULE_3__.ClipView });
+        this.view.scrubberContainer.addChild(clip, this.model.clipHandler.convertBlockScopeToIndex(id + 1, blockKey));
+        return clip;
+    }
+    set scaled(value) {
+        if (this.view && this.view.scrubber)
+            this.view.scrubber.scaled = value;
+    }
+    get width() {
+        return this.model.totalDuration * this.pixelsPerSecondUnit * ((this.scaled ? this.director.canvas.scale : 1) || 1);
+    }
+    reloadTime() {
+        super.reloadTime();
+        this.view.drawer.refresh();
+    }
+    addIndicatorAt(indicator, index) {
+        indicator.remove();
+        this.view.scrubberContainer.addChild(indicator, index);
+    }
+};
+__decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
+], ShootingTimeline.prototype, "scaled", null);
+ShootingTimeline = __decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-shooting-timeline")
+], ShootingTimeline);
+
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/components/timeline/shootingTimeline/shootingTimeline.view.ts":
+/*!*******************************************************************************************!*\
+  !*** ./frontend/src/client/components/timeline/shootingTimeline/shootingTimeline.view.ts ***!
+  \*******************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ShootingTimelineView: () => (/* binding */ ShootingTimelineView)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _timeline_view__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../timeline.view */ "./frontend/src/client/components/timeline/timeline.view.ts");
+/* harmony import */ var _scrubber_clipScrubber_clipScrubber__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../scrubber/clipScrubber/clipScrubber */ "./frontend/src/client/components/scrubber/clipScrubber/clipScrubber.ts");
+
+
+
+class ShootingTimelineView extends _timeline_view__WEBPACK_IMPORTED_MODULE_1__.TimelineView {
+    setupUIElements() {
+        super.setupUIElements();
+        this.drawer = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboDrawer({ icon: "chevron", side: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.right });
+        this.scrubber = new _scrubber_clipScrubber_clipScrubber__WEBPACK_IMPORTED_MODULE_2__.ClipScrubber({ timeline: this.element, director: this.element.director, initialize: true });
+    }
+    setupUILayout() {
+        this.element.addChild(this.drawer);
+        this.element.childHandler = this.drawer.childHandler;
+        super.setupUILayout();
+    }
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/components/timeline/timeline.clipController.ts":
 /*!****************************************************************************!*\
   !*** ./frontend/src/client/components/timeline/timeline.clipController.ts ***!
@@ -7008,7 +7557,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _timeline_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./timeline.css */ "./frontend/src/client/components/timeline/timeline.css");
 /* harmony import */ var _clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../clipRenderer/clipRenderer.types */ "./frontend/src/client/components/clipRenderer/clipRenderer.types.ts");
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../managers/toolManager/toolManager.types */ "./frontend/src/client/managers/toolManager/toolManager.types.ts");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
 
 
 
@@ -7018,7 +7567,7 @@ class TimelineClipController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2_
         super.setupChangedCallbacks();
         this.emitter.add("currentTimeChanged", () => this.reloadCurrentClip());
         const snapWhenShooting = (e) => requestAnimationFrame(() => {
-            if (this.element.director.toolManager.getFiredTool(e).name == _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_3__.ToolType.shoot)
+            if (this.element.director.toolManager.getFiredTool(e).name == _directors_project_project_types__WEBPACK_IMPORTED_MODULE_3__.ToolType.shoot)
                 this.snapToClosest();
         });
         this.view.scrubber.onScrubbingEnd = snapWhenShooting;
@@ -7030,7 +7579,7 @@ class TimelineClipController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2_
     reloadCurrentClip() {
         var _a;
         this.model.indexInfo = this.clipHandler.getClipIndexAtTimestamp();
-        this.element.director.contextManager.setContext(this.model.currentClip, 2);
+        this.element.director.contextManager.setContext(this.model.currentClip, 2, this.model.currentClip.selected);
         if (this.element.renderer.isPlaying)
             return;
         this.element.renderer.setFrame(this.element.renderer.visibilityMode == _clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_1__.ClipRendererVisibility.ghosting
@@ -7379,7 +7928,21 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 class TimelinePlayController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboController {
     setupChangedCallbacks() {
         super.setupChangedCallbacks();
-        this.emitter.add("playButtonClicked", () => this.play());
+        this.emitter.add("playButtonClicked", () => {
+            this.play();
+            (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.video)({
+                parent: document.body,
+                controls: true,
+                src: this.clipHandler.getClipAt(0).uri,
+                style: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.css) `
+                    position: absolute;
+                    display: block;
+                    width: 500px;
+                    top: 20px;
+                    left: 20px;
+                `
+            });
+        });
         this.emitter.add("containerClicked", () => {
             if (this.element.isPlaying)
                 this.play(true);
@@ -7644,7 +8207,8 @@ let Timeline = class Timeline extends _component_component__WEBPACK_IMPORTED_MOD
         return this.renderer.isPlaying;
     }
     get width() {
-        return this.offsetWidth;
+        const basis = this.scaled ? this.director.canvas.scale : 1;
+        return this.offsetWidth * basis;
     }
     addClip(clip, index) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -7846,6 +8410,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 /* harmony import */ var _toolbar_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./toolbar.css */ "./frontend/src/client/components/toolbar/toolbar.css");
 /* harmony import */ var _component_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../component/component */ "./frontend/src/client/components/component/component.ts");
+/* harmony import */ var _tools_tool_tool__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../tools/tool/tool */ "./frontend/src/client/tools/tool/tool.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -7855,25 +8420,27 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
+
 let Toolbar = class Toolbar extends _component_component__WEBPACK_IMPORTED_MODULE_2__.VcComponent {
     constructor(properties = {}) {
+        var _a;
         super(properties);
+        (_a = properties.tools) === null || _a === void 0 ? void 0 : _a.forEach(tool => this.addTool(tool));
     }
     get toolManager() {
         return this.director.toolManager;
     }
-    populateWith(...names) {
-        names.forEach(name => { var _a; return this.addToolInstance((_a = this.toolManager.getToolByName(name)) === null || _a === void 0 ? void 0 : _a.createInstance()); });
+    createTool(tool) {
+        if (tool instanceof turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Tool)
+            return tool;
+        if (typeof tool === "object")
+            return new _tools_tool_tool__WEBPACK_IMPORTED_MODULE_3__.VcTool(Object.assign(Object.assign({}, tool), { toolManager: this.toolManager, director: this.director }));
+        if (typeof tool === "string")
+            return new _tools_tool_tool__WEBPACK_IMPORTED_MODULE_3__.VcTool({ name: tool, toolManager: this.toolManager, director: this.director });
     }
-    populateWithAllTools() {
-        this.toolManager.getToolsArray().forEach(tool => this.addToolInstance(tool.createInstance()));
-    }
-    addToolInstance(tool) {
-        tool === null || tool === void 0 ? void 0 : tool.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, (e) => {
-            this.toolManager.setTool(tool.tool, turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.ClickMode.left);
-            e.stopImmediatePropagation();
-        });
-        this.addChild(tool);
+    addTool(tool) {
+        const genTool = this.createTool(tool);
+        this.addChild(genTool);
     }
 };
 Toolbar = __decorate([
@@ -8014,6 +8581,34 @@ class ProjectCardsModel extends _yManagement_yModel_types_yManagerModel__WEBPACK
     }
     get branchingNodesInstances() {
         return this.getAllComponents("branchingNodes");
+    }
+}
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/directors/project/project.createCardInteractor.ts":
+/*!*******************************************************************************!*\
+  !*** ./frontend/src/client/directors/project/project.createCardInteractor.ts ***!
+  \*******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ProjectCreateCardInteractor: () => (/* binding */ ProjectCreateCardInteractor)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./project.types */ "./frontend/src/client/directors/project/project.types.ts");
+
+
+class ProjectCreateCardInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
+    constructor() {
+        super(...arguments);
+        this.tool = _project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.createCard;
+    }
+    click(e) {
+        this.element.createNewCard(e.scaledPosition);
     }
 }
 
@@ -8189,6 +8784,78 @@ class ProjectModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IM
 
 /***/ }),
 
+/***/ "./frontend/src/client/directors/project/project.navigationInteractor.ts":
+/*!*******************************************************************************!*\
+  !*** ./frontend/src/client/directors/project/project.navigationInteractor.ts ***!
+  \*******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ProjectNavigationInteractor: () => (/* binding */ ProjectNavigationInteractor)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./project.types */ "./frontend/src/client/directors/project/project.types.ts");
+/* harmony import */ var _managers_cursorManager_cursorManager_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../managers/cursorManager/cursorManager.types */ "./frontend/src/client/managers/cursorManager/cursorManager.types.ts");
+
+
+
+class ProjectNavigationInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
+    constructor() {
+        super(...arguments);
+        this.tool = _project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.navigator;
+    }
+    clickStart() {
+        //Click start --> cursor grabbing
+        this.element.cursorManager.cursor = _managers_cursorManager_cursorManager_types__WEBPACK_IMPORTED_MODULE_2__.Cursor.grabbing;
+    }
+    drag(e) {
+        //On drag --> pan and (if two touch points) zoom
+        this.element.canvas.navigationManager.pan(e);
+        if (e.positions.valuesArray().length > 1)
+            this.element.canvas.navigationManager.zoom(e);
+    }
+    clickEnd(e) {
+        if (e.clickMode == turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.ClickMode.middle)
+            this.element.cursorManager.cursor = _managers_cursorManager_cursorManager_types__WEBPACK_IMPORTED_MODULE_2__.Cursor.default;
+        //Click end --> cursor grab
+        else
+            this.element.cursorManager.cursor = _managers_cursorManager_cursorManager_types__WEBPACK_IMPORTED_MODULE_2__.Cursor.grab;
+    }
+}
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/directors/project/project.selectionInteractor.ts":
+/*!******************************************************************************!*\
+  !*** ./frontend/src/client/directors/project/project.selectionInteractor.ts ***!
+  \******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ProjectSelectionInteractor: () => (/* binding */ ProjectSelectionInteractor)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./project.types */ "./frontend/src/client/directors/project/project.types.ts");
+
+
+class ProjectSelectionInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
+    constructor() {
+        super(...arguments);
+        this.tool = _project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.selection;
+    }
+    clickStart() {
+        this.element.contextManager.clearContext();
+    }
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/directors/project/project.ts":
 /*!**********************************************************!*\
   !*** ./frontend/src/client/directors/project/project.ts ***!
@@ -8206,16 +8873,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_flow_flow__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/flow/flow */ "./frontend/src/client/components/flow/flow.ts");
 /* harmony import */ var _panels_shootingPanel_shootingPanel__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../panels/shootingPanel/shootingPanel */ "./frontend/src/client/panels/shootingPanel/shootingPanel.ts");
 /* harmony import */ var _panels_textPanel_textPanel__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../panels/textPanel/textPanel */ "./frontend/src/client/panels/textPanel/textPanel.ts");
-/* harmony import */ var _managers_contextManager_contextManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../managers/contextManager/contextManager */ "./frontend/src/client/managers/contextManager/contextManager.ts");
-/* harmony import */ var _managers_toolManager_toolManager__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../managers/toolManager/toolManager */ "./frontend/src/client/managers/toolManager/toolManager.ts");
-/* harmony import */ var _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../managers/toolManager/toolManager.types */ "./frontend/src/client/managers/toolManager/toolManager.types.ts");
-/* harmony import */ var _project_types__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./project.types */ "./frontend/src/client/directors/project/project.types.ts");
-/* harmony import */ var _project_view__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./project.view */ "./frontend/src/client/directors/project/project.view.ts");
-/* harmony import */ var _project_model__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./project.model */ "./frontend/src/client/directors/project/project.model.ts");
-/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
-/* harmony import */ var _project_css__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./project.css */ "./frontend/src/client/directors/project/project.css");
-/* harmony import */ var _rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../rootDirector/rootDirector */ "./frontend/src/client/directors/rootDirector/rootDirector.ts");
-/* harmony import */ var _handlers_mediaHandler_mediaHandler__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../handlers/mediaHandler/mediaHandler */ "./frontend/src/client/handlers/mediaHandler/mediaHandler.ts");
+/* harmony import */ var _project_types__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./project.types */ "./frontend/src/client/directors/project/project.types.ts");
+/* harmony import */ var _managers_contextManager_contextManager__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../managers/contextManager/contextManager */ "./frontend/src/client/managers/contextManager/contextManager.ts");
+/* harmony import */ var _project_view__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./project.view */ "./frontend/src/client/directors/project/project.view.ts");
+/* harmony import */ var _project_model__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./project.model */ "./frontend/src/client/directors/project/project.model.ts");
+/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+/* harmony import */ var _project_css__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./project.css */ "./frontend/src/client/directors/project/project.css");
+/* harmony import */ var _rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../rootDirector/rootDirector */ "./frontend/src/client/directors/rootDirector/rootDirector.ts");
+/* harmony import */ var _handlers_mediaHandler_mediaHandler__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../handlers/mediaHandler/mediaHandler */ "./frontend/src/client/handlers/mediaHandler/mediaHandler.ts");
+/* harmony import */ var _project_selectionInteractor__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./project.selectionInteractor */ "./frontend/src/client/directors/project/project.selectionInteractor.ts");
+/* harmony import */ var _project_createCardInteractor__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./project.createCardInteractor */ "./frontend/src/client/directors/project/project.createCardInteractor.ts");
+/* harmony import */ var _project_navigationInteractor__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./project.navigationInteractor */ "./frontend/src/client/directors/project/project.navigationInteractor.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8247,19 +8915,21 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_14__.RootDirector {
+
+let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_12__.RootDirector {
     constructor(properties) {
         var _a;
         super(properties);
         if (properties.document)
             this.document = properties.document;
-        this._mediaHandler = new _handlers_mediaHandler_mediaHandler__WEBPACK_IMPORTED_MODULE_15__.MediaHandler(this);
-        this._contextManager = new _managers_contextManager_contextManager__WEBPACK_IMPORTED_MODULE_6__.ContextManager();
-        this._toolManager = new _managers_toolManager_toolManager__WEBPACK_IMPORTED_MODULE_7__.ToolManager();
+        this._mediaHandler = new _handlers_mediaHandler_mediaHandler__WEBPACK_IMPORTED_MODULE_13__.MediaHandler(this);
+        this._contextManager = new _managers_contextManager_contextManager__WEBPACK_IMPORTED_MODULE_7__.ContextManager();
+        this._toolManager = new turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.ToolManager();
         this.mvc.generate({
-            modelConstructor: _project_model__WEBPACK_IMPORTED_MODULE_11__.ProjectModel,
-            viewConstructor: _project_view__WEBPACK_IMPORTED_MODULE_10__.ProjectView,
+            modelConstructor: _project_model__WEBPACK_IMPORTED_MODULE_9__.ProjectModel,
+            viewConstructor: _project_view__WEBPACK_IMPORTED_MODULE_8__.ProjectView,
             data: (_a = properties.document) === null || _a === void 0 ? void 0 : _a.getMap("document_content"),
+            interactorConstructors: [_project_selectionInteractor__WEBPACK_IMPORTED_MODULE_14__.ProjectSelectionInteractor, _project_createCardInteractor__WEBPACK_IMPORTED_MODULE_15__.ProjectCreateCardInteractor, _project_navigationInteractor__WEBPACK_IMPORTED_MODULE_16__.ProjectNavigationInteractor],
             initialize: false
         });
         this.model.onBranchingNodeAdded = data => new _components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_0__.BranchingNode({
@@ -8278,17 +8948,18 @@ let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED
             director: this
         });
         this.mvc.initialize();
-        this.currentType = _project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.canvas;
+        this.currentType = _project_types__WEBPACK_IMPORTED_MODULE_6__.ProjectScreens.canvas;
         this.toolPanel.addPanel(new _panels_shootingPanel_shootingPanel__WEBPACK_IMPORTED_MODULE_4__.ShootingPanel({
             toolPanel: this.toolPanel,
             director: this
-        }), _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_8__.ToolType.shoot, _project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.camera);
+        }), _project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.shoot, _project_types__WEBPACK_IMPORTED_MODULE_6__.ProjectScreens.camera);
         this.toolPanel.addPanel(new _panels_textPanel_textPanel__WEBPACK_IMPORTED_MODULE_5__.TextPanel({
             toolPanel: this.toolPanel,
             director: this
-        }), _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_8__.ToolType.text, _project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.camera);
-        this.eventManager.authorizeEventScaling = () => this.currentType == _project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.canvas;
+        }), _project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.createText, _project_types__WEBPACK_IMPORTED_MODULE_6__.ProjectScreens.camera);
+        this.eventManager.authorizeEventScaling = () => this.currentType == _project_types__WEBPACK_IMPORTED_MODULE_6__.ProjectScreens.canvas;
         this.eventManager.scaleEventPosition = (position) => this.canvas.navigationManager.computePositionRelativeToCanvas(position);
+        this.onScreenChange.add(() => this.view.showAppBar(this.currentType !== _project_types__WEBPACK_IMPORTED_MODULE_6__.ProjectScreens.camera));
     }
     get mediaHandler() {
         return this._mediaHandler;
@@ -8325,7 +8996,7 @@ let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED
         return this.model.media.get(id);
     }
     setMedia(id, media) {
-        this.model.media.set(id, media);
+        this.model.media.set(id, _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__.YUtilities.createYMap(media));
     }
     forEachBranch(callback) {
         this.flows.forEach(flow => flow.branches.forEach(branch => callback(branch, flow)));
@@ -8336,7 +9007,7 @@ let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED
             if (position instanceof turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.Point)
                 position = position.object;
             if (!id)
-                return yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_12__.YUtilities.addInYMap(_components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_0__.BranchingNode.createData({ origin: position }), this.model.branchingNodesData);
+                return yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__.YUtilities.addInYMap(_components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_0__.BranchingNode.createData({ origin: position }), this.model.branchingNodesData);
             this.model.branchingNodesData.set(id, _components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_0__.BranchingNode.createData({ origin: position }));
             return id;
         });
@@ -8344,17 +9015,17 @@ let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED
     createNewCard(position) {
         return __awaiter(this, void 0, void 0, function* () {
             this.model.incrementCardsCount();
-            return yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_12__.YUtilities.addInYMap(_components_card_card__WEBPACK_IMPORTED_MODULE_1__.Card.createData({
+            return yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__.YUtilities.addInYMap(_components_card_card__WEBPACK_IMPORTED_MODULE_1__.Card.createData({
                 origin: position.object,
                 title: "Card - " + this.model.cardsCount
             }), this.model.cardsData);
         });
     }
-    createNewFlow(position, nodeId) {
+    createNewFlow(position, nodeId, color) {
         return __awaiter(this, void 0, void 0, function* () {
             this.model.incrementFlowsCount();
             const defaultName = "Flow " + this.model.flowsCount;
-            return yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_12__.YUtilities.addInYMap(_components_flow_flow__WEBPACK_IMPORTED_MODULE_3__.Flow.createData({
+            return yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__.YUtilities.addInYMap(_components_flow_flow__WEBPACK_IMPORTED_MODULE_3__.Flow.createData({
                 branches: {
                     "0": {
                         entries: [{
@@ -8371,7 +9042,8 @@ let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED
                                 branchIds: ["0"]
                             }]
                     }],
-                defaultName: defaultName
+                defaultName: defaultName,
+                color: color
             }), this.model.flowsData);
         });
     }
@@ -8379,10 +9051,10 @@ let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED
         this.model.clear();
     }
     get canvas() {
-        return this.getScreen(_project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.canvas);
+        return this.getScreen(_project_types__WEBPACK_IMPORTED_MODULE_6__.ProjectScreens.canvas);
     }
     get camera() {
-        return this.getScreen(_project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.camera);
+        return this.getScreen(_project_types__WEBPACK_IMPORTED_MODULE_6__.ProjectScreens.camera);
     }
     delete(element) {
         if (element instanceof _components_card_card__WEBPACK_IMPORTED_MODULE_1__.Card)
@@ -8413,7 +9085,8 @@ Project = __decorate([
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ProjectScreens: () => (/* binding */ ProjectScreens)
+/* harmony export */   ProjectScreens: () => (/* binding */ ProjectScreens),
+/* harmony export */   ToolType: () => (/* binding */ ToolType)
 /* harmony export */ });
 var ProjectScreens;
 (function (ProjectScreens) {
@@ -8421,6 +9094,16 @@ var ProjectScreens;
     ProjectScreens["canvas"] = "canvas";
     ProjectScreens["camera"] = "camera";
 })(ProjectScreens || (ProjectScreens = {}));
+var ToolType;
+(function (ToolType) {
+    ToolType["connection"] = "Connect";
+    ToolType["createCard"] = "Create Card";
+    ToolType["delete"] = "Delete";
+    ToolType["navigator"] = "Navigator";
+    ToolType["selection"] = "Selection";
+    ToolType["shoot"] = "Shoot";
+    ToolType["createText"] = "Create Text";
+})(ToolType || (ToolType = {}));
 
 
 /***/ }),
@@ -8623,12 +9306,22 @@ class RootDirectorView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Turb
     setupUIElements() {
         super.setupUIElements();
         this.appBar = new _components_appBar_appBar__WEBPACK_IMPORTED_MODULE_1__.AppBar();
+        this.appBar.showTransition = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.StatefulReifect({
+            states: [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Shown.visible, turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Shown.hidden],
+            styles: {
+                [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Shown.visible]: { "display": "" },
+                [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Shown.hidden]: { "display": "none" }
+            }
+        });
         this.content = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)();
     }
     setupUILayout() {
         super.setupUILayout();
         this.element.addChild([this.appBar, this.content]);
         this.element.childHandler = this.content;
+    }
+    showAppBar(shown) {
+        this.appBar.show(shown);
     }
 }
 
@@ -8875,7 +9568,7 @@ class MediaHandler extends _requestHandler_requestHandler__WEBPACK_IMPORTED_MODU
         this.document = document;
     }
     get url() {
-        return this.serverUrl + "media/";
+        return this.serverUrl + "api/media/";
     }
     initializeLocalDatabase() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -8891,41 +9584,45 @@ class MediaHandler extends _requestHandler_requestHandler__WEBPACK_IMPORTED_MODU
             return this.localDatabase;
         });
     }
+    getMediaMetadata(id) {
+        return this.document.getMedia(id);
+    }
+    setMediaMetadata(id, media) {
+        this.document.setMedia(id, media);
+    }
     getMedia(id) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             if (id == undefined)
                 return undefined;
             const type = id.split("-")[0] == "image" ? "image" : "video";
-            const metadata = this.document.getMedia(id);
             const db = yield this.initializeLocalDatabase();
             const storeName = type + "s";
             const cachedMedia = yield ((_a = db.transaction(storeName, "readonly").objectStore(storeName)) === null || _a === void 0 ? void 0 : _a.get(id));
             if (cachedMedia)
-                return Object.assign(Object.assign({}, metadata), { blob: cachedMedia.blob });
+                return cachedMedia.blob;
             return new Promise((resolve) => {
                 this.makeRequest(this.url + id, "GET", id, response => resolve(response), error => console.error("Upload failed", error), false, "blob");
-            }).then(blob => {
-                console.log(blob);
-                return Object.assign(Object.assign({}, metadata), { blob: blob });
             });
         });
     }
-    updateMedia(data) {
+    updateMedia(data, blob) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             const id = data === null || data === void 0 ? void 0 : data.id;
-            const blob = data === null || data === void 0 ? void 0 : data.blob;
-            if (!id || !blob)
+            if (!id)
                 return undefined;
+            this.setMediaMetadata(id, data);
+            if (!blob)
+                return id;
+            console.log("SAVING BLOB", blob);
             const type = (_a = data.type) !== null && _a !== void 0 ? _a : "video";
-            this.document.setMedia(id, Object.assign(Object.assign({}, data), { blob: undefined }));
-            const formData = new FormData();
             const extension = blob.type === "video/mp4" ? ".mp4"
                 : blob.type === "video/webm" ? ".webm"
                     : blob.type === "image/png" ? ".png"
                         : blob.type === "image/jpeg" ? ".jpg"
                             : "";
+            const formData = new FormData();
             formData.append("media", blob, id + extension);
             this.makeRequest(this.url + id, "POST", formData, response => console.log("Upload success", response), error => console.error("Upload failed", error), false);
             const db = yield this.initializeLocalDatabase();
@@ -8934,14 +9631,30 @@ class MediaHandler extends _requestHandler_requestHandler__WEBPACK_IMPORTED_MODU
             return id;
         });
     }
-    saveMedia(data) {
+    saveMedia(data, blob) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
-            if (!(data === null || data === void 0 ? void 0 : data.blob))
+            if (!data)
                 return undefined;
-            const type = (_a = data.type) !== null && _a !== void 0 ? _a : "video";
-            data.id = `${type}-${Math.floor(Math.random() * 1000)}-${Date.now()}`;
-            return this.updateMedia(data);
+            if (!data.id) {
+                const type = (_a = data.type) !== null && _a !== void 0 ? _a : "video";
+                data.id = `${type}-${Math.floor(Math.random() * 1000)}-${Date.now()}`;
+            }
+            return this.updateMedia(data, blob);
+        });
+    }
+    convertMedia(data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const formData = new FormData();
+            formData.append("id", String(data.id));
+            formData.append("video", data.blob, `${data.id}.webm`);
+            console.log("CREATED FORM", formData.get("id"));
+            return new Promise((resolve) => {
+                this.makeRequest(this.url + "convert/", "POST", formData, (msg) => {
+                    console.log(msg);
+                    resolve(true);
+                }, error => console.error("Failed to convert video", error), false);
+            });
         });
     }
 }
@@ -9041,9 +9754,6 @@ class ContextManager {
     setContext(element, level = 1, select = false) {
         if (!element)
             return -1;
-        const levelEntry = this.context.get(level);
-        if (levelEntry && levelEntry.length == 1 && levelEntry[0] == element)
-            return 0;
         this.clearContext(level);
         this.context.set(level, [element]);
         if (select) {
@@ -9226,10 +9936,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 
 /**
- * @description Manages the navigation (panning and zooming) of a canvas
+ * @description Manages the navigation (panning and zooming) of a element
  */
 class NavigationManager {
-    constructor(canvas) {
+    constructor(element) {
         //Translation and scale
         this._translation = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point();
         this._scale = 1;
@@ -9241,8 +9951,8 @@ class NavigationManager {
         this.maxScale = 20;
         this.minScale = 0.1;
         this.willChangeTimeout = null;
-        this.canvas = canvas;
-        //Init canvas position to the center of the screen
+        this.element = element;
+        //Init element position to the center of the screen
         this.translation = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point(window.innerWidth / 2, window.innerHeight / 2);
         this.initEvents();
     }
@@ -9254,7 +9964,7 @@ class NavigationManager {
     }
     // Translation and scale manipulation
     /**
-     * @description The canvas's current scale.
+     * @description The element's current scale.
      */
     get scale() {
         return this._scale;
@@ -9268,11 +9978,11 @@ class NavigationManager {
             this._scale = this.minScale + 0.01;
         else
             this._scale = value;
-        //Transform the canvas accordingly
-        this.canvas.transform(this.translation, this.scale);
+        //Transform the element accordingly
+        this.element.transform(this.translation, this.scale);
     }
     /**
-     * @description The canvas's current translation
+     * @description The element's current translation
      * @private
      */
     get translation() {
@@ -9280,11 +9990,11 @@ class NavigationManager {
     }
     set translation(value) {
         this._translation = value;
-        //Transform the canvas accordingly
-        this.canvas.transform(this.translation, this.scale);
+        //Transform the element accordingly
+        this.element.transform(this.translation, this.scale);
     }
     /**
-     * @description Translate the canvas by the given delta values (will increment the previous translation
+     * @description Translate the element by the given delta values (will increment the previous translation
      * by the given values).
      * @param delta
      * @private
@@ -9294,7 +10004,7 @@ class NavigationManager {
     }
     //Pan and zoom
     /**
-     * @description Pans the canvas
+     * @description Pans the element
      * @param e
      */
     pan(e) {
@@ -9312,7 +10022,7 @@ class NavigationManager {
     }
     //TODO maybe also consider pointer location as zoom origin (for PC events)
     /**
-     * @description Zooms the canvas
+     * @description Zooms the element
      * @param e
      * @param isTrackpad
      */
@@ -9322,12 +10032,13 @@ class NavigationManager {
         const oldScale = this.scale;
         //Init zoom origin to the center of the screen
         let zoomOrigin;
-        // if (e.position) zoomOrigin = e.position.sub(this.translation);
-        // else {
-        const rect = this.canvas.getBoundingClientRect();
-        const canvasCenter = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point(rect.left + rect.width / 2, rect.top + rect.height / 2);
-        zoomOrigin = canvasCenter.sub(this.translation);
-        // }
+        if (e.position)
+            zoomOrigin = e.position;
+        else {
+            const rect = this.element.getBoundingClientRect();
+            zoomOrigin = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        }
+        zoomOrigin = zoomOrigin.sub(this.translation);
         //Touch Event
         if (e instanceof turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboDragEvent) {
             //Get arrays of positions and previous positions
@@ -9352,193 +10063,20 @@ class NavigationManager {
         if (this.willChangeTimeout)
             clearTimeout(this.willChangeTimeout);
         this.willChangeTimeout = setTimeout(() => {
-            this.canvas.setStyle("willChange", "");
-            requestAnimationFrame(() => this.canvas.setStyle("willChange", "transform"));
+            this.element.setStyle("willChange", "");
+            requestAnimationFrame(() => this.element.setStyle("willChange", "transform"));
         }, 200);
     }
     /**
-     * @description Offset a given screen position by the canvas's translation.
+     * @description Offset a given screen position by the element's translation.
      * @param {Point} screenPosition
      */
     computePositionRelativeToCanvas(screenPosition) {
-        const rect = this.canvas.getBoundingClientRect();
+        const rect = this.element.getBoundingClientRect();
         const localPos = screenPosition.sub(new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point(rect.left, rect.top));
         return localPos.sub(this.translation).div(this.scale);
     }
 }
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/managers/toolManager/toolManager.ts":
-/*!*****************************************************************!*\
-  !*** ./frontend/src/client/managers/toolManager/toolManager.ts ***!
-  \*****************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ToolManager: () => (/* binding */ ToolManager)
-/* harmony export */ });
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-
-//TODO handle key combinations maybe? Also fix the issue with 2-finger navigation on mobile when app starts
-/**
- * @description Manages (ideally) all the tools in the application
- */
-class ToolManager {
-    constructor() {
-        //Init all maps
-        this.tools = new Map();
-        this.mappedKeysToTool = new Map();
-        this.currentTools = new Map();
-        //Create delegate
-        this.onToolChange = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Delegate();
-        //Initialization
-        this.initEvents();
-    }
-    //Utility callback to get the current tool based on the fired event's information
-    getFiredTool(e) {
-        let tool;
-        //If keys are pressed --> try to get the tool assigned to key mode
-        if (e.keys.length > 0)
-            tool = this.getTool(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.ClickMode.key);
-        //If tool still null --> get tool assigned to event's click mode
-        if (!tool)
-            tool = this.getTool(e.clickMode);
-        return tool;
-    }
-    initEvents() {
-        //On key press --> set corresponding tool as key mode
-        document.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.keyPressed, (e) => this.setToolByKey(e.keyPressed));
-        //On key release --> clear set tool on key mode
-        document.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.keyReleased, () => this.setTool(null, turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.ClickMode.key, { select: false }));
-        //Listen for all custom events on the document and accordingly execute the corresponding function on the
-        //current tool. The tool will manage its actions and what object to interact with
-        document.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.clickStart, (e) => { var _a; return (_a = this.getFiredTool(e)) === null || _a === void 0 ? void 0 : _a.clickStart(e); });
-        document.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.click, (e) => { var _a; return (_a = this.getFiredTool(e)) === null || _a === void 0 ? void 0 : _a.clickAction(e); });
-        document.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.clickEnd, (e) => { var _a; return (_a = this.getFiredTool(e)) === null || _a === void 0 ? void 0 : _a.clickEnd(e); });
-        document.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.move, (e) => { var _a; return (_a = this.getFiredTool(e)) === null || _a === void 0 ? void 0 : _a.moveAction(e); });
-        document.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.dragStart, (e) => { var _a; return (_a = this.getFiredTool(e)) === null || _a === void 0 ? void 0 : _a.dragStart(e); });
-        document.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.drag, (e) => { var _a; return (_a = this.getFiredTool(e)) === null || _a === void 0 ? void 0 : _a.dragAction(e); });
-        document.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.dragEnd, (e) => { var _a; return (_a = this.getFiredTool(e)) === null || _a === void 0 ? void 0 : _a.dragEnd(e); });
-    }
-    /**
-     * @description Returns the tool with the given name (or undefined)
-     * @param name
-     */
-    getToolByName(name) {
-        return this.tools.get(name);
-    }
-    /**
-     * @description Returns all created tools as an array
-     */
-    getToolsArray() {
-        return [...this.tools.values()];
-    }
-    /**
-     * @description Adds a tool to the tools map, identified by its name. Optionally, provide a key to bind the tool to.
-     * @param tool
-     * @param key
-     */
-    addTool(tool, key) {
-        this.tools.set(tool.name, tool);
-        if (key)
-            this.mappedKeysToTool.set(key, tool.name);
-    }
-    /**
-     * @description Returns the tool currently held by the provided click mode
-     * @param mode
-     */
-    getTool(mode) {
-        return this.currentTools.get(mode);
-    }
-    /**
-     * @description Sets the provided tool as a current tool associated with the provided type
-     * @param tool
-     * @param type
-     * @param options
-     */
-    setTool(tool, type, options = {}) {
-        //Initialize undefined options
-        if (options.select == undefined)
-            options.select = true;
-        if (options.activate == undefined)
-            options.activate = true;
-        if (options.setAsNoAction == undefined)
-            options.setAsNoAction = type == turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.ClickMode.left;
-        //Get previous tool
-        const previousTool = this.currentTools.get(type);
-        if (previousTool) {
-            //Return if it's the same
-            if (previousTool == tool)
-                return;
-            //Deselect and deactivate previous tool
-            if (options.select)
-                previousTool.selected = false;
-            if (options.activate)
-                previousTool.deactivate();
-        }
-        //Select new tool (and maybe set it as the tool for no click mode)
-        this.currentTools.set(type, tool);
-        if (options.setAsNoAction)
-            this.currentTools.set(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.ClickMode.none, tool);
-        //Select and activate the tool
-        if (options.select && tool)
-            tool.selected = true;
-        if (options.activate && tool)
-            tool.activate();
-        //Fire tool changed
-        this.onToolChange.fire(previousTool, tool, type);
-    }
-    /**
-     * @description Returns the tool associated with the given key
-     * @param key
-     */
-    getToolByKey(key) {
-        const toolName = this.mappedKeysToTool.get(key);
-        if (!toolName)
-            return null;
-        return this.tools.get(toolName);
-    }
-    /**
-     * @description Sets tool associated with the provided key as the current tool for the key mode
-     * @param key
-     */
-    setToolByKey(key) {
-        const tool = this.getToolByKey(key);
-        if (!tool)
-            return false;
-        this.setTool(tool, turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.ClickMode.key, { select: false });
-        return true;
-    }
-}
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/managers/toolManager/toolManager.types.ts":
-/*!***********************************************************************!*\
-  !*** ./frontend/src/client/managers/toolManager/toolManager.types.ts ***!
-  \***********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ToolType: () => (/* binding */ ToolType)
-/* harmony export */ });
-var ToolType;
-(function (ToolType) {
-    ToolType["connection"] = "Connect";
-    ToolType["createCard"] = "Create Card";
-    ToolType["delete"] = "Delete";
-    ToolType["navigator"] = "Navigator";
-    ToolType["selection"] = "Selection";
-    ToolType["shoot"] = "Shoot";
-    ToolType["text"] = "Text";
-})(ToolType || (ToolType = {}));
 
 
 /***/ }),
@@ -9570,7 +10108,7 @@ class WebsocketManager {
         this.handleConnect = () => this.provider.connect();
         this.handleDisconnect = () => this.provider.disconnect();
         if (!websocketOptions)
-            websocketOptions = { debug: true };
+            websocketOptions = { debug: false };
         if (!websocketOptions.options)
             websocketOptions.options = {};
         this.room = room;
@@ -9903,6 +10441,7 @@ class ShootingPanelView extends _toolPanelContent_toolPanelContent_view__WEBPACK
         this.backgroundSelector = new _components_backgroundSelector_backgroundSelector__WEBPACK_IMPORTED_MODULE_4__.BackgroundSelector();
         this.shootingDiv = new turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.TurboSelectEntry({ value: "shooting", reflectValueOn: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.div)() });
         this.backgroundColorDiv = new turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.TurboSelectEntry({ value: "backgroundColor", reflectValueOn: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.div)() });
+        this.toolsDiv = new turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.TurboSelectEntry({ value: "tools", reflectValueOn: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.div)() });
         this.animatedDiv = new _components_animationComponents_animatedContentSwitchingDiv_animatedContentSwitchingDiv__WEBPACK_IMPORTED_MODULE_6__.AnimatedContentSwitchingDiv({ values: [this.shootingDiv, this.backgroundColorDiv] });
     }
     setupUILayout() {
@@ -10083,7 +10622,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 /* harmony import */ var _toolPanelContent_toolPanelContent__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../toolPanelContent/toolPanelContent */ "./frontend/src/client/panels/toolPanelContent/toolPanelContent.ts");
 /* harmony import */ var _components_textElement_textElement__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../components/textElement/textElement */ "./frontend/src/client/components/textElement/textElement.ts");
-/* harmony import */ var _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../managers/toolManager/toolManager.types */ "./frontend/src/client/managers/toolManager/toolManager.types.ts");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -10103,7 +10642,7 @@ let TextPanel = class TextPanel extends _toolPanelContent_toolPanelContent__WEBP
         this.onContextChange = (entry) => {
             if (entry.element instanceof _components_textElement_textElement__WEBPACK_IMPORTED_MODULE_5__.TextElement) {
                 if (entry.changed == "added")
-                    this.toolPanel.changePanel(_managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.text);
+                    this.toolPanel.changePanel(_directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.createText);
                 else
                     this.toolPanel.changePanel(this.toolManager.getTool(turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.ClickMode.left).name);
             }
@@ -10173,7 +10712,7 @@ class TextPanelView extends _toolPanelContent_toolPanelContent_view__WEBPACK_IMP
         // this.element.setStyle("top", this.element.toolPanel.panelMarginTop + "px");
         this.originXInput = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboNumericalInput({
             element: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.input)({ type: "number", step: "1", min: "0", max: "100" }),
-            label: "Position",
+            label: "Position : ",
             prefix: "x: ",
             suffix: "%",
             multiplier: 100,
@@ -10188,7 +10727,7 @@ class TextPanelView extends _toolPanelContent_toolPanelContent_view__WEBPACK_IMP
         });
         this.fontSizeInput = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboNumericalInput({
             element: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.input)({ type: "number", step: "1", min: "0", max: "100" }),
-            label: "Font size",
+            label: "Font size : ",
             suffix: "%",
             multiplier: 100,
             decimalPlaces: 2,
@@ -10692,8 +11231,8 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 };
 
 class CameraModel extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboModel {
-    constructor() {
-        super(...arguments);
+    constructor(data) {
+        super(data);
         this.aspectRatio = 1.33;
         this.videoStreamOn = false;
         this.cameraDeviceIdIndex = 0;
@@ -10701,12 +11240,11 @@ class CameraModel extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboMode
         this.cameraIsLikelyFront = null;
         this.recordedChunks = [];
     }
+    setRecordedMedia(data, blob) {
+        this.fireCallback("recordedMedia", data, blob);
+    }
     set stream(value) {
         this.fireCallback("stream", value);
-        this.recordingHandler.setupMediaRecorder();
-    }
-    set lastRecordedMedia(value) {
-        this.fireCallback("recordedMedia", value);
     }
     set lastSavedMedia(value) {
         this.fireCallback("savedMedia", value);
@@ -10717,16 +11255,10 @@ class CameraModel extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboMode
     get captureHandler() {
         return this.getHandler("capture");
     }
-    get recordingHandler() {
-        return this.getHandler("recording");
-    }
 }
 __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
 ], CameraModel.prototype, "stream", null);
-__decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
-], CameraModel.prototype, "lastRecordedMedia", null);
 __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
 ], CameraModel.prototype, "lastSavedMedia", null);
@@ -10737,16 +11269,16 @@ __decorate([
 
 /***/ }),
 
-/***/ "./frontend/src/client/screens/camera/camera.recordingHandler.ts":
-/*!***********************************************************************!*\
-  !*** ./frontend/src/client/screens/camera/camera.recordingHandler.ts ***!
-  \***********************************************************************/
+/***/ "./frontend/src/client/screens/camera/camera.recordingController.ts":
+/*!**************************************************************************!*\
+  !*** ./frontend/src/client/screens/camera/camera.recordingController.ts ***!
+  \**************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   CameraRecordingHandler: () => (/* binding */ CameraRecordingHandler)
+/* harmony export */   CameraRecordingController: () => (/* binding */ CameraRecordingController)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -10759,18 +11291,13 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
     });
 };
 
-class CameraRecordingHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
-    setupMediaRecorder() {
-        if (!this.model.stream) {
-            alert("No stream available to record.");
-            return;
-        }
-        this.model.mediaRecorder = new MediaRecorder(this.model.stream, { videoBitsPerSecond: 2500000 });
-        this.model.mediaRecorder.onstop = () => this.saveRecording();
-        this.model.mediaRecorder.ondataavailable = (event) => {
-            if (event.data.size > 0)
-                this.model.recordedChunks.push(event.data);
-        };
+class CameraRecordingController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboController {
+    setupChangedCallbacks() {
+        super.setupChangedCallbacks();
+        this.emitter.add("stream", () => this.setupMediaRecorder());
+    }
+    get mediaHandler() {
+        return this.element.director.mediaHandler;
     }
     startRecording() {
         if (!this.model.mediaRecorder || this.model.mediaRecorder.state != "inactive") {
@@ -10787,26 +11314,46 @@ class CameraRecordingHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
         }
         this.model.mediaRecorder.stop();
     }
+    setupMediaRecorder() {
+        if (!this.model.stream) {
+            alert("No stream available to record.");
+            return;
+        }
+        this.model.mediaRecorder = new MediaRecorder(this.model.stream, { videoBitsPerSecond: 2500000 });
+        this.model.mediaRecorder.onstop = () => this.saveRecording();
+        this.model.mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0)
+                this.model.recordedChunks.push(event.data);
+        };
+    }
     saveRecording() {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.model.recordedChunks.length == 0)
                 return;
-            this.model.lastRecordedMedia = {
+            const media = {
+                id: `video-${Math.floor(Math.random() * 10000000)}-${Date.now()}`,
                 type: "video",
                 timestamp: Date.now(),
                 duration: (Date.now() - this.model.lastRecorderTimestamp) / 1000,
-                blob: new Blob(this.model.recordedChunks, { type: "video/webm" })
+                converting: true
             };
+            this.model.setRecordedMedia(media, undefined);
+            const blob = new Blob(this.model.recordedChunks, { type: "video/webm" });
             this.model.recordedChunks = [];
-            //TODO
-            // const reader = new FileReader();
+            console.log("CONVERTING MEDIA");
+            const convert = yield this.mediaHandler.convertMedia({ id: media.id, blob: blob });
+            console.log(convert);
+            if (!convert)
+                return;
+            console.log("MEDIA CONVERTED");
+            this.mediaHandler.getMediaMetadata(media.id).converting = false;
+            //TODO make clip listen for change in converting value --> reload video
+            // const mp4Blob = await response.blob();
+            // const videoURL = URL.createObjectURL(mp4Blob);
             //
-            // reader.onloadend = async ()  => {
-            //     media.id = await add_video(reader.result as string, media) as string;
-            //     this.model.lastSavedMedia = media;
-            //     this.model.recordedChunks = [];
-            // }
-            // reader.readAsDataURL(blob);
+            // const data = await this.model.ffmpeg.readFile("output.mp4");
+            // media.blob = new Blob([data], {type: "video/mp4"});
+            // this.model.updatedMedia = media;
         });
     }
 }
@@ -10830,7 +11377,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../components/clipRenderer/clipRenderer.types */ "./frontend/src/client/components/clipRenderer/clipRenderer.types.ts");
 /* harmony import */ var _camera_view__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./camera.view */ "./frontend/src/client/screens/camera/camera.view.ts");
 /* harmony import */ var _camera_model__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./camera.model */ "./frontend/src/client/screens/camera/camera.model.ts");
-/* harmony import */ var _camera_recordingHandler__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./camera.recordingHandler */ "./frontend/src/client/screens/camera/camera.recordingHandler.ts");
+/* harmony import */ var _camera_recordingController__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./camera.recordingController */ "./frontend/src/client/screens/camera/camera.recordingController.ts");
 /* harmony import */ var _camera_captureHandler__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./camera.captureHandler */ "./frontend/src/client/screens/camera/camera.captureHandler.ts");
 /* harmony import */ var _components_component_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../components/component/component */ "./frontend/src/client/components/component/component.ts");
 /* harmony import */ var _components_clip_clip__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../components/clip/clip */ "./frontend/src/client/components/clip/clip.ts");
@@ -10866,14 +11413,15 @@ let Camera = class Camera extends _components_component_component__WEBPACK_IMPOR
         this.mvc.generate({
             viewConstructor: _camera_view__WEBPACK_IMPORTED_MODULE_3__.CameraView,
             modelConstructor: _camera_model__WEBPACK_IMPORTED_MODULE_4__.CameraModel,
-            handlerConstructors: [_camera_recordingHandler__WEBPACK_IMPORTED_MODULE_5__.CameraRecordingHandler, _camera_captureHandler__WEBPACK_IMPORTED_MODULE_6__.CameraCaptureHandler]
+            handlerConstructors: [_camera_captureHandler__WEBPACK_IMPORTED_MODULE_6__.CameraCaptureHandler],
+            controllerConstructors: [_camera_recordingController__WEBPACK_IMPORTED_MODULE_5__.CameraRecordingController]
         });
         this.model.ghosting = true;
-        this.mvc.emitter.add("recordedMedia", (media) => __awaiter(this, void 0, void 0, function* () {
+        this.mvc.emitter.add("recordedMedia", (media, blob) => __awaiter(this, void 0, void 0, function* () {
             var _a;
-            media.id = yield this.director.mediaHandler.saveMedia(media);
-            // this.model.lastSavedMedia = {...this.model.lastRecordedMedia, blob: undefined};
-            yield this.card.addClip(_components_clip_clip__WEBPACK_IMPORTED_MODULE_8__.Clip.createData({ endTime: ((_a = media === null || media === void 0 ? void 0 : media.duration) !== null && _a !== void 0 ? _a : 5), mediaId: media.id, }), this.view.timeline.currentClipInfo.closestIntersection);
+            yield this.director.mediaHandler.saveMedia(media, blob);
+            const clipData = _components_clip_clip__WEBPACK_IMPORTED_MODULE_8__.Clip.createData({ endTime: ((_a = media === null || media === void 0 ? void 0 : media.duration) !== null && _a !== void 0 ? _a : 5), mediaId: media.id });
+            yield this.card.addClip(clipData, this.view.timeline.currentClipInfo.closestIntersection);
         }));
     }
     set card(value) {
@@ -10923,10 +11471,13 @@ let Camera = class Camera extends _components_component_component__WEBPACK_IMPOR
         this.model.captureHandler.muteAudio(b);
     }
     startRecording() {
-        this.model.recordingHandler.startRecording();
+        this.recordingController.startRecording();
     }
     stopRecording() {
-        this.model.recordingHandler.stopRecording();
+        this.recordingController.stopRecording();
+    }
+    get recordingController() {
+        return this.mvc.getController("recording");
     }
     set visibilityMode(value) {
         this.view.clipRenderer.visibilityMode = value;
@@ -10967,10 +11518,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_clipRenderer_clipRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../components/clipRenderer/clipRenderer */ "./frontend/src/client/components/clipRenderer/clipRenderer.ts");
 /* harmony import */ var _components_toolbar_toolbar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../components/toolbar/toolbar */ "./frontend/src/client/components/toolbar/toolbar.ts");
 /* harmony import */ var _components_metadataDrawer_metadataDrawer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/metadataDrawer/metadataDrawer */ "./frontend/src/client/components/metadataDrawer/metadataDrawer.ts");
-/* harmony import */ var _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../managers/toolManager/toolManager.types */ "./frontend/src/client/managers/toolManager/toolManager.types.ts");
-/* harmony import */ var _components_renderer_renderer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../components/renderer/renderer */ "./frontend/src/client/components/renderer/renderer.ts");
-/* harmony import */ var _components_timeline_clipTimeline_clipTimeline__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../components/timeline/clipTimeline/clipTimeline */ "./frontend/src/client/components/timeline/clipTimeline/clipTimeline.ts");
-
+/* harmony import */ var _components_renderer_renderer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../components/renderer/renderer */ "./frontend/src/client/components/renderer/renderer.ts");
+/* harmony import */ var _components_timeline_shootingTimeline_shootingTimeline__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../components/timeline/shootingTimeline/shootingTimeline */ "./frontend/src/client/components/timeline/shootingTimeline/shootingTimeline.ts");
 
 
 
@@ -10984,13 +11533,13 @@ class CameraView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView 
     }
     setupUIElements() {
         super.setupUIElements();
-        this.cameraRenderer = new _components_renderer_renderer__WEBPACK_IMPORTED_MODULE_5__.Renderer({ director: this.element.director,
+        this.cameraRenderer = new _components_renderer_renderer__WEBPACK_IMPORTED_MODULE_4__.Renderer({ director: this.element.director,
             videoProperties: { autoplay: true, muted: true, playsInline: true } });
         this.clipRenderer = new _components_clipRenderer_clipRenderer__WEBPACK_IMPORTED_MODULE_1__.ClipRenderer({ director: this.element.director, videoProperties: { playsInline: true } });
         //TODO this.sidePanel = new SidePanel(this.element, this.captureManager);
-        this.toolbar = new _components_toolbar_toolbar__WEBPACK_IMPORTED_MODULE_2__.Toolbar({ classes: "left-toolbar", director: this.element.director });
-        this.toolbar.populateWith(_managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_4__.ToolType.selection, _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_4__.ToolType.shoot, _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_4__.ToolType.text, _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_4__.ToolType.delete);
-        this.timeline = new _components_timeline_clipTimeline_clipTimeline__WEBPACK_IMPORTED_MODULE_6__.ClipTimeline({
+        this.toolbar = new _components_toolbar_toolbar__WEBPACK_IMPORTED_MODULE_2__.Toolbar({ classes: "right-toolbar", director: this.element.director });
+        // this.toolbar.populateWith(ToolType.selection, ToolType.shoot, ToolType.text, ToolType.delete);
+        this.timeline = new _components_timeline_shootingTimeline_shootingTimeline__WEBPACK_IMPORTED_MODULE_5__.ShootingTimeline({
             drawerProperties: {
                 side: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.top,
                 icon: "chevron",
@@ -11103,16 +11652,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 /* harmony import */ var _canvas_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./canvas.css */ "./frontend/src/client/screens/canvas/canvas.css");
 /* harmony import */ var _components_toolbar_toolbar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../components/toolbar/toolbar */ "./frontend/src/client/components/toolbar/toolbar.ts");
-/* harmony import */ var _tools_selection_selection__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../tools/selection/selection */ "./frontend/src/client/tools/selection/selection.ts");
-/* harmony import */ var _tools_navigator_navigator__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../tools/navigator/navigator */ "./frontend/src/client/tools/navigator/navigator.ts");
-/* harmony import */ var _tools_createCard_createCard__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../tools/createCard/createCard */ "./frontend/src/client/tools/createCard/createCard.ts");
-/* harmony import */ var _tools_connection_connection__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../tools/connection/connection */ "./frontend/src/client/tools/connection/connection.ts");
-/* harmony import */ var _tools_text_text__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../tools/text/text */ "./frontend/src/client/tools/text/text.ts");
-/* harmony import */ var _tools_shoot_shoot__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../tools/shoot/shoot */ "./frontend/src/client/tools/shoot/shoot.ts");
-/* harmony import */ var _tools_delete_delete__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../tools/delete/delete */ "./frontend/src/client/tools/delete/delete.ts");
-/* harmony import */ var _managers_navigationManager_navigationManager__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../managers/navigationManager/navigationManager */ "./frontend/src/client/managers/navigationManager/navigationManager.ts");
-/* harmony import */ var _components_component_component__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../components/component/component */ "./frontend/src/client/components/component/component.ts");
-/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+/* harmony import */ var _tools_navigator_navigator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../tools/navigator/navigator */ "./frontend/src/client/tools/navigator/navigator.ts");
+/* harmony import */ var _managers_navigationManager_navigationManager__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../managers/navigationManager/navigationManager */ "./frontend/src/client/managers/navigationManager/navigationManager.ts");
+/* harmony import */ var _components_component_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../components/component/component */ "./frontend/src/client/components/component/component.ts");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+/* harmony import */ var _tools_shoot_shoot__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../tools/shoot/shoot */ "./frontend/src/client/tools/shoot/shoot.ts");
+/* harmony import */ var _tools_selection_selection__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../tools/selection/selection */ "./frontend/src/client/tools/selection/selection.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11128,21 +11673,29 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
-
-
-
-
 /**
  * @description Class representing a canvas on which the user can add cards, connect them, move them around, etc.
  */
-let Canvas = class Canvas extends _components_component_component__WEBPACK_IMPORTED_MODULE_11__.VcComponent {
+let Canvas = class Canvas extends _components_component_component__WEBPACK_IMPORTED_MODULE_5__.VcComponent {
     constructor(document) {
         super({ director: document });
         this.content = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ parent: this, id: "canvas-content" });
         //Init navigation manager
-        this.navigationManager = new _managers_navigationManager_navigationManager__WEBPACK_IMPORTED_MODULE_10__.NavigationManager(this);
+        this.navigationManager = new _managers_navigationManager_navigationManager__WEBPACK_IMPORTED_MODULE_4__.NavigationManager(this);
         //Init toolbar
-        this.toolbar = new _components_toolbar_toolbar__WEBPACK_IMPORTED_MODULE_2__.Toolbar({ parent: this, classes: "bottom-toolbar", director: this.director });
+        this.toolbar = new _components_toolbar_toolbar__WEBPACK_IMPORTED_MODULE_2__.Toolbar({
+            parent: this,
+            classes: "bottom-toolbar",
+            director: this.director,
+            tools: [
+                new _tools_selection_selection__WEBPACK_IMPORTED_MODULE_8__.SelectionTool({ name: _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.selection, toolManager: this.toolManager, director: this.director, key: "Shift" }),
+                new _tools_navigator_navigator__WEBPACK_IMPORTED_MODULE_3__.NavigatorTool({ name: _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.navigator, toolManager: this.toolManager, director: this.director }),
+                _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.createCard,
+                _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.createText,
+                _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.delete,
+                new _tools_shoot_shoot__WEBPACK_IMPORTED_MODULE_7__.ShootTool({ name: _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.shoot, toolManager: this.toolManager, director: this.director }),
+            ]
+        });
         this.initTools();
     }
     get toolManager() {
@@ -11150,24 +11703,17 @@ let Canvas = class Canvas extends _components_component_component__WEBPACK_IMPOR
     }
     initTools() {
         //Create all tools
-        this.toolManager.addTool(new _tools_selection_selection__WEBPACK_IMPORTED_MODULE_3__.SelectionTool(this.director), "Shift");
-        this.toolManager.addTool(new _tools_navigator_navigator__WEBPACK_IMPORTED_MODULE_4__.NavigatorTool(this.director), "Control");
-        this.toolManager.addTool(new _tools_createCard_createCard__WEBPACK_IMPORTED_MODULE_5__.CreateCardTool(this.director));
-        this.toolManager.addTool(new _tools_connection_connection__WEBPACK_IMPORTED_MODULE_6__.ConnectionTool(this.director));
-        this.toolManager.addTool(new _tools_text_text__WEBPACK_IMPORTED_MODULE_7__.TextTool(this.director));
-        this.toolManager.addTool(new _tools_shoot_shoot__WEBPACK_IMPORTED_MODULE_8__.ShootTool(this.director));
-        this.toolManager.addTool(new _tools_delete_delete__WEBPACK_IMPORTED_MODULE_9__.DeleteTool(this.director));
+        // this.toolManager.addTool(new ConnectionTool(this.director));
         //Init default tools at hand
         this.toolManager.setTool(this.toolManager.getToolByKey("Shift"), turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.ClickMode.left);
         this.toolManager.setTool(this.toolManager.getToolByKey("Control"), turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.ClickMode.middle, { select: false, activate: false });
-        this.toolbar.populateWithAllTools();
     }
     remove() {
         super.remove();
         return this;
     }
     get scale() {
-        if (this.director.currentType !== _directors_project_project_types__WEBPACK_IMPORTED_MODULE_12__.ProjectScreens.canvas)
+        if (this.director.currentType !== _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ProjectScreens.canvas)
             return 1;
         return this.navigationManager.scale;
     }
@@ -11241,270 +11787,6 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
-/***/ "./frontend/src/client/tools/connection/connection.ts":
-/*!************************************************************!*\
-  !*** ./frontend/src/client/tools/connection/connection.ts ***!
-  \************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ConnectionTool: () => (/* binding */ ConnectionTool)
-/* harmony export */ });
-/* harmony import */ var _tool_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../tool/tool */ "./frontend/src/client/tools/tool/tool.ts");
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../managers/toolManager/toolManager.types */ "./frontend/src/client/managers/toolManager/toolManager.types.ts");
-/* harmony import */ var _components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/branchingNode/branchingNode */ "./frontend/src/client/components/branchingNode/branchingNode.ts");
-var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-
-
-/**
- * @description Tool that handles creating flows and connecting nodes
- */
-let ConnectionTool = class ConnectionTool extends _tool_tool__WEBPACK_IMPORTED_MODULE_0__.Tool {
-    constructor(project) {
-        super(project, _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_2__.ToolType.connection);
-        this.lastNodeId = null;
-        //Interval indicating the frequency at which points are permanently added to the flow
-        //A higher value will increase the smoothing effect of the flow
-        this.drawingInterval = 150;
-        //The last time a point was added permanently (used for when drawing flows)
-        this.lastDrawnTime = 0;
-    }
-    get currentFlowId() {
-        return this._currentFlowId;
-    }
-    set currentFlowId(value) {
-        this._currentFlowId = value;
-        this._currentFlow = undefined;
-    }
-    get currentFlow() {
-        if (!this._currentFlow)
-            this._currentFlow = this.project.getFlow(this.currentFlowId);
-        return this._currentFlow;
-    }
-    initializeFlow(e) {
-        return __awaiter(this, void 0, void 0, function* () {
-            //Reset drawing time
-            this.lastDrawnTime = Date.now();
-            //Save closest node
-            const closestNode = e.closest(_components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_3__.BranchingNode, true, turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.ClosestOrigin.position);
-            //If clicking on a node
-            if (closestNode) {
-                //Set last node ID
-                this.lastNodeId = closestNode.dataId;
-                //Find first flow intersection with this node
-                let intersection;
-                for (const flow of this.project.flows) {
-                    intersection = flow.findNodeEntry(this.lastNodeId);
-                    if (intersection)
-                        break;
-                }
-                //If intersection found
-                if (intersection && intersection.flowId != undefined) {
-                    //Assign flow ID
-                    this.currentFlowId = intersection.flowId;
-                    //Create a new branch at this node
-                    return yield this.currentFlow.branchAtPoint(intersection, e.scaledPosition, this.lastNodeId);
-                }
-                //Otherwise --> create a new flow
-                this.currentFlowId = yield this.project.createNewFlow(e.scaledPosition, this.lastNodeId);
-                return;
-            }
-            //Otherwise --> get the point data (if any) that the user initiated the drag from
-            // const closestPoint = FlowIntersectionHandler.flowIntersectingWithPoint(e.scaledPosition);
-            // //Return if null
-            // if (!closestPoint || !closestPoint.flowId) return;
-            //
-            // this.currentFlow = Flow.getById(closestPoint.flowId);
-            // //Update last node ID
-            // this.lastNodeId = closestPoint.lastNodeId;
-            // //Branch (temporarily) at point to later update the original path
-            // return this.currentFlow.branchingHandler.branchAtPoint(closestPoint, e.scaledPosition,
-            //     undefined, true, true);
-        });
-    }
-    //On click --> create a point if the click is inside a node, otherwise cancel flow
-    clickAction(e) {
-        //Get the closest node to the event's target
-        const closestNode = e.closest(_components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_3__.BranchingNode);
-        //Otherwise --> store last node ID
-        if (closestNode)
-            this.lastNodeId = closestNode.dataId.toString();
-        //If no current flow --> try to initialize one
-        if (!this.currentFlow)
-            return this.initializeFlow(e);
-        //If clicked outside a node --> end current flow (if any) and return
-        if (!closestNode)
-            return this.endAndClear();
-        //Add a point to this flow, with the closestNode's ID
-        this.currentFlow.addPoint(e.scaledPosition, this.lastNodeId);
-    }
-    dragStart(e) {
-        //Return if already creating/editing a flow
-        if (this.currentFlowId)
-            return;
-        this.initializeFlow(e);
-    }
-    moveAction(e) {
-        var _a;
-        (_a = this.currentFlow) === null || _a === void 0 ? void 0 : _a.addPoint(e.scaledPosition, null, true);
-    }
-    //On drag --> draw flow
-    dragAction(e) {
-        var _a;
-        //Return if no current flow
-        if (!this.currentFlow || !this.currentFlow.currentBranch)
-            return;
-        //Get the closest node
-        const closestNode = e.closest(_components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_3__.BranchingNode, true, turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.ClosestOrigin.position);
-        //Check if drawing a temporary or permanent point
-        //If drawing into a new node --> ignore interval and add a point. This ensures that when a user hits a
-        // new node, it is added to the flow
-        const isTemporary = Date.now() - this.lastDrawnTime <= this.drawingInterval
-            && (closestNode === null || closestNode === void 0 ? void 0 : closestNode.dataId.toString()) == this.lastNodeId;
-        //If the point is permanent --> update last drawn time and last node
-        if (!isTemporary) {
-            this.lastDrawnTime = Date.now();
-            this.lastNodeId = closestNode === null || closestNode === void 0 ? void 0 : closestNode.dataId.toString();
-        }
-        //Add point
-        (_a = this.currentFlow) === null || _a === void 0 ? void 0 : _a.addPoint(e.scaledPosition, closestNode === null || closestNode === void 0 ? void 0 : closestNode.dataId, isTemporary);
-    }
-    dragEnd() {
-        //Drag end --> end the flow and clear current reference
-        this.endAndClear();
-    }
-    endAndClear() {
-        this.currentFlow.endFlow();
-        this.currentFlowId = null;
-        this.lastNodeId = null;
-    }
-};
-ConnectionTool = __decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.define)("connection-tool")
-], ConnectionTool);
-
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/tools/createCard/createCard.ts":
-/*!************************************************************!*\
-  !*** ./frontend/src/client/tools/createCard/createCard.ts ***!
-  \************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   CreateCardTool: () => (/* binding */ CreateCardTool)
-/* harmony export */ });
-/* harmony import */ var _tool_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../tool/tool */ "./frontend/src/client/tools/tool/tool.ts");
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _components_card_card__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../components/card/card */ "./frontend/src/client/components/card/card.ts");
-/* harmony import */ var _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../managers/toolManager/toolManager.types */ "./frontend/src/client/managers/toolManager/toolManager.types.ts");
-var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-
-
-
-
-/**
- * @description Tool that creates cards
- */
-let CreateCardTool = class CreateCardTool extends _tool_tool__WEBPACK_IMPORTED_MODULE_0__.Tool {
-    constructor(project) {
-        super(project, _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_3__.ToolType.createCard);
-    }
-    //On click
-    clickAction(e) {
-        //If there's already a card at click position --> return
-        if (e.closest(_components_card_card__WEBPACK_IMPORTED_MODULE_2__.Card, false))
-            return;
-        //Otherwise --> create card at click position
-        this.project.createNewCard(e.scaledPosition);
-    }
-};
-CreateCardTool = __decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.define)("create-card-tool")
-], CreateCardTool);
-
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/tools/delete/delete.ts":
-/*!****************************************************!*\
-  !*** ./frontend/src/client/tools/delete/delete.ts ***!
-  \****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   DeleteTool: () => (/* binding */ DeleteTool)
-/* harmony export */ });
-/* harmony import */ var _tool_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../tool/tool */ "./frontend/src/client/tools/tool/tool.ts");
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../managers/toolManager/toolManager.types */ "./frontend/src/client/managers/toolManager/toolManager.types.ts");
-/* harmony import */ var _components_clip_clip__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/clip/clip */ "./frontend/src/client/components/clip/clip.ts");
-/* harmony import */ var _components_textElement_textElement__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../components/textElement/textElement */ "./frontend/src/client/components/textElement/textElement.ts");
-/* harmony import */ var _components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../components/branchingNode/branchingNode */ "./frontend/src/client/components/branchingNode/branchingNode.ts");
-var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-
-
-
-
-
-
-let DeleteTool = class DeleteTool extends _tool_tool__WEBPACK_IMPORTED_MODULE_0__.Tool {
-    constructor(project) {
-        super(project, _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_2__.ToolType.delete);
-    }
-    clickAction(e) {
-        if (e.closest(_components_textElement_textElement__WEBPACK_IMPORTED_MODULE_4__.TextElement))
-            e.closest(_components_textElement_textElement__WEBPACK_IMPORTED_MODULE_4__.TextElement).clip.removeText(e.closest(_components_textElement_textElement__WEBPACK_IMPORTED_MODULE_4__.TextElement));
-        else if (e.closest(_components_clip_clip__WEBPACK_IMPORTED_MODULE_3__.Clip))
-            e.closest(_components_clip_clip__WEBPACK_IMPORTED_MODULE_3__.Clip).card.removeClip(e.closest(_components_clip_clip__WEBPACK_IMPORTED_MODULE_3__.Clip));
-        else if (e.closest(_components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_5__.BranchingNode))
-            e.closest(_components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_5__.BranchingNode).delete();
-    }
-};
-DeleteTool = __decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.define)("delete-tool")
-], DeleteTool);
-
-
-
-/***/ }),
-
 /***/ "./frontend/src/client/tools/navigator/navigator.ts":
 /*!**********************************************************!*\
   !*** ./frontend/src/client/tools/navigator/navigator.ts ***!
@@ -11516,10 +11798,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   NavigatorTool: () => (/* binding */ NavigatorTool)
 /* harmony export */ });
-/* harmony import */ var _tool_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../tool/tool */ "./frontend/src/client/tools/tool/tool.ts");
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _managers_cursorManager_cursorManager_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../managers/cursorManager/cursorManager.types */ "./frontend/src/client/managers/cursorManager/cursorManager.types.ts");
-/* harmony import */ var _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../managers/toolManager/toolManager.types */ "./frontend/src/client/managers/toolManager/toolManager.types.ts");
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _managers_cursorManager_cursorManager_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../managers/cursorManager/cursorManager.types */ "./frontend/src/client/managers/cursorManager/cursorManager.types.ts");
+/* harmony import */ var _tool_tool__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../tool/tool */ "./frontend/src/client/tools/tool/tool.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11529,45 +11810,21 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
-
 /**
  * @description Tool that allows the user to pan the canvas
  */
-let NavigatorTool = class NavigatorTool extends _tool_tool__WEBPACK_IMPORTED_MODULE_0__.Tool {
-    constructor(project) {
-        super(project, _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_3__.ToolType.navigator);
-    }
-    get navigationManager() {
-        return this.project.canvas.navigationManager;
-    }
+let NavigatorTool = class NavigatorTool extends _tool_tool__WEBPACK_IMPORTED_MODULE_2__.VcTool {
     activate() {
         //Set cursor to grab
-        this.cursorManager.cursor = _managers_cursorManager_cursorManager_types__WEBPACK_IMPORTED_MODULE_2__.Cursor.grab;
-    }
-    clickStart(e) {
-        //Click start --> cursor grabbing
-        this.cursorManager.cursor = _managers_cursorManager_cursorManager_types__WEBPACK_IMPORTED_MODULE_2__.Cursor.grabbing;
-    }
-    dragAction(e) {
-        //On drag --> pan and (if two touch points) zoom
-        this.navigationManager.pan(e);
-        if (e.positions.valuesArray().length > 1)
-            this.navigationManager.zoom(e);
-    }
-    clickEnd(e) {
-        if (e.clickMode == turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.ClickMode.middle)
-            this.cursorManager.cursor = _managers_cursorManager_cursorManager_types__WEBPACK_IMPORTED_MODULE_2__.Cursor.default;
-        //Click end --> cursor grab
-        else
-            this.cursorManager.cursor = _managers_cursorManager_cursorManager_types__WEBPACK_IMPORTED_MODULE_2__.Cursor.grab;
+        this.cursorManager.cursor = _managers_cursorManager_cursorManager_types__WEBPACK_IMPORTED_MODULE_1__.Cursor.grab;
     }
     deactivate() {
         //Deactivation --> cursor default
-        this.cursorManager.cursor = _managers_cursorManager_cursorManager_types__WEBPACK_IMPORTED_MODULE_2__.Cursor.default;
+        this.cursorManager.cursor = _managers_cursorManager_cursorManager_types__WEBPACK_IMPORTED_MODULE_1__.Cursor.default;
     }
 };
 NavigatorTool = __decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.define)("navigator-tool")
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("navigator-tool")
 ], NavigatorTool);
 
 
@@ -11586,15 +11843,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   SelectionTool: () => (/* binding */ SelectionTool)
 /* harmony export */ });
 /* harmony import */ var _tool_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../tool/tool */ "./frontend/src/client/tools/tool/tool.ts");
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _components_card_card__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../components/card/card */ "./frontend/src/client/components/card/card.ts");
-/* harmony import */ var _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../managers/toolManager/toolManager.types */ "./frontend/src/client/managers/toolManager/toolManager.types.ts");
-/* harmony import */ var _components_textElement_textElement__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../components/textElement/textElement */ "./frontend/src/client/components/textElement/textElement.ts");
-/* harmony import */ var _managers_contextManager_contextManager_types__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../managers/contextManager/contextManager.types */ "./frontend/src/client/managers/contextManager/contextManager.types.ts");
-/* harmony import */ var _components_clip_clip__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../components/clip/clip */ "./frontend/src/client/components/clip/clip.ts");
-/* harmony import */ var _components_timeline_timeline__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../components/timeline/timeline */ "./frontend/src/client/components/timeline/timeline.ts");
-/* harmony import */ var _components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../components/branchingNode/branchingNode */ "./frontend/src/client/components/branchingNode/branchingNode.ts");
-/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+/* harmony import */ var _components_clip_clip__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../components/clip/clip */ "./frontend/src/client/components/clip/clip.ts");
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11604,141 +11854,52 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
-
-
-
-
-
-
-
-/**
- * @description Tool that allows user to select elements and move them around
- */
-let SelectionTool = class SelectionTool extends _tool_tool__WEBPACK_IMPORTED_MODULE_0__.Tool {
-    constructor(project) {
-        super(project, _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_3__.ToolType.selection);
+let SelectionTool = class SelectionTool extends _tool_tool__WEBPACK_IMPORTED_MODULE_0__.VcTool {
+    constructor(properties) {
+        super(properties);
         this.clipClone = null;
-        this.timelineIndicator = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.div)({ style: "background-color: pink; width: 5px; border: 2px solid cyan" });
+        this.timelineIndicator = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.div)({ style: "background-color: pink; width: 5px; border: 2px solid cyan" });
     }
-    clickAction(e) {
-        const closestText = e.closest(_components_textElement_textElement__WEBPACK_IMPORTED_MODULE_4__.TextElement);
-        const closestClip = e.closest(_components_clip_clip__WEBPACK_IMPORTED_MODULE_6__.Clip);
-        const closestCard = e.closest(_components_card_card__WEBPACK_IMPORTED_MODULE_2__.Card);
-        if (closestText && this.contextManager.view == _managers_contextManager_contextManager_types__WEBPACK_IMPORTED_MODULE_5__.ContextView.camera) {
-            this.contextManager.setContext(closestText, 3, true);
-            this.currentTarget = closestText;
-        }
-        else if (closestClip) {
-            this.contextManager.setContext(e.closest(_components_card_card__WEBPACK_IMPORTED_MODULE_2__.Card, false), 1);
-            this.contextManager.setContext(closestClip, 2, true);
-            this.currentTarget = closestClip;
-        }
-        else if (closestCard) {
-            this.contextManager.setContext(closestCard, 1, true);
-            this.currentTarget = closestCard;
-        }
-        else {
-            this.contextManager.clearContext();
-            this.currentTarget = null;
-        }
-    }
-    dragStart(e) {
-        const closestText = e.closest(_components_textElement_textElement__WEBPACK_IMPORTED_MODULE_4__.TextElement);
-        const closestClip = e.closest(_components_clip_clip__WEBPACK_IMPORTED_MODULE_6__.Clip);
-        const closestNode = e.closest(_components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_8__.BranchingNode);
-        if (closestClip) {
-            this.contextManager.setContext(e.closest(_components_card_card__WEBPACK_IMPORTED_MODULE_2__.Card, false), 1);
-            this.contextManager.setContext(closestClip, 2, true);
-            this.currentTarget = closestClip;
-            this.clipClone = closestClip.cloneAndMove(e);
-        }
-        //Click start --> save the card that was clicked on (if any)
-        else if (this.project.currentType == _directors_project_project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.canvas && closestNode) {
-            this.contextManager.setContext(closestNode, 1);
-            this.currentTarget = closestNode;
-        }
-        else if (this.project.currentType == _directors_project_project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.camera && closestText) {
-            this.contextManager.setContext(closestText, 3);
-            closestText.select(true);
-            this.currentTarget = closestText;
-        }
-    }
-    dragAction(e) {
-        //On drag and if dragging a card --> compute delta position of drag, move card accordingly, and update
-        //affected flows
-        if (this.clipClone) {
-            this.clipClone.translateBy(e.scaledDeltaPosition);
-            this.insertIndicatorAfterClosestClip(e);
-        }
-        else if (this.project.currentType == _directors_project_project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.canvas && this.currentTarget instanceof _components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_8__.BranchingNode) {
-            const id = this.currentTarget.dataId;
-            this.currentTarget.move(e.scaledDeltaPosition);
-            this.project.forEachBranch((branch) => branch.updateAfterMovingNode(id, e.scaledDeltaPosition));
-        }
-        else if (this.project.currentType == _directors_project_project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.camera && this.currentTarget instanceof _components_textElement_textElement__WEBPACK_IMPORTED_MODULE_4__.TextElement) {
-            this.currentTarget.translateBy(e.scaledDeltaPosition);
-            this.contextManager.getAllOfType(_components_textElement_textElement__WEBPACK_IMPORTED_MODULE_4__.TextElement).forEach(entry => {
-                if (!(entry instanceof _components_textElement_textElement__WEBPACK_IMPORTED_MODULE_4__.TextElement))
-                    return;
-                entry.translateBy(e.scaledDeltaPosition);
-            });
-        }
-    }
-    dragEnd(e) {
-        this.currentTarget = null;
-        if (this.clipClone) {
-            this.moveClip(e);
-        }
-        else if (this.project.currentType == _directors_project_project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.canvas) {
-            if (e.closest(_components_card_card__WEBPACK_IMPORTED_MODULE_2__.Card))
-                this.contextManager.removeContext(e.closest(_components_card_card__WEBPACK_IMPORTED_MODULE_2__.Card));
-        }
-        else if (this.project.currentType == _directors_project_project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.camera && this.contextManager.getOfType(_components_textElement_textElement__WEBPACK_IMPORTED_MODULE_4__.TextElement)) {
-            this.contextManager.removeContext(e.closest(_components_textElement_textElement__WEBPACK_IMPORTED_MODULE_4__.TextElement), 3);
-        }
-    }
-    insertIndicatorAfterClosestClip(e) {
-        const closestTimeline = e.closest(_components_timeline_timeline__WEBPACK_IMPORTED_MODULE_7__.Timeline, true, turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.ClosestOrigin.position);
-        if (!closestTimeline) {
+    insertIndicatorAfterClosestClip(e, timeline) {
+        if (!timeline)
+            return this.removeTimelineIndicator();
+        this.timelineIndicatorIndex = timeline.getClipFromPosition(e).closestIntersection;
+        if (timeline.clips[this.timelineIndicatorIndex] == this.clipClone.originElement
+            || timeline.clips[this.timelineIndicatorIndex - 1] == this.clipClone.originElement) {
             this.removeTimelineIndicator();
             return;
         }
-        this.timelineIndicatorIndex = closestTimeline.getClipFromPosition(e).closestIntersection;
-        if (closestTimeline.clips[this.timelineIndicatorIndex] == this.clipClone.originElement
-            || closestTimeline.clips[this.timelineIndicatorIndex - 1] == this.clipClone.originElement) {
-            this.removeTimelineIndicator();
-            return;
-        }
-        closestTimeline.addIndicatorAt(this.timelineIndicator, this.timelineIndicatorIndex + 1);
+        timeline.addIndicatorAt(this.timelineIndicator, this.timelineIndicatorIndex + 1);
     }
-    moveClip(e) {
-        var _a;
-        const closestTimeline = e.closest(_components_timeline_timeline__WEBPACK_IMPORTED_MODULE_7__.Timeline, true, turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.ClosestOrigin.position);
-        const newCard = e.closest(_components_card_card__WEBPACK_IMPORTED_MODULE_2__.Card, false, turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.ClosestOrigin.position);
-        if (closestTimeline && this.timelineIndicatorIndex != -1) {
+    moveClip(timeline) {
+        if (timeline && this.timelineIndicatorIndex != -1) {
             this.contextManager.clearContext();
-            if (newCard == this.clipClone.originElement.card
+            if (timeline.card == this.clipClone.originElement.card
                 && this.timelineIndicatorIndex >= this.clipClone.originElement.dataIndex)
                 this.timelineIndicatorIndex--;
             const clipDataCopy = this.clipClone.originElement.data.toJSON();
             this.clipClone.originElement.card.removeClip(this.clipClone.originElement);
-            newCard.addClip(_components_clip_clip__WEBPACK_IMPORTED_MODULE_6__.Clip.createData(clipDataCopy), this.timelineIndicatorIndex).then(index => {
-                this.contextManager.setContext(newCard, 1);
-                this.contextManager.setContext(newCard.timeline.clips[index], 2, true);
+            timeline.card.addClip(_components_clip_clip__WEBPACK_IMPORTED_MODULE_1__.Clip.createData(clipDataCopy), this.timelineIndicatorIndex).then(index => {
+                this.contextManager.setContext(timeline.card, 1);
+                this.contextManager.setContext(timeline.card.timeline.clips[index], 2, true);
             });
         }
-        (_a = this.clipClone.originElement) === null || _a === void 0 ? void 0 : _a.setStyle("opacity", "1");
-        this.removeTimelineIndicator();
-        this.clipClone.remove();
-        this.clipClone = null;
+        this.cancelClipMoving();
     }
     removeTimelineIndicator() {
         this.timelineIndicator.remove();
         this.timelineIndicatorIndex = -1;
     }
+    cancelClipMoving() {
+        var _a;
+        (_a = this.clipClone.originElement) === null || _a === void 0 ? void 0 : _a.setStyle("opacity", "1");
+        this.removeTimelineIndicator();
+        this.clipClone.remove();
+        this.clipClone = null;
+    }
 };
 SelectionTool = __decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.define)("selection-tool")
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.define)()
 ], SelectionTool);
 
 
@@ -11758,10 +11919,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _tool_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../tool/tool */ "./frontend/src/client/tools/tool/tool.ts");
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _components_card_card__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../components/card/card */ "./frontend/src/client/components/card/card.ts");
-/* harmony import */ var _components_clip_clip__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/clip/clip */ "./frontend/src/client/components/clip/clip.ts");
-/* harmony import */ var _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../managers/toolManager/toolManager.types */ "./frontend/src/client/managers/toolManager/toolManager.types.ts");
-/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11770,95 +11927,22 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 };
 
 
-
-
-
-
 /**
  * @description Tool that allows the user to shoot video clips into a card
  */
-let ShootTool = class ShootTool extends _tool_tool__WEBPACK_IMPORTED_MODULE_0__.Tool {
-    constructor(project) {
-        super(project, _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_4__.ToolType.shoot);
-    }
+let ShootTool = class ShootTool extends _tool_tool__WEBPACK_IMPORTED_MODULE_0__.VcTool {
     activate() {
         // this.documentManager.camera?.startStream();
     }
     deactivate() {
         var _a;
-        (_a = this.project.camera) === null || _a === void 0 ? void 0 : _a.stopStream();
-    }
-    clickAction(e) {
-        const closestClip = e.closest(_components_clip_clip__WEBPACK_IMPORTED_MODULE_3__.Clip);
-        //Get clicked card (if any) and shoot into it
-        const closestCard = (closestClip ? closestClip.closest(_components_card_card__WEBPACK_IMPORTED_MODULE_2__.Card) : e.closest(_components_card_card__WEBPACK_IMPORTED_MODULE_2__.Card));
-        if (!closestCard)
-            return;
-        this.contextManager.setContext(closestCard, 1);
-        if (closestClip)
-            this.contextManager.setContext(closestClip, 2, true);
-        // else this.contextManager.setContext(closestCard.timeline.clips[closestCard.timeline.clips.length - 1], 2);
-        this.project.currentType = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_5__.ProjectScreens.camera;
-        this.project.camera.card = closestCard;
-        this.project.camera.snapToClip(closestClip);
-        this.project.toolPanel.changePanel(_managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_4__.ToolType.shoot);
-        this.project.camera.startStream();
+        (_a = this.director.camera) === null || _a === void 0 ? void 0 : _a.stopStream();
     }
 };
 ShootTool = __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.define)("shoot-tool")
 ], ShootTool);
 
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/tools/text/text.ts":
-/*!************************************************!*\
-  !*** ./frontend/src/client/tools/text/text.ts ***!
-  \************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   TextTool: () => (/* binding */ TextTool)
-/* harmony export */ });
-/* harmony import */ var _tool_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../tool/tool */ "./frontend/src/client/tools/tool/tool.ts");
-/* harmony import */ var _components_card_card__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../components/card/card */ "./frontend/src/client/components/card/card.ts");
-/* harmony import */ var _components_clipRenderer_clipRenderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../components/clipRenderer/clipRenderer */ "./frontend/src/client/components/clipRenderer/clipRenderer.ts");
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../managers/toolManager/toolManager.types */ "./frontend/src/client/managers/toolManager/toolManager.types.ts");
-/* harmony import */ var _components_clip_clip__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../components/clip/clip */ "./frontend/src/client/components/clip/clip.ts");
-/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
-
-
-
-
-
-
-
-class TextTool extends _tool_tool__WEBPACK_IMPORTED_MODULE_0__.Tool {
-    constructor(project) {
-        super(project, _managers_toolManager_toolManager_types__WEBPACK_IMPORTED_MODULE_4__.ToolType.text);
-    }
-    clickAction(e) {
-        if (this.project.currentType == _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ProjectScreens.canvas) {
-            const closestCard = e.closest(_components_card_card__WEBPACK_IMPORTED_MODULE_1__.Card, false);
-            if (!closestCard)
-                return;
-            closestCard.editTitle();
-            e.stopImmediatePropagation();
-        }
-        else if (this.project.currentType == _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ProjectScreens.camera) {
-            const closestRenderer = e.closest(_components_clipRenderer_clipRenderer__WEBPACK_IMPORTED_MODULE_2__.ClipRenderer);
-            if (!closestRenderer)
-                return;
-            const rendererBounds = closestRenderer.getBoundingClientRect();
-            this.contextManager.getOfType(_components_clip_clip__WEBPACK_IMPORTED_MODULE_5__.Clip).addText(new turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.Point((e.position.x - rendererBounds.left) / rendererBounds.width, (e.position.y - rendererBounds.top) / rendererBounds.height));
-        }
-    }
-}
 
 
 /***/ }),
@@ -11925,155 +12009,37 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Tool: () => (/* binding */ Tool)
+/* harmony export */   VcTool: () => (/* binding */ VcTool)
 /* harmony export */ });
 /* harmony import */ var _tool_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./tool.css */ "./frontend/src/client/tools/tool/tool.css");
-/* harmony import */ var _toolView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./toolView */ "./frontend/src/client/tools/tool/toolView.ts");
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-
 
 
 /**
  * @description General Tool class that defines basic behaviors and "abstract" functions tools could use to handle events
  */
-class Tool {
-    constructor(project, name) {
-        //DOM elements representing this tool
-        this.instances = [];
-        this.name = name;
-        this.project = project;
-        this.selected = false;
+let VcTool = class VcTool extends turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Tool {
+    constructor(properties) {
+        super(properties);
+        this.director = properties.director;
+        this.addClass("vc-tool");
     }
     get contextManager() {
-        return this.project.contextManager;
-    }
-    get toolManager() {
-        return this.project.toolManager;
+        return this.director.contextManager;
     }
     get cursorManager() {
-        return this.project.director.cursorManager;
-    }
-    /**
-     * @description Creates an HTML DOM element that represents this tool
-     */
-    createInstance() {
-        const instance = new _toolView__WEBPACK_IMPORTED_MODULE_1__.ToolView(this);
-        this.instances.push(instance);
-        return instance;
-    }
-    /**
-     * @description Fired when the tool is picked up
-     */
-    activate() { }
-    /**
-     * @description Fired on click start
-     * @param e
-     */
-    clickStart(e) { }
-    /**
-     * @description Fired on click
-     * @param e
-     */
-    clickAction(e) { }
-    /**
-     * @description Fired on click end
-     * @param e
-     */
-    clickEnd(e) { }
-    /**
-     * @description Fired on pointer move
-     * @param e
-     */
-    moveAction(e) { }
-    /**
-     * @description Fired on drag start
-     * @param e
-     */
-    dragStart(e) { }
-    /**
-     * @description Fired on drag
-     * @param e
-     */
-    dragAction(e) { }
-    /**
-     * @description Fired on drag end
-     * @param e
-     */
-    dragEnd(e) { }
-    /**
-     * Fired when tool is put down (deselected)
-     */
-    deactivate() { }
-    /**
-     * @description Marks whether the tool is selected or not. Accurately reflected on its instances
-     */
-    set selected(value) {
-        this.instances.forEach(instance => instance.update());
-    }
-}
-__decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.auto)()
-], Tool.prototype, "selected", null);
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/tools/tool/toolView.ts":
-/*!****************************************************!*\
-  !*** ./frontend/src/client/tools/tool/toolView.ts ***!
-  \****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ToolView: () => (/* binding */ ToolView)
-/* harmony export */ });
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _tool_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./tool.css */ "./frontend/src/client/tools/tool/tool.css");
-var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-
-
-/**
- * @description Basic DOM element that represents a tool (for now it's just a button)
- */
-let ToolView = class ToolView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboButton {
-    constructor(tool) {
-        super({ text: tool.name, elementTag: "h4", classes: "card clickable" });
-        this.selectedClass = "selected";
-        this.tool = tool;
-        this.update();
-    }
-    /**
-     * @description Selected state of the tool
-     */
-    get selected() {
-        return this.tool.selected;
-    }
-    set selected(value) {
-        this.tool.selected = value;
-    }
-    /**
-     * @description Updates the visual appearance of the element based on the tool's state
-     */
-    update() {
-        this.toggleClass(this.selectedClass, this.selected);
+        return this.director.cursorManager;
     }
 };
-ToolView = __decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-tool")
-], ToolView);
+VcTool = __decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.define)()
+], VcTool);
 
 
 
@@ -13886,8 +13852,8 @@ vc-flow svg {
 
 vc-flow path {
     fill: none;
-    stroke: #727377;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/flow/flow.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,qCAAqC;AACzC;;AAEA;IACI,4BAA4B;IAC5B,oBAAoB;AACxB;;AAEA;IACI,UAAU;IACV,eAAe;AACnB","sourcesContent":["vc-flow {\r\n    position: absolute;\r\n    transform: translate3d(-50%, -50%, 0);\r\n}\r\n\r\nvc-flow svg {\r\n    image-rendering: crisp-edges;\r\n    pointer-events: none;\r\n}\r\n\r\nvc-flow path {\r\n    fill: none;\r\n    stroke: #727377;\r\n}"],"sourceRoot":""}]);
+    /*stroke: #727377;*/
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/flow/flow.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,qCAAqC;AACzC;;AAEA;IACI,4BAA4B;IAC5B,oBAAoB;AACxB;;AAEA;IACI,UAAU;IACV,mBAAmB;AACvB","sourcesContent":["vc-flow {\r\n    position: absolute;\r\n    transform: translate3d(-50%, -50%, 0);\r\n}\r\n\r\nvc-flow svg {\r\n    image-rendering: crisp-edges;\r\n    pointer-events: none;\r\n}\r\n\r\nvc-flow path {\r\n    fill: none;\r\n    /*stroke: #727377;*/\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -14425,6 +14391,110 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.vc-timeline.vc-clip-timeline {
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/timeline/shootingTimeline/shootingTimeline.css":
+/*!*****************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/timeline/shootingTimeline/shootingTimeline.css ***!
+  \*****************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `.vc-timeline.vc-shooting-timeline {
+    height: 100%;
+    display: flex;
+    width: 0;
+    right: 0;
+}
+
+.vc-timeline.vc-shooting-timeline .scrubber-container {
+    position: relative;
+    border-radius: 0.35em;
+    height: 3.8em;
+    background-color: transparent;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.vc-shooting-timeline .turbo-drawer {
+    height: 120%;
+    align-items: center;
+}
+
+.vc-shooting-timeline .turbo-drawer .turbo-drawer-panel-container {
+    height: 100%;
+    display: flex;
+    background-color: transparent;
+}
+
+.vc-shooting-timeline .turbo-drawer .turbo-drawer-panel {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.vc-shooting-timeline .turbo-drawer .clips-container {
+    position: relative;
+    border-radius: 0.35em;
+    height: calc(6em - 2.4em);
+
+    display: flex;
+    flex-direction: row;
+
+    flex-grow: 1;
+
+    z-index: 2;
+}
+
+.vc-shooting-timeline .top-drawer {
+    bottom: 1em;
+}
+
+.vc-shooting-timeline .right-drawer {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.vc-shooting-timeline .play-button {
+    height: 1.5em;
+    padding: 0.2em;
+}
+
+.vc-shooting-timeline vc-clip .vc-clip-content {
+    border-radius: 0;
+}
+
+.vc-shooting-timeline vc-clip:nth-child(2) .vc-clip-content {
+    border-radius: 0.35em 0 0 0.35em;
+}
+
+.vc-shooting-timeline vc-clip:last-child .vc-clip-content {
+    border-radius:  0 0.35em 0.35em 0;
+}
+
+.vc-shooting-timeline vc-clip:last-child:nth-child(2) .vc-clip-content {
+    border-radius:  0.35em;
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/timeline/shootingTimeline/shootingTimeline.css"],"names":[],"mappings":"AAAA;IACI,YAAY;IACZ,aAAa;IACb,QAAQ;IACR,QAAQ;AACZ;;AAEA;IACI,kBAAkB;IAClB,qBAAqB;IACrB,aAAa;IACb,6BAA6B;;IAE7B,aAAa;IACb,mBAAmB;AACvB;;AAEA;IACI,YAAY;IACZ,mBAAmB;AACvB;;AAEA;IACI,YAAY;IACZ,aAAa;IACb,6BAA6B;AACjC;;AAEA;IACI,wBAAwB;IACxB,sBAAsB;IACtB,WAAW;AACf;;AAEA;IACI,kBAAkB;IAClB,qBAAqB;IACrB,yBAAyB;;IAEzB,aAAa;IACb,mBAAmB;;IAEnB,YAAY;;IAEZ,UAAU;AACd;;AAEA;IACI,WAAW;AACf;;AAEA;IACI,kBAAkB;IAClB,UAAU;IACV,QAAQ;IACR,2BAA2B;AAC/B;;AAEA;IACI,aAAa;IACb,cAAc;AAClB;;AAEA;IACI,gBAAgB;AACpB;;AAEA;IACI,gCAAgC;AACpC;;AAEA;IACI,iCAAiC;AACrC;;AAEA;IACI,sBAAsB;AAC1B","sourcesContent":[".vc-timeline.vc-shooting-timeline {\r\n    height: 100%;\r\n    display: flex;\r\n    width: 0;\r\n    right: 0;\r\n}\r\n\r\n.vc-timeline.vc-shooting-timeline .scrubber-container {\r\n    position: relative;\r\n    border-radius: 0.35em;\r\n    height: 3.8em;\r\n    background-color: transparent;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n}\r\n\r\n.vc-shooting-timeline .turbo-drawer {\r\n    height: 120%;\r\n    align-items: center;\r\n}\r\n\r\n.vc-shooting-timeline .turbo-drawer .turbo-drawer-panel-container {\r\n    height: 100%;\r\n    display: flex;\r\n    background-color: transparent;\r\n}\r\n\r\n.vc-shooting-timeline .turbo-drawer .turbo-drawer-panel {\r\n    display: flex !important;\r\n    flex-direction: column;\r\n    gap: 0.5rem;\r\n}\r\n\r\n.vc-shooting-timeline .turbo-drawer .clips-container {\r\n    position: relative;\r\n    border-radius: 0.35em;\r\n    height: calc(6em - 2.4em);\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n\r\n    flex-grow: 1;\r\n\r\n    z-index: 2;\r\n}\r\n\r\n.vc-shooting-timeline .top-drawer {\r\n    bottom: 1em;\r\n}\r\n\r\n.vc-shooting-timeline .right-drawer {\r\n    position: absolute;\r\n    left: 100%;\r\n    top: 50%;\r\n    transform: translateY(-50%);\r\n}\r\n\r\n.vc-shooting-timeline .play-button {\r\n    height: 1.5em;\r\n    padding: 0.2em;\r\n}\r\n\r\n.vc-shooting-timeline vc-clip .vc-clip-content {\r\n    border-radius: 0;\r\n}\r\n\r\n.vc-shooting-timeline vc-clip:nth-child(2) .vc-clip-content {\r\n    border-radius: 0.35em 0 0 0.35em;\r\n}\r\n\r\n.vc-shooting-timeline vc-clip:last-child .vc-clip-content {\r\n    border-radius:  0 0.35em 0.35em 0;\r\n}\r\n\r\n.vc-shooting-timeline vc-clip:last-child:nth-child(2) .vc-clip-content {\r\n    border-radius:  0.35em;\r\n}"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/timeline/timeline.css":
 /*!****************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/timeline/timeline.css ***!
@@ -14539,7 +14609,17 @@ vc-toolbar.left-toolbar {
     top: 50%;
     transform: translate(0, -50%);
 }
-`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/toolbar/toolbar.css"],"names":[],"mappings":"AAAA;IACI,aAAa;IACb,wBAAwB;;IAExB,eAAe;;IAEf,wCAAwC;IACxC,iCAAiC;IACjC,2BAA2B;IAC3B,uBAAuB;;IAEvB,UAAU;AACd;;AAEA;IACI,mBAAmB;;IAEnB,qCAAqC;IACrC,UAAU;IACV,WAAW;AACf;;AAEA;IACI,sBAAsB;;IAEtB,mCAAmC;IACnC,QAAQ;IACR,6BAA6B;AACjC","sourcesContent":["vc-toolbar {\r\n    display: flex;\r\n    gap: var(--base-padding);\r\n\r\n    position: fixed;\r\n\r\n    padding: calc(1.5 * var(--base-padding));\r\n    border-radius: var(--card-radius);\r\n    border: var(--border-style);\r\n    background-color: white;\r\n\r\n    z-index: 2;\r\n}\r\n\r\nvc-toolbar.bottom-toolbar {\r\n    flex-direction: row;\r\n\r\n    bottom: calc(2 * var(--base-padding));\r\n    left: 15vw;\r\n    right: 15vw;\r\n}\r\n\r\nvc-toolbar.left-toolbar {\r\n    flex-direction: column;\r\n\r\n    left: calc(2 * var(--base-padding));\r\n    top: 50%;\r\n    transform: translate(0, -50%);\r\n}\r\n"],"sourceRoot":""}]);
+
+vc-toolbar.right-toolbar {
+    flex-direction: column;
+
+    right: calc(2 * var(--base-padding));
+    top: 50%;
+    transform: translate(0, -50%);
+
+    display:none;
+}
+`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/toolbar/toolbar.css"],"names":[],"mappings":"AAAA;IACI,aAAa;IACb,wBAAwB;;IAExB,eAAe;;IAEf,wCAAwC;IACxC,iCAAiC;IACjC,2BAA2B;IAC3B,uBAAuB;;IAEvB,UAAU;AACd;;AAEA;IACI,mBAAmB;;IAEnB,qCAAqC;IACrC,UAAU;IACV,WAAW;AACf;;AAEA;IACI,sBAAsB;;IAEtB,mCAAmC;IACnC,QAAQ;IACR,6BAA6B;AACjC;;AAEA;IACI,sBAAsB;;IAEtB,oCAAoC;IACpC,QAAQ;IACR,6BAA6B;;IAE7B,YAAY;AAChB","sourcesContent":["vc-toolbar {\r\n    display: flex;\r\n    gap: var(--base-padding);\r\n\r\n    position: fixed;\r\n\r\n    padding: calc(1.5 * var(--base-padding));\r\n    border-radius: var(--card-radius);\r\n    border: var(--border-style);\r\n    background-color: white;\r\n\r\n    z-index: 2;\r\n}\r\n\r\nvc-toolbar.bottom-toolbar {\r\n    flex-direction: row;\r\n\r\n    bottom: calc(2 * var(--base-padding));\r\n    left: 15vw;\r\n    right: 15vw;\r\n}\r\n\r\nvc-toolbar.left-toolbar {\r\n    flex-direction: column;\r\n\r\n    left: calc(2 * var(--base-padding));\r\n    top: 50%;\r\n    transform: translate(0, -50%);\r\n}\r\n\r\nvc-toolbar.right-toolbar {\r\n    flex-direction: column;\r\n\r\n    right: calc(2 * var(--base-padding));\r\n    top: 50%;\r\n    transform: translate(0, -50%);\r\n\r\n    display:none;\r\n}\r\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -14727,6 +14807,10 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 ___CSS_LOADER_EXPORT___.push([module.id, `text-panel {
     position: relative;
     color: white;
+
+    display: flex;
+    flex-direction: column;
+    align-items: normal;
 }
 
 text-panel {
@@ -14754,7 +14838,7 @@ text-panel .side-panel-buttons-div .icon {
 
 text-panel .side-panel-buttons-div .icon svg {
     fill: rgba(255, 255, 255, 0.7);
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/panels/textPanel/textPanel.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,YAAY;AAChB;;AAEA;IACI,YAAY;IACZ,oCAAoC;IACpC,+BAA+B;AACnC;;AAEA;IACI,UAAU;;IAEV,aAAa;IACb,mBAAmB;IACnB,QAAQ;IACR,kBAAkB;IAClB,mBAAmB;IACnB,0CAA0C;;AAE9C;;AAEA;IACI,UAAU;IACV,WAAW;AACf;;AAEA;IACI,8BAA8B;AAClC","sourcesContent":["text-panel {\r\n    position: relative;\r\n    color: white;\r\n}\r\n\r\ntext-panel {\r\n    padding: 2em;\r\n    background-color: rgba(0, 0, 0, 0.3);\r\n    transition: width 0.3s ease-out;\r\n}\r\n\r\ntext-panel .side-panel-buttons-div {\r\n    z-index: 2;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    gap: 1em;\r\n    padding: 0.7em 1em;\r\n    border-radius: 10em;\r\n    background-color: rgba(255, 255, 255, 0.1);\r\n\r\n}\r\n\r\ntext-panel .side-panel-buttons-div .icon {\r\n    width: 2em;\r\n    height: 2em;\r\n}\r\n\r\ntext-panel .side-panel-buttons-div .icon svg {\r\n    fill: rgba(255, 255, 255, 0.7);\r\n}"],"sourceRoot":""}]);
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/panels/textPanel/textPanel.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,YAAY;;IAEZ,aAAa;IACb,sBAAsB;IACtB,mBAAmB;AACvB;;AAEA;IACI,YAAY;IACZ,oCAAoC;IACpC,+BAA+B;AACnC;;AAEA;IACI,UAAU;;IAEV,aAAa;IACb,mBAAmB;IACnB,QAAQ;IACR,kBAAkB;IAClB,mBAAmB;IACnB,0CAA0C;;AAE9C;;AAEA;IACI,UAAU;IACV,WAAW;AACf;;AAEA;IACI,8BAA8B;AAClC","sourcesContent":["text-panel {\r\n    position: relative;\r\n    color: white;\r\n\r\n    display: flex;\r\n    flex-direction: column;\r\n    align-items: normal;\r\n}\r\n\r\ntext-panel {\r\n    padding: 2em;\r\n    background-color: rgba(0, 0, 0, 0.3);\r\n    transition: width 0.3s ease-out;\r\n}\r\n\r\ntext-panel .side-panel-buttons-div {\r\n    z-index: 2;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    gap: 1em;\r\n    padding: 0.7em 1em;\r\n    border-radius: 10em;\r\n    background-color: rgba(255, 255, 255, 0.1);\r\n\r\n}\r\n\r\ntext-panel .side-panel-buttons-div .icon {\r\n    width: 2em;\r\n    height: 2em;\r\n}\r\n\r\ntext-panel .side-panel-buttons-div .icon svg {\r\n    fill: rgba(255, 255, 255, 0.7);\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -14786,7 +14870,8 @@ ___CSS_LOADER_EXPORT___.push([module.id, `tool-panel {
     height: calc(100% - 4em);
     right: 0;
     transition: width 0.3s ease-out;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/panels/toolPanel/toolPanel.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,wBAAwB;IACxB,QAAQ;IACR,+BAA+B;AACnC","sourcesContent":["tool-panel {\r\n    position: absolute;\r\n    height: calc(100% - 4em);\r\n    right: 0;\r\n    transition: width 0.3s ease-out;\r\n}"],"sourceRoot":""}]);
+    z-index: 1;
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/panels/toolPanel/toolPanel.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,wBAAwB;IACxB,QAAQ;IACR,+BAA+B;IAC/B,UAAU;AACd","sourcesContent":["tool-panel {\r\n    position: absolute;\r\n    height: calc(100% - 4em);\r\n    right: 0;\r\n    transition: width 0.3s ease-out;\r\n    z-index: 1;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -14902,7 +14987,11 @@ vc-camera > #capture-bar > div:last-child {
     flex-direction: column;
     gap: 2em;
     margin-left: 2em;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/screens/camera/camera.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,MAAM;IACN,OAAO;IACP,SAAS;IACT,QAAQ;;IAER,aAAa;IACb,uBAAuB;IACvB,mBAAmB;;IAEnB,uBAAuB;AAC3B;;AAEA;IACI,kBAAkB;IAClB,qBAAqB;AACzB;;AAEA;IACI,kBAAkB;IAClB,YAAY;IACZ,QAAQ;;IAER,aAAa;IACb,mBAAmB;IACnB,mBAAmB;;IAEnB,sBAAsB;;IAEtB,oCAAoC;AACxC;;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,QAAQ;IACR,gBAAgB;AACpB","sourcesContent":["vc-camera {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    bottom: 0;\r\n    right: 0;\r\n\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n\r\n    background-color: black;\r\n}\r\n\r\nvc-camera vc-timeline {\r\n    position: absolute;\r\n    top: calc(100% - 3em);\r\n}\r\n\r\nvc-camera > #capture-bar {\r\n    position: absolute;\r\n    height: 100%;\r\n    right: 0;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    align-items: center;\r\n\r\n    padding: 2em 2em 2em 0;\r\n\r\n    background-color: rgba(0, 0, 0, 0.3);\r\n}\r\n\r\nvc-camera > #capture-bar > div:last-child {\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 2em;\r\n    margin-left: 2em;\r\n}"],"sourceRoot":""}]);
+}
+
+vc-camera .vc-renderer {
+    position: absolute;
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/screens/camera/camera.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,MAAM;IACN,OAAO;IACP,SAAS;IACT,QAAQ;;IAER,aAAa;IACb,uBAAuB;IACvB,mBAAmB;;IAEnB,uBAAuB;AAC3B;;AAEA;IACI,kBAAkB;IAClB,qBAAqB;AACzB;;AAEA;IACI,kBAAkB;IAClB,YAAY;IACZ,QAAQ;;IAER,aAAa;IACb,mBAAmB;IACnB,mBAAmB;;IAEnB,sBAAsB;;IAEtB,oCAAoC;AACxC;;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,QAAQ;IACR,gBAAgB;AACpB;;AAEA;IACI,kBAAkB;AACtB","sourcesContent":["vc-camera {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    bottom: 0;\r\n    right: 0;\r\n\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n\r\n    background-color: black;\r\n}\r\n\r\nvc-camera vc-timeline {\r\n    position: absolute;\r\n    top: calc(100% - 3em);\r\n}\r\n\r\nvc-camera > #capture-bar {\r\n    position: absolute;\r\n    height: 100%;\r\n    right: 0;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    align-items: center;\r\n\r\n    padding: 2em 2em 2em 0;\r\n\r\n    background-color: rgba(0, 0, 0, 0.3);\r\n}\r\n\r\nvc-camera > #capture-bar > div:last-child {\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 2em;\r\n    margin-left: 2em;\r\n}\r\n\r\nvc-camera .vc-renderer {\r\n    position: absolute;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -15132,7 +15221,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_css_loader_dist_cjs_js_markingMenu_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! -!../../../../node_modules/css-loader/dist/cjs.js!./markingMenu.css */ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/styles/markingMenu.css");
 /* harmony import */ var _node_modules_css_loader_dist_cjs_js_colors_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! -!../../../../node_modules/css-loader/dist/cjs.js!./colors.css */ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/styles/colors.css");
 /* harmony import */ var _node_modules_css_loader_dist_cjs_js_drawer_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! -!../../../../node_modules/css-loader/dist/cjs.js!./drawer.css */ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/styles/drawer.css");
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_popup_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! -!../../../../node_modules/css-loader/dist/cjs.js!./popup.css */ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/styles/popup.css");
 // Imports
+
 
 
 
@@ -15145,6 +15236,7 @@ ___CSS_LOADER_EXPORT___.i(_node_modules_css_loader_dist_cjs_js_input_css__WEBPAC
 ___CSS_LOADER_EXPORT___.i(_node_modules_css_loader_dist_cjs_js_markingMenu_css__WEBPACK_IMPORTED_MODULE_3__["default"]);
 ___CSS_LOADER_EXPORT___.i(_node_modules_css_loader_dist_cjs_js_colors_css__WEBPACK_IMPORTED_MODULE_4__["default"]);
 ___CSS_LOADER_EXPORT___.i(_node_modules_css_loader_dist_cjs_js_drawer_css__WEBPACK_IMPORTED_MODULE_5__["default"]);
+___CSS_LOADER_EXPORT___.i(_node_modules_css_loader_dist_cjs_js_popup_css__WEBPACK_IMPORTED_MODULE_6__["default"]);
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `body {
     width: 100vw;
@@ -15290,7 +15382,7 @@ button.clickable:hover {
 }
 
 
-`, "",{"version":3,"sources":["webpack://./frontend/src/client/styles/main.css"],"names":[],"mappings":"AAMA;IACI,YAAY;IACZ,aAAa;;IAEb,yBAAyB;IACzB,iBAAiB;IACjB,gBAAgB;;IAEhB,yBAAyB;;IAEzB,8BAA8B;IAC9B,mBAAmB;IACnB,kBAAkB;AACtB;;AAEA;IACI,aAAa;AACjB;;AAEA;IACI,SAAS;IACT,eAAe;IACf,gCAAgC;AACpC;;AAEA;IACI,qBAAqB;IACrB,gBAAgB;IAChB,iBAAiB;IACjB,eAAe;AACnB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,eAAe;AACnB;;AAEA;IACI,eAAe;IACf,UAAU;IACV,YAAY;AAChB;;;;AAIA,yBAAyB;;AAEzB;IACI,iBAAiB;AACrB;;AAEA;IACI,kBAAkB;AACtB;;AAEA;IACI,gBAAgB;AACpB;;AAEA;IACI,eAAe;AACnB;;;;AAIA,0BAA0B;;AAE1B;IACI,2BAA2B;AAC/B;;AAEA;IACI,wCAAwC;AAC5C;;AAEA;IACI,wCAAwC;IACxC,iCAAiC;AACrC;;AAEA;IACI,aAAa;AACjB;;AAEA;IACI,wBAAwB;AAC5B;;;;AAIA,2BAA2B;;AAE3B;IACI,2BAA2B;IAC3B,wCAAwC;IACxC,iCAAiC;IACjC,uBAAuB;AAC3B;;AAEA;IACI,eAAe;IACf,oCAAoC;AACxC;;;;AAIA,yBAAyB;;AAEzB;IACI,aAAa;IACb,mBAAmB;AACvB;;AAEA;IACI,aAAa;IACb,sBAAsB;AAC1B;;AAEA;IACI,YAAY;IACZ,cAAc;AAClB;;AAEA;IACI,YAAY;IACZ,aAAa;AACjB;;AAEA;IACI,wBAAwB;AAC5B;;AAEA;IACI,kCAAkC;AACtC;;AAEA;IACI,cAAc;IACd,cAAc;IACd,iBAAiB;AACrB","sourcesContent":["@import url(\"https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap\");\r\n@import \"./input.css\";\r\n@import \"./markingMenu.css\";\r\n@import \"./colors.css\";\r\n@import \"./drawer.css\";\r\n\r\nbody {\r\n    width: 100vw;\r\n    height: 100vh;\r\n\r\n    touch-action: pan-x pan-y;\r\n    user-select: none;\r\n    overflow: hidden;\r\n\r\n    background-color: #f1f8f8;\r\n\r\n    --border-style: 1px solid #ccc;\r\n    --base-padding: 8px;\r\n    --card-radius: 6px;\r\n}\r\n\r\nbody::-webkit-scrollbar {\r\n    display: none;\r\n}\r\n\r\n* {\r\n    margin: 0;\r\n    font-size: 13px;\r\n    font-family: \"Inter\", sans-serif;\r\n}\r\n\r\n.icon {\r\n    display: inline-block;\r\n    max-width: 2.5em;\r\n    max-height: 2.5em;\r\n    aspect-ratio: 1;\r\n}\r\n\r\n.icon > svg {\r\n    width: 100%;\r\n    height: 100%;\r\n    aspect-ratio: 1;\r\n}\r\n\r\n.content-wrapper {\r\n    padding: 32px 0;\r\n    width: 50%;\r\n    margin: auto;\r\n}\r\n\r\n\r\n\r\n/* Generic text classes */\r\n\r\n.bold {\r\n    font-weight: bold;\r\n}\r\n\r\n.italic {\r\n    font-style: italic;\r\n}\r\n\r\n.left {\r\n    text-align: left;\r\n}\r\n\r\n.large {\r\n    font-size: 16px;\r\n}\r\n\r\n\r\n\r\n/* Generic style classes */\r\n\r\n.border {\r\n    border: var(--border-style);\r\n}\r\n\r\n.padding-small {\r\n    padding: calc(0.5 * var(--base-padding));\r\n}\r\n\r\n.padding {\r\n    padding: calc(1.5 * var(--base-padding));\r\n    border-radius: var(--card-radius);\r\n}\r\n\r\n.translucent {\r\n    opacity: 0.25;\r\n}\r\n\r\n.hidden {\r\n    display: none !important;\r\n}\r\n\r\n\r\n\r\n/* Generic button classes */\r\n\r\nbutton.clickable, .card {\r\n    border: var(--border-style);\r\n    padding: calc(1.5 * var(--base-padding));\r\n    border-radius: var(--card-radius);\r\n    background-color: white;\r\n}\r\n\r\nbutton.clickable:hover {\r\n    cursor: pointer;\r\n    background-color: rgba(0, 0, 0, 0.1);\r\n}\r\n\r\n\r\n\r\n/* Generic flex classes */\r\n\r\n.row {\r\n    display: flex;\r\n    flex-direction: row;\r\n}\r\n\r\n.column {\r\n    display: flex;\r\n    flex-direction: column;\r\n}\r\n\r\n.row > *, .column > * {\r\n    flex-grow: 0;\r\n    flex-shrink: 0;\r\n}\r\n\r\n.grow {\r\n    flex-grow: 1;\r\n    flex-basis: 0;\r\n}\r\n\r\n.gap {\r\n    gap: var(--base-padding);\r\n}\r\n\r\n.gap-large {\r\n    gap: calc(2 * var(--base-padding));\r\n}\r\n\r\n.scroller {\r\n    overflow: auto;\r\n    flex-shrink: 1;\r\n    padding-top: 32px;\r\n}\r\n\r\n\r\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./frontend/src/client/styles/main.css"],"names":[],"mappings":"AAOA;IACI,YAAY;IACZ,aAAa;;IAEb,yBAAyB;IACzB,iBAAiB;IACjB,gBAAgB;;IAEhB,yBAAyB;;IAEzB,8BAA8B;IAC9B,mBAAmB;IACnB,kBAAkB;AACtB;;AAEA;IACI,aAAa;AACjB;;AAEA;IACI,SAAS;IACT,eAAe;IACf,gCAAgC;AACpC;;AAEA;IACI,qBAAqB;IACrB,gBAAgB;IAChB,iBAAiB;IACjB,eAAe;AACnB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,eAAe;AACnB;;AAEA;IACI,eAAe;IACf,UAAU;IACV,YAAY;AAChB;;;;AAIA,yBAAyB;;AAEzB;IACI,iBAAiB;AACrB;;AAEA;IACI,kBAAkB;AACtB;;AAEA;IACI,gBAAgB;AACpB;;AAEA;IACI,eAAe;AACnB;;;;AAIA,0BAA0B;;AAE1B;IACI,2BAA2B;AAC/B;;AAEA;IACI,wCAAwC;AAC5C;;AAEA;IACI,wCAAwC;IACxC,iCAAiC;AACrC;;AAEA;IACI,aAAa;AACjB;;AAEA;IACI,wBAAwB;AAC5B;;;;AAIA,2BAA2B;;AAE3B;IACI,2BAA2B;IAC3B,wCAAwC;IACxC,iCAAiC;IACjC,uBAAuB;AAC3B;;AAEA;IACI,eAAe;IACf,oCAAoC;AACxC;;;;AAIA,yBAAyB;;AAEzB;IACI,aAAa;IACb,mBAAmB;AACvB;;AAEA;IACI,aAAa;IACb,sBAAsB;AAC1B;;AAEA;IACI,YAAY;IACZ,cAAc;AAClB;;AAEA;IACI,YAAY;IACZ,aAAa;AACjB;;AAEA;IACI,wBAAwB;AAC5B;;AAEA;IACI,kCAAkC;AACtC;;AAEA;IACI,cAAc;IACd,cAAc;IACd,iBAAiB;AACrB","sourcesContent":["@import url(\"https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap\");\r\n@import \"./input.css\";\r\n@import \"./markingMenu.css\";\r\n@import \"./colors.css\";\r\n@import \"./drawer.css\";\r\n@import \"./popup.css\";\r\n\r\nbody {\r\n    width: 100vw;\r\n    height: 100vh;\r\n\r\n    touch-action: pan-x pan-y;\r\n    user-select: none;\r\n    overflow: hidden;\r\n\r\n    background-color: #f1f8f8;\r\n\r\n    --border-style: 1px solid #ccc;\r\n    --base-padding: 8px;\r\n    --card-radius: 6px;\r\n}\r\n\r\nbody::-webkit-scrollbar {\r\n    display: none;\r\n}\r\n\r\n* {\r\n    margin: 0;\r\n    font-size: 13px;\r\n    font-family: \"Inter\", sans-serif;\r\n}\r\n\r\n.icon {\r\n    display: inline-block;\r\n    max-width: 2.5em;\r\n    max-height: 2.5em;\r\n    aspect-ratio: 1;\r\n}\r\n\r\n.icon > svg {\r\n    width: 100%;\r\n    height: 100%;\r\n    aspect-ratio: 1;\r\n}\r\n\r\n.content-wrapper {\r\n    padding: 32px 0;\r\n    width: 50%;\r\n    margin: auto;\r\n}\r\n\r\n\r\n\r\n/* Generic text classes */\r\n\r\n.bold {\r\n    font-weight: bold;\r\n}\r\n\r\n.italic {\r\n    font-style: italic;\r\n}\r\n\r\n.left {\r\n    text-align: left;\r\n}\r\n\r\n.large {\r\n    font-size: 16px;\r\n}\r\n\r\n\r\n\r\n/* Generic style classes */\r\n\r\n.border {\r\n    border: var(--border-style);\r\n}\r\n\r\n.padding-small {\r\n    padding: calc(0.5 * var(--base-padding));\r\n}\r\n\r\n.padding {\r\n    padding: calc(1.5 * var(--base-padding));\r\n    border-radius: var(--card-radius);\r\n}\r\n\r\n.translucent {\r\n    opacity: 0.25;\r\n}\r\n\r\n.hidden {\r\n    display: none !important;\r\n}\r\n\r\n\r\n\r\n/* Generic button classes */\r\n\r\nbutton.clickable, .card {\r\n    border: var(--border-style);\r\n    padding: calc(1.5 * var(--base-padding));\r\n    border-radius: var(--card-radius);\r\n    background-color: white;\r\n}\r\n\r\nbutton.clickable:hover {\r\n    cursor: pointer;\r\n    background-color: rgba(0, 0, 0, 0.1);\r\n}\r\n\r\n\r\n\r\n/* Generic flex classes */\r\n\r\n.row {\r\n    display: flex;\r\n    flex-direction: row;\r\n}\r\n\r\n.column {\r\n    display: flex;\r\n    flex-direction: column;\r\n}\r\n\r\n.row > *, .column > * {\r\n    flex-grow: 0;\r\n    flex-shrink: 0;\r\n}\r\n\r\n.grow {\r\n    flex-grow: 1;\r\n    flex-basis: 0;\r\n}\r\n\r\n.gap {\r\n    gap: var(--base-padding);\r\n}\r\n\r\n.gap-large {\r\n    gap: calc(2 * var(--base-padding));\r\n}\r\n\r\n.scroller {\r\n    overflow: auto;\r\n    flex-shrink: 1;\r\n    padding-top: 32px;\r\n}\r\n\r\n\r\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -15359,6 +15451,41 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.turbo-marking-menu > turbo-select-ent
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/styles/popup.css":
+/*!************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/styles/popup.css ***!
+  \************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `.popup-card {
+    background-color: white;
+    padding: 1em;
+    border-radius: 0.6em;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/styles/popup.css"],"names":[],"mappings":"AAAA;IACI,uBAAuB;IACvB,YAAY;IACZ,oBAAoB;;IAEpB,aAAa;IACb,sBAAsB;IACtB,QAAQ;AACZ","sourcesContent":[".popup-card {\r\n    background-color: white;\r\n    padding: 1em;\r\n    border-radius: 0.6em;\r\n\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 1em;\r\n}"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/tools/tool/tool.css":
 /*!***************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/tools/tool/tool.css ***!
@@ -15379,10 +15506,10 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `vc-tool.selected {
+___CSS_LOADER_EXPORT___.push([module.id, `.vc-tool.selected {
     background-color: aquamarine;
 }
-`, "",{"version":3,"sources":["webpack://./frontend/src/client/tools/tool/tool.css"],"names":[],"mappings":"AAAA;IACI,4BAA4B;AAChC","sourcesContent":["vc-tool.selected {\r\n    background-color: aquamarine;\r\n}\r\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./frontend/src/client/tools/tool/tool.css"],"names":[],"mappings":"AAAA;IACI,4BAA4B;AAChC","sourcesContent":[".vc-tool.selected {\r\n    background-color: aquamarine;\r\n}\r\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -56166,6 +56293,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   StatefulReifect: () => (/* binding */ StatefulReifect),
 /* harmony export */   SvgNamespace: () => (/* binding */ SvgNamespace),
 /* harmony export */   SvgTagsDefinitions: () => (/* binding */ SvgTagsDefinitions),
+/* harmony export */   Tool: () => (/* binding */ Tool),
+/* harmony export */   ToolManager: () => (/* binding */ ToolManager),
+/* harmony export */   ToolModel: () => (/* binding */ ToolModel),
+/* harmony export */   ToolView: () => (/* binding */ ToolView),
 /* harmony export */   TurboButton: () => (/* binding */ TurboButton),
 /* harmony export */   TurboClickEventName: () => (/* binding */ TurboClickEventName),
 /* harmony export */   TurboController: () => (/* binding */ TurboController),
@@ -56184,6 +56315,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   TurboIconSwitch: () => (/* binding */ TurboIconSwitch),
 /* harmony export */   TurboIconToggle: () => (/* binding */ TurboIconToggle),
 /* harmony export */   TurboInput: () => (/* binding */ TurboInput),
+/* harmony export */   TurboInteractor: () => (/* binding */ TurboInteractor),
 /* harmony export */   TurboKeyEvent: () => (/* binding */ TurboKeyEvent),
 /* harmony export */   TurboKeyEventName: () => (/* binding */ TurboKeyEventName),
 /* harmony export */   TurboMap: () => (/* binding */ TurboMap),
@@ -57583,6 +57715,7 @@ class MvcHandler {
     element;
     _model;
     controllers = new Map();
+    interactors = new Map();
     constructor(properties) {
         if (properties.element)
             this.element = properties.element;
@@ -57661,6 +57794,36 @@ class MvcHandler {
     get dataSize() {
         return this.model?.getSize();
     }
+    findInteractor(tool) {
+        for (const [key, interactor] of this.interactors) {
+            if (!interactor.tool || interactor.tool !== tool.name)
+                continue;
+            return interactor;
+        }
+    }
+    propagatesUp(e, tool) {
+        const interactor = this.findInteractor(tool);
+        if (!interactor)
+            return undefined;
+        switch (typeof interactor.propagateUp) {
+            case "boolean": return interactor.propagateUp;
+            case "function": return interactor.propagateUp(e);
+            case "object":
+                const propagateUpEntry = interactor.propagateUp[e.eventName];
+                switch (typeof propagateUpEntry) {
+                    case "undefined": return false;
+                    case "boolean": return propagateUpEntry;
+                    case "function": return propagateUpEntry(e);
+                }
+        }
+    }
+    interact(e, tool) {
+        const interactor = this.findInteractor(tool);
+        if (!interactor)
+            return undefined;
+        interactor.interact(e, tool);
+        return true;
+    }
     /**
      * @function getController
      * @description Retrieves the attached MVC controller with the given key.
@@ -57682,6 +57845,28 @@ class MvcHandler {
             controller.keyName =
                 this.extractClassEssenceName(controller.constructor);
         this.controllers.set(controller.keyName, controller);
+    }
+    /**
+     * @function getInteractor
+     * @description Retrieves the attached MVC interactor with the given key.
+     * By default, unless manually defined in the interactor, if the element's class name is MyElement
+     * and the interactor's class name is MyElementSomethingInteractor, the key would be "something".
+     * @param {string} key - The interactor's key.
+     * @return {TurboInteractor} - The interactor.
+     */
+    getInteractor(key) {
+        return this.interactors.get(key);
+    }
+    /**
+     * @function addInteractor
+     * @description Adds the given interactor to the MVC structure.
+     * @param {TurboInteractor} interactor - The interactor to add.
+     */
+    addInteractor(interactor) {
+        if (!interactor.keyName)
+            interactor.keyName =
+                this.extractClassEssenceName(interactor.constructor);
+        this.interactors.set(interactor.keyName, interactor);
     }
     /**
      * @function getHandler
@@ -57741,6 +57926,14 @@ class MvcHandler {
             };
             properties.controllerConstructors.forEach(controllerConstructor => this.addController(new controllerConstructor(controllerProperties)));
         }
+        if (properties.interactorConstructors) {
+            const interactorProperties = {
+                element: this.element,
+                view: this.view,
+                model: this.model,
+            };
+            properties.interactorConstructors.forEach(interactorConstructor => this.addInteractor(new interactorConstructor(interactorProperties)));
+        }
         if (properties.handlerConstructors) {
             properties.handlerConstructors.forEach(handlerConstructor => this.addHandler(new handlerConstructor(this.model)));
         }
@@ -57756,6 +57949,7 @@ class MvcHandler {
         this.view?.initialize();
         this.controllers.forEach((controller) => controller.initialize());
         this.model?.initialize();
+        this.interactors.forEach((interactor) => interactor.initialize());
     }
     linkModelToView() {
         if (!this.view || !this.model)
@@ -57882,6 +58076,154 @@ class TurboHandler {
     }
 }
 
+const TurboKeyEventName = {
+    keyPressed: "turbo-key-pressed",
+    keyReleased: "turbo-key-released"
+};
+const TurboClickEventName = {
+    click: "turbo-click",
+    clickStart: "turbo-click-start",
+    clickEnd: "turbo-click-end",
+    longPress: "turbo-long-press"
+};
+const TurboMoveName = {
+    move: "turbo-move"
+};
+const TurboDragEventName = {
+    drag: "turbo-drag",
+    dragStart: "turbo-drag-start",
+    dragEnd: "turbo-drag-end"
+};
+const TurboWheelEventName = {
+    trackpadScroll: "turbo-trackpad-scroll",
+    trackpadPinch: "turbo-trackpad-pinch",
+    mouseWheel: "turbo-mouse-wheel"
+};
+const TurboEventName = {
+    ...TurboClickEventName,
+    ...TurboKeyEventName,
+    ...TurboMoveName,
+    ...TurboDragEventName,
+    ...TurboWheelEventName,
+    selectInput: "turbo-select-input",
+};
+/**
+ * @description Object containing the names of events fired by default by the turboComponents. Modifying it (prior to
+ * setting up new turbo components) will subsequently alter the events that the instantiated components will listen for.
+ */
+const DefaultEventName = {
+    keyPressed: "keydown",
+    keyReleased: "keyup",
+    click: "click",
+    clickStart: "mousedown",
+    clickEnd: "mouseup",
+    longPress: TurboEventName.longPress,
+    move: "mousemove",
+    drag: TurboEventName.drag,
+    dragStart: TurboEventName.dragStart,
+    dragEnd: TurboEventName.dragEnd,
+    wheel: "wheel",
+    trackpadScroll: "wheel",
+    trackpadPinch: "wheel",
+    mouseWheel: "wheel",
+    scroll: "scroll",
+    input: "input",
+    change: "change",
+    focus: "focus",
+    blur: "blur",
+    resize: "resize"
+};
+
+class TurboInteractor {
+    /**
+     * @description The key of the interactor. Used to retrieve it in the main component. If not set, if the element's
+     * class name is MyElement and the interactor's class name is MyElementSomethingInteractor, the key would
+     * default to "something".
+     */
+    keyName;
+    propagateUp;
+    target;
+    tool;
+    /**
+     * @description A reference to the component.
+     * @protected
+     */
+    element;
+    /**
+     * @description A reference to the MVC view.
+     * @protected
+     */
+    view;
+    /**
+     * @description A reference to the MVC model.
+     * @protected
+     */
+    model;
+    constructor(properties) {
+        this.element = properties.element;
+        this.view = properties.view;
+        this.model = properties.model;
+        this.target = this.element;
+        this.propagateUp = false;
+    }
+    reverseTurboEventName = Object.fromEntries(Object.entries(TurboEventName).map(([k, v]) => [v, k]));
+    interact(e, tool) {
+        const eventKey = this.reverseTurboEventName[e.eventName];
+        if (eventKey && typeof this[eventKey] === "function")
+            this[eventKey](e, tool);
+    }
+    initialize() { }
+    /**
+     * @description Fired on click start
+     * @param e
+     * @param tool
+     */
+    clickStart(e, tool) {
+    }
+    /**
+     * @description Fired on click
+     * @param e
+     * @param tool
+     */
+    click(e, tool) {
+    }
+    /**
+     * @description Fired on click end
+     * @param e
+     * @param tool
+     */
+    clickEnd(e, tool) {
+    }
+    /**
+     * @description Fired on pointer move
+     * @param e
+     * @param tool
+     */
+    move(e, tool) {
+    }
+    /**
+     * @description Fired on drag start
+     * @param e
+     * @param tool
+     */
+    dragStart(e, tool) {
+    }
+    /**
+     * @description Fired on drag
+     * @param e
+     * @param tool
+     */
+    drag(e, tool) {
+    }
+    /**
+     * @description Fired on drag end
+     * @param e
+     * @param tool
+     */
+    dragEnd(e, tool) {
+    }
+}
+
 class Delegate {
     callbacks = new Set();
     /**
@@ -57941,7 +58283,7 @@ class TurboModel {
     keyChangedCallback;
     /**
      * @constructor
-     * @param {DataType} [data] - Initial data. Not initialized if provided
+     * @param {DataType} [data] - Initial data. Not initialized if provided.
      * @param {BlocksType} [dataBlocksType] - Type of data blocks (array or map).
      */
     constructor(data, dataBlocksType) {
@@ -58539,6 +58881,12 @@ class TurboElement extends HTMLElement {
     get dataSize() {
         return this.mvc.dataSize;
     }
+    propagatesUp(e, tool) {
+        return this.mvc.propagatesUp(e, tool);
+    }
+    interact(e, tool) {
+        return this.mvc.interact(e, tool);
+    }
     /**
      * @function getPropertiesValue
      * @description Returns the value with some fallback mechanisms on the static config field and a default value.
@@ -58652,6 +59000,12 @@ class TurboHeadlessElement {
      */
     get dataSize() {
         return this.mvc.dataSize;
+    }
+    propagatesUp(e, tool) {
+        return this.mvc.propagatesUp(e, tool);
+    }
+    interact(e, tool) {
+        return this.mvc.interact(e, tool);
     }
     /**
      * @function getPropertiesValue
@@ -58795,6 +59149,12 @@ class TurboProxiedElement {
      */
     get dataSize() {
         return this.mvc.dataSize;
+    }
+    propagatesUp(e, tool) {
+        return this.mvc.propagatesUp(e, tool);
+    }
+    interact(e, tool) {
+        return this.mvc.interact(e, tool);
     }
     /**
      * @function getPropertiesValue
@@ -60890,64 +61250,6 @@ function turbofy() {
     addReifectManagementToNodePrototype();
 }
 
-const TurboKeyEventName = {
-    keyPressed: "turbo-key-pressed",
-    keyReleased: "turbo-key-released"
-};
-const TurboClickEventName = {
-    click: "turbo-click",
-    clickStart: "turbo-click-start",
-    clickEnd: "turbo-click-end",
-    longPress: "turbo-long-press"
-};
-const TurboMoveName = {
-    move: "turbo-move"
-};
-const TurboDragEventName = {
-    drag: "turbo-drag",
-    dragStart: "turbo-drag-start",
-    dragEnd: "turbo-drag-end"
-};
-const TurboWheelEventName = {
-    trackpadScroll: "turbo-trackpad-scroll",
-    trackpadPinch: "turbo-trackpad-pinch",
-    mouseWheel: "turbo-mouse-wheel"
-};
-const TurboEventName = {
-    ...TurboClickEventName,
-    ...TurboKeyEventName,
-    ...TurboMoveName,
-    ...TurboDragEventName,
-    ...TurboWheelEventName,
-    selectInput: "turbo-select-input",
-};
-/**
- * @description Object containing the names of events fired by default by the turboComponents. Modifying it (prior to
- * setting up new turbo components) will subsequently alter the events that the instantiated components will listen for.
- */
-const DefaultEventName = {
-    keyPressed: "keydown",
-    keyReleased: "keyup",
-    click: "click",
-    clickStart: "mousedown",
-    clickEnd: "mouseup",
-    longPress: TurboEventName.longPress,
-    move: "mousemove",
-    drag: TurboEventName.drag,
-    dragStart: TurboEventName.dragStart,
-    dragEnd: TurboEventName.dragEnd,
-    wheel: "wheel",
-    trackpadScroll: "wheel",
-    trackpadPinch: "wheel",
-    mouseWheel: "wheel",
-    scroll: "scroll",
-    input: "input",
-    change: "change",
-    focus: "focus",
-    blur: "blur",
-    resize: "resize"
-};
-
 var ClosestOrigin;
 (function (ClosestOrigin) {
     ClosestOrigin["target"] = "target";
@@ -60958,6 +61260,10 @@ var ClosestOrigin;
  * Generic turbo event
  */
 class TurboEvent extends Event {
+    /**
+     * @description The name of the event.
+     */
+    eventName;
     /**
      * @description The click mode of the fired event
      */
@@ -60984,6 +61290,7 @@ class TurboEvent extends Event {
         super(eventName, { bubbles: true, cancelable: true, ...eventInitDict });
         this.authorizeScaling = authorizeScaling ?? true;
         this.scalePosition = scalePosition ?? ((position) => position);
+        this.eventName = eventName;
         this.clickMode = clickMode;
         this.keys = keys;
         this.position = position;
@@ -60998,9 +61305,11 @@ class TurboEvent extends Event {
     closest(type, strict = true, from = ClosestOrigin.target) {
         const elements = from == ClosestOrigin.target ? [this.target]
             : document.elementsFromPoint(this.position.x, this.position.y);
+        const strictElement = strict instanceof Element ? strict : null;
+        const isStrict = strict === true || strictElement !== null;
         for (let element of elements) {
             while (element && !((element instanceof type)
-                && (!strict || this.isPositionInsideElement(this.position, element))))
+                && (!isStrict || this.isPositionInsideElement(this.position, strictElement ?? element))))
                 element = element.parentElement;
             if (element)
                 return element;
@@ -61900,6 +62209,269 @@ let TurboEventManager = class TurboEventManager extends TurboElement {
 TurboEventManager = __decorate([
     define()
 ], TurboEventManager);
+
+class ToolModel extends TurboModel {
+    set selected(value) {
+        this.fireCallback("selected", value);
+    }
+}
+__decorate([
+    auto()
+], ToolModel.prototype, "selected", null);
+
+class ToolView extends TurboView {
+    textElement;
+    setupUIElements() {
+        super.setupUIElements();
+        this.textElement = h4({ text: this.element.name });
+        this.element.addClass("card clickable");
+    }
+    setupUILayout() {
+        super.setupUILayout();
+        this.element.addChild(this.textElement);
+    }
+    setupChangedCallbacks() {
+        super.setupChangedCallbacks();
+        this.emitter.add("selected", (value) => this.element.toggleClass(Tool.config.defaultSelectedClass, value));
+    }
+    setupUIListeners() {
+        super.setupUIListeners();
+        this.element.addEventListener(DefaultEventName.click, (e) => {
+            this.element.toolManager.setTool(this.element, ClickMode.left);
+            e.stopImmediatePropagation();
+        });
+    }
+}
+
+/**
+ * @description General Tool class that defines basic behaviors and "abstract" functions tools could use to handle events
+ */
+let Tool = class Tool extends TurboElement {
+    /**
+     * @description The name of the tool
+     */
+    name;
+    _toolManager;
+    constructor(properties) {
+        if (!properties.modelConstructor)
+            properties.modelConstructor = ToolModel;
+        if (!properties.viewConstructor)
+            properties.viewConstructor = ToolView;
+        if (!properties.forceNewModel && !properties.model)
+            properties.model =
+                properties.toolManager.getToolByName(properties.name)?.model;
+        super(properties);
+        this.name = properties.name;
+        this._toolManager = properties.toolManager;
+        if (properties.generate === undefined)
+            this.mvc.generate(properties);
+        this.toolManager.addTool(this, properties.key);
+    }
+    get toolManager() {
+        return this._toolManager;
+    }
+    /**
+     * @description Fired when the tool is picked up
+     */
+    activate() { }
+    /**
+     * Fired when tool is put down (deselected)
+     */
+    deactivate() { }
+    /**
+     * @description Marks whether the tool is selected or not. Accurately reflected on its instances
+     */
+    get selected() {
+        return this.model.selected;
+    }
+    set selected(value) {
+        this.model.selected = value;
+    }
+};
+Tool = __decorate([
+    define("turbo-tool")
+], Tool);
+
+//TODO handle key combinations maybe? Also fix the issue with 2-finger navigation on mobile when app starts
+/**
+ * @description Manages (ideally) all the tools in the application
+ */
+class ToolManager {
+    //All created tools
+    tools = new Map();
+    //Tools mapped to keys
+    mappedKeysToTool = new Map();
+    //Tools currently held by the user (one - or none - per each click button/mode)
+    currentTools = new Map();
+    /**
+     * @description Delegate fired when a tool is changed on a certain click button/mode
+     */
+    onToolChange = new Delegate();
+    constructor() {
+        //Initialization
+        this.initEvents();
+    }
+    interactWithObject(e) {
+        const tool = this.getFiredTool(e);
+        if (!tool)
+            return;
+        const interactors = [];
+        let target = e.target;
+        while (target) {
+            if (typeof target["interact"] === "function" && typeof target["propagatesUp"] === "function") {
+                interactors.push(target);
+                const shouldPropagate = target["propagatesUp"](e, tool);
+                if (shouldPropagate === false)
+                    break;
+            }
+            target = target.parentElement;
+        }
+        // Reverse and interact
+        for (let i = interactors.length - 1; i >= 0; i--) {
+            interactors[i]["interact"](e, tool);
+        }
+    }
+    initEvents() {
+        //On key press --> set corresponding tool as key mode
+        document.addEventListener(TurboEventName.keyPressed, (e) => this.setToolByKey(e.keyPressed));
+        //On key release --> clear set tool on key mode
+        document.addEventListener(TurboEventName.keyReleased, () => this.setTool(null, ClickMode.key, { select: false }));
+        //Listen for all custom events on the document and accordingly execute the corresponding function on the
+        //current tool. The tool will manage its actions and what object to interact with
+        document.addEventListener(TurboEventName.clickStart, (e) => this.interactWithObject(e));
+        document.addEventListener(TurboEventName.click, (e) => this.interactWithObject(e));
+        document.addEventListener(TurboEventName.clickEnd, (e) => this.interactWithObject(e));
+        document.addEventListener(TurboEventName.move, (e) => this.interactWithObject(e));
+        document.addEventListener(TurboEventName.dragStart, (e) => this.interactWithObject(e));
+        document.addEventListener(TurboEventName.drag, (e) => this.interactWithObject(e));
+        document.addEventListener(TurboEventName.dragEnd, (e) => this.interactWithObject(e));
+    }
+    /**
+     * @description Returns all created tools as an array
+     */
+    getToolsArray() {
+        return [...this.tools.values()].flat();
+    }
+    /**
+     * @description Returns the tool with the given name (or undefined)
+     * @param name
+     */
+    getToolsByName(name) {
+        return this.tools.get(name) || [];
+    }
+    /**
+     * @description Returns the tool with the given name (or undefined)
+     * @param name
+     * @param predicate
+     */
+    getToolByName(name, predicate) {
+        const tools = this.getToolsByName(name);
+        return predicate ? tools?.find(predicate) : tools?.[0];
+    }
+    /**
+     * @description Returns the tools associated with the given key
+     * @param key
+     */
+    getToolsByKey(key) {
+        const toolName = this.mappedKeysToTool.get(key);
+        if (!toolName)
+            return null;
+        return this.tools.get(toolName) || [];
+    }
+    /**
+     * @description Returns the tool associated with the given key
+     * @param key
+     * @param predicate
+     */
+    getToolByKey(key, predicate) {
+        const tools = this.getToolsByKey(key);
+        return predicate ? tools?.find(predicate) : tools?.[0];
+    }
+    /**
+     * @description Adds a tool to the tools map, identified by its name. Optionally, provide a key to bind the tool to.
+     * @param tool
+     * @param key
+     */
+    addTool(tool, key) {
+        if (!this.tools.has(tool.name))
+            this.tools.set(tool.name, []);
+        const tools = this.tools.get(tool.name);
+        if (!tools.includes(tool))
+            tools.push(tool);
+        if (key)
+            this.mappedKeysToTool.set(key, tool.name);
+    }
+    createTool(properties) {
+        return new Tool({ ...properties, toolManager: this });
+    }
+    /**
+     * @description Returns the tool currently held by the provided click mode
+     * @param mode
+     */
+    getTool(mode) {
+        return this.currentTools.get(mode);
+    }
+    //Utility callback to get the current tool based on the fired event's information
+    getFiredTool(e) {
+        let tool;
+        //If keys are pressed --> try to get the tool assigned to key mode
+        if (e.keys.length > 0)
+            tool = this.getTool(ClickMode.key);
+        //If tool still null --> get tool assigned to event's click mode
+        if (!tool)
+            tool = this.getTool(e.clickMode);
+        return tool;
+    }
+    /**
+     * @description Sets the provided tool as a current tool associated with the provided type
+     * @param tool
+     * @param type
+     * @param options
+     */
+    setTool(tool, type, options = {}) {
+        //Initialize undefined options
+        if (options.select == undefined)
+            options.select = true;
+        if (options.activate == undefined)
+            options.activate = true;
+        if (options.setAsNoAction == undefined)
+            options.setAsNoAction = type == ClickMode.left;
+        //Get previous tool
+        const previousTool = this.currentTools.get(type);
+        if (previousTool) {
+            //Return if it's the same
+            if (previousTool == tool)
+                return;
+            //Deselect and deactivate previous tool
+            if (options.select)
+                previousTool.selected = false;
+            if (options.activate)
+                previousTool.deactivate();
+        }
+        //Select new tool (and maybe set it as the tool for no click mode)
+        this.currentTools.set(type, tool);
+        if (options.setAsNoAction)
+            this.currentTools.set(ClickMode.none, tool);
+        //Select and activate the tool
+        if (options.select && tool)
+            tool.selected = true;
+        if (options.activate && tool)
+            tool.activate();
+        //Fire tool changed
+        this.onToolChange.fire(previousTool, tool, type);
+    }
+    /**
+     * @description Sets tool associated with the provided key as the current tool for the key mode
+     * @param key
+     */
+    setToolByKey(key) {
+        const tool = this.getToolByKey(key);
+        if (!tool)
+            return false;
+        this.setTool(tool, ClickMode.key, { select: false });
+        return true;
+    }
+}
 
 function styleInject(css, ref) {
   if ( ref === void 0 ) ref = {};

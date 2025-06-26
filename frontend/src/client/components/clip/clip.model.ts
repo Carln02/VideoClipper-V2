@@ -1,30 +1,43 @@
 import {YUtilities} from "../../../yManagement/yUtilities";
 import {YComponentModel} from "../../../yManagement/yModel/types/yComponentModel";
 import {ClipTextHandler} from "./clip.textHandler";
-import { YArray } from "../../../yManagement/yManagement.types";
+import { YArray, YMap } from "../../../yManagement/yManagement.types";
 import { SyncedText } from "../textElement/textElement.types";
 import { SyncedMedia } from "../../handlers/mediaHandler/mediaHandler.types";
+import {SyncedClip} from "./clip.types";
 
 export class ClipModel extends YComponentModel {
-    private _metadata: SyncedMedia;
     private _uri: string;
     private _videoDuration: number = null;
 
     public readonly minimumDuration: number = 0.3 as const;
 
-    public get data(): any {
+    public get data(): SyncedClip & YMap {
         return super.data;
     }
 
-    public set data(value: any) {
-        super.data = value;
+    public set data(data: SyncedClip & YMap) {
+        super.data = data;
         //TODO MAKE IT TOGGLEABLE
         YUtilities.deepObserveAny(this.data, () => this.fireCallback("reload_thumbnail"),
             "startTime", "endTime", "backgroundFill", "mediaId", "content");
     }
 
-    public get metadata(): SyncedMedia {
-        return this._metadata;
+    public get metadata(): SyncedMedia & YMap {
+        return this.getBlock("metadata")?.data;
+    }
+
+    public setMetadata(value: SyncedMedia & YMap, id?: string) {
+        this.setBlock(value, id, "metadata");
+    }
+
+    public get metadataType(): "image" | "video" {
+        return this.metadata?.get("type");
+    }
+
+    public set blob(value: Blob) {
+        this._uri = value ? URL.createObjectURL(value) : null;
+        this._videoDuration = this.metadataType == "video" ? this.metadata?.get("duration") : null;
     }
 
     public get uri(): string {
@@ -33,15 +46,6 @@ export class ClipModel extends YComponentModel {
 
     public get videoDuration(): number {
         return this._videoDuration;
-    }
-
-    public async updateMediaData(media: SyncedMedia) {
-        this._metadata = media;
-
-        if (media?.blob instanceof Blob) this._uri = URL.createObjectURL(media.blob);
-        else this._uri = null;
-
-        this._videoDuration = media?.type == "video" ? media?.duration : null;
     }
 
     public get startTime(): number {
@@ -80,11 +84,7 @@ export class ClipModel extends YComponentModel {
     }
 
     public get mediaId(): string {
-        return this.getData("mediaId") as string;
-    }
-
-    public set mediaId(value: string) {
-        this.setData("mediaId", value);
+        return this.getBlockId("metadata");
     }
 
     public get thumbnail(): string {

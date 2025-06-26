@@ -4,7 +4,7 @@ import {Card} from "../../components/card/card";
 import {ClipRendererVisibility} from "../../components/clipRenderer/clipRenderer.types";
 import {CameraView} from "./camera.view";
 import {CameraModel} from "./camera.model";
-import {CameraRecordingHandler} from "./camera.recordingHandler";
+import {CameraRecordingController} from "./camera.recordingController";
 import {CameraCaptureHandler} from "./camera.captureHandler";
 import {VcComponent} from "../../components/component/component";
 import {Clip} from "../../components/clip/clip";
@@ -20,16 +20,16 @@ export class Camera extends VcComponent<CameraView, object, CameraModel, Project
         this.mvc.generate({
             viewConstructor: CameraView,
             modelConstructor: CameraModel,
-            handlerConstructors: [CameraRecordingHandler, CameraCaptureHandler]
+            handlerConstructors: [CameraCaptureHandler],
+            controllerConstructors: [CameraRecordingController]
         });
 
         this.model.ghosting = true;
 
-        this.mvc.emitter.add("recordedMedia", async (media: SyncedMedia) => {
-            media.id = await this.director.mediaHandler.saveMedia(media);
-            // this.model.lastSavedMedia = {...this.model.lastRecordedMedia, blob: undefined};
-            await this.card.addClip(Clip.createData({endTime: (media?.duration ?? 5), mediaId: media.id,}),
-                this.view.timeline.currentClipInfo.closestIntersection);
+        this.mvc.emitter.add("recordedMedia", async (media: SyncedMedia, blob?: Blob) => {
+            await this.director.mediaHandler.saveMedia(media, blob);
+            const clipData = Clip.createData({endTime: (media?.duration ?? 5), mediaId: media.id});
+            await this.card.addClip(clipData, this.view.timeline.currentClipInfo.closestIntersection);
         });
     }
 
@@ -86,11 +86,15 @@ export class Camera extends VcComponent<CameraView, object, CameraModel, Project
     }
 
     public startRecording() {
-        this.model.recordingHandler.startRecording();
+        this.recordingController.startRecording();
     }
 
     public stopRecording() {
-        this.model.recordingHandler.stopRecording();
+        this.recordingController.stopRecording();
+    }
+
+    protected get recordingController(): CameraRecordingController {
+        return this.mvc.getController("recording") as CameraRecordingController;
     }
 
     public set visibilityMode(value: ClipRendererVisibility) {

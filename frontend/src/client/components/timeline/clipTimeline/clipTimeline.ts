@@ -13,7 +13,10 @@ export class ClipTimeline extends Timeline<ClipTimelineView> {
     public readonly renderer: ClipRenderer;
 
     public constructor(properties: ClipTimelineProperties) {
-        super({...properties, viewConstructor: ClipTimelineView});
+        super({
+            ...properties,
+            viewConstructor: ClipTimelineView,
+        });
         this.addClass("vc-clip-timeline");
         this.scaled = true;
         if (properties.drawerProperties) this.view.drawer.setProperties(properties.drawerProperties);
@@ -47,5 +50,9 @@ export class ClipTimeline extends Timeline<ClipTimelineView> {
     public addIndicatorAt(indicator: Element, index: number) {
         indicator.remove();
         this.view.scrubberContainer.addChild(indicator, index);
+    }
+
+    public get clipsContainer(): HTMLDivElement {
+        return this.view.scrubberContainer;
     }
 }

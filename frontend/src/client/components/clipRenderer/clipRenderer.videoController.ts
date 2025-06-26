@@ -13,9 +13,10 @@ export class ClipRendererVideoController extends RendererVideoController<ClipRen
             const offset = this.model.getOffset(index);
             const video = this.videos[index];
             if (!video) return;
+            this.view.showVideo();
 
             if (clip?.uri) {
-                video.src = clip.uri;
+                if (clip.uri !== video.src) video.src = clip.uri;
                 await RendererVideoController.waitForVideoLoad(video, offset);
             } else {
                 video.removeAttribute("src");
@@ -34,13 +35,13 @@ export class ClipRendererVideoController extends RendererVideoController<ClipRen
         const clip = this.model.getClip();
         if (!clip) return;
 
-        if (clip.metadata?.type == "video") {
-            this.view.showCurrentVideo();
+        if (clip.metadataType == "video") {
+            this.view.showVideo();
             await this.play();
         } else this.model.isPlaying = true;
     }
 
     public async play() {
-        if (this.model.getClip()?.metadata?.type == "video") await super.play();
+        if (this.model.getClip()?.metadataType == "video") await super.play();
     }
 }

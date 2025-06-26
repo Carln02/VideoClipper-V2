@@ -8,6 +8,8 @@ import {Project} from "../../directors/project/project";
 import {ProjectScreens, ToolType} from "../../directors/project/project.types";
 import {ShootTool} from "../../tools/shoot/shoot";
 import {NavigatableElement} from "../../managers/navigationManager/navigationManager.types";
+import {SelectionTool} from "../../tools/selection/selection";
+import {ConnectionTool} from "../../tools/connection/connection";
 
 /**
  * @description Class representing a canvas on which the user can add cards, connect them, move them around, etc.
@@ -37,11 +39,12 @@ export class Canvas extends VcComponent<any, any, any, Project>  implements Navi
             classes: "bottom-toolbar",
             director: this.director,
             tools: [
-                {name: ToolType.selection, key: "Shift"},
+                new SelectionTool({name: ToolType.selection, toolManager: this.toolManager, director: this.director, key: "Shift"}),
                 new NavigatorTool({name: ToolType.navigator, toolManager: this.toolManager, director: this.director}),
                 ToolType.createCard,
                 ToolType.createText,
                 ToolType.delete,
+                new ConnectionTool({name: ToolType.connection, toolManager: this.toolManager, director: this.director}),
                 new ShootTool({name: ToolType.shoot, toolManager: this.toolManager, director: this.director}),
             ]
         });

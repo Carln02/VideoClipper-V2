@@ -19,7 +19,7 @@ export class WebsocketManager {
     private readonly handleDisconnect = () => this.provider.disconnect();
 
     public constructor(room: string, ydoc: YDoc, websocketOptions?: WebsocketOptions) {
-        if (!websocketOptions) websocketOptions = {debug: true};
+        if (!websocketOptions) websocketOptions = {debug: false};
         if (!websocketOptions.options) websocketOptions.options = {};
 
         this.room = room;

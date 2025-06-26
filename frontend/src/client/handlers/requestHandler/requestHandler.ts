@@ -19,10 +19,18 @@ export class RequestHandler {
         request.onreadystatechange = _ => {
             if (request.readyState !== 4) return;
             if (request.status < 200 || request.status >= 300) {
-                onFailure(request.responseText);
+                onFailure(request.response);
                 return;
             }
-            parse ? onSuccess(JSON.parse(request.responseText)) : onSuccess(request.response);
+            if (parse) {
+                try {
+                    onSuccess(typeof request.response === "string"
+                        ? JSON.parse(request.response)
+                        : JSON.parse(new TextDecoder().decode(request.response)));
+                } catch (err) {
+                    onFailure("Failed to parse JSON: " + err.message);
+                }
+            } else onSuccess(request.response);
         }
 
         request.open(method, url, true);

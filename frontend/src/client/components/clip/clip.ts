@@ -42,8 +42,8 @@ export class Clip<
         });
 
         this.mvc.emitter.add("mediaId", async (value: string) => {
-            this.model.updateMediaData(await this.director.mediaHandler.getMedia(value));
-
+            this.model.setMetadata(this.director.mediaHandler.getMediaMetadata(value), value);
+            this.model.blob = await this.director.mediaHandler.getMedia(value);
             //TODO maybe remove this? idk
             // if (media.metadata?.thumbnail) {
             //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
@@ -51,6 +51,11 @@ export class Clip<
 
             this.onMediaDataChanged(this);
         });
+
+        this.mvc.emitter.addWithBlock("convert", "metadata", async (value: string) => {
+            if (!value) return;
+            this.model.blob = await this.director.mediaHandler.getMedia(value);
+        })
     }
 
     public static createData(data?: SyncedClip): YMap & SyncedClip {
@@ -92,6 +97,10 @@ export class Clip<
 
     public get metadata(): SyncedMedia {
         return this.model.metadata;
+    }
+
+    public get metadataType(): "image" | "video" {
+        return this.model.metadataType;
     }
 
     public get videoDuration(): number {
