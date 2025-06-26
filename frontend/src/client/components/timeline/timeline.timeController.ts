@@ -1,5 +1,5 @@
 import {Timeline} from "./timeline";
-import {TurboController, TurboDragEvent, TurboEvent} from "turbodombuilder";
+import {TurboController, TurboEvent} from "turbodombuilder";
 import {TimelineView} from "./timeline.view";
 import {TimelineModel} from "./timeline.model";
 
@@ -11,7 +11,6 @@ export class TimelineTimeController extends TurboController<Timeline, TimelineVi
             if (this.element.card) this.element.card.duration = this.model.totalDuration;
         });
 
-        this.view.scrubber.onScrubbing = (e: TurboDragEvent) => this.emitter.fire("containerClicked", e);
         this.emitter.add("containerClicked", (e: TurboEvent) => {
             this.model.currentTime = this.getTimeFromPosition(e);
         });

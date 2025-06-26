@@ -104,7 +104,7 @@ export class Timeline<
         const selectedClip = this.director.contextManager.getContext(2);
         if (selectedClip && selectedClip[0] instanceof Clip) this.clipController.snapToClosest();
         else this.clipController.snapAtEnd();
-        this.clipController.reloadCurrentClip();
+        // this.clipController.reloadCurrentClip();
     }
 
     public get clips(): Clip[] {

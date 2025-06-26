@@ -7,7 +7,7 @@ import {
     flexRowCenter,
     icon,
     p,
-    spacer,
+    spacer, TurboDragEvent,
     TurboEvent,
     TurboIcon,
     TurboView
@@ -70,6 +70,8 @@ export class TimelineView<
 
     protected setupUIListeners() {
         super.setupUIListeners();
+
+        this.scrubber.onScrubbing = (e: TurboDragEvent) => this.emitter.fire("containerClicked", e);
 
         this.scrubberContainer.addEventListener(DefaultEventName.click, (e: TurboEvent) =>
             this.emitter.fire("containerClicked", e));

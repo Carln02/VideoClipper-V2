@@ -34,10 +34,8 @@ export class RendererVideoController<
             };
 
             const handleSeek = () => {
-                console.log("SEEKINGGGG")
                 video.addEventListener("seeked", seekListener);
                 setTimeout(() => video.currentTime = Math.round(seekTime * 100) / 100, delay);
-                console.log(video.indexInParent())
             };
 
             const seekListener = () => {
@@ -53,10 +51,6 @@ export class RendererVideoController<
             video.addEventListener("error", onError);
             if (video.readyState >= 2) handleSeek();
             else video.addEventListener("canplay", loadListener);
-
-            video.addEventListener("timeupdate", () => {
-                console.log("Time:", video.currentTime);
-            });
         });
     }
 }

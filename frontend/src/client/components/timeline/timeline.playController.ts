@@ -10,8 +10,19 @@ export class TimelinePlayController extends TurboController<Timeline, TimelineVi
         super.setupChangedCallbacks();
 
         this.emitter.add("playButtonClicked", () => this.play());
+
+        let wasPlaying = false;
+
         this.emitter.add("containerClicked", () => {
-            if (this.element.isPlaying) this.play(true);
+            if (!this.element.isPlaying) return;
+            wasPlaying = true;
+            this.play(false, false);
+        });
+
+        this.emitter.add("clipReloaded", () => {
+            if (!wasPlaying) return;
+            wasPlaying = false;
+            this.play(true);
         });
     }
 
@@ -49,8 +60,8 @@ export class TimelinePlayController extends TurboController<Timeline, TimelineVi
         this.model.nextTimer = setTimeout(() => this.playRecur(index + 1), timeoutDuration);
     }
 
-    public async play(play: boolean = !this.renderer.isPlaying) {
-        this.view.updatePlayButtonIcon(play);
+    public async play(play: boolean = !this.renderer.isPlaying, updateIcon: boolean = true) {
+        if (updateIcon) this.view.updatePlayButtonIcon(play);
         if (this.model.nextTimer) clearTimeout(this.model.nextTimer);
         if (this.model.playTimer) clearInterval(this.model.playTimer);
 
