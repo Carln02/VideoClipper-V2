@@ -27,3 +27,13 @@ vc-toolbar.left-toolbar {
     top: 50%;
     transform: translate(0, -50%);
 }
+
+vc-toolbar.right-toolbar {
+    flex-direction: column;
+
+    right: calc(2 * var(--base-padding));
+    top: 50%;
+    transform: translate(0, -50%);
+
+    display:none;
+}

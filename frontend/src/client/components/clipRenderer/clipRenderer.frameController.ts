@@ -19,7 +19,7 @@ export class ClipRendererFrameController extends TurboController<ClipRenderer, C
         if (!clip) this.model.currentCanvasFill = null;
         else if (clip.backgroundFill) this.model.currentCanvasFill = clip.backgroundFill;
         else if (clip.mediaId) {
-            if (clip.metadata?.type == "image") this.model.currentCanvasFill = clip.uri;
+            if (clip.metadataType == "image") this.model.currentCanvasFill = clip.uri;
             else this.model.currentCanvasFill = forceCanvas ? this.view.video : null;
         }
     }

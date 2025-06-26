@@ -82,7 +82,7 @@ export class ClipRendererModel extends RendererModel {
         const prevOffset = this.offsets[index];
         if (offset != prevOffset) this.offsets[index] = offset;
 
-        if (index == this.currentIndex) this.currentIndex = index;
+        if (index === this.currentIndex) this.currentIndex = index;
         this.fireCallback("clipChanged", index);
     }
 }

@@ -2,7 +2,7 @@ import {TurboProperties} from "turbodombuilder";
 import {RendererView} from "./renderer.view";
 import {RendererModel} from "./renderer.model";
 import {VcComponentProperties} from "../component/component.types";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 
 export type RendererProperties<
     ViewType extends RendererView = RendererView<any, any>,

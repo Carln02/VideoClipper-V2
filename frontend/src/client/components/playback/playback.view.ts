@@ -19,8 +19,8 @@ export class PlaybackView extends TurboView<Playback, PlaybackModel> {
         super.setupUIElements();
 
         this.scaleContainer = div();
-        this.renderer = new ClipRenderer({screenManager: this.element.screenManager, videoProperties: {playsInline: true}});
-        this.timeline = new Timeline({screenManager: this.element.screenManager, renderer: this.renderer, initialize: true});
+        this.renderer = new ClipRenderer({director: this.element.director, videoProperties: {playsInline: true}});
+        this.timeline = new Timeline({director: this.element.director, renderer: this.renderer, initialize: true});
     }
 
     protected setupUILayout() {

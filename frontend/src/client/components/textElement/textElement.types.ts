@@ -4,7 +4,7 @@ import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {TextElementView} from "./textElement.view";
 import {TextElementModel} from "./textElement.model";
 import {VcComponentProperties} from "../component/component.types";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 
 export enum TextType {
     custom = "custom",

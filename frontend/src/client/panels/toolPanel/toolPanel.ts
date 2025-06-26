@@ -1,17 +1,15 @@
-import {ClickMode, define, Shown, StatefulReifect} from "turbodombuilder";
-import {ToolType} from "../../managers/toolManager/toolManager.types";
+import {ClickMode, define, Shown, StatefulReifect, Tool, ToolManager} from "turbodombuilder";
 import {ToolPanelContent} from "../toolPanelContent/toolPanelContent";
 import "./toolPanel.css";
 import {ContextEntry} from "../../managers/contextManager/contextManager.types";
 import {VcComponent} from "../../components/component/component";
-import {ToolManager} from "../../managers/toolManager/toolManager";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {VcComponentProperties} from "../../components/component/component.types";
-import {Project} from "../../screens/project/project";
-import {ProjectScreens} from "../../screens/project/project.types";
+import {Project} from "../../directors/project/project";
+import {ProjectScreens} from "../../directors/project/project.types";
 
 @define()
-export class ToolPanel extends VcComponent<any, any, any, Project> {
+export class ToolPanel<ToolType = string> extends VcComponent<any, any, any, Project> {
     private readonly panels: Map<ToolType, Map<ProjectScreens, ToolPanelContent>> = new Map();
     private readonly contextCallbacks: ((entry: ContextEntry) => void)[] = [];
 
@@ -25,12 +23,12 @@ export class ToolPanel extends VcComponent<any, any, any, Project> {
             styles: {[Shown.hidden]: "opacity: 0", [Shown.visible]: "opacity: 1"}
         });
 
-        this.toolManager.onToolChange.add((_, newTool, type) => {
+        this.toolManager.onToolChange.add((_, newTool: Tool<ToolType>, type) => {
             if (type != ClickMode.left) return;
             this.changePanel(newTool.name);
         });
 
-        this.screenManager.onScreenChange.add(() => {
+        this.director.onScreenChange.add(() => {
             this.changePanel();
         });
 
@@ -39,15 +37,15 @@ export class ToolPanel extends VcComponent<any, any, any, Project> {
         });
     }
 
-    public get toolManager(): ToolManager {
-        return this.screenManager.toolManager;
+    public get toolManager(): ToolManager<ToolType> {
+        return this.director.toolManager as ToolManager<ToolType>;
     }
 
     public get contextManager(): ContextManager {
-        return this.screenManager.contextManager;
+        return this.director.contextManager;
     }
 
-    public getPanel(tool: ToolType, context: ProjectScreens = this.screenManager.currentType): ToolPanelContent {
+    public getPanel(tool: ToolType, context: ProjectScreens = this.director.currentType): ToolPanelContent {
         return this.panels.get(tool)?.get(context);
     }
 
@@ -68,8 +66,8 @@ export class ToolPanel extends VcComponent<any, any, any, Project> {
         if (index >= 0) this.contextCallbacks.splice(index, 1);
     }
 
-    public changePanel(toolName: ToolType = this.toolManager.getTool(ClickMode.left).name,
-                       context: ProjectScreens = this.screenManager.currentType) {
+    public changePanel(toolName: ToolType = this.toolManager.getTool(ClickMode.left).name as ToolType,
+                       context: ProjectScreens = this.director.currentType) {
         this.currentPanel?.detach();
         this.removeChild(this.currentPanel);
 

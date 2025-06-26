@@ -1,7 +1,5 @@
 import {DefaultEventName, h3, icon, spacer, TurboIcon, TurboView} from "turbodombuilder";
 import {AppBar} from "./appBar";
-import {leave_room} from "../../sync/datastore";
-import {show_projects} from "../../index";
 
 export class AppBarView extends TurboView<AppBar> {
     private fullscreenToggle: TurboIcon;
@@ -12,7 +10,7 @@ export class AppBarView extends TurboView<AppBar> {
         super.setupUIElements();
 
         this.fullscreenToggle = icon({icon: "maximize"})
-        this.canvasTitle = h3({text: "TODO"});
+        this.canvasTitle = h3({text: "VideoClipper"});
         this.backButton = icon({icon: "home"});
     }
 
@@ -26,8 +24,9 @@ export class AppBarView extends TurboView<AppBar> {
 
         this.fullscreenToggle.addListener(DefaultEventName.click, () => this.toggleFullscreen());
         this.backButton.addListener(DefaultEventName.click, () => {
-            leave_room();
-            show_projects();
+            //TODO
+            // leave_room();
+            // show_projects();
         });
     }
 

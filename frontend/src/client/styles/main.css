@@ -1,0 +1,151 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+@import "./input.css";
+@import "./markingMenu.css";
+@import "./colors.css";
+@import "./drawer.css";
+@import "./popup.css";
+
+body {
+    width: 100vw;
+    height: 100vh;
+
+    touch-action: pan-x pan-y;
+    user-select: none;
+    overflow: hidden;
+
+    background-color: #f1f8f8;
+
+    --border-style: 1px solid #ccc;
+    --base-padding: 8px;
+    --card-radius: 6px;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+* {
+    margin: 0;
+    font-size: 13px;
+    font-family: "Inter", sans-serif;
+}
+
+.icon {
+    display: inline-block;
+    max-width: 2.5em;
+    max-height: 2.5em;
+    aspect-ratio: 1;
+}
+
+.icon > svg {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1;
+}
+
+.content-wrapper {
+    padding: 32px 0;
+    width: 50%;
+    margin: auto;
+}
+
+
+
+/* Generic text classes */
+
+.bold {
+    font-weight: bold;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.left {
+    text-align: left;
+}
+
+.large {
+    font-size: 16px;
+}
+
+
+
+/* Generic style classes */
+
+.border {
+    border: var(--border-style);
+}
+
+.padding-small {
+    padding: calc(0.5 * var(--base-padding));
+}
+
+.padding {
+    padding: calc(1.5 * var(--base-padding));
+    border-radius: var(--card-radius);
+}
+
+.translucent {
+    opacity: 0.25;
+}
+
+.hidden {
+    display: none !important;
+}
+
+
+
+/* Generic button classes */
+
+button.clickable, .card {
+    border: var(--border-style);
+    padding: calc(1.5 * var(--base-padding));
+    border-radius: var(--card-radius);
+    background-color: white;
+}
+
+button.clickable:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+
+
+/* Generic flex classes */
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+}
+
+.row > *, .column > * {
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.grow {
+    flex-grow: 1;
+    flex-basis: 0;
+}
+
+.gap {
+    gap: var(--base-padding);
+}
+
+.gap-large {
+    gap: calc(2 * var(--base-padding));
+}
+
+.scroller {
+    overflow: auto;
+    flex-shrink: 1;
+    padding-top: 32px;
+}
+
+

@@ -1,0 +1,15 @@
+vc-project {
+    display: block;
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+vc-project > div:first-child {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+}

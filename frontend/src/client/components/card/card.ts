@@ -11,9 +11,13 @@ import {SyncedCardMetadata} from "../metadataDrawer/metadataDrawer.types";
 import { YArray, YMap } from "../../../yManagement/yManagement.types";
 import {SyncedClip} from "../clip/clip.types";
 import {VcComponentProperties} from "../component/component.types";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 import {Clip} from "../clip/clip";
 import {YUtilities} from "../../../yManagement/yUtilities";
+import {BranchingNodeSelectionInteractor} from "../branchingNode/branchingNode.selectionInteractor";
+import {CardShootingInteractor} from "./card.shootingInteractor";
+import {CardCreateCardInteractor} from "./card.createCardInteractor";
+import {BranchingNodeConnectionInteractor} from "../branchingNode/branchingNode.connectionInteractor";
 
 /**
  * @description Class representing a card
@@ -26,6 +30,8 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
             viewConstructor: CardView,
             modelConstructor: CardModel,
             data: properties.data,
+            interactorConstructors: [BranchingNodeSelectionInteractor, CardShootingInteractor,
+                CardCreateCardInteractor, BranchingNodeConnectionInteractor]
         });
         this.renderer.card = this;
     }
@@ -101,8 +107,8 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
      * amd updates the attached flows accordingly.
      */
     public async delete() {
-        await this.screenManager.createNewNode(this.model.origin, this.dataId);
-        this.screenManager.delete(this);
+        await this.director.createNewNode(this.model.origin, this.dataId);
+        this.director.delete(this);
     }
 
     public async addClip(clip: SyncedClip & YMap, index?: number): Promise<number> {

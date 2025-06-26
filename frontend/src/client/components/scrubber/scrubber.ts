@@ -8,7 +8,7 @@ import "./scrubber.css";
 import {ScrubberProperties} from "./scrubber.types";
 import {Timeline} from "../timeline/timeline";
 import {VcComponent} from "../component/component";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 
 @define("vc-scrubber")
 export class Scrubber extends VcComponent<any, any, any, Project> {
@@ -44,14 +44,14 @@ export class Scrubber extends VcComponent<any, any, any, Project> {
         });
 
         //On drag and if scrubbing --> stop propagation and move scrubber by delta position
-        document.addListener(TurboEventName.drag, (e: TurboDragEvent) => {
+        this.director.addListener(TurboEventName.drag, (e: TurboDragEvent) => {
             if (!this.scrubbing) return;
             e.stopImmediatePropagation();
             if (this.onScrubbing) this.onScrubbing(e);
         });
 
         //Drag end and if scrubbing --> end scrubbing and stop propagation
-        document.addListener(TurboEventName.dragEnd, (e: TurboDragEvent) => {
+        this.director.addListener(TurboEventName.dragEnd, (e: TurboDragEvent) => {
             if (!this.scrubbing) return;
             this.scrubbing = false;
             if (this.onScrubbingEnd) this.onScrubbingEnd(e);
@@ -63,7 +63,7 @@ export class Scrubber extends VcComponent<any, any, any, Project> {
      */
     @auto()
     public set translation(value: number) {
-        const basis = this.scaled ? this.screenManager.canvas.scale : 1;
+        const basis = this.scaled ? this.director.canvas.scale : 1;
         this.style.transform = `translate(calc(${value / basis}px - 50%), 0)`;
     }
 }

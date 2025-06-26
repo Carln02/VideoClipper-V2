@@ -4,7 +4,7 @@ import {FlowTagProperties, SyncedFlowTag} from "./flowTag.types";
 import {VcComponent} from "../component/component";
 import {FlowTagModel} from "./flowTag.model";
 import {FlowTagView} from "./flowTag.view";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 import {YArray, YMap} from "../../../yManagement/yManagement.types";
 import {SyncedFlowPath} from "../flowPath/flowPath.types";
 import {FlowPath} from "../flowPath/flowPath";
@@ -36,7 +36,7 @@ export class FlowTag extends VcComponent<FlowTagView, SyncedFlowTag, FlowTagMode
     }
 
     public get attachedNode(): BranchingNode {
-        return this.screenManager.getNode(this.model.nodeId);
+        return this.director.getNode(this.model.nodeId);
     }
 
     public get paths(): YArray<SyncedFlowPath & YMap> {

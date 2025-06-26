@@ -2,7 +2,7 @@ import {auto, define} from "turbodombuilder";
 import "./playback.css";
 import {PlaybackView} from "./playback.view";
 import {PlaybackModel} from "./playback.model";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 import {VcComponent} from "../component/component";
 import {Clip} from "../clip/clip";
 import {PlaybackProperties} from "./playback.types";
@@ -10,7 +10,8 @@ import {FlowPath} from "../flowPath/flowPath";
 import {Card} from "../card/card";
 import {Timeline} from "../timeline/timeline";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
-import {ProjectScreens} from "../../screens/project/project.types";
+import {ProjectScreens} from "../../directors/project/project.types";
+import {PlaybackAddTextInteractor} from "./playback.addTextInteractor";
 
 @define("vc-playback")
 export class Playback extends VcComponent<PlaybackView, object, PlaybackModel, Project> {
@@ -19,7 +20,8 @@ export class Playback extends VcComponent<PlaybackView, object, PlaybackModel, P
 
         this.mvc.generate({
             viewConstructor: PlaybackView,
-            modelConstructor: PlaybackModel
+            modelConstructor: PlaybackModel,
+            interactorConstructors: [PlaybackAddTextInteractor]
         });
         if (properties.path) this.path = properties.path;
         if (properties.card) this.card = properties.card;
@@ -57,7 +59,7 @@ export class Playback extends VcComponent<PlaybackView, object, PlaybackModel, P
 
     public clear() {
         this.view.timeline.data = undefined; //TODO idk if gd idea
-        this.screenManager.currentType = ProjectScreens.canvas;
+        this.director.currentType = ProjectScreens.canvas;
     }
 
     public snapToClip(clip: Clip) {

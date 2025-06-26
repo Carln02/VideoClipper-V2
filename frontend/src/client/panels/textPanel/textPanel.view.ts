@@ -25,7 +25,7 @@ export class TextPanelView extends ToolPanelContentView<TextPanel, TextPanelMode
 
         this.originXInput = new TurboNumericalInput({
             element: input({type: "number", step: "1", min: "0", max: "100"}),
-            label: "Position",
+            label: "Position : ",
             prefix: "x: ",
             suffix: "%",
             multiplier: 100,
@@ -42,7 +42,7 @@ export class TextPanelView extends ToolPanelContentView<TextPanel, TextPanelMode
 
         this.fontSizeInput = new TurboNumericalInput({
             element: input({type: "number", step: "1", min: "0", max: "100"}),
-            label: "Font size",
+            label: "Font size : ",
             suffix: "%",
             multiplier: 100,
             decimalPlaces: 2,

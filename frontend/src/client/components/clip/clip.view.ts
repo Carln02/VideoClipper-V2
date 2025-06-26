@@ -3,7 +3,7 @@ import {Clip} from "./clip";
 import {DefaultEventName, div, icon, img, TurboDragEvent, TurboView} from "turbodombuilder";
 
 export class ClipView extends TurboView<Clip, ClipModel> {
-    private clipContent: HTMLDivElement;
+    public clipContent: HTMLDivElement;
     private thumbnailImage: HTMLImageElement;
 
     private leftHandle: HTMLDivElement;
@@ -52,6 +52,7 @@ export class ClipView extends TurboView<Clip, ClipModel> {
     }
 
     private generateHandleEvents(handle: HTMLDivElement, side: "left" | "right") {
+        handle.addEventListener(DefaultEventName.clickStart, (e: TurboDragEvent) => e.stopImmediatePropagation());
         handle.addEventListener(DefaultEventName.dragStart, (e: TurboDragEvent) => e.stopImmediatePropagation());
         handle.addEventListener(DefaultEventName.drag, (e: TurboDragEvent) => this.dragHandle(side, e));
         handle.addEventListener(DefaultEventName.dragEnd, () => this.model.normalizeTime());

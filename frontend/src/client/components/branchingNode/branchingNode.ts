@@ -5,9 +5,12 @@ import {BranchingNodeModel} from "./branchingNode.model";
 import {BranchingNodeView} from "./branchingNode.view";
 import {VcComponentProperties} from "../component/component.types";
 import {VcComponent} from "../component/component";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 import {YUtilities} from "../../../yManagement/yUtilities";
 import { YMap } from "../../../yManagement/yManagement.types";
+import {BranchingNodeSelectionInteractor} from "./branchingNode.selectionInteractor";
+import {BranchingNodeDeleteInteractor} from "./branchingNode.deleteInteractor";
+import {BranchingNodeConnectionInteractor} from "./branchingNode.connectionInteractor";
 
 /**
  * @class BranchingNode
@@ -27,7 +30,9 @@ export class BranchingNode<
         if (properties.data) this.mvc.generate({
             viewConstructor: BranchingNodeView as new () => View,
             modelConstructor: BranchingNodeModel as new () => Model,
-            data: properties.data
+            data: properties.data,
+            interactorConstructors: [BranchingNodeSelectionInteractor, BranchingNodeDeleteInteractor,
+                BranchingNodeConnectionInteractor]
         });
     }
 
@@ -53,7 +58,7 @@ export class BranchingNode<
      * amd updates the attached flows accordingly.
      */
     public delete() {
-        this.screenManager.flows.forEach(flow => flow.updateOnDetachingNode(this.dataId));
-        this.screenManager.delete(this);
+        this.director.flows.forEach(flow => flow.updateOnDetachingNode(this.dataId));
+        this.director.delete(this);
     }
 }

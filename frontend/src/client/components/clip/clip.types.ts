@@ -2,7 +2,7 @@ import {SyncedText} from "../textElement/textElement.types";
 import {ClipModel} from "./clip.model";
 import {Timeline} from "../timeline/timeline";
 import {VcComponentProperties} from "../component/component.types";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 import {YArray} from "yjs/dist/src/types/YArray";
 import {TurboView} from "turbodombuilder";
 

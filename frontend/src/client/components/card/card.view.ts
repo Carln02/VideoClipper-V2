@@ -58,7 +58,9 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
         this.titleElement = new TurboInput({selectTextOnFocus: true});
         this.durationElement = div();
 
-        this.playback = new Playback({screenManager: this.element.screenManager, card: this.element, classes: "card-playback"});
+        this.playback = new Playback({director: this.element.director, card: this.element, classes: "card-playback"});
+
+        this.playback.timeline.scaled = true;
 
         this._metadataDrawer = new MetadataDrawer({
             card: this.element,
@@ -74,7 +76,7 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
                 hideOverflow: true,
                 offset: {[Open.open]: 12}
             },
-            screenManager: this.element.screenManager,
+            director: this.element.director,
             card: this.element,
             renderer: this.renderer,
             model: this.playback.timeline.model

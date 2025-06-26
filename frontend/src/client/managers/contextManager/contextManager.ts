@@ -41,8 +41,6 @@ export class ContextManager {
 
     public setContext(element: Element, level: number = 1, select: boolean = false): number {
         if (!element) return -1;
-        const levelEntry = this.context.get(level);
-        if (levelEntry && levelEntry.length == 1 && levelEntry[0] == element) return 0;
 
         this.clearContext(level);
         this.context.set(level, [element]);

@@ -1,12 +1,12 @@
-import {Coordinate, Point, TurboDragEvent, TurboEventName, TurboWheelEvent} from "turbodombuilder";
-import {Canvas} from "../../screens/canvas/canvas";
+import {Point, TurboDragEvent, TurboEventName, TurboWheelEvent} from "turbodombuilder";
+import {NavigatableElement} from "./navigationManager.types";
 
 /**
- * @description Manages the navigation (panning and zooming) of a canvas
+ * @description Manages the navigation (panning and zooming) of a element
  */
 export class NavigationManager {
-    //The canvas it is linked to
-    private canvas: Canvas;
+    //The element it is linked to
+    private element: NavigatableElement;
 
     //Translation and scale
     private _translation: Point = new Point();
@@ -23,9 +23,9 @@ export class NavigationManager {
 
     private willChangeTimeout: NodeJS.Timeout = null;
 
-    constructor(canvas: Canvas) {
-        this.canvas = canvas;
-        //Init canvas position to the center of the screen
+    public constructor(element: NavigatableElement) {
+        this.element = element;
+        //Init element position to the center of the screen
         this.translation = new Point(window.innerWidth / 2, window.innerHeight / 2);
         this.initEvents();
     }
@@ -40,7 +40,7 @@ export class NavigationManager {
     // Translation and scale manipulation
 
     /**
-     * @description The canvas's current scale.
+     * @description The element's current scale.
      */
     public get scale() {
         return this._scale;
@@ -52,12 +52,12 @@ export class NavigationManager {
         if (value > this.maxScale) this._scale = this.maxScale - 0.01;
         else if (value < this.minScale) this._scale = this.minScale + 0.01;
         else this._scale = value;
-        //Transform the canvas accordingly
-        this.canvas.transform(this.translation, this.scale);
+        //Transform the element accordingly
+        this.element.transform(this.translation, this.scale);
     }
 
     /**
-     * @description The canvas's current translation
+     * @description The element's current translation
      * @private
      */
     public get translation(): Point {
@@ -66,12 +66,12 @@ export class NavigationManager {
 
     private set translation(value: Point) {
         this._translation = value;
-        //Transform the canvas accordingly
-        this.canvas.transform(this.translation, this.scale);
+        //Transform the element accordingly
+        this.element.transform(this.translation, this.scale);
     }
 
     /**
-     * @description Translate the canvas by the given delta values (will increment the previous translation
+     * @description Translate the element by the given delta values (will increment the previous translation
      * by the given values).
      * @param delta
      * @private
@@ -83,7 +83,7 @@ export class NavigationManager {
     //Pan and zoom
 
     /**
-     * @description Pans the canvas
+     * @description Pans the element
      * @param e
      */
     public pan(e: TurboDragEvent | TurboWheelEvent) {
@@ -103,7 +103,7 @@ export class NavigationManager {
 
     //TODO maybe also consider pointer location as zoom origin (for PC events)
     /**
-     * @description Zooms the canvas
+     * @description Zooms the element
      * @param e
      * @param isTrackpad
      */
@@ -113,7 +113,14 @@ export class NavigationManager {
         //Save old scale value
         const oldScale: number = this.scale;
         //Init zoom origin to the center of the screen
-        let zoomOrigin = new Point(window.innerWidth / 2, window.innerHeight / 2).sub(this.translation);
+        let zoomOrigin: Point;
+
+        if (e.position) zoomOrigin = e.position;
+        else {
+            const rect = this.element.getBoundingClientRect();
+            zoomOrigin = new Point(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        }
+        zoomOrigin = zoomOrigin.sub(this.translation);
 
         //Touch Event
         if (e instanceof TurboDragEvent) {
@@ -142,16 +149,18 @@ export class NavigationManager {
     private fireWillChangeTimeout() {
         if (this.willChangeTimeout) clearTimeout(this.willChangeTimeout);
         this.willChangeTimeout = setTimeout(() => {
-            this.canvas.setStyle("willChange", "");
-            requestAnimationFrame(() => this.canvas.setStyle("willChange", "transform"));
+            this.element.setStyle("willChange", "");
+            requestAnimationFrame(() => this.element.setStyle("willChange", "transform"));
         }, 200);
     }
 
     /**
-     * @description Offset a given screen position by the canvas's translation.
+     * @description Offset a given screen position by the element's translation.
      * @param {Point} screenPosition
      */
     public computePositionRelativeToCanvas(screenPosition: Point) {
-        return screenPosition?.sub(this.translation as Coordinate).div(this.scale);
+        const rect = this.element.getBoundingClientRect();
+        const localPos = screenPosition.sub(new Point(rect.left, rect.top));
+        return localPos.sub(this.translation).div(this.scale);
     }
 }

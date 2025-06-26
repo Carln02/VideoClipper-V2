@@ -1,6 +1,10 @@
 text-panel {
     position: relative;
     color: white;
+
+    display: flex;
+    flex-direction: column;
+    align-items: normal;
 }
 
 text-panel {

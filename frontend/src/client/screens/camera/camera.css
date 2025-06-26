@@ -37,3 +37,7 @@ vc-camera > #capture-bar > div:last-child {
     gap: 2em;
     margin-left: 2em;
 }
+
+vc-camera .vc-renderer {
+    position: absolute;
+}

@@ -41,7 +41,7 @@ export class TimelineView<
         super.setupUIElements();
 
         this.scrubberContainer = div({classes: "scrubber-container"});
-        this.scrubber = new Scrubber({timeline: this.element, screenManager: this.element.screenManager, initialize: true});
+        this.scrubber = new Scrubber({timeline: this.element, director: this.element.director, initialize: true});
 
         this.controlsContainer = flexRowCenter();
         this.currentTimeText = p({style: "min-width: 3em"});

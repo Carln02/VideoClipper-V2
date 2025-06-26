@@ -7,15 +7,18 @@ import {ClipThumbnailController} from "./clipThumbnailController";
 import {MovableComponent} from "../basicComponents/movableComponent/movableComponent";
 import {ClipTextHandler} from "./clip.textHandler";
 import {Card} from "../card/card";
-import {SyncedMedia} from "../../managers/mediaManager/mediaManager.types";
 import {TextElement} from "../textElement/textElement";
 import {YMap} from "../../../yManagement/yManagement.types";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 import {VcComponent} from "../component/component";
 import {randomColor} from "../../utils/random";
 import {YUtilities} from "../../../yManagement/yUtilities";
 import {SyncedText} from "../textElement/textElement.types";
 import {ClipView} from "./clip.view";
+import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
+import {ClipSelectionInteractor} from "./clip.selectionInteractor";
+import {ClipDeleteInteractor} from "./clip.deleteInteractor";
+import {ClipShootingInteractor} from "./clip.shootingInteractor";
 
 @define("vc-clip")
 export class Clip<
@@ -34,12 +37,13 @@ export class Clip<
             modelConstructor: ClipModel as unknown as new () => Model,
             data: properties.data,
             handlerConstructors: [ClipTextHandler],
-            controllerConstructors: [ClipThumbnailController]
+            controllerConstructors: [ClipThumbnailController],
+            interactorConstructors: [ClipSelectionInteractor, ClipDeleteInteractor, ClipShootingInteractor]
         });
 
         this.mvc.emitter.add("mediaId", async (value: string) => {
-            this.model.updateMediaData(await this.screenManager.mediaManager.getMedia(value));
-
+            this.model.setMetadata(this.director.mediaHandler.getMediaMetadata(value), value);
+            this.model.blob = await this.director.mediaHandler.getMedia(value);
             //TODO maybe remove this? idk
             // if (media.metadata?.thumbnail) {
             //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
@@ -47,6 +51,11 @@ export class Clip<
 
             this.onMediaDataChanged(this);
         });
+
+        this.mvc.emitter.addWithBlock("convert", "metadata", async (value: string) => {
+            if (!value) return;
+            this.model.blob = await this.director.mediaHandler.getMedia(value);
+        })
     }
 
     public static createData(data?: SyncedClip): YMap & SyncedClip {
@@ -88,6 +97,10 @@ export class Clip<
 
     public get metadata(): SyncedMedia {
         return this.model.metadata;
+    }
+
+    public get metadataType(): "image" | "video" {
+        return this.model.metadataType;
     }
 
     public get videoDuration(): number {
@@ -156,7 +169,7 @@ export class Clip<
             timeline: this.timeline,
             data: this.data,
             viewConstructor: this.view?.constructor as any,
-            screenManager: this.screenManager
+            director: this.director
         });
 
         clone.setStyle("width", this.offsetWidth + "px");
@@ -177,7 +190,7 @@ export class Clip<
         const clone = this.clone();
         this.setStyle("opacity", "0.4");
 
-        const moveableClone = new MovableComponent(clone, this, {parent: this.screenManager.canvas.content});
+        const moveableClone = new MovableComponent(clone, this, {parent: this.director.canvas.content});
         moveableClone.translation = this.timeline.scaled ? e.scaledPosition : e.position;
         return moveableClone;
     }

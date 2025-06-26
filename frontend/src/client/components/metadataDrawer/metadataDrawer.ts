@@ -1,5 +1,5 @@
 import {MetadataDrawerProperties, SyncedCardMetadata} from "./metadataDrawer.types";
-import {auto, define, TurboDrawer} from "turbodombuilder";
+import {auto, define, Side, TurboDrawer, TurboIconSwitch} from "turbodombuilder";
 import "./metadataDrawer.css";
 import {Card} from "../card/card";
 import {MetadataDrawerView} from "./metadataDrawer.view";
@@ -17,6 +17,11 @@ export class MetadataDrawer extends TurboDrawer<MetadataDrawerView, SyncedCardMe
             viewConstructor: MetadataDrawerView,
             modelConstructor: MetadataDrawerModel,
             data: properties.card ? properties.card.metadata : undefined
+        });
+
+        requestAnimationFrame(() => {
+            (this.icon as TurboIconSwitch<Side>).switchReifect.apply(this.getOppositeSide());
+            requestAnimationFrame(() => (this.icon as TurboIconSwitch<Side>).switchReifect.apply(this.side));
         });
     }
 

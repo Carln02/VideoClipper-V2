@@ -1,9 +1,27 @@
-import { Request, Response, NextFunction } from "express";
+import {Request, Response, NextFunction} from "express";
 
 export function authenticate(sessions: Map<string, any>) {
-    return (req: Request, _res: Response, next: NextFunction) => {
+    return (req: Request, res: Response, next: NextFunction) => {
         const sessionId = req.cookies.session;
-        if (sessionId && sessions.has(sessionId)) req.user = sessions.get(sessionId);
+        if (sessionId && sessions.has(sessionId)) {
+            req.user = sessions.get(sessionId);
+            return next();
+        }
+
+        if (!req.path.startsWith("/api") && !req.path.includes("/login")) {
+            return res.redirect("/login");
+        }
+
+        next();
+    };
+}
+
+export function redirectIfAuthenticated(sessions: Map<string, any>) {
+    return (req: Request, res: Response, next: NextFunction) => {
+        const sessionId = req.cookies.session;
+        if (sessionId && sessions.has(sessionId)) {
+            return res.redirect("/");
+        }
         next();
     };
 }

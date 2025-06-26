@@ -7,9 +7,11 @@ import {Card} from "../card/card";
 import {TextElementView} from "./textElement.view";
 import {TextElementModel} from "./textElement.model";
 import {VcComponent} from "../component/component";
-import {Project} from "../../screens/project/project";
+import {Project} from "../../directors/project/project";
 import {YUtilities} from "../../../yManagement/yUtilities";
 import {YMap} from "../../../yManagement/yManagement.types";
+import {TextElementSelectionInteractor} from "./textElement.selectionInteractor";
+import {TextElementDeleteInteractor} from "./textElement.deleteInteractor";
 
 @define("vc-text-entry")
 export class TextElement extends VcComponent<TextElementView, SyncedText, TextElementModel, Project> {
@@ -21,7 +23,8 @@ export class TextElement extends VcComponent<TextElementView, SyncedText, TextEl
         this.mvc.generate({
             viewConstructor: TextElementView,
             modelConstructor: TextElementModel,
-            data: properties.data
+            data: properties.data,
+            interactorConstructors: [TextElementSelectionInteractor, TextElementDeleteInteractor]
         });
     }
 
@@ -76,7 +79,7 @@ export class TextElement extends VcComponent<TextElementView, SyncedText, TextEl
 
     public translateBy(deltaPosition: Point) {
         this.model.origin = deltaPosition
-            .div(this.screenManager.camera.frameWidth, this.screenManager.camera.frameHeight)
+            .div(this.director.camera.frameWidth, this.director.camera.frameHeight)
             .add(this.model.origin)
             .object;
     }
