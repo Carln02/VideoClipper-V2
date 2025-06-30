@@ -160,15 +160,7 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
         this.model.incrementFlowsCount();
         const defaultName = "Flow " + this.model.flowsCount;
         return await YUtilities.addInYMap(Flow.createData({
-            branches: {
-                "0": {
-                    entries: [{
-                        startNodeId: nodeId,
-                        endNodeId: nodeId,
-                        points: [position]
-                    }],
-                }
-            },
+            entries: {},
             tags: [{
                 nodeId: nodeId,
                 paths: [{

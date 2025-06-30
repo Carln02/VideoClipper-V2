@@ -2,6 +2,7 @@ import {define} from "turbodombuilder";
 import {Flow} from "../../components/flow/flow";
 import {VcTool} from "../tool/tool";
 import {ToolType} from "../../directors/project/project.types";
+import {FlowEntry} from "../../components/flowEntry/flowEntry";
 
 //TODO WITH JUNE
 
@@ -33,5 +34,9 @@ export class ConnectionTool extends VcTool<ToolType> {
     public get currentFlow(): Flow {
         if (!this._currentFlow) this._currentFlow = this.director.getFlow(this.currentFlowId);
         return this._currentFlow;
+    }
+
+    public get currentEntry(): FlowEntry {
+        return this.currentFlow?.currentEntry;
     }
 }

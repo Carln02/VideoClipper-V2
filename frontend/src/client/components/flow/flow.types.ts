@@ -1,6 +1,6 @@
 import {YArray, YMap} from "../../../yManagement/yManagement.types";
-import {SyncedFlowBranch} from "../flowBranch/flowBranch.types";
 import {SyncedFlowTag} from "../flowTag/flowTag.types";
+import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 
 /**
  * Represents the entire flow document:
@@ -9,7 +9,7 @@ import {SyncedFlowTag} from "../flowTag/flowTag.types";
  * - "defaultName" is optional labeling, same as before.
  */
 export type SyncedFlow = {
-    branches?: YMap<SyncedFlowBranch> | Record<string, SyncedFlowBranch>;
+    entries?: YMap<SyncedFlowEntry> | Record<string, SyncedFlowEntry>;
     tags?: YArray<SyncedFlowTag> | SyncedFlowTag[];
     defaultName?: string;
     color?: string;

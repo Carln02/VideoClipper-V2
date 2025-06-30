@@ -1,8 +1,8 @@
 import {Point, TurboHandler} from "turbodombuilder";
-import {FlowBranchModel} from "./flowBranch.model";
 import {FlowIntersection} from "../flow/flow.types";
+import {FlowEntryModel} from "./flowEntry.model";
 
-export class FlowBranchIntersectionHandler extends TurboHandler<FlowBranchModel> {
+export class FlowEntryIntersectionHandler extends TurboHandler<FlowEntryModel> {
     public intersectsPoint(p: Point, errorMargin: number = 50, incrementValue: number = 1): boolean {
         const numPoints = Math.ceil(2 * Math.PI * errorMargin);
         for (let i = 0; i < numPoints; i += incrementValue) {

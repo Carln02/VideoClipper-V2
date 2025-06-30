@@ -26,8 +26,6 @@ export class ProjectModel extends YComponentModel {
 
         this.cardsModel = new ProjectCardsModel();
         this.cardsModel.onAdded = (data, id, blockKey) => {
-            console.log(data);
-            console.log("CARD ADDED")
             if ((data as YMap).get("type") == BranchingNodeType.node) return this.onBranchingNodeAdded(data, id, blockKey);
             else return this.onCardAdded(data, id, blockKey);
         };

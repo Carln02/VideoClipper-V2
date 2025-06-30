@@ -15,27 +15,24 @@ export class ProjectConnectionInteractor extends TurboInteractor<ToolType, Proje
     }
 
     public move(e: TurboDragEvent, tool: ConnectionTool) {
-        tool.currentFlow?.addPoint(e.scaledPosition, null, true);
+        tool.currentFlow?.addPoint(e.scaledPosition, true);
     }
 
     //On drag --> draw flow
     public drag(e: TurboDragEvent, tool: ConnectionTool) {
         //Return if no current flow
-        if (!tool.currentFlow || !tool.currentFlow.currentBranch) return;
-        //Get the closest node
-        const closestNode = e.closest(BranchingNode, true, ClosestOrigin.position);
+        if (!tool.currentFlow || !tool.currentEntry) return;
         //Check if drawing a temporary or permanent point
         //If drawing into a new node --> ignore interval and add a point. This ensures that when a user hits a
         // new node, it is added to the flow
-        const isTemporary = Date.now() - tool.lastDrawnTime <= tool.drawingInterval && !tool.lastNodeId;
+        const isTemporary = Date.now() - tool.lastDrawnTime <= tool.drawingInterval;
         //If the point is permanent --> update last drawn time and last node
         if (!isTemporary) {
             tool.lastDrawnTime = Date.now();
             tool.lastNodeId = null;
         }
         //Add point
-        tool.currentFlow?.addPoint(e.scaledPosition, closestNode?.dataId, isTemporary);
-
+        tool.currentFlow?.addPoint(e.scaledPosition, isTemporary);
     }
 
     public dragEnd(_, tool: ConnectionTool) {
@@ -44,7 +41,7 @@ export class ProjectConnectionInteractor extends TurboInteractor<ToolType, Proje
     }
 
     private endAndClear(tool: ConnectionTool) {
-        tool.currentFlow.endFlow();
+        tool.currentEntry.endEntry();
         tool.currentFlowId = null;
         tool.lastNodeId = null;
     }

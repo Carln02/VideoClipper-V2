@@ -3423,7 +3423,7 @@ class FlowModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
     set data(value) {
         super.data = value;
         this.branchesModel.data = this.getData("branches");
-        this.branchesModel.onAdded = (data) => this.onFlowBranchAdded(data);
+        this.branchesModel.onAdded = (data) => this.onFlowEntryAdded(data);
         this.tagsModel.data = this.tagsData;
         this.tagsModel.onAdded = (data) => this.onFlowTagAdded(data);
         _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_4__.YUtilities.deepObserveAll(this.data, () => this.fireCallback("__redraw"), "branches", "entries");

@@ -6,8 +6,6 @@ import {ProjectScreens} from "./directors/project/project.types";
 RootDirector.initialize();
 const project = new Project({parent: document.body});
 
-console.log("HIIII");
-
 const segments = window.location.pathname.split("/").filter(Boolean);
 const projectId = segments[segments.length - 1];
 if (!Number.parseInt(projectId)) throw new Error("Invalid project ID in URL.");

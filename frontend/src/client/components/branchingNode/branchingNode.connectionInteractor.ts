@@ -23,23 +23,24 @@ export class BranchingNodeConnectionInteractor extends TurboInteractor<ToolType,
         //Set last node ID
         tool.lastNodeId = closestNode.dataId;
         //Find first flow intersection with this node
-        let intersection: FlowPoint;
-        for (const flow of this.element.director.flows) {
-            intersection = flow.findNodeEntry(tool.lastNodeId);
-            if (intersection) break;
-        }
-
-        //If intersection found
-        if (intersection && intersection.flowId != undefined) {
-            //Assign flow ID
-            tool.currentFlowId = intersection.flowId;
-            //Create a new branch at this node
-            return await tool.currentFlow.branchAtPoint(intersection, e.scaledPosition, tool.lastNodeId);
-        }
+        // let intersection: FlowPoint;
+        // for (const flow of this.element.director.flows) {
+        //     intersection = flow.findNodeEntry(tool.lastNodeId);
+        //     if (intersection) break;
+        // }
+        //
+        // //If intersection found
+        // if (intersection && intersection.flowId != undefined) {
+        //     //Assign flow ID
+        //     tool.currentFlowId = intersection.flowId;
+        //     //Create a new branch at this node
+        //     return await tool.currentFlow.branchAtPoint(intersection, e.scaledPosition, tool.lastNodeId);
+        // }
 
         //Otherwise --> create a new flow
         tool.currentFlowId = await this.element.director.createNewFlow(e.scaledPosition, tool.lastNodeId,"#439045");
 
+        console.log("INIT FLOWWW")
         //Otherwise --> get the point data (if any) that the user initiated the drag from
         // const closestPoint = FlowIntersectionHandler.flowIntersectingWithPoint(e.scaledPosition);
         // //Return if null
@@ -59,7 +60,7 @@ export class BranchingNodeConnectionInteractor extends TurboInteractor<ToolType,
         //If no current flow --> try to initialize one
         if (!tool.currentFlow) return this.initializeFlow(e, tool);
         //Add a point to this flow, with the closestNode's ID
-        tool.currentFlow.addPoint(e.scaledPosition, tool.lastNodeId);
+        tool.currentFlow.addPoint(e.scaledPosition);
     }
 
     public dragStart(e: TurboDragEvent, tool: ConnectionTool) {
@@ -70,22 +71,32 @@ export class BranchingNodeConnectionInteractor extends TurboInteractor<ToolType,
 
     //On drag --> draw flow
     public drag(e: TurboDragEvent, tool: ConnectionTool) {
+        console.log("DRAGGING ON CARD")
         //Return if no current flow
-        if (!tool.currentFlow || !tool.currentFlow.currentBranch) return;
-        //Check if drawing a temporary or permanent point
-        //If drawing into a new node --> ignore interval and add a point. This ensures that when a user hits a
-        // new node, it is added to the flow
-        const isTemporary = Date.now() - tool.lastDrawnTime <= tool.drawingInterval
-            && this.element.dataId == tool.lastNodeId;
-        //If the point is permanent --> update last drawn time and last node
-        if (!isTemporary) {
-            tool.lastDrawnTime = Date.now();
-            tool.lastNodeId = this.element.dataId;
+        if (!tool.currentFlow) return;
+        if (tool.currentEntry) {
+            if (tool.currentEntry.startNodeId === this.model.dataId) return;
+            tool.currentEntry.endEntry(this.model.dataId);
         }
 
-        console.log(tool.lastNodeId);
-        //Add point
-        tool.currentFlow?.addPoint(e.scaledPosition, this.element.dataId, isTemporary);
+        console.log("HEYYYY");
+        console.log(tool.currentEntry);
 
+        tool.currentFlow.createEntry(this.model.dataId);
+
+        // //Check if drawing a temporary or permanent point
+        // //If drawing into a new node --> ignore interval and add a point. This ensures that when a user hits a
+        // // new node, it is added to the flow
+        // const isTemporary = Date.now() - tool.lastDrawnTime <= tool.drawingInterval
+        //     && this.element.dataId == tool.lastNodeId;
+        // //If the point is permanent --> update last drawn time and last node
+        // if (!isTemporary) {
+        //     tool.lastDrawnTime = Date.now();
+        //     tool.lastNodeId = this.element.dataId;
+        // }
+        //
+        // console.log(tool.lastNodeId);
+        // //Add point
+        // tool.currentFlow?.addPoint(e.scaledPosition, this.element.dataId, isTemporary);
     }
 }
