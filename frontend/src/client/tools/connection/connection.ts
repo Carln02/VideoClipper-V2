@@ -75,6 +75,10 @@ export class ConnectionTool extends Tool {
             if (intersection && intersection.flowId != undefined) {
                 //Assign flow ID
                 this.currentFlowId = intersection.flowId;
+                if(this.currentFlow.color !== this.currentColor) {
+                    this.currentFlowId = await this.project.createNewFlow(e.scaledPosition, this.lastNodeId, this.currentColor);
+                    return;
+                }
                 //Create a new branch at this node
                 return await this.currentFlow.branchAtPoint(intersection, e.scaledPosition, this.lastNodeId);
             }
@@ -111,8 +115,11 @@ export class ConnectionTool extends Tool {
         //If clicked outside a node --> end current flow (if any) and return
         if (!closestNode) return this.endAndClear();
         //Add a point to this flow, with the closestNode's ID
+
         this.currentFlow.addPoint(e.scaledPosition, this.lastNodeId);
-    }    public dragStart(e: TurboDragEvent) {
+    }    
+    
+    public dragStart(e: TurboDragEvent) {
         // Hide color selector if showing
         this.colorSelector.hide();
         
