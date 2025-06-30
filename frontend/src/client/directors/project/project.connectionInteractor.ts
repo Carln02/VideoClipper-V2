@@ -1,9 +1,8 @@
-import {ClosestOrigin, TurboDragEvent, TurboInteractor} from "turbodombuilder";
+import {TurboDragEvent, TurboInteractor} from "turbodombuilder";
 import {ToolType} from "./project.types";
 import {Project} from "./project";
 import {ProjectView} from "./project.view";
 import {ProjectModel} from "./project.model";
-import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {ConnectionTool} from "../../tools/connection/connection";
 
 export class ProjectConnectionInteractor extends TurboInteractor<ToolType, Project, ProjectView, ProjectModel> {

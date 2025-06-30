@@ -18,8 +18,8 @@ export class FlowPathModel extends YComponentModel {
         this.branchIdsModel = new YManagerModel();
         this.entriesModel = new YManagerModel();
 
-        this.branchIdsModel.onAdded = (branchId, branchIndex) =>
-            this.entriesModel.setBlock(this.flow.getBranchById(branchId)?.entriesData, branchId, branchIndex);
+        // this.branchIdsModel.onAdded = (branchId, branchIndex) =>
+        //     this.entriesModel.setBlock(this.flow.getBranchById(branchId)?.entriesData, branchId, branchIndex);
 
         this.entriesModel.onAdded = () => this.entryCardHandler?.updateCardsModel(this.entriesModel);
         this.entriesModel.onDeleted = () => this.entryCardHandler?.updateCardsModel(this.entriesModel);

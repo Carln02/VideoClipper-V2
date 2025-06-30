@@ -3,7 +3,6 @@ import {YComponentModel} from "../../../yManagement/yModel/types/yComponentModel
 import {SyncedFlow} from "./flow.types";
 import {SyncedFlowTag} from "../flowTag/flowTag.types";
 import {Point} from "turbodombuilder";
-import {FlowCleaningHandler} from "./flow.cleaningHandler";
 import {FlowIntersectionHandler} from "./flow.intersectionHandler";
 import {FlowTagsModel} from "./flow.tagsModel";
 import {FlowTag} from "../flowTag/flowTag";
@@ -51,15 +50,12 @@ export class FlowModel extends YComponentModel {
     }
 
     public get currentEntry(): FlowEntry {
-        return this.entryHandler.getEntry(this.currentEntryId);
+        const entries = this.entryHandler.getEntries(this.currentEntryId);
+        return entries?.[entries?.length - 1];
     }
 
     public get entryHandler(): FlowEntryHandler {
         return this.getHandler("entry") as FlowEntryHandler;
-    }
-
-    public get cleaningHandler(): FlowCleaningHandler {
-        return this.getHandler("cleaning") as FlowCleaningHandler;
     }
 
     public get intersectionHandler(): FlowIntersectionHandler {
@@ -70,12 +66,12 @@ export class FlowModel extends YComponentModel {
         return this.getHandler("update") as FlowUpdateHandler;
     }
 
-    public get entriesData(): YMap<SyncedFlowEntry & YMap> {
-        return this.getData("entries") as YMap<SyncedFlowEntry & YMap>;
+    public get entriesData(): YMap<YArray<SyncedFlowEntry & YMap>> {
+        return this.getData("entries") as YMap<YArray<SyncedFlowEntry & YMap>>;
     }
 
     public get entriesDataArray(): (SyncedFlowEntry & YMap)[] {
-        return this.entryHandler.getEntriesData();
+        return this.entryHandler.getAllEntriesData();
     }
 
     public get tagsData(): YArray<SyncedFlowTag> {
@@ -99,7 +95,7 @@ export class FlowModel extends YComponentModel {
     }
 
     public get entries(): FlowEntry[] {
-        return this.entryHandler.getEntries();
+        return this.entryHandler.getAllEntries();
     }
 
     public get tags(): FlowTag[] {

@@ -47,7 +47,7 @@ export class FlowTag extends VcComponent<FlowTagView, SyncedFlowTag, FlowTagMode
         return this.model.pathsDataArray;
     }
 
-    public insertPath(pathData: YMap | SyncedFlowPath, index?: number) {
+    public insertPath(pathData: YMap & SyncedFlowPath, index?: number) {
         return this.model.insertPath(pathData, index);
     }
 

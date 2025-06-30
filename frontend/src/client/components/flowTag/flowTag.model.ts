@@ -61,7 +61,7 @@ export class FlowTagModel extends YComponentModel {
         return this.pathsModel.getAllComponents();
     }
 
-    public insertPath(pathData: YMap | SyncedFlowPath, index?: number) {
+    public insertPath(pathData: YMap & SyncedFlowPath, index?: number) {
         if (!(pathData instanceof YMap)) pathData = FlowPath.createData(pathData);
         if (index == undefined || index >= this.pathsDataArray.length) return this.pathsData.push([pathData]);
         if (index < 0) index = 0;

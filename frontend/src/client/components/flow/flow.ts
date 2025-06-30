@@ -68,9 +68,9 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
         return this.currentEntry.data;
     }
 
-    public getEntry(id: string): FlowEntry {
-        return this.model.entryHandler.getEntry(id);
-    }
+    // public getEntry(id: string): FlowEntry {
+    //     return this.model.entryHandler.getEntry(id);
+    // }
 
     public createEntry(startNodeId: string): SyncedFlowEntry & YMap {
         this.model.currentEntryId = startNodeId;
@@ -122,9 +122,13 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
     //     return await this.model.branchHandler.branchAtPoint(p, branchPosition, nodeId, createThirdBranch, isOverwritingSibling);
     // }
 
+    public updateAfterMovingNode(nodeId: string, deltaPosition: Point) {
+        return this.model.updateHandler.updateAfterMovingNode(nodeId, deltaPosition);
+    }
+
     public updateOnDetachingNode(nodeId: string) {
         this.model.updateHandler.updateOnDetachingNode(nodeId);
-        this.model.cleaningHandler.removeUnnecessaryBranchesOrFlow();
+        // this.model.cleaningHandler.removeUnnecessaryBranchesOrFlow();
     }
 
     // public getPathsFromNode(nodeId: string): string[][] {

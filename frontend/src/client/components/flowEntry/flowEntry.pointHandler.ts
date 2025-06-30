@@ -33,8 +33,9 @@ export class FlowEntryPointHandler extends TurboHandler<FlowEntryModel> {
     }
 
     public incrementPoint(index: number, increment: Coordinate) {
-        const points = this.model.points;
-        this.model.setData("points", points[index].add(increment));
+        const points = this.model.coordinates;
+        points[index] = new Point(points[index]).add(increment).object;
+        this.model.setData("points", points);
     }
 
     public getMaxPoint(): Point {

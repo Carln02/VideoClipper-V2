@@ -95,6 +95,10 @@ export class YManagerModel<
         });
     }
 
+    public getAllData(blockKey: MvcBlockKeyType<BlocksType> = this.defaultComputationBlockKey): DataType[] {
+        return super.getAllData(blockKey) as DataType[];
+    }
+
     /**
      * @function fireKeyChangedCallback
      * @description Fires the emitter's change callback for the given key in a block, passing it the data at the key's value.

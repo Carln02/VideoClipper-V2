@@ -9,7 +9,7 @@ import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
  * - "defaultName" is optional labeling, same as before.
  */
 export type SyncedFlow = {
-    entries?: YMap<SyncedFlowEntry> | Record<string, SyncedFlowEntry>;
+    entries?: YMap<YArray<SyncedFlowEntry>> | Record<string, SyncedFlowEntry[]>;
     tags?: YArray<SyncedFlowTag> | SyncedFlowTag[];
     defaultName?: string;
     color?: string;

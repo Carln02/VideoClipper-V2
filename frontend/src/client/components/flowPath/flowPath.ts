@@ -39,12 +39,12 @@ export class FlowPath extends TurboSelectEntry<string, string, "p", TurboView, S
         super.setupUIListeners();
 
         this.onSelected = (b: boolean) => {
-            this.model.flow.branches?.forEach(branch => {
-                branch.highlighted = this.branchIdsArray?.includes(branch.dataId)
-            });
-            if (!b) return;
-            this.model.flow.branches?.forEach(branch =>
-                branch.highlighted = this.branchIdsArray?.includes(branch.dataId));
+            // this.model.flow.branches?.forEach(branch => {
+            //     branch.highlighted = this.branchIdsArray?.includes(branch.dataId)
+            // });
+            // if (!b) return;
+            // this.model.flow.branches?.forEach(branch =>
+            //     branch.highlighted = this.branchIdsArray?.includes(branch.dataId));
         };
     }
 

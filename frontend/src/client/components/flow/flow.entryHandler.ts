@@ -2,69 +2,85 @@ import {TurboHandler} from "turbodombuilder";
 import {FlowModel} from "./flow.model";
 import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 import {YManagerModel} from "../../../yManagement/yModel/types/yManagerModel";
-import {YMap} from "../../../yManagement/yManagement.types";
+import {YArray, YMap} from "../../../yManagement/yManagement.types";
 import {FlowEntry} from "../flowEntry/flowEntry";
-import {randomString} from "../../utils/random";
 
 export class FlowEntryHandler extends TurboHandler<FlowModel> {
-    private entryModel: YManagerModel<SyncedFlowEntry & YMap, FlowEntry, string, YMap>;
+    private entryModel: YManagerModel<
+        YArray<SyncedFlowEntry & YMap>,
+        YManagerModel<SyncedFlowEntry & YMap, FlowEntry, number, YArray>,
+        string,
+        YMap
+    >;
 
     public onFlowEntryAdded: (data: SyncedFlowEntry) => FlowEntry;
 
     public constructor(model: FlowModel) {
         super(model);
         this.entryModel = new YManagerModel();
-        this.entryModel.onAdded = data => this.onFlowEntryAdded?.(data);
-    }
-
-    public setData(data: YMap<SyncedFlowEntry>) {
-        this.entryModel.data = data;
-    }
-
-    public getEntries(): FlowEntry[] {
-        return this.entryModel.getAllComponents();
-    }
-
-    public getEntriesData(): (SyncedFlowEntry & YMap)[] {
-        return this.entryModel.getAllData() as (SyncedFlowEntry & YMap)[];
-    }
-
-    public getEntryData(id: string): YMap & SyncedFlowEntry {
-        return this.entryModel.getData(id);
-    }
-
-    public getEntry(id: string): FlowEntry {
-        return this.entryModel.getInstance(id);
-    }
-
-    public createEntry(data: SyncedFlowEntry): SyncedFlowEntry & YMap {
-        if (!data || !data.startNodeId || !this.entryModel.data) return null;
-        const entry = FlowEntry.createData(data);
-        this.entryModel.data.set(data.startNodeId, entry);
-        return entry;
-    }
-
-    public addEntry(entry: FlowEntry | (SyncedFlowEntry & YMap), id ?: string) {
-        if (entry instanceof FlowEntry) entry = entry.data;
-        if (!id) while (!id || this.getEntryData(id)) id = randomString(16);
-        this.model.entriesData.set(id, entry);
-    }
-
-    public addNewEntry(data: FlowEntry | SyncedFlowEntry, id ?: string) {
-        this.addEntry((data instanceof YMap || data instanceof FlowEntry) ? data : this.createEntry(data), id);
-    }
-
-    public removeEntry(entry: FlowEntry) {
-        for (const [id, value] of Array.from(this.model.entriesData.entries())) {
-            if (value !== entry.data) continue;
-            this.model.entriesData.delete(id);
-            return;
+        this.entryModel.onAdded = array => {
+            const manager = new YManagerModel<SyncedFlowEntry & YMap, FlowEntry, number, YArray>(array);
+            manager.onAdded =  data => {
+                console.log(data);
+                return this.onFlowEntryAdded?.(data);
+            }
+            return manager;
         }
     }
 
-    public setEntry(entry: FlowEntry, id ?: string) {
-        this.removeEntry(entry);
-        this.addEntry(entry.data, id);
+    protected getData(): YMap<YArray<SyncedFlowEntry & YMap>> {
+        return this.entryModel.data;
+    }
+
+    public setData(data: YMap<YArray<SyncedFlowEntry & YMap>>) {
+        this.entryModel.data = data;
+    }
+
+    public getAllEntries(): FlowEntry[] {
+        return this.entryModel.getAllComponents()
+            .flatMap(manager => manager.getAllComponents());
+    }
+
+    public getAllEntriesData(): (SyncedFlowEntry & YMap)[] {
+        const results = [];
+        this.entryModel.getAllData().forEach(arr => {
+            arr.forEach(entry => results.push(entry));
+        });
+        return results;
+    }
+
+    public getEntriesData(id: string): (YMap & SyncedFlowEntry)[] {
+        return this.entryModel.getData(id);
+    }
+
+    public getEntries(id: string): FlowEntry[] {
+        return this.entryModel.getInstance(id)?.getAllComponents() || [];
+    }
+
+    public createEntry(data: SyncedFlowEntry): SyncedFlowEntry & YMap {
+        if (!data || !data.startNodeId) return null;
+        const entry = FlowEntry.createData(data);
+        this.addEntry(entry, data.startNodeId);
+        return entry;
+    }
+
+    public addEntry(entry: FlowEntry | (SyncedFlowEntry & YMap), id?: string) {
+        if (entry instanceof FlowEntry) entry = entry.data;
+        if (!id) id = entry.get("startNodeId");
+
+        if (!this.entryModel.getData(id)) this.entryModel.setData(id, new YArray());
+        this.entryModel.getData(id).push([entry]);
+    }
+
+    public removeEntry(entry: FlowEntry) {
+        if (!entry) return;
+        const arr: YArray<SyncedFlowEntry & YMap> = this.entryModel.getData(entry.startNodeId);
+        if (!arr) return;
+
+        arr.forEach((arrEntry, id) => {
+            if (arrEntry !== entry.data) return;
+            arr.delete(id);
+        });
     }
 
     public getNodesIds(): string[] {

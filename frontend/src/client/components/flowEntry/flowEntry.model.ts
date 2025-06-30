@@ -4,12 +4,6 @@ import {SplitEntryData, SyncedFlowEntry} from "./flowEntry.types";
 import {YUtilities} from "../../../yManagement/yUtilities";
 import {Flow} from "../flow/flow";
 import d3 from "d3";
-import {FlowBranchPointHandler} from "../flowBranch/flowBranch.pointHandler";
-import {FlowBranchSearchHandler} from "../flowBranch/flowBranch.searchHandler";
-import {FlowBranchCleaningHandler} from "../flowBranch/flowBranch.cleaningHandler";
-import {FlowBranchUpdateHandler} from "../flowBranch/flowBranch.updateHandler";
-import {FlowBranchIntersectionHandler} from "../flowBranch/flowBranch.intersectionHandler";
-import {FlowBranchConnectionHandler} from "../flowBranch/flowBranch.connectionHandler";
 import {FlowEntryPointHandler} from "./flowEntry.pointHandler";
 import {FlowEntryUpdateHandler} from "./flowEntry.updateHandler";
 import {FlowEntryIntersectionHandler} from "./flowEntry.intersectionHandler";
@@ -38,7 +32,7 @@ export class FlowEntryModel extends YComponentModel {
     public set data(value: any) {
         super.data = value;
 
-        YUtilities.deepObserveAny(this.data, () => this.fireCallback("__redraw"), "entries");
+        YUtilities.deepObserveAny(this.data, () => this.fireCallback("__redraw"), "points");
     }
 
     public get path(): SVGPathElement {
@@ -71,10 +65,13 @@ export class FlowEntryModel extends YComponentModel {
     }
 
     public get points(): Point[] {
+        return this.coordinates.map(coordinate => new Point(coordinate));
+    }
+
+    public get coordinates(): Coordinate[] {
         const points = this.pointsData
-            .filter((point: Coordinate) => !!point)
-            .map((point: Coordinate) => new Point(point));
-        if (this.temporaryPoint) points.push(this.temporaryPoint);
+            .filter((point: Coordinate) => !!point);
+        if (this.temporaryPoint) points.push(this.temporaryPoint.object);
         return points;
     }
 
@@ -123,23 +120,11 @@ export class FlowEntryModel extends YComponentModel {
         return this.getHandler("point") as FlowEntryPointHandler;
     }
 
-    public get searchHandler(): FlowBranchSearchHandler {
-        return this.getHandler("search") as FlowBranchSearchHandler;
-    }
-
-    public get cleaningHandler(): FlowBranchCleaningHandler {
-        return this.getHandler("cleaning") as FlowBranchCleaningHandler;
-    }
-
     public get updateHandler(): FlowEntryUpdateHandler {
         return this.getHandler("update") as FlowEntryUpdateHandler;
     }
 
     public get intersectionHandler(): FlowEntryIntersectionHandler {
         return this.getHandler("intersection") as FlowEntryIntersectionHandler;
-    }
-
-    public get connectionHandler(): FlowBranchConnectionHandler {
-        return this.getHandler("connection") as FlowBranchConnectionHandler;
     }
 }

@@ -20,6 +20,8 @@ export class FlowEntry extends TurboProxiedElement<"g", FlowEntryView, SyncedFlo
             initialize: false
         });
 
+        console.log(properties.data);
+
         this.model.flow = properties.flow;
         this.model.flow?.svg.addChild(this.element);
 
