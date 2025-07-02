@@ -20,8 +20,6 @@ export class FlowEntry extends TurboProxiedElement<"g", FlowEntryView, SyncedFlo
             initialize: false
         });
 
-        console.log(properties.data);
-
         this.model.flow = properties.flow;
         this.model.flow?.svg.addChild(this.element);
 
@@ -125,8 +123,7 @@ export class FlowEntry extends TurboProxiedElement<"g", FlowEntryView, SyncedFlo
 
     public endEntry(endNodeId?: string) {
         if (endNodeId) this.endNodeId = endNodeId;
-        if (!this.model.endNodeId) return this.delete();
-        console.log(this.model.temporaryPoint)
+        if (!this.endNodeId) return this.delete();
         if (this.model.temporaryPoint) this.addPoint(this.model.temporaryPoint, false);
     }
 }

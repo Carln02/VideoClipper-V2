@@ -4,8 +4,6 @@ import {VcTool} from "../tool/tool";
 import {ToolType} from "../../directors/project/project.types";
 import {FlowEntry} from "../../components/flowEntry/flowEntry";
 
-//TODO WITH JUNE
-
 /**
  * @description Tool that handles creating flows and connecting nodes
  */
@@ -15,6 +13,8 @@ export class ConnectionTool extends VcTool<ToolType> {
     private _currentFlowId: string;
 
     public lastNodeId: string = null;
+
+    public color: string = "#439482";
 
     //Interval indicating the frequency at which points are permanently added to the flow
     //A higher value will increase the smoothing effect of the flow

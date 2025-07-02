@@ -29,7 +29,7 @@ export class Playback extends VcComponent<PlaybackView, object, PlaybackModel, P
 
     @auto()
     public set path(value: FlowPath) {
-        this.view.timeline.cardIds = value.cardIds;
+        this.view.timeline.cardIds = value.nodeIds;
     }
 
     @auto()

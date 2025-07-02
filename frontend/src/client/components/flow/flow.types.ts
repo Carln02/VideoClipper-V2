@@ -1,6 +1,6 @@
 import {YArray, YMap} from "../../../yManagement/yManagement.types";
-import {SyncedFlowTag} from "../flowTag/flowTag.types";
 import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
+import {SyncedFlowSelector} from "../flowSelector/flowSelector.types";
 
 /**
  * Represents the entire flow document:
@@ -10,7 +10,7 @@ import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
  */
 export type SyncedFlow = {
     entries?: YMap<YArray<SyncedFlowEntry>> | Record<string, SyncedFlowEntry[]>;
-    tags?: YArray<SyncedFlowTag> | SyncedFlowTag[];
+    tags?: YArray<SyncedFlowSelector> | SyncedFlowSelector[];
     defaultName?: string;
     color?: string;
 };

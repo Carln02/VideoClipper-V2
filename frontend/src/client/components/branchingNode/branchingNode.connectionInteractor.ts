@@ -1,10 +1,10 @@
-import {ClosestOrigin, DefaultEventName, TurboDragEvent, TurboEvent, TurboInteractor} from "turbodombuilder";
+import {DefaultEventName, TurboDragEvent, TurboEvent, TurboInteractor} from "turbodombuilder";
 import {ToolType} from "../../directors/project/project.types";
 import {BranchingNode} from "./branchingNode";
 import {BranchingNodeModel} from "./branchingNode.model";
 import {BranchingNodeView} from "./branchingNode.view";
-import {FlowPoint} from "../flow/flow.types";
 import {ConnectionTool} from "../../tools/connection/connection";
+import {getClosestPointOnEdge} from "../../utils/computation";
 
 export class BranchingNodeConnectionInteractor extends TurboInteractor<ToolType, BranchingNode, BranchingNodeView, BranchingNodeModel> {
     public tool = ToolType.connection;
@@ -17,41 +17,16 @@ export class BranchingNodeConnectionInteractor extends TurboInteractor<ToolType,
     private async initializeFlow(e: TurboEvent, tool: ConnectionTool) {
         //Reset drawing time
         tool.lastDrawnTime = Date.now();
-        //Save closest node
-        const closestNode: BranchingNode = e.closest(BranchingNode, true, ClosestOrigin.position);
-        //If clicking on a node
-        //Set last node ID
-        tool.lastNodeId = closestNode.dataId;
-        //Find first flow intersection with this node
-        // let intersection: FlowPoint;
-        // for (const flow of this.element.director.flows) {
-        //     intersection = flow.findNodeEntry(tool.lastNodeId);
-        //     if (intersection) break;
-        // }
-        //
-        // //If intersection found
-        // if (intersection && intersection.flowId != undefined) {
-        //     //Assign flow ID
-        //     tool.currentFlowId = intersection.flowId;
-        //     //Create a new branch at this node
-        //     return await tool.currentFlow.branchAtPoint(intersection, e.scaledPosition, tool.lastNodeId);
-        // }
+        tool.lastNodeId = this.element.dataId; //TODO MAYBE CRASHES - GO BACK TO e.closest()
 
-        //Otherwise --> create a new flow
-        tool.currentFlowId = await this.element.director.createNewFlow(e.scaledPosition, tool.lastNodeId,"#439045");
+        const existingFlow = this.element.director.flows.find(flow => flow.color === tool.color);
 
-        console.log("INIT FLOWWW")
-        //Otherwise --> get the point data (if any) that the user initiated the drag from
-        // const closestPoint = FlowIntersectionHandler.flowIntersectingWithPoint(e.scaledPosition);
-        // //Return if null
-        // if (!closestPoint || !closestPoint.flowId) return;
-        //
-        // this.currentFlow = Flow.getById(closestPoint.flowId);
-        // //Update last node ID
-        // this.lastNodeId = closestPoint.lastNodeId;
-        // //Branch (temporarily) at point to later update the original path
-        // return this.currentFlow.branchingHandler.branchAtPoint(closestPoint, e.scaledPosition,
-        //     undefined, true, true);
+        if (existingFlow) {
+            tool.currentFlowId = existingFlow.dataId;
+            if (!existingFlow.hasNode(tool.lastNodeId)) existingFlow.createSelector(tool.lastNodeId);
+        } else {
+            tool.currentFlowId = await this.element.director.createNewFlow(e.scaledPosition, tool.lastNodeId, tool.color);
+        }
     }
 
     //On click --> create a point if the click is inside a node, otherwise cancel flow
@@ -71,16 +46,16 @@ export class BranchingNodeConnectionInteractor extends TurboInteractor<ToolType,
 
     //On drag --> draw flow
     public drag(e: TurboDragEvent, tool: ConnectionTool) {
-        console.log("DRAGGING ON CARD")
         //Return if no current flow
         if (!tool.currentFlow) return;
         if (tool.currentEntry) {
             if (tool.currentEntry.startNodeId === this.model.dataId) return;
+
+            const lastPoint = getClosestPointOnEdge(e.position, this.element.querySelector("vc-playback").getBoundingClientRect());
+            //TODO USE CONSTRAINTS INSTEAD
+            tool.currentEntry.addPoint(this.element.director.canvas.navigationManager.computePositionRelativeToCanvas(lastPoint));
             tool.currentEntry.endEntry(this.model.dataId);
         }
-
-        console.log("HEYYYY");
-        console.log(tool.currentEntry);
 
         tool.currentFlow.createEntry(this.model.dataId);
 

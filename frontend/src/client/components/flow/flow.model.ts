@@ -1,21 +1,21 @@
 import {YArray, YMap} from "../../../yManagement/yManagement.types";
 import {YComponentModel} from "../../../yManagement/yModel/types/yComponentModel";
 import {SyncedFlow} from "./flow.types";
-import {SyncedFlowTag} from "../flowTag/flowTag.types";
 import {Point} from "turbodombuilder";
 import {FlowIntersectionHandler} from "./flow.intersectionHandler";
-import {FlowTagsModel} from "./flow.tagsModel";
-import {FlowTag} from "../flowTag/flowTag";
+import {FlowSelector} from "../flowSelector/flowSelector";
 import {YUtilities} from "../../../yManagement/yUtilities";
 import {FlowEntryHandler} from "./flow.entryHandler";
 import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 import {FlowEntry} from "../flowEntry/flowEntry";
 import {FlowUpdateHandler} from "./flow.updateHandler";
+import {YManagerModel} from "../../../yManagement/yModel/types/yManagerModel";
+import {SyncedFlowSelector} from "../flowSelector/flowSelector.types";
 
 export class FlowModel extends YComponentModel {
     public currentEntryId: string;
 
-    public readonly tagsModel: FlowTagsModel;
+    public readonly selectorModel: YManagerModel<SyncedFlowSelector, FlowSelector, number, YArray>;
 
     // Added margin to the computed viewBox
     public readonly viewBoxPadding = 200 as const;
@@ -26,11 +26,11 @@ export class FlowModel extends YComponentModel {
     public lastViewBoxValues: Point = new Point();
 
     public onFlowEntryAdded: (data: SyncedFlowEntry) => FlowEntry;
-    public onFlowTagAdded: (data: SyncedFlowTag) => FlowTag;
+    public onFlowSelectorAdded: (data: SyncedFlowSelector) => FlowSelector;
 
     public constructor(data: SyncedFlow) {
         super(data as any);
-        this.tagsModel = new FlowTagsModel();
+        this.selectorModel = new YManagerModel();
     }
 
     public get data(): any {
@@ -43,10 +43,13 @@ export class FlowModel extends YComponentModel {
         this.entryHandler.setData(this.getData("entries"));
         this.entryHandler.onFlowEntryAdded = (data) => this.onFlowEntryAdded(data);
 
-        this.tagsModel.data = this.tagsData;
-        // this.tagsModel.onAdded = (data) => this.onFlowTagAdded(data);
+        this.selectorModel.data = this.selectorsData;
+        this.selectorModel.onAdded = (data) => this.onFlowSelectorAdded(data);
 
-        YUtilities.deepObserveAll(this.data, () => this.fireCallback("__redraw"), "branches", "entries");
+        YUtilities.deepObserveAll(this.data, () => {
+            this.fireCallback("__redraw");
+            this.selectorModel.getAllComponents().forEach(selector => selector.updatePaths());
+        }, "entries");
     }
 
     public get currentEntry(): FlowEntry {
@@ -74,12 +77,12 @@ export class FlowModel extends YComponentModel {
         return this.entryHandler.getAllEntriesData();
     }
 
-    public get tagsData(): YArray<SyncedFlowTag> {
+    public get selectorsData(): YArray<SyncedFlowSelector> {
         return this.getData("tags");
     }
 
-    public get tagsDataArray(): SyncedFlowTag[] {
-        return this.tagsData.toArray();
+    public get selectorsDataArray(): SyncedFlowSelector[] {
+        return this.selectorsData.toArray();
     }
 
     public get defaultName(): string {
@@ -98,7 +101,7 @@ export class FlowModel extends YComponentModel {
         return this.entryHandler.getAllEntries();
     }
 
-    public get tags(): FlowTag[] {
-        return this.tagsModel.getAllComponents();
+    public get selectors(): FlowSelector[] {
+        return this.selectorModel.getAllComponents();
     }
 }

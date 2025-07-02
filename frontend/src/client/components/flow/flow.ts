@@ -9,7 +9,7 @@ import {Project} from "../../directors/project/project";
 import {FlowIntersectionHandler} from "./flow.intersectionHandler";
 import {YMap} from "../../../yManagement/yManagement.types";
 import {YUtilities} from "../../../yManagement/yUtilities";
-import {FlowTag} from "../flowTag/flowTag";
+import {FlowSelector} from "../flowSelector/flowSelector";
 import {FlowEntry} from "../flowEntry/flowEntry";
 import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 import {FlowEntryHandler} from "./flow.entryHandler";
@@ -31,7 +31,7 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
         });
 
         this.model.onFlowEntryAdded = (data) => new FlowEntry({flow: this, data: data as YMap});
-        this.model.onFlowTagAdded = (data) => new FlowTag({flow: this, data: data, director: this.director});
+        this.model.onFlowSelectorAdded = (data) => new FlowSelector({flow: this, data: data, director: this.director});
         this.mvc.initialize();
     }
 
@@ -43,7 +43,7 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
 
         Object.entries(data.entries).forEach(([key, branch]) => data.entries[key] = FlowEntry.createData(branch));
         data.entries = YUtilities.createYMap(data.entries);
-        data.tags = YUtilities.createYArray(data.tags.map(tag => FlowTag.createData(tag)));
+        data.tags = YUtilities.createYArray(data.tags.map(tag => FlowSelector.createData(tag)));
 
         return YUtilities.createYMap(data);
     }
@@ -54,6 +54,10 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
 
     public get color(): string {
         return this.model.color;
+    }
+
+    public get defaultName(): string {
+        return this.model.defaultName;
     }
 
     public get entries(): FlowEntry[] {
@@ -68,6 +72,10 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
         return this.currentEntry.data;
     }
 
+    public getEntries(id: string): FlowEntry[] {
+        return this.model.entryHandler.getEntries(id);
+    }
+
     // public getEntry(id: string): FlowEntry {
     //     return this.model.entryHandler.getEntry(id);
     // }
@@ -79,6 +87,18 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
 
     public removeEntry(entry: FlowEntry): void {
         return this.model.entryHandler.removeEntry(entry);
+    }
+
+    public hasNode(id: string): boolean {
+        if (this.getEntries(id)?.length > 0) return true;
+        for (const entry of this.entries) {
+            if (entry.endNodeId === id) return true;
+        }
+        return false;
+    }
+
+    public createSelector(nodeId: string) {
+        return YUtilities.addInYArray(FlowSelector.createData({nodeId: nodeId, paths: []}), this.model.selectorsData);
     }
 
     // /**
@@ -128,7 +148,6 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
 
     public updateOnDetachingNode(nodeId: string) {
         this.model.updateHandler.updateOnDetachingNode(nodeId);
-        // this.model.cleaningHandler.removeUnnecessaryBranchesOrFlow();
     }
 
     // public getPathsFromNode(nodeId: string): string[][] {

@@ -1,10 +1,10 @@
 import {DefaultEventName, Direction, TurboIcon, TurboSelectWheel, TurboView} from "turbodombuilder";
-import {FlowTag} from "./flowTag";
-import {FlowTagModel} from "./flowTag.model";
+import {FlowSelector} from "./flowSelector";
+import {FlowSelectorModel} from "./flowSelector.model";
 import {Playback} from "../playback/playback";
 import {FlowPath} from "../flowPath/flowPath";
 
-export class FlowTagView extends TurboView<FlowTag, FlowTagModel> {
+export class FlowSelectorView extends TurboView<FlowSelector, FlowSelectorModel> {
     private wheel: TurboSelectWheel<string, string, FlowPath>;
     private playButton: TurboIcon;
 

@@ -10,8 +10,7 @@ import {Flow} from "../flow/flow";
  */
 export type SyncedFlowPath = {
     name?: string,
-    branchIds?: string[],
-    cardIds?: string[],
+    nodeIds?: string[],
 };
 
 export type FlowPathProperties = TurboSelectEntryProperties<string, string, "p", TurboView, SyncedFlowPath & YMap, FlowPathModel> & {

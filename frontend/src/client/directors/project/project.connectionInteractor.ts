@@ -4,6 +4,7 @@ import {Project} from "./project";
 import {ProjectView} from "./project.view";
 import {ProjectModel} from "./project.model";
 import {ConnectionTool} from "../../tools/connection/connection";
+import {getClosestPointOnEdge} from "../../utils/computation";
 
 export class ProjectConnectionInteractor extends TurboInteractor<ToolType, Project, ProjectView, ProjectModel> {
     public tool = ToolType.connection;
@@ -21,6 +22,15 @@ export class ProjectConnectionInteractor extends TurboInteractor<ToolType, Proje
     public drag(e: TurboDragEvent, tool: ConnectionTool) {
         //Return if no current flow
         if (!tool.currentFlow || !tool.currentEntry) return;
+
+        if (tool.currentEntry.points.length < 2) {
+            const lastNode = this.element.getNode(tool.currentEntry.startNodeId).querySelector("vc-playback");
+            if (!lastNode) return;
+            const firstPoint = getClosestPointOnEdge(e.position, lastNode.getBoundingClientRect());
+            //TODO USE CONSTRAINTS INSTEAD
+            tool.currentEntry.addPoint(this.element.canvas.navigationManager.computePositionRelativeToCanvas(firstPoint));
+        }
+
         //Check if drawing a temporary or permanent point
         //If drawing into a new node --> ignore interval and add a point. This ensures that when a user hits a
         // new node, it is added to the flow

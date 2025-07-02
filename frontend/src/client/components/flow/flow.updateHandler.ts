@@ -25,12 +25,11 @@ export class FlowUpdateHandler extends TurboHandler<FlowModel> {
         const flowEntries = this.model.entries;
         for (let i = flowEntries.length - 1; i >= 0; i--) {
             const entry = flowEntries[i];
+            console.log("REF: ", nodeId, "\nSTART: ", entry.startNodeId, "\nEND: ", entry.endNodeId, "\nMATCHING: ", entry.startNodeId === nodeId || entry.endNodeId === nodeId);
             // If the entry is not connected to the card on any end --> skip it
             if (entry.startNodeId != nodeId && entry.endNodeId != nodeId) continue;
             //Otherwise --> delete entry
-            this.model.entryHandler.removeEntry(entry);
-            return true;
+            entry.delete();
         }
-        return false;
     }
 }

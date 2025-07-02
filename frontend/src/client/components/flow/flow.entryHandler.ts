@@ -20,10 +20,7 @@ export class FlowEntryHandler extends TurboHandler<FlowModel> {
         this.entryModel = new YManagerModel();
         this.entryModel.onAdded = array => {
             const manager = new YManagerModel<SyncedFlowEntry & YMap, FlowEntry, number, YArray>(array);
-            manager.onAdded =  data => {
-                console.log(data);
-                return this.onFlowEntryAdded?.(data);
-            }
+            manager.onAdded =  data => this.onFlowEntryAdded?.(data);
             return manager;
         }
     }

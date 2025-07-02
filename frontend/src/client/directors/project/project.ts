@@ -160,7 +160,7 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
                 nodeId: nodeId,
                 paths: [{
                     name: defaultName + " - 1",
-                    branchIds: ["0"]
+                    nodeIds: [nodeId]
                 }]
             }],
             defaultName: defaultName,

@@ -5,8 +5,9 @@ import {FlowPath} from "../flowPath/flowPath";
 import {YManagerModel} from "../../../yManagement/yModel/types/yManagerModel";
 import {MvcBlockKeyType} from "turbodombuilder";
 import {Flow} from "../flow/flow";
+import {FlowSelectorPathHandler} from "./flowSelector.pathHandler";
 
-export class FlowTagModel extends YComponentModel {
+export class FlowSelectorModel extends YComponentModel {
     private pathsModel: YManagerModel<SyncedFlowPath, FlowPath, number, YArray>;
     public flow: Flow;
 
@@ -66,5 +67,9 @@ export class FlowTagModel extends YComponentModel {
         if (index == undefined || index >= this.pathsDataArray.length) return this.pathsData.push([pathData]);
         if (index < 0) index = 0;
         this.pathsData.insert(index, [pathData]);
+    }
+
+    public get pathHandler(): FlowSelectorPathHandler {
+        return this.getHandler("path") as FlowSelectorPathHandler;
     }
 }

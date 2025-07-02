@@ -18,6 +18,7 @@ import {BranchingNodeSelectionInteractor} from "../branchingNode/branchingNode.s
 import {CardShootingInteractor} from "./card.shootingInteractor";
 import {CardCreateCardInteractor} from "./card.createCardInteractor";
 import {BranchingNodeConnectionInteractor} from "../branchingNode/branchingNode.connectionInteractor";
+import {BranchingNodeDeleteInteractor} from "../branchingNode/branchingNode.deleteInteractor";
 
 /**
  * @description Class representing a card
@@ -31,7 +32,7 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
             modelConstructor: CardModel,
             data: properties.data,
             interactorConstructors: [BranchingNodeSelectionInteractor, CardShootingInteractor,
-                CardCreateCardInteractor, BranchingNodeConnectionInteractor]
+                CardCreateCardInteractor, BranchingNodeConnectionInteractor, BranchingNodeDeleteInteractor]
         });
         this.renderer.card = this;
     }
@@ -99,16 +100,6 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
      */
     public editTitle() {
         this.view.editTitle();
-    }
-
-    /**
-     * @function delete
-     * @description Deletes the node data from the Yjs document, destroys all its attached components (including this),
-     * amd updates the attached flows accordingly.
-     */
-    public async delete() {
-        await this.director.createNewNode(this.model.origin, this.dataId);
-        this.director.delete(this);
     }
 
     public async addClip(clip: SyncedClip & YMap, index?: number): Promise<number> {

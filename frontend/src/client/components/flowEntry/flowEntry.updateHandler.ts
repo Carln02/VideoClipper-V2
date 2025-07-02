@@ -14,7 +14,7 @@ export class FlowEntryUpdateHandler extends TurboHandler<FlowEntryModel> {
         // points and how close the current point is from the moved node) for a natural-looking update of the flow
         for (let i = 0; i < this.model.points.length; i++) {
             //Compute interpolation amount (both sides incremented by 1 to soften the effect)
-            let moveFactor = i / this.model.points.length;
+            let moveFactor = i / (this.model.points.length - 1);
             //Flip interpolation if points start from the given node (as then it should start high and end low)
             if (this.model.startNodeId == nodeId) moveFactor = 1 - moveFactor;
             //Update accordingly the point's coordinates

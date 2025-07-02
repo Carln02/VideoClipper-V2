@@ -3,15 +3,13 @@ import {YUtilities} from "../../../yManagement/yUtilities";
 import {FlowPathModel} from "./flowPath.model";
 import {define, TurboSelectEntry, TurboView} from "turbodombuilder";
 import {YArray, YMap} from "../../../yManagement/yManagement.types";
-import {FlowPathEntryCardHandler} from "./flowPath.entryCardHandler";
 
 @define()
 export class FlowPath extends TurboSelectEntry<string, string, "p", TurboView, SyncedFlowPath & YMap, FlowPathModel> {
     public static createData(data?: SyncedFlowPath) {
         if (!data) data = {};
         if (!data.name) data.name = "Flow Path";
-        data.branchIds = YUtilities.createYArray(data.branchIds ? data.branchIds : ["0"]) as any;
-        data.cardIds = YUtilities.createYArray([]) as any;
+        data.nodeIds = YUtilities.createYArray(data.nodeIds ?? []) as any;
         return YUtilities.createYMap(data);
     }
 
@@ -19,7 +17,6 @@ export class FlowPath extends TurboSelectEntry<string, string, "p", TurboView, S
         super(properties);
         this.mvc.generate({
             modelConstructor: FlowPathModel,
-            handlerConstructors: [FlowPathEntryCardHandler],
             data: properties.data,
             initialize: false
         });
@@ -64,27 +61,11 @@ export class FlowPath extends TurboSelectEntry<string, string, "p", TurboView, S
         this.model.index = value;
     }
 
-    public get branchIds(): YArray<string> {
-        return this.model.branchIds;
+    public get nodeIds(): YArray<string> {
+        return this.model.nodeIds;
     }
 
-    public set branchIds(value: YArray<string>) {
-        this.model.branchIds = value;
-    }
-
-    public get branchIdsArray(): string[] {
-        return this.model.branchIdsArray;
-    }
-
-    public get cardIds(): YArray<string> {
-        return this.model.cardIds;
-    }
-
-    public get cardIdsArray(): string[] {
-        return this.model.cardIdsArray;
-    }
-
-    public insertBranchAt(branchId: string, index?: number) {
-        return this.model.insertBranchAt(branchId, index);
+    public get nodeIdsArray(): string[] {
+        return this.model.nodeIdsArray;
     }
 }

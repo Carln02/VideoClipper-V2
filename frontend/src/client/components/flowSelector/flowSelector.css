@@ -1,4 +1,4 @@
-vc-flow-tag {
+vc-flow-selector {
     position: absolute;
     right: 100%;
 
@@ -12,6 +12,6 @@ vc-flow-tag {
     gap: 1em;
 }
 
-vc-flow-tag > turbo-icon {
+vc-flow-selector > turbo-icon {
     height: 1.3em;
 }
