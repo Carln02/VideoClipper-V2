@@ -19,7 +19,7 @@ export class ClipScrubber extends Scrubber {
         this.orientation == Direction.vertical ? this.addClass("vc-scrubber-v") : this.addClass("vc-scrubber-h");
 
         if (!ClipScrubber.markingMenu) {
-            ClipScrubber.markingMenu = new ScrubberMarkingMenu({});
+            ClipScrubber.markingMenu = new ScrubberMarkingMenu({scrubber: this});
             this.director.canvas.content.addChild(ClipScrubber.markingMenu);
         }
 

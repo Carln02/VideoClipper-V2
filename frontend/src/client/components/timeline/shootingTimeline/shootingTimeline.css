@@ -1,17 +1,3 @@
-/*
-.vc-timeline.vc-shooting-timeline {
-    height: 100%;
-    display: flex;
-    width: 0;
-    right: 0;
-    /*left: calc(2 * var(--base-padding));//
-    left:0px;
-    top: 50%;
-    transform: translate(0, -50%);
-    rotate:-90deg;
-}
-*/
-
 vc-shooting-timeline {
     position: fixed;
     /*
@@ -19,10 +5,21 @@ vc-shooting-timeline {
     left: -40%;*/
 }
 
+.vc-shooting-timeline .turbo-drawer-panel {
+    align-content: center;
+}
+
+.vc-timeline.vc-shooting-timeline .shooting-timeline-container {
+    margin: 0.5em;
+    justify-content: space-around;
+}
+
 .vc-timeline.vc-shooting-timeline .scrubber-container {
     position: relative;
     border-radius: 0.35em;
     width: 3.8em;
+    height:100%;
+
     background-color: transparent;
 
     display: flex;
@@ -45,43 +42,14 @@ vc-shooting-timeline {
     gap: 0.5rem;
 }
 
-.vc-shooting-timeline .shooting-timeline-drawer .clips-container {
-    position: relative;
-    border-radius: 0.35em;
-    height: calc(6em - 2.4em);
-
-    display: flex;
-    flex-direction: row;
-
-    flex-grow: 1;
-
-    z-index: 2;
-}
-
 .vc-shooting-timeline .top-drawer {
     bottom: 1em;
 }
 
-/*
-.vc-shooting-timeline .right-drawer {
-    position: absolute;
-    left: 100%;
-    top: 50%;
-    transform: translateY(-50%);
-}
-*/
-
 .vc-shooting-timeline .play-button {
     height: 1.5em;
     padding: 0.2em;
-    /*rotate: 90deg;*/
 }
-
-/*
-.vc-shooting-timeline p {
-    rotate: 90deg;
-}
-*/
 
 .vc-shooting-timeline vc-clip .vc-clip-content {
     border-radius: 0;

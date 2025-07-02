@@ -34,7 +34,7 @@ export class ShootingTimelineView  extends TimelineView<ShootingTimeline> {
 
         this.scrubberContainer = div({classes: "scrubber-container"});
 
-        this.shootingTimelineContainer = flexColCenter();
+        this.shootingTimelineContainer = flexColCenter({classes: "shooting-timeline-container"});
         this.currentTimeText = p({style: "min-width: 3em"});
         this.totalDurationText = p({style: "min-width: 3em; text-align: right"});
 
@@ -65,7 +65,6 @@ export class ShootingTimelineView  extends TimelineView<ShootingTimeline> {
         this.element.addChild([this.drawer]);
         this.element.childHandler = this.drawer.childHandler;
 
-        this.scrubberContainer.addChild(this.scrubber, 0);
         this.element.addChild([this.shootingTimelineContainer]);
     }
 }

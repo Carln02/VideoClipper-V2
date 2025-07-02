@@ -85,7 +85,11 @@ export class TimelineView<
 
         this.emitter.add("currentTimeChanged", () => {
             this.currentTimeText.textContent = formatMMSS(this.model.currentTime);
-            this.scrubber.translation = this.model.currentTime / this.model.totalDuration * this.element.width;
+            this.scrubber.orientation == "vertical" ?
+                this.scrubber.translation = this.model.currentTime / this.model.totalDuration * this.element.width
+                : this.scrubber.translation = this.model.currentTime / this.model.totalDuration * this.element.height;
+                //does not work lmao
+
         });
 
         this.emitter.add("totalDurationChanged", () => {

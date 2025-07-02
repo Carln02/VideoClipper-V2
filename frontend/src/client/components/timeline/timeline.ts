@@ -132,6 +132,11 @@ export class Timeline<
         return this.offsetWidth * basis;
     }
 
+    public get height() {
+        const basis = this.scaled ? this.director.canvas.scale : 1;
+        return this.offsetHeight * basis;
+    }
+
     public async addClip(clip: SyncedClip & YMap, index?: number): Promise<number> {
         return this.model.clipHandler.addClip(clip, index);
     }

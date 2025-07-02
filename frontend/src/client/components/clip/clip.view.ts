@@ -45,20 +45,28 @@ export class ClipView extends TurboView<Clip, ClipModel> {
     }
 
     private generateHandles() {
-        this.leftHandle = div({classes: "clip-handle-left", children: icon({icon: "chevron-left"})});
-        this.rightHandle = div({classes: "clip-handle-right", children: icon({icon: "chevron-right"})});
+        if( this.element.orientation == Direction.horizontal ) {
+            this.leftHandle = div({classes: "clip-handle-left", children: icon({icon: "chevron-left"})});
+            this.rightHandle = div({classes: "clip-handle-right", children: icon({icon: "chevron-right"})});
 
-        this.generateHandleEvents(this.leftHandle, "left");
-        this.generateHandleEvents(this.rightHandle, "right");
+            this.generateHandleEvents(this.leftHandle, "left");
+            this.generateHandleEvents(this.rightHandle, "right");
+        } else {
+            this.leftHandle = div({classes: "clip-handle-top", children: icon({icon: "chevron-up"})});
+            this.rightHandle = div({classes: "clip-handle-bottom", children: icon({icon: "chevron-down"})});
+
+            this.generateHandleEvents(this.leftHandle, "top");
+            this.generateHandleEvents(this.rightHandle, "bottom");
+        }
     }
 
-    private generateHandleEvents(handle: HTMLDivElement, side: "left" | "right") {
+    private generateHandleEvents(handle: HTMLDivElement, side: "left" | "right" | "top" | "bottom") {
         handle.addEventListener(DefaultEventName.dragStart, (e: TurboDragEvent) => e.stopImmediatePropagation());
         handle.addEventListener(DefaultEventName.drag, (e: TurboDragEvent) => this.dragHandle(side, e));
         handle.addEventListener(DefaultEventName.dragEnd, () => this.model.normalizeTime());
     }
 
-    private dragHandle(side: "left" | "right", e: TurboDragEvent) {
+    private dragHandle(side: "left" | "right" | "top" | "bottom", e: TurboDragEvent) {
         e.stopImmediatePropagation();
         const delta = (this.element.timeline.scaled ? e.scaledDeltaPosition.x : e.deltaPosition.x)
             / this.element.timeline?.pixelsPerSecondUnit;

@@ -35,6 +35,10 @@ export class ShootingTimeline extends Timeline<ShootingTimelineView> {
         return this.model.totalDuration * this.pixelsPerSecondUnit * ((this.scaled ? this.director.canvas.scale : 1) || 1);
     }
 
+    public get height() {
+        return this.model.totalDuration * this.pixelsPerSecondUnit * ((this.scaled ? this.director.canvas.scale : 1) || 1);
+    }
+
     public reloadTime() {
         super.reloadTime();
         this.view.drawer.refresh();
