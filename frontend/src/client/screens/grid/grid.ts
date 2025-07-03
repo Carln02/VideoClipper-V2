@@ -1,6 +1,6 @@
 import {VcComponent} from "../../components/component/component";
 import {Project} from "../../directors/project/project";
-import {ClickMode, css, define, div, Point, ToolManager} from "turbodombuilder";
+import {ClickMode, Coordinate, css, define, div, Point, ToolManager} from "turbodombuilder";
 import { NavigationManager } from "../../managers/navigationManager/navigationManager";
 import { Toolbar } from "../../components/toolbar/toolbar";
 import { NavigatableElement } from "../../managers/navigationManager/navigationManager.types";
@@ -17,6 +17,10 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
     public readonly navigationManager: NavigationManager;
 
     public gridElements: Array<Array<VcComponent>>;
+    public gridRoot : VcComponent;
+
+    public gridElementWidth : number;
+    public gridElementHeight : number;
 
     //Main toolbar
     private readonly toolbar: Toolbar;
@@ -87,13 +91,40 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
         let element1 = this.gridElements[x1][y1];
         let element2 = this.gridElements[x2][y2];
 
-        console.log("creating connection from", element1, "to", element2);
+        console.log("creating connection from", element1, "to", element2); //TODO
     }
 
+    public updatePos(value : Coordinate, element : VcComponent){
+        let newValue = value;
 
-    public updatePos(){
+        console.log("updating pos of", element, "to", newValue); //TODO
 
+        return newValue;
     }
+
+    public updateGridView(){
+        //place the grid root at 0,0 then for each connection
+    }
+    // public getNextPos(value: Point){
+    //     let x = value.x;
+    //     let y = value.y;
+    //     if(this.gridElements[x][y] === undefined){
+    //         return (value)
+    //     }
+    //     if (this.gridElements[x][y] !== undefined){
+    //         value = this.getNextPos(new Point(x+1, y));
+    //         value = this.getNextPos(new Point(x, y+1));
+    //     }
+    // }
+
+    public gridToScreen(x : number, y : number){
+        return new Point(x * this.gridElementWidth, y * this.gridElementHeight);
+    }
+
+    public screenToGrid(value : Coordinate){
+        return new Point(value.x / this.gridElementWidth, value.y / this.gridElementHeight);
+    }
+
     /**
      * @description Translate and scale the canvas by the given values
      * @param translation

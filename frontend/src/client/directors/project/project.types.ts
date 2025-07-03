@@ -7,7 +7,7 @@ import {ProjectView} from "./project.view";
 import {DirectorProperties} from "../director/director.types";
 import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
 import {NavigationManager} from "../../managers/navigationManager/navigationManager";
-import {Point} from "turbodombuilder";
+import {Coordinate, ElementTagMap, Point} from "turbodombuilder";
 
 export enum ProjectScreens {
     home = "home",
@@ -46,4 +46,5 @@ export interface Substrate extends HTMLElement {
     readonly content?: HTMLDivElement;
     scale?: number;
     transform?(translation: Point, scale: number): void;
+    updatePos?:(value: Coordinate, element: Element) => Coordinate;
 }

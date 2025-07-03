@@ -12,7 +12,7 @@ export class BranchingNodeView<
 
         this.emitter.add("origin", (value: Coordinate) => {
             // if (this.element.director.currentType === ProjectScreens.canvas)
-            value = this.element.director.substrate.updatePos(value, this.element);
+            value = this.element.director.currentScreen.updatePos?.(value, this.element);
             this.element.setStyle("transform", `translate3d(calc(${value.x}px - 50%), calc(${value.y}px - 50%), 0)`);
     });
     }
