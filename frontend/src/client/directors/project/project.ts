@@ -8,7 +8,7 @@ import {ShootingPanel} from "../../panels/shootingPanel/shootingPanel";
 import {TextPanel} from "../../panels/textPanel/textPanel";
 import {VcComponent} from "../../components/component/component";
 import {SyncedBranchingNode} from "../../components/branchingNode/branchingNode.types";
-import {ProjectProperties, ProjectScreens, SyncedDocument, ToolType} from "./project.types";
+import {ProjectProperties, ProjectScreens, Substrate, SyncedDocument, ToolType} from "./project.types";
 import { ContextManager } from "../../managers/contextManager/contextManager";
 import {ProjectView} from "./project.view";
 import {ProjectModel} from "./project.model";
@@ -24,9 +24,11 @@ import {ProjectSelectionInteractor} from "./project.selectionInteractor";
 import {ProjectCreateCardInteractor} from "./project.createCardInteractor";
 import {ProjectNavigationInteractor} from "./project.navigationInteractor";
 import {ProjectConnectionInteractor} from "./project.connectionInteractor";
+import {Grid} from "../../screens/grid/grid";
+import {NavigatableElement} from "../../managers/navigationManager/navigationManager.types";
 
 @define("vc-project")
-export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDocument, ProjectModel> {
+export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDocument, ProjectModel, Substrate> {
     private readonly _mediaHandler: MediaHandler;
     private readonly _contextManager: ContextManager;
     private readonly _toolManager: ToolManager<ToolType>;
@@ -66,9 +68,11 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
             director: this
         });
 
-        this.mvc.initialize();
 
-        this.currentType = ProjectScreens.canvas;
+        // this.currentType = ProjectScreens.canvas;
+        this.currentType = ProjectScreens.grid;
+
+        this.mvc.initialize();
 
         this.toolPanel.addPanel(new ShootingPanel({
             toolPanel: this.toolPanel,
@@ -81,7 +85,7 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
 
         this.eventManager.authorizeEventScaling = () => this.currentType == ProjectScreens.canvas;
         this.eventManager.scaleEventPosition = (position: Point) =>
-            this.canvas.navigationManager.computePositionRelativeToCanvas(position);
+            this.currentScreen.navigationManager.computePositionRelativeToCanvas(position);
 
         this.onScreenChange.add(() => this.view.showAppBar(this.currentType !== ProjectScreens.camera));
     }
@@ -187,6 +191,10 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
 
     public get canvas(): Canvas {
         return this.getScreen(ProjectScreens.canvas) as Canvas;
+    }
+
+    public get grid(): Grid {
+        return this.getScreen(ProjectScreens.grid) as Grid;
     }
 
     public get camera(): Camera {

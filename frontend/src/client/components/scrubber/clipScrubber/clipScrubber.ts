@@ -3,6 +3,7 @@ import "./clipScrubber.css";
 import {ScrubberProperties} from "../scrubber.types";
 import {ScrubberMarkingMenu} from "../../scrubberMarkingMenu/scrubberMarkingMenu";
 import {Scrubber} from "../scrubber";
+import {NavigatableElement} from "../../../managers/navigationManager/navigationManager.types";
 
 @define("vc-clip-scrubber")
 export class ClipScrubber extends Scrubber {
@@ -17,7 +18,7 @@ export class ClipScrubber extends Scrubber {
 
         if (!ClipScrubber.markingMenu) {
             ClipScrubber.markingMenu = new ScrubberMarkingMenu({});
-            this.director.canvas.content.addChild(ClipScrubber.markingMenu);
+            this.director.currentScreen.content.addChild(ClipScrubber.markingMenu);
         }
 
         if (properties.initialize) this.initializeUI();

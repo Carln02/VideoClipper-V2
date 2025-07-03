@@ -5,7 +5,7 @@ import {NavigatorTool} from "../../tools/navigator/navigator";
 import {NavigationManager} from "../../managers/navigationManager/navigationManager";
 import {VcComponent} from "../../components/component/component";
 import {Project} from "../../directors/project/project";
-import {ProjectScreens, ToolType} from "../../directors/project/project.types";
+import {ProjectScreens, Substrate, ToolType} from "../../directors/project/project.types";
 import {ShootTool} from "../../tools/shoot/shoot";
 import {NavigatableElement} from "../../managers/navigationManager/navigationManager.types";
 import {SelectionTool} from "../../tools/selection/selection";
@@ -15,7 +15,7 @@ import {ConnectionTool} from "../../tools/connection/connection";
  * @description Class representing a canvas on which the user can add cards, connect them, move them around, etc.
  */
 @define("vc-canvas")
-export class Canvas extends VcComponent<any, any, any, Project>  implements NavigatableElement {
+export class Canvas extends VcComponent<any, any, any, Project>  implements Substrate {
     //Canvas parent --> contains the main components that are translated/scaled
     public readonly content: HTMLDivElement;
 

@@ -13,6 +13,7 @@ export class BranchingNodeSelectionInteractor extends TurboInteractor<ToolType, 
 
     public drag(e: TurboDragEvent) {
         //TODO CHECK SUBSTRATE
+        console.log("dragged");
         this.model.origin = e.scaledDeltaPosition.add(this.model.origin).object;
         this.element.director.forEachBranch((branch) =>
             branch.updateAfterMovingNode(this.element.dataId, e.scaledDeltaPosition));

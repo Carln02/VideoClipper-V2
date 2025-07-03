@@ -4,16 +4,19 @@ import {ClickMode, css, define, div, Point, ToolManager} from "turbodombuilder";
 import { NavigationManager } from "../../managers/navigationManager/navigationManager";
 import { Toolbar } from "../../components/toolbar/toolbar";
 import { NavigatableElement } from "../../managers/navigationManager/navigationManager.types";
-import {ProjectScreens, ToolType} from "../../directors/project/project.types";
+import {ProjectScreens, Substrate, ToolType} from "../../directors/project/project.types";
 import {ShootTool} from "../../tools/shoot/shoot";
 import {NavigatorTool} from "../../tools/navigator/navigator";
+import {SelectionTool} from "../../tools/selection/selection";
 
 @define("vc-grid")
-export class Grid extends VcComponent<any, any, any, Project> implements NavigatableElement {
+export class Grid extends VcComponent<any, any, any, Project> implements Substrate {
     //Grid parent --> contains the main components that are translated/scaled
     public readonly content: HTMLDivElement;
 
     public readonly navigationManager: NavigationManager;
+
+    public gridElements: Array<Array<VcComponent>>;
 
     //Main toolbar
     private readonly toolbar: Toolbar;
@@ -32,7 +35,8 @@ export class Grid extends VcComponent<any, any, any, Project> implements Navigat
             classes: "bottom-toolbar",
             director: this.director,
             tools: [
-                {name: ToolType.selection, key: "Shift"},
+                // {name: ToolType.selection, key: "Shift"},
+                new SelectionTool({name: ToolType.selection, toolManager: this.toolManager, director: this.director, key: "Shift"}),
                 new NavigatorTool({name: ToolType.navigator, toolManager: this.toolManager, director: this.director}),
                 ToolType.createCard,
                 ToolType.createText,
@@ -63,10 +67,33 @@ export class Grid extends VcComponent<any, any, any, Project> implements Navigat
     }
 
     public get scale() {
-        if (this.director.currentType !== ProjectScreens.canvas) return 1;
+        if (this.director.currentType !== ProjectScreens.grid) return 1;
         return this.navigationManager.scale;
     }
 
+    public addToGrid(x : number, y : number, element : VcComponent){
+        this.gridElements[x][y] = element;
+    }
+
+    public removeFromGrid(x : number, y : number){
+        this.gridElements[x][y] = undefined;
+    }
+
+    public getElement(x : number, y : number){
+        return this.gridElements[x][y];
+    }
+
+    public createConnection(x1 : number, y1 : number, x2 : number, y2 : number ){
+        let element1 = this.gridElements[x1][y1];
+        let element2 = this.gridElements[x2][y2];
+
+        console.log("creating connection from", element1, "to", element2);
+    }
+
+
+    public updatePos(){
+
+    }
     /**
      * @description Translate and scale the canvas by the given values
      * @param translation

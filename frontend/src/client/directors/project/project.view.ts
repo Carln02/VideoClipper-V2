@@ -6,6 +6,7 @@ import {RootDirectorView} from "../rootDirector/rootDirector.view";
 import {ToolPanel} from "../../panels/toolPanel/toolPanel";
 import {Canvas} from "../../screens/canvas/canvas";
 import {Camera} from "../../screens/camera/camera";
+import {Grid} from "../../screens/grid/grid";
 
 export class ProjectView extends RootDirectorView<Project, ProjectModel> {
     //Parents used to segregate different types of elements placed on the canvas
@@ -30,7 +31,8 @@ export class ProjectView extends RootDirectorView<Project, ProjectModel> {
 
         this.toolPanel = new ToolPanel({director: this.element});
 
-        this.element.addScreen(new Canvas(this.element), ProjectScreens.canvas);
+        // this.element.addScreen(new Canvas(this.element), ProjectScreens.canvas); //TODO where does this go
+        this.element.addScreen(new Grid(this.element), ProjectScreens.grid);
         this.element.addScreen(new Camera(this.element), ProjectScreens.camera);
     }
 
@@ -38,6 +40,7 @@ export class ProjectView extends RootDirectorView<Project, ProjectModel> {
         super.setupUILayout();
 
         this.element.addChild(this.toolPanel);
-        this.element.canvas.content.addChild([this.flowsParent, this.cardsParent]);
+        // this.element.canvas.content.addChild([this.flowsParent, this.cardsParent]); //TODO where does this go
+        this.element.grid.content.addChild([this.flowsParent, this.cardsParent]);
     }
 }

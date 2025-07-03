@@ -15,9 +15,10 @@ export class Director<
     ViewType extends TurboView = TurboView<any, any>,
     DataType extends object = object,
     ModelType extends TurboModel<DataType> = TurboModel,
-    DirectorType extends Director = any
+    DirectorType extends Director = any,
+    ScreenNav extends HTMLElement = any,
 > extends VcComponent<ViewType, DataType, ModelType, DirectorType> {
-    private readonly screens: Map<ScreenType, VcComponent> = new Map();
+    private readonly screens: Map<ScreenType, ScreenNav> = new Map();
 
     public screensParent: Node = this;
 
@@ -27,18 +28,18 @@ export class Director<
     /**
      * @description Delegate fired when a tool is changed on a certain click button/mode
      */
-    public readonly onScreenChange: Delegate<(oldScreen: VcComponent, newScreen: VcComponent, type: ScreenType) => void>;
+    public readonly onScreenChange: Delegate<(oldScreen: ScreenNav, newScreen: ScreenNav, type: ScreenType) => void>;
 
 
     public constructor(properties: DirectorProperties<ScreenType, ViewType, DataType, ModelType, DirectorType>) {
         super(properties);
         this.addClass("director");
 
-        this.onScreenChange = new Delegate<(oldScreen: VcComponent, newScreen: VcComponent, type: ScreenType) => void>();
+        this.onScreenChange = new Delegate<(oldScreen: ScreenNav, newScreen: ScreenNav, type: ScreenType) => void>();
         this.showReifect = properties.showReifect;
         if (properties.screensParent) this.screensParent = properties.screensParent;
         if (properties.screens) Object.entries(properties.screens).forEach(([key, entry]) => {
-            this.addScreen(entry as VcComponent, key as ScreenType);
+            this.addScreen(entry as ScreenNav, key as ScreenType);
         });
     }
 
@@ -55,7 +56,7 @@ export class Director<
         this.onScreenChange.fire(oldScreen, newScreen, value);
     }
 
-    public get currentScreen(): VcComponent {
+    public get currentScreen(): ScreenNav {
         return this.getScreen(this.currentType);
     }
 
@@ -75,8 +76,8 @@ export class Director<
             });
     }
 
-    public addScreen(screen: VcComponent, type: ScreenType) {
-        this.screens.set(type, screen);
+    public addScreen(screen: ScreenNav, ScreenType) {
+        this.screens.set(ScreenType, screen);
         // this.screensParent.addChild(screen);
         // this.showReifect.apply(Shown.hidden, screen);
     }
@@ -86,11 +87,11 @@ export class Director<
         this.screens.delete(type);
     }
 
-    public getScreen(type: ScreenType): VcComponent {
+    public getScreen(type: ScreenType): ScreenNav {
         return this.screens.get(type);
     }
 
-    protected switchScreens(oldScreen: VcComponent, newScreen: VcComponent) {
+    protected switchScreens(oldScreen: ScreenNav, newScreen: ScreenNav) {
         if (oldScreen) oldScreen.remove();
         if (newScreen) this.screensParent.addChild(newScreen);
         return;

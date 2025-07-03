@@ -6,10 +6,13 @@ import {ProjectModel} from "./project.model";
 import {ProjectView} from "./project.view";
 import {DirectorProperties} from "../director/director.types";
 import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
+import {NavigationManager} from "../../managers/navigationManager/navigationManager";
+import {Point} from "turbodombuilder";
 
 export enum ProjectScreens {
     home = "home",
     canvas = "canvas",
+    grid = "grid",
     camera = "camera",
 }
 
@@ -36,4 +39,11 @@ export enum ToolType {
     selection = "Selection",
     shoot = "Shoot",
     createText = "Create Text",
+}
+
+export interface Substrate extends HTMLElement {
+    readonly navigationManager?: NavigationManager;
+    readonly content?: HTMLDivElement;
+    scale?: number;
+    transform?(translation: Point, scale: number): void;
 }

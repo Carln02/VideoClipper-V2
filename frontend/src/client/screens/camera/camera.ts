@@ -9,11 +9,11 @@ import {CameraCaptureHandler} from "./camera.captureHandler";
 import {VcComponent} from "../../components/component/component";
 import {Clip} from "../../components/clip/clip";
 import {Project} from "../../directors/project/project";
-import {ProjectScreens} from "../../directors/project/project.types";
+import {ProjectScreens, Substrate} from "../../directors/project/project.types";
 import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
 
 @define("vc-camera")
-export class Camera extends VcComponent<CameraView, object, CameraModel, Project> {
+export class Camera extends VcComponent<CameraView, object, CameraModel, Project> implements Substrate{
     public constructor(document: Project) {
         super({director: document});
 

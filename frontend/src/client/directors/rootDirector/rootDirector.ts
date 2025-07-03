@@ -6,6 +6,7 @@ import {Director} from "../director/director";
 import {DirectorProperties} from "../director/director.types";
 import {AuthenticationHandler} from "../../handlers/authenticationHandler/authenticationHandler";
 import {GroupsHandler} from "../../handlers/groupsHandler/groupsHandler";
+import {VcComponent} from "../../components/component/component";
 
 @define("vc-root-director")
 export class RootDirector<
@@ -13,7 +14,8 @@ export class RootDirector<
     ViewType extends RootDirectorView = RootDirectorView<any, any>,
     DataType extends object = object,
     ModelType extends TurboModel<DataType> = TurboModel,
-> extends Director<ScreenType, ViewType, DataType, ModelType> {
+    ScreenNav extends HTMLElement = HTMLElement,
+> extends Director<ScreenType, ViewType, DataType, ModelType, any, ScreenNav> {
     private readonly _eventManager: TurboEventManager;
     private readonly _cursorManager: CursorManager;
     private readonly _authenticationHandler: AuthenticationHandler;
@@ -63,5 +65,4 @@ export class RootDirector<
         this.eventManager.defaultState.preventDefaultMouse = value;
     }
 
-    publ
 }

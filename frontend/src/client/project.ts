@@ -15,6 +15,7 @@ if (!Number.parseInt(projectId)) throw new Error("Invalid project ID in URL.");
 project.groupsHandler.openProject(projectId as any).then(({doc, websocket}) => {
     websocket.onConnect.add(() => {
         project.document = doc;
-        project.currentType = ProjectScreens.canvas;
+        // project.currentType = ProjectScreens.canvas;
+        project.currentType = ProjectScreens.grid;
     });
 });

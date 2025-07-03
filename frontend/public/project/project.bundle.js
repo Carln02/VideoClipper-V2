@@ -804,6 +804,119 @@ Resizer = __decorate([
 
 /***/ }),
 
+/***/ "./frontend/src/client/components/branchingNode/branchingNode.connectionInteractor.ts":
+/*!********************************************************************************************!*\
+  !*** ./frontend/src/client/components/branchingNode/branchingNode.connectionInteractor.ts ***!
+  \********************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   BranchingNodeConnectionInteractor: () => (/* binding */ BranchingNodeConnectionInteractor)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+/* harmony import */ var _branchingNode__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./branchingNode */ "./frontend/src/client/components/branchingNode/branchingNode.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+class BranchingNodeConnectionInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
+    constructor() {
+        super(...arguments);
+        this.tool = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.connection;
+        this.propagateUp = {
+            [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.move]: true,
+            [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.dragEnd]: true,
+        };
+    }
+    initializeFlow(e, tool) {
+        return __awaiter(this, void 0, void 0, function* () {
+            //Reset drawing time
+            tool.lastDrawnTime = Date.now();
+            //Save closest node
+            const closestNode = e.closest(_branchingNode__WEBPACK_IMPORTED_MODULE_2__.BranchingNode, true, turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.ClosestOrigin.position);
+            //If clicking on a node
+            //Set last node ID
+            tool.lastNodeId = closestNode.dataId;
+            //Find first flow intersection with this node
+            let intersection;
+            for (const flow of this.element.director.flows) {
+                intersection = flow.findNodeEntry(tool.lastNodeId);
+                if (intersection)
+                    break;
+            }
+            //If intersection found
+            if (intersection && intersection.flowId != undefined) {
+                //Assign flow ID
+                tool.currentFlowId = intersection.flowId;
+                //Create a new branch at this node
+                return yield tool.currentFlow.branchAtPoint(intersection, e.scaledPosition, tool.lastNodeId);
+            }
+            //Otherwise --> create a new flow
+            tool.currentFlowId = yield this.element.director.createNewFlow(e.scaledPosition, tool.lastNodeId, "#439045");
+            //Otherwise --> get the point data (if any) that the user initiated the drag from
+            // const closestPoint = FlowIntersectionHandler.flowIntersectingWithPoint(e.scaledPosition);
+            // //Return if null
+            // if (!closestPoint || !closestPoint.flowId) return;
+            //
+            // this.currentFlow = Flow.getById(closestPoint.flowId);
+            // //Update last node ID
+            // this.lastNodeId = closestPoint.lastNodeId;
+            // //Branch (temporarily) at point to later update the original path
+            // return this.currentFlow.branchingHandler.branchAtPoint(closestPoint, e.scaledPosition,
+            //     undefined, true, true);
+        });
+    }
+    //On click --> create a point if the click is inside a node, otherwise cancel flow
+    click(e, tool) {
+        tool.lastNodeId = this.element.dataId;
+        //If no current flow --> try to initialize one
+        if (!tool.currentFlow)
+            return this.initializeFlow(e, tool);
+        //Add a point to this flow, with the closestNode's ID
+        tool.currentFlow.addPoint(e.scaledPosition, tool.lastNodeId);
+    }
+    dragStart(e, tool) {
+        //Return if already creating/editing a flow
+        if (tool.currentFlowId)
+            return;
+        this.initializeFlow(e, tool);
+    }
+    //On drag --> draw flow
+    drag(e, tool) {
+        var _a;
+        //Return if no current flow
+        if (!tool.currentFlow || !tool.currentFlow.currentBranch)
+            return;
+        //Check if drawing a temporary or permanent point
+        //If drawing into a new node --> ignore interval and add a point. This ensures that when a user hits a
+        // new node, it is added to the flow
+        const isTemporary = Date.now() - tool.lastDrawnTime <= tool.drawingInterval
+            && this.element.dataId == tool.lastNodeId;
+        //If the point is permanent --> update last drawn time and last node
+        if (!isTemporary) {
+            tool.lastDrawnTime = Date.now();
+            tool.lastNodeId = this.element.dataId;
+        }
+        console.log(tool.lastNodeId);
+        //Add point
+        (_a = tool.currentFlow) === null || _a === void 0 ? void 0 : _a.addPoint(e.scaledPosition, this.element.dataId, isTemporary);
+    }
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/components/branchingNode/branchingNode.css":
 /*!************************************************************************!*\
   !*** ./frontend/src/client/components/branchingNode/branchingNode.css ***!
@@ -963,12 +1076,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
 /* harmony import */ var _branchingNode_selectionInteractor__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./branchingNode.selectionInteractor */ "./frontend/src/client/components/branchingNode/branchingNode.selectionInteractor.ts");
 /* harmony import */ var _branchingNode_deleteInteractor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./branchingNode.deleteInteractor */ "./frontend/src/client/components/branchingNode/branchingNode.deleteInteractor.ts");
+/* harmony import */ var _branchingNode_connectionInteractor__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./branchingNode.connectionInteractor */ "./frontend/src/client/components/branchingNode/branchingNode.connectionInteractor.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
 
 
 
@@ -993,7 +1108,8 @@ let BranchingNode = class BranchingNode extends _component_component__WEBPACK_IM
                 viewConstructor: _branchingNode_view__WEBPACK_IMPORTED_MODULE_4__.BranchingNodeView,
                 modelConstructor: _branchingNode_model__WEBPACK_IMPORTED_MODULE_3__.BranchingNodeModel,
                 data: properties.data,
-                interactorConstructors: [_branchingNode_selectionInteractor__WEBPACK_IMPORTED_MODULE_7__.BranchingNodeSelectionInteractor, _branchingNode_deleteInteractor__WEBPACK_IMPORTED_MODULE_8__.BranchingNodeDeleteInteractor]
+                interactorConstructors: [_branchingNode_selectionInteractor__WEBPACK_IMPORTED_MODULE_7__.BranchingNodeSelectionInteractor, _branchingNode_deleteInteractor__WEBPACK_IMPORTED_MODULE_8__.BranchingNodeDeleteInteractor,
+                    _branchingNode_connectionInteractor__WEBPACK_IMPORTED_MODULE_9__.BranchingNodeConnectionInteractor]
             });
     }
     static createData(data) {
@@ -1574,6 +1690,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _branchingNode_branchingNode_selectionInteractor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../branchingNode/branchingNode.selectionInteractor */ "./frontend/src/client/components/branchingNode/branchingNode.selectionInteractor.ts");
 /* harmony import */ var _card_shootingInteractor__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./card.shootingInteractor */ "./frontend/src/client/components/card/card.shootingInteractor.ts");
 /* harmony import */ var _card_createCardInteractor__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./card.createCardInteractor */ "./frontend/src/client/components/card/card.createCardInteractor.ts");
+/* harmony import */ var _branchingNode_branchingNode_connectionInteractor__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../branchingNode/branchingNode.connectionInteractor */ "./frontend/src/client/components/branchingNode/branchingNode.connectionInteractor.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1600,6 +1717,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 /**
  * @description Class representing a card
  */
@@ -1610,7 +1728,8 @@ let Card = class Card extends _branchingNode_branchingNode__WEBPACK_IMPORTED_MOD
             viewConstructor: _card_view__WEBPACK_IMPORTED_MODULE_4__.CardView,
             modelConstructor: _card_model__WEBPACK_IMPORTED_MODULE_3__.CardModel,
             data: properties.data,
-            interactorConstructors: [_branchingNode_branchingNode_selectionInteractor__WEBPACK_IMPORTED_MODULE_8__.BranchingNodeSelectionInteractor, _card_shootingInteractor__WEBPACK_IMPORTED_MODULE_9__.CardShootingInteractor, _card_createCardInteractor__WEBPACK_IMPORTED_MODULE_10__.CardCreateCardInteractor]
+            interactorConstructors: [_branchingNode_branchingNode_selectionInteractor__WEBPACK_IMPORTED_MODULE_8__.BranchingNodeSelectionInteractor, _card_shootingInteractor__WEBPACK_IMPORTED_MODULE_9__.CardShootingInteractor,
+                _card_createCardInteractor__WEBPACK_IMPORTED_MODULE_10__.CardCreateCardInteractor, _branchingNode_branchingNode_connectionInteractor__WEBPACK_IMPORTED_MODULE_11__.BranchingNodeConnectionInteractor]
         });
         this.renderer.card = this;
     }
@@ -1887,14 +2006,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
 /* harmony import */ var _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../yManagement/yModel/types/yComponentModel */ "./frontend/src/yManagement/yModel/types/yComponentModel.ts");
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-
 
 
 class ClipModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_1__.YComponentModel {
@@ -1906,17 +2017,26 @@ class ClipModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
     get data() {
         return super.data;
     }
-    set data(value) {
-        super.data = value;
+    set data(data) {
+        super.data = data;
         //TODO MAKE IT TOGGLEABLE
         _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__.YUtilities.deepObserveAny(this.data, () => this.fireCallback("reload_thumbnail"), "startTime", "endTime", "backgroundFill", "mediaId", "content");
     }
-    set metadata(value) {
+    get metadata() {
+        var _a;
+        return (_a = this.getBlock("metadata")) === null || _a === void 0 ? void 0 : _a.data;
+    }
+    setMetadata(value, id) {
+        this.setBlock(value, id, "metadata");
+    }
+    get metadataType() {
+        var _a;
+        return (_a = this.metadata) === null || _a === void 0 ? void 0 : _a.get("type");
     }
     set blob(value) {
-        var _a, _b;
+        var _a;
         this._uri = value ? URL.createObjectURL(value) : null;
-        this._videoDuration = ((_a = this.metadata) === null || _a === void 0 ? void 0 : _a.type) == "video" ? (_b = this.metadata) === null || _b === void 0 ? void 0 : _b.duration : null;
+        this._videoDuration = this.metadataType == "video" ? (_a = this.metadata) === null || _a === void 0 ? void 0 : _a.get("duration") : null;
     }
     get uri() {
         return this._uri;
@@ -1958,10 +2078,7 @@ class ClipModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
         this.setData("backgroundFill", value);
     }
     get mediaId() {
-        return this.getData("mediaId");
-    }
-    set mediaId(value) {
-        this.setData("mediaId", value);
+        return this.getBlockId("metadata");
     }
     get thumbnail() {
         return this.getData("thumbnail");
@@ -1997,9 +2114,6 @@ class ClipModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
         return this.getHandler("text");
     }
 }
-__decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.auto)()
-], ClipModel.prototype, "metadata", null);
 
 
 /***/ }),
@@ -2226,13 +2340,18 @@ let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MO
             interactorConstructors: [_clip_selectionInteractor__WEBPACK_IMPORTED_MODULE_11__.ClipSelectionInteractor, _clip_deleteInteractor__WEBPACK_IMPORTED_MODULE_12__.ClipDeleteInteractor, _clip_shootingInteractor__WEBPACK_IMPORTED_MODULE_13__.ClipShootingInteractor]
         });
         this.mvc.emitter.add("mediaId", (value) => __awaiter(this, void 0, void 0, function* () {
-            this.model.metadata = this.director.mediaHandler.getMediaMetadata(value);
-            // this.model.blob = await this.director.mediaHandler.getMedia(value);
+            this.model.setMetadata(this.director.mediaHandler.getMediaMetadata(value), value);
+            this.model.blob = yield this.director.mediaHandler.getMedia(value);
             //TODO maybe remove this? idk
             // if (media.metadata?.thumbnail) {
             //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
             // }
             this.onMediaDataChanged(this);
+        }));
+        this.mvc.emitter.addWithBlock("convert", "metadata", (value) => __awaiter(this, void 0, void 0, function* () {
+            if (!value)
+                return;
+            this.model.blob = yield this.director.mediaHandler.getMedia(value);
         }));
     }
     static createData(data) {
@@ -2274,6 +2393,9 @@ let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MO
     }
     get metadata() {
         return this.model.metadata;
+    }
+    get metadataType() {
+        return this.model.metadataType;
     }
     get videoDuration() {
         return this.model.videoDuration;
@@ -2549,13 +2671,12 @@ class ClipRendererFrameController extends turbodombuilder__WEBPACK_IMPORTED_MODU
     }
     setCurrentClipBackground(clip_1) {
         return __awaiter(this, arguments, void 0, function* (clip, forceCanvas = false) {
-            var _a;
             if (!clip)
                 this.model.currentCanvasFill = null;
             else if (clip.backgroundFill)
                 this.model.currentCanvasFill = clip.backgroundFill;
             else if (clip.mediaId) {
-                if (((_a = clip.metadata) === null || _a === void 0 ? void 0 : _a.type) == "image")
+                if (clip.metadataType == "image")
                     this.model.currentCanvasFill = clip.uri;
                 else
                     this.model.currentCanvasFill = forceCanvas ? this.view.video : null;
@@ -2881,12 +3002,11 @@ class ClipRendererVideoController extends _renderer_renderer_videoController__WE
     }
     playNext() {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
             this.model.currentIndex++;
             const clip = this.model.getClip();
             if (!clip)
                 return;
-            if (((_a = clip.metadata) === null || _a === void 0 ? void 0 : _a.type) == "video") {
+            if (clip.metadataType == "video") {
                 this.view.showVideo();
                 yield this.play();
             }
@@ -2899,8 +3019,8 @@ class ClipRendererVideoController extends _renderer_renderer_videoController__WE
             play: { get: () => super.play }
         });
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
-            if (((_b = (_a = this.model.getClip()) === null || _a === void 0 ? void 0 : _a.metadata) === null || _b === void 0 ? void 0 : _b.type) == "video")
+            var _a;
+            if (((_a = this.model.getClip()) === null || _a === void 0 ? void 0 : _a.metadataType) == "video")
                 yield _super.play.call(this);
         });
     }
@@ -6265,10 +6385,8 @@ class RendererVideoController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
                 handleSeek();
             };
             const handleSeek = () => {
-                console.log("SEEKINGGGG");
                 video.addEventListener("seeked", seekListener);
                 setTimeout(() => video.currentTime = Math.round(seekTime * 100) / 100, delay);
-                console.log(video.indexInParent());
             };
             const seekListener = () => {
                 video.removeEventListener("seeked", seekListener);
@@ -6283,9 +6401,6 @@ class RendererVideoController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
                 handleSeek();
             else
                 video.addEventListener("canplay", loadListener);
-            video.addEventListener("timeupdate", () => {
-                console.log("Time:", video.currentTime);
-            });
         });
     }
 }
@@ -6482,10 +6597,13 @@ let ClipScrubber = ClipScrubber_1 = class ClipScrubber extends _scrubber__WEBPAC
     }
     setupUIListeners() {
         super.setupUIListeners();
+        this.markingMenuHandle.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.drag, (e) => e.stopImmediatePropagation());
         ClipScrubber_1.markingMenu.attachTo(this.markingMenuHandle, (e) => {
+            e.stopImmediatePropagation();
             ClipScrubber_1.markingMenu.scrubber = this;
             ClipScrubber_1.markingMenu.show(true, this.scaled ? e.scaledPosition : e.position);
         }, (e) => {
+            e.stopImmediatePropagation();
             ClipScrubber_1.markingMenu.scrubber = this;
             ClipScrubber_1.markingMenu.show(undefined, this.scaled ? e.scaledOrigins.first : e.origins.first);
         });
@@ -7580,10 +7698,9 @@ class TimelineClipController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2_
         var _a;
         this.model.indexInfo = this.clipHandler.getClipIndexAtTimestamp();
         this.element.director.contextManager.setContext(this.model.currentClip, 2, this.model.currentClip.selected);
-        if (this.element.renderer.isPlaying)
-            return;
         this.element.renderer.setFrame(this.element.renderer.visibilityMode == _clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_1__.ClipRendererVisibility.ghosting
             ? this.model.currentGhostingClip : this.model.currentClip, (_a = this.model.indexInfo) === null || _a === void 0 ? void 0 : _a.offset);
+        this.emitter.fire("clipReloaded");
     }
     snapToClosest(entry = this.model.indexInfo) {
         let index = typeof entry == "number" ? entry : entry.closestIntersection;
@@ -7928,24 +8045,19 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 class TimelinePlayController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboController {
     setupChangedCallbacks() {
         super.setupChangedCallbacks();
-        this.emitter.add("playButtonClicked", () => {
-            this.play();
-            (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.video)({
-                parent: document.body,
-                controls: true,
-                src: this.clipHandler.getClipAt(0).uri,
-                style: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.css) `
-                    position: absolute;
-                    display: block;
-                    width: 500px;
-                    top: 20px;
-                    left: 20px;
-                `
-            });
-        });
+        this.emitter.add("playButtonClicked", () => this.play());
+        let wasPlaying = false;
         this.emitter.add("containerClicked", () => {
-            if (this.element.isPlaying)
-                this.play(true);
+            if (!this.element.isPlaying)
+                return;
+            wasPlaying = true;
+            this.play(false, false);
+        });
+        this.emitter.add("clipReloaded", () => {
+            if (!wasPlaying)
+                return;
+            wasPlaying = false;
+            this.play(true);
         });
     }
     get renderer() {
@@ -7980,8 +8092,9 @@ class TimelinePlayController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
         });
     }
     play() {
-        return __awaiter(this, arguments, void 0, function* (play = !this.renderer.isPlaying) {
-            this.view.updatePlayButtonIcon(play);
+        return __awaiter(this, arguments, void 0, function* (play = !this.renderer.isPlaying, updateIcon = true) {
+            if (updateIcon)
+                this.view.updatePlayButtonIcon(play);
             if (this.model.nextTimer)
                 clearTimeout(this.model.nextTimer);
             if (this.model.playTimer)
@@ -8020,7 +8133,6 @@ class TimelineTimeController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
             if (this.element.card)
                 this.element.card.duration = this.model.totalDuration;
         });
-        this.view.scrubber.onScrubbing = (e) => this.emitter.fire("containerClicked", e);
         this.emitter.add("containerClicked", (e) => {
             this.model.currentTime = this.getTimeFromPosition(e);
         });
@@ -8189,7 +8301,7 @@ let Timeline = class Timeline extends _component_component__WEBPACK_IMPORTED_MOD
             this.clipController.snapToClosest();
         else
             this.clipController.snapAtEnd();
-        this.clipController.reloadCurrentClip();
+        // this.clipController.reloadCurrentClip();
     }
     get clips() {
         return this.model.getAllComponents();
@@ -8316,6 +8428,7 @@ class TimelineView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboVie
     }
     setupUIListeners() {
         super.setupUIListeners();
+        this.scrubber.onScrubbing = (e) => this.emitter.fire("containerClicked", e);
         this.scrubberContainer.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, (e) => this.emitter.fire("containerClicked", e));
         this.playButton.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, (e) => {
             e.stopImmediatePropagation();
@@ -8581,6 +8694,70 @@ class ProjectCardsModel extends _yManagement_yModel_types_yManagerModel__WEBPACK
     }
     get branchingNodesInstances() {
         return this.getAllComponents("branchingNodes");
+    }
+}
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/directors/project/project.connectionInteractor.ts":
+/*!*******************************************************************************!*\
+  !*** ./frontend/src/client/directors/project/project.connectionInteractor.ts ***!
+  \*******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ProjectConnectionInteractor: () => (/* binding */ ProjectConnectionInteractor)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./project.types */ "./frontend/src/client/directors/project/project.types.ts");
+/* harmony import */ var _components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../components/branchingNode/branchingNode */ "./frontend/src/client/components/branchingNode/branchingNode.ts");
+
+
+
+class ProjectConnectionInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
+    constructor() {
+        super(...arguments);
+        this.tool = _project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.connection;
+    }
+    //On click --> create a point if the click is inside a node, otherwise cancel flow
+    click(_, tool) {
+        this.endAndClear(tool);
+    }
+    move(e, tool) {
+        var _a;
+        (_a = tool.currentFlow) === null || _a === void 0 ? void 0 : _a.addPoint(e.scaledPosition, null, true);
+    }
+    //On drag --> draw flow
+    drag(e, tool) {
+        var _a;
+        //Return if no current flow
+        if (!tool.currentFlow || !tool.currentFlow.currentBranch)
+            return;
+        //Get the closest node
+        const closestNode = e.closest(_components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_2__.BranchingNode, true, turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.ClosestOrigin.position);
+        //Check if drawing a temporary or permanent point
+        //If drawing into a new node --> ignore interval and add a point. This ensures that when a user hits a
+        // new node, it is added to the flow
+        const isTemporary = Date.now() - tool.lastDrawnTime <= tool.drawingInterval && !tool.lastNodeId;
+        //If the point is permanent --> update last drawn time and last node
+        if (!isTemporary) {
+            tool.lastDrawnTime = Date.now();
+            tool.lastNodeId = null;
+        }
+        //Add point
+        (_a = tool.currentFlow) === null || _a === void 0 ? void 0 : _a.addPoint(e.scaledPosition, closestNode === null || closestNode === void 0 ? void 0 : closestNode.dataId, isTemporary);
+    }
+    dragEnd(_, tool) {
+        //Drag end --> end the flow and clear current reference
+        this.endAndClear(tool);
+    }
+    endAndClear(tool) {
+        tool.currentFlow.endFlow();
+        tool.currentFlowId = null;
+        tool.lastNodeId = null;
     }
 }
 
@@ -8884,6 +9061,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _project_selectionInteractor__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./project.selectionInteractor */ "./frontend/src/client/directors/project/project.selectionInteractor.ts");
 /* harmony import */ var _project_createCardInteractor__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./project.createCardInteractor */ "./frontend/src/client/directors/project/project.createCardInteractor.ts");
 /* harmony import */ var _project_navigationInteractor__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./project.navigationInteractor */ "./frontend/src/client/directors/project/project.navigationInteractor.ts");
+/* harmony import */ var _project_connectionInteractor__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./project.connectionInteractor */ "./frontend/src/client/directors/project/project.connectionInteractor.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8916,6 +9094,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_12__.RootDirector {
     constructor(properties) {
         var _a;
@@ -8929,7 +9108,8 @@ let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED
             modelConstructor: _project_model__WEBPACK_IMPORTED_MODULE_9__.ProjectModel,
             viewConstructor: _project_view__WEBPACK_IMPORTED_MODULE_8__.ProjectView,
             data: (_a = properties.document) === null || _a === void 0 ? void 0 : _a.getMap("document_content"),
-            interactorConstructors: [_project_selectionInteractor__WEBPACK_IMPORTED_MODULE_14__.ProjectSelectionInteractor, _project_createCardInteractor__WEBPACK_IMPORTED_MODULE_15__.ProjectCreateCardInteractor, _project_navigationInteractor__WEBPACK_IMPORTED_MODULE_16__.ProjectNavigationInteractor],
+            interactorConstructors: [_project_selectionInteractor__WEBPACK_IMPORTED_MODULE_14__.ProjectSelectionInteractor, _project_createCardInteractor__WEBPACK_IMPORTED_MODULE_15__.ProjectCreateCardInteractor,
+                _project_navigationInteractor__WEBPACK_IMPORTED_MODULE_16__.ProjectNavigationInteractor, _project_connectionInteractor__WEBPACK_IMPORTED_MODULE_17__.ProjectConnectionInteractor],
             initialize: false
         });
         this.model.onBranchingNodeAdded = data => new _components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_0__.BranchingNode({
@@ -9602,7 +9782,7 @@ class MediaHandler extends _requestHandler_requestHandler__WEBPACK_IMPORTED_MODU
             if (cachedMedia)
                 return cachedMedia.blob;
             return new Promise((resolve) => {
-                this.makeRequest(this.url + id, "GET", id, response => resolve(response), error => console.error("Upload failed", error), false, "blob");
+                this.makeRequest(this.url + id, "GET", id, response => resolve(response), error => console.error("Download failed", error), false, "blob");
             });
         });
     }
@@ -9648,12 +9828,8 @@ class MediaHandler extends _requestHandler_requestHandler__WEBPACK_IMPORTED_MODU
             const formData = new FormData();
             formData.append("id", String(data.id));
             formData.append("video", data.blob, `${data.id}.webm`);
-            console.log("CREATED FORM", formData.get("id"));
             return new Promise((resolve) => {
-                this.makeRequest(this.url + "convert/", "POST", formData, (msg) => {
-                    console.log(msg);
-                    resolve(true);
-                }, error => console.error("Failed to convert video", error), false);
+                this.makeRequest(this.url + "convert/", "POST", formData, () => resolve(true), error => console.error("Failed to convert video", error), false);
             });
         });
     }
@@ -9688,10 +9864,21 @@ class RequestHandler {
             if (request.readyState !== 4)
                 return;
             if (request.status < 200 || request.status >= 300) {
-                onFailure(request.responseText);
+                onFailure(request.response);
                 return;
             }
-            parse ? onSuccess(JSON.parse(request.responseText)) : onSuccess(request.response);
+            if (parse) {
+                try {
+                    onSuccess(typeof request.response === "string"
+                        ? JSON.parse(request.response)
+                        : JSON.parse(new TextDecoder().decode(request.response)));
+                }
+                catch (err) {
+                    onFailure("Failed to parse JSON: " + err.message);
+                }
+            }
+            else
+                onSuccess(request.response);
         };
         request.open(method, url, true);
         if (!(body instanceof FormData)) {
@@ -11340,12 +11527,8 @@ class CameraRecordingController extends turbodombuilder__WEBPACK_IMPORTED_MODULE
             this.model.setRecordedMedia(media, undefined);
             const blob = new Blob(this.model.recordedChunks, { type: "video/webm" });
             this.model.recordedChunks = [];
-            console.log("CONVERTING MEDIA");
-            const convert = yield this.mediaHandler.convertMedia({ id: media.id, blob: blob });
-            console.log(convert);
-            if (!convert)
+            if (!(yield this.mediaHandler.convertMedia({ id: media.id, blob: blob })))
                 return;
-            console.log("MEDIA CONVERTED");
             this.mediaHandler.getMediaMetadata(media.id).converting = false;
             //TODO make clip listen for change in converting value --> reload video
             // const mp4Blob = await response.blob();
@@ -11658,12 +11841,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
 /* harmony import */ var _tools_shoot_shoot__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../tools/shoot/shoot */ "./frontend/src/client/tools/shoot/shoot.ts");
 /* harmony import */ var _tools_selection_selection__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../tools/selection/selection */ "./frontend/src/client/tools/selection/selection.ts");
+/* harmony import */ var _tools_connection_connection__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../tools/connection/connection */ "./frontend/src/client/tools/connection/connection.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
 
 
 
@@ -11693,6 +11878,7 @@ let Canvas = class Canvas extends _components_component_component__WEBPACK_IMPOR
                 _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.createCard,
                 _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.createText,
                 _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.delete,
+                new _tools_connection_connection__WEBPACK_IMPORTED_MODULE_9__.ConnectionTool({ name: _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.connection, toolManager: this.toolManager, director: this.director }),
                 new _tools_shoot_shoot__WEBPACK_IMPORTED_MODULE_7__.ShootTool({ name: _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.shoot, toolManager: this.toolManager, director: this.director }),
             ]
         });
@@ -11783,6 +11969,62 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
        /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_main_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_main_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_main_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/tools/connection/connection.ts":
+/*!************************************************************!*\
+  !*** ./frontend/src/client/tools/connection/connection.ts ***!
+  \************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ConnectionTool: () => (/* binding */ ConnectionTool)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _tool_tool__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../tool/tool */ "./frontend/src/client/tools/tool/tool.ts");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+//TODO WITH JUNE
+/**
+ * @description Tool that handles creating flows and connecting nodes
+ */
+let ConnectionTool = class ConnectionTool extends _tool_tool__WEBPACK_IMPORTED_MODULE_1__.VcTool {
+    constructor() {
+        super(...arguments);
+        this.lastNodeId = null;
+        //Interval indicating the frequency at which points are permanently added to the flow
+        //A higher value will increase the smoothing effect of the flow
+        this.drawingInterval = 150;
+        //The last time a point was added permanently (used for when drawing flows)
+        this.lastDrawnTime = 0;
+    }
+    get currentFlowId() {
+        return this._currentFlowId;
+    }
+    set currentFlowId(value) {
+        this._currentFlowId = value;
+        this._currentFlow = undefined;
+    }
+    get currentFlow() {
+        if (!this._currentFlow)
+            this._currentFlow = this.director.getFlow(this.currentFlowId);
+        return this._currentFlow;
+    }
+};
+ConnectionTool = __decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("connection-tool")
+], ConnectionTool);
+
 
 
 /***/ }),
@@ -47484,8 +47726,8 @@ function defaultGetY(p) {
   \**********************************************************************/
 /***/ (function(module) {
 
-/*! dom-to-image-more 16-10-2024 */
-(l=>{let f=(()=>{let e=0;return{escape:function(e){return e.replace(/([.*+?^${}()|[\]/\\])/g,"\\$1")},isDataUrl:function(e){return-1!==e.search(/^(data:)/)},canvasToBlob:function(t){if(t.toBlob)return new Promise(function(e){t.toBlob(e)});return(r=>new Promise(function(e){var t=u(r.toDataURL().split(",")[1]),n=t.length,o=new Uint8Array(n);for(let e=0;e<n;e++)o[e]=t.charCodeAt(e);e(new Blob([o],{type:"image/png"}))}))(t)},resolveUrl:function(e,t){var n=document.implementation.createHTMLDocument(),o=n.createElement("base"),r=(n.head.appendChild(o),n.createElement("a"));return n.body.appendChild(r),o.href=t,r.href=e,r.href},getAndEncode:function(s){let e=a.impl.urlCache.find(function(e){return e.url===s});e||(e={url:s,promise:null},a.impl.urlCache.push(e));null===e.promise&&(a.impl.options.cacheBust&&(s+=(/\?/.test(s)?"&":"?")+(new Date).getTime()),e.promise=new Promise(function(t){let e=a.impl.options.httpTimeout,r=new XMLHttpRequest;if(r.onreadystatechange=function(){if(4===r.readyState)if(300<=r.status)n?t(n):l(`cannot fetch resource: ${s}, status: `+r.status);else{let e=new FileReader;e.onloadend=function(){t(e.result)},e.readAsDataURL(r.response)}},r.ontimeout=function(){n?t(n):l(`timeout of ${e}ms occured while fetching resource: `+s)},r.responseType="blob",r.timeout=e,0<a.impl.options.useCredentialsFilters.length&&(a.impl.options.useCredentials=0<a.impl.options.useCredentialsFilters.filter(e=>0<=s.search(e)).length),a.impl.options.useCredentials&&(r.withCredentials=!0),a.impl.options.corsImg&&0===s.indexOf("http")&&-1===s.indexOf(window.location.origin)){var i="POST"===(a.impl.options.corsImg.method||"GET").toUpperCase()?"POST":"GET";r.open(i,(a.impl.options.corsImg.url||"").replace("#{cors}",s),!0);let t=!1,n=a.impl.options.corsImg.headers||{},o=(Object.keys(n).forEach(function(e){-1!==n[e].indexOf("application/json")&&(t=!0),r.setRequestHeader(e,n[e])}),(e=>{try{return JSON.parse(JSON.stringify(e))}catch(e){l("corsImg.data is missing or invalid:"+e.toString())}})(a.impl.options.corsImg.data||""));Object.keys(o).forEach(function(e){"string"==typeof o[e]&&(o[e]=o[e].replace("#{cors}",s))}),r.send(t?JSON.stringify(o):o)}else r.open("GET",s,!0),r.send();let n;function l(e){console.error(e),t("")}a.impl.options.imagePlaceholder&&(i=a.impl.options.imagePlaceholder.split(/,/))&&i[1]&&(n=i[1])}));return e.promise},uid:function(){return"u"+("0000"+(Math.random()*Math.pow(36,4)<<0).toString(36)).slice(-4)+e++},delay:function(n){return function(t){return new Promise(function(e){setTimeout(function(){e(t)},n)})}},asArray:function(t){var n=[],o=t.length;for(let e=0;e<o;e++)n.push(t[e]);return n},escapeXhtml:function(e){return e.replace(/%/g,"%25").replace(/#/g,"%23").replace(/\n/g,"%0A")},makeImage:function(r){return"data:,"!==r?new Promise(function(e,t){let n=document.createElementNS("http://www.w3.org/2000/svg","svg"),o=new Image;a.impl.options.useCredentials&&(o.crossOrigin="use-credentials"),o.onload=function(){document.body.removeChild(n),window&&window.requestAnimationFrame?window.requestAnimationFrame(function(){e(o)}):e(o)},o.onerror=e=>{document.body.removeChild(n),t(e)},n.appendChild(o),o.src=r,document.body.appendChild(n)}):Promise.resolve()},width:function(e){var t=i(e,"width");if(!isNaN(t))return t;var t=i(e,"border-left-width"),n=i(e,"border-right-width");return e.scrollWidth+t+n},height:function(e){var t=i(e,"height");if(!isNaN(t))return t;var t=i(e,"border-top-width"),n=i(e,"border-bottom-width");return e.scrollHeight+t+n},getWindow:t,isElement:r,isElementHostForOpenShadowRoot:function(e){return r(e)&&null!==e.shadowRoot},isShadowRoot:n,isInShadowRoot:o,isHTMLElement:function(e){return e instanceof t(e).HTMLElement},isHTMLCanvasElement:function(e){return e instanceof t(e).HTMLCanvasElement},isHTMLInputElement:function(e){return e instanceof t(e).HTMLInputElement},isHTMLImageElement:function(e){return e instanceof t(e).HTMLImageElement},isHTMLLinkElement:function(e){return e instanceof t(e).HTMLLinkElement},isHTMLScriptElement:function(e){return e instanceof t(e).HTMLScriptElement},isHTMLStyleElement:function(e){return e instanceof t(e).HTMLStyleElement},isHTMLTextAreaElement:function(e){return e instanceof t(e).HTMLTextAreaElement},isShadowSlotElement:function(e){return o(e)&&e instanceof t(e).HTMLSlotElement},isSVGElement:function(e){return e instanceof t(e).SVGElement},isSVGRectElement:function(e){return e instanceof t(e).SVGRectElement},isDimensionMissing:function(e){return isNaN(e)||e<=0}};function t(e){e=e?e.ownerDocument:void 0;return(e?e.defaultView:void 0)||window||l}function n(e){return e instanceof t(e).ShadowRoot}function o(e){return null!=e&&void 0!==e.getRootNode&&n(e.getRootNode())}function r(e){return e instanceof t(e).Element}function i(t,n){if(t.nodeType===c){let e=m(t).getPropertyValue(n);if("px"===e.slice(-2))return e=e.slice(0,-2),parseFloat(e)}return NaN}})(),r=(()=>{let o=/url\(['"]?([^'"]+?)['"]?\)/g;return{inlineAll:function(t,o,r){if(!e(t))return Promise.resolve(t);return Promise.resolve(t).then(n).then(function(e){let n=Promise.resolve(t);return e.forEach(function(t){n=n.then(function(e){return i(e,t,o,r)})}),n})},shouldProcess:e,impl:{readUrls:n,inline:i}};function e(e){return-1!==e.search(o)}function n(e){for(var t,n=[];null!==(t=o.exec(e));)n.push(t[1]);return n.filter(function(e){return!f.isDataUrl(e)})}function i(n,o,t,e){return Promise.resolve(o).then(function(e){return t?f.resolveUrl(e,t):e}).then(e||f.getAndEncode).then(function(e){return n.replace((t=o,new RegExp(`(url\\(['"]?)(${f.escape(t)})(['"]?\\))`,"g")),`$1${e}$3`);var t})}})(),e={resolveAll:function(){return t().then(function(e){return Promise.all(e.map(function(e){return e.resolve()}))}).then(function(e){return e.join("\n")})},impl:{readAll:t}};function t(){return Promise.resolve(f.asArray(document.styleSheets)).then(function(e){let n=[];return e.forEach(function(t){var e=Object.getPrototypeOf(t);if(Object.prototype.hasOwnProperty.call(e,"cssRules"))try{f.asArray(t.cssRules||[]).forEach(n.push.bind(n))}catch(e){console.error("domtoimage: Error while reading CSS rules from "+t.href,e.toString())}}),n}).then(function(e){return e.filter(function(e){return e.type===CSSRule.FONT_FACE_RULE}).filter(function(e){return r.shouldProcess(e.style.getPropertyValue("src"))})}).then(function(e){return e.map(t)});function t(t){return{resolve:function(){var e=(t.parentStyleSheet||{}).href;return r.inlineAll(t.cssText,e)},src:function(){return t.style.getPropertyValue("src")}}}}let n={inlineAll:function t(e){if(!f.isElement(e))return Promise.resolve(e);return n(e).then(function(){return f.isHTMLImageElement(e)?o(e).inline():Promise.all(f.asArray(e.childNodes).map(function(e){return t(e)}))});function n(o){let e=["background","background-image"],t=e.map(function(t){let e=o.style.getPropertyValue(t),n=o.style.getPropertyPriority(t);return e?r.inlineAll(e).then(function(e){o.style.setProperty(t,e,n)}):Promise.resolve()});return Promise.all(t).then(function(){return o})}},impl:{newImage:o}};function o(n){return{inline:function(e){if(f.isDataUrl(n.src))return Promise.resolve();return Promise.resolve(n.src).then(e||f.getAndEncode).then(function(t){return new Promise(function(e){n.onload=e,n.onerror=e,n.src=t})})}}}let s={copyDefaultStyles:!0,imagePlaceholder:void 0,cacheBust:!1,useCredentials:!1,useCredentialsFilters:[],httpTimeout:3e4,styleCaching:"strict",corsImg:void 0,adjustClonedNode:void 0},a={toSvg:d,toPng:function(e,t){return i(e,t).then(function(e){return e.toDataURL()})},toJpeg:function(e,t){return i(e,t).then(function(e){return e.toDataURL("image/jpeg",(t?t.quality:void 0)||1)})},toBlob:function(e,t){return i(e,t).then(f.canvasToBlob)},toPixelData:function(t,e){return i(t,e).then(function(e){return e.getContext("2d").getImageData(0,0,f.width(t),f.height(t)).data})},toCanvas:i,impl:{fontFaces:e,images:n,util:f,inliner:r,urlCache:[],options:{}}},c=( true?module.exports=a:0,("undefined"!=typeof Node?Node.ELEMENT_NODE:void 0)||1),m=(void 0!==l?l.getComputedStyle:void 0)||("undefined"!=typeof window?window.getComputedStyle:void 0)||globalThis.getComputedStyle,u=(void 0!==l?l.atob:void 0)||("undefined"!=typeof window?window.atob:void 0)||globalThis.atob;function d(e,r){let t=a.impl.util.getWindow(e);var n=r=r||{};void 0===n.copyDefaultStyles?a.impl.options.copyDefaultStyles=s.copyDefaultStyles:a.impl.options.copyDefaultStyles=n.copyDefaultStyles,a.impl.options.imagePlaceholder=(void 0===n.imagePlaceholder?s:n).imagePlaceholder,a.impl.options.cacheBust=(void 0===n.cacheBust?s:n).cacheBust,a.impl.options.corsImg=(void 0===n.corsImg?s:n).corsImg,a.impl.options.useCredentials=(void 0===n.useCredentials?s:n).useCredentials,a.impl.options.useCredentialsFilters=(void 0===n.useCredentialsFilters?s:n).useCredentialsFilters,a.impl.options.httpTimeout=(void 0===n.httpTimeout?s:n).httpTimeout,a.impl.options.styleCaching=(void 0===n.styleCaching?s:n).styleCaching;let i=[];return Promise.resolve(e).then(function(e){if(e.nodeType===c)return e;var t=e,n=e.parentNode,o=document.createElement("span");return n.replaceChild(o,t),o.append(e),i.push({parent:n,child:t,wrapper:o}),o}).then(function(e){return function l(t,s,r,u){let e=s.filter;if(t===h||f.isHTMLScriptElement(t)||f.isHTMLStyleElement(t)||f.isHTMLLinkElement(t)||null!==r&&e&&!e(t))return Promise.resolve();return Promise.resolve(t).then(n).then(o).then(function(e){return c(e,a(t))}).then(i).then(function(e){return d(e,t)});function n(e){return f.isHTMLCanvasElement(e)?f.makeImage(e.toDataURL()):e.cloneNode(!1)}function o(e){return s.adjustClonedNode&&s.adjustClonedNode(t,e,!1),Promise.resolve(e)}function i(e){return s.adjustClonedNode&&s.adjustClonedNode(t,e,!0),Promise.resolve(e)}function a(e){return f.isElementHostForOpenShadowRoot(e)?e.shadowRoot:e}function c(n,e){let o=t(e),r=Promise.resolve();if(0!==o.length){let t=m(i(e));f.asArray(o).forEach(function(e){r=r.then(function(){return l(e,s,t,u).then(function(e){e&&n.appendChild(e)})})})}return r.then(function(){return n});function i(e){return f.isShadowRoot(e)?e.host:e}function t(t){if(f.isShadowSlotElement(t)){let e=t.assignedNodes();if(e&&0<e.length)return e}return t.childNodes}}function d(u,a){return!f.isElement(u)||f.isShadowSlotElement(a)?Promise.resolve(u):Promise.resolve().then(e).then(t).then(n).then(o).then(function(){return u});function e(){function o(e,t){t.font=e.font,t.fontFamily=e.fontFamily,t.fontFeatureSettings=e.fontFeatureSettings,t.fontKerning=e.fontKerning,t.fontSize=e.fontSize,t.fontStretch=e.fontStretch,t.fontStyle=e.fontStyle,t.fontVariant=e.fontVariant,t.fontVariantCaps=e.fontVariantCaps,t.fontVariantEastAsian=e.fontVariantEastAsian,t.fontVariantLigatures=e.fontVariantLigatures,t.fontVariantNumeric=e.fontVariantNumeric,t.fontVariationSettings=e.fontVariationSettings,t.fontWeight=e.fontWeight}function e(e,t){let n=m(e);n.cssText?(t.style.cssText=n.cssText,o(n,t.style)):(y(s,e,n,r,t),null===r&&(["inset-block","inset-block-start","inset-block-end"].forEach(e=>t.style.removeProperty(e)),["left","right","top","bottom"].forEach(e=>{t.style.getPropertyValue(e)&&t.style.setProperty(e,"0px")})))}e(a,u)}function t(){let s=f.uid();function t(r){let i=m(a,r),l=i.getPropertyValue("content");if(""!==l&&"none"!==l){let e=u.getAttribute("class")||"",t=(u.setAttribute("class",e+" "+s),document.createElement("style"));function n(){let e=`.${s}:`+r,t=(i.cssText?n:o)();return document.createTextNode(e+`{${t}}`);function n(){return`${i.cssText} content: ${l};`}function o(){let e=f.asArray(i).map(t).join("; ");return e+";";function t(e){let t=i.getPropertyValue(e),n=i.getPropertyPriority(e)?" !important":"";return e+": "+t+n}}}t.appendChild(n()),u.appendChild(t)}}[":before",":after"].forEach(function(e){t(e)})}function n(){f.isHTMLTextAreaElement(a)&&(u.innerHTML=a.value),f.isHTMLInputElement(a)&&u.setAttribute("value",a.value)}function o(){f.isSVGElement(u)&&(u.setAttribute("xmlns","http://www.w3.org/2000/svg"),f.isSVGRectElement(u))&&["width","height"].forEach(function(e){let t=u.getAttribute(e);t&&u.style.setProperty(e,t)})}}}(e,r,null,t)}).then(r.disableEmbedFonts?Promise.resolve(e):p).then(g).then(function(t){r.bgcolor&&(t.style.backgroundColor=r.bgcolor);r.width&&(t.style.width=r.width+"px");r.height&&(t.style.height=r.height+"px");r.style&&Object.keys(r.style).forEach(function(e){t.style[e]=r.style[e]});let e=null;"function"==typeof r.onclone&&(e=r.onclone(t));return Promise.resolve(e).then(function(){return t})}).then(function(e){let n=r.width||f.width(e),o=r.height||f.height(e);return Promise.resolve(e).then(function(e){return e.setAttribute("xmlns","http://www.w3.org/1999/xhtml"),(new XMLSerializer).serializeToString(e)}).then(f.escapeXhtml).then(function(e){var t=(f.isDimensionMissing(n)?' width="100%"':` width="${n}"`)+(f.isDimensionMissing(o)?' height="100%"':` height="${o}"`);return`<svg xmlns="http://www.w3.org/2000/svg"${(f.isDimensionMissing(n)?"":` width="${n}"`)+(f.isDimensionMissing(o)?"":` height="${o}"`)}><foreignObject${t}>${e}</foreignObject></svg>`}).then(function(e){return"data:image/svg+xml;charset=utf-8,"+e})}).then(function(e){for(;0<i.length;){var t=i.pop();t.parent.replaceChild(t.child,t.wrapper)}return e}).then(function(e){return a.impl.urlCache=[],(()=>{h&&(document.body.removeChild(h),h=null),v&&clearTimeout(v),v=setTimeout(()=>{v=null,w={}},2e4)})(),e})}function i(r,i){return d(r,i=i||{}).then(f.makeImage).then(function(e){var t="number"!=typeof i.scale?1:i.scale,n=((e,t)=>{let n=i.width||f.width(e),o=i.height||f.height(e);return f.isDimensionMissing(n)&&(n=f.isDimensionMissing(o)?300:2*o),f.isDimensionMissing(o)&&(o=n/2),(e=document.createElement("canvas")).width=n*t,e.height=o*t,i.bgcolor&&((t=e.getContext("2d")).fillStyle=i.bgcolor,t.fillRect(0,0,e.width,e.height)),e})(r,t),o=n.getContext("2d");return o.msImageSmoothingEnabled=!1,o.imageSmoothingEnabled=!1,e&&(o.scale(t,t),o.drawImage(e,0,0)),n})}let h=null;function p(n){return e.resolveAll().then(function(e){var t;return""!==e&&(t=document.createElement("style"),n.appendChild(t),t.appendChild(document.createTextNode(e))),n})}function g(e){return n.inlineAll(e).then(function(){return e})}function y(e,t,i,l,n){let s=a.impl.options.copyDefaultStyles?((t,e)=>{var n,o=(e=>("relaxed"!==t.styleCaching?e:e.filter((e,t,n)=>0===t||t===n.length-1)).join(">"))(e=(e=>{var t=[];do{if(e.nodeType===c){var n=e.tagName;if(t.push(n),E.includes(n))break}}while(e=e.parentNode);return t})(e));{if(w[o])return w[o];e=((e,t)=>{let n=e.body;do{var o=t.pop(),o=e.createElement(o);n.appendChild(o),n=o}while(0<t.length);return n.textContent="​",n})((n=(()=>{if(h)return h.contentWindow;t=document.characterSet||"UTF-8",e=(e=document.doctype)?(`<!DOCTYPE ${s(e.name)} ${s(e.publicId)} `+s(e.systemId)).trim()+">":"",(h=document.createElement("iframe")).id="domtoimage-sandbox-"+f.uid(),h.style.visibility="hidden",h.style.position="fixed",document.body.appendChild(h);var e,t,n=h,o="domtoimage-sandbox";try{return n.contentWindow.document.write(e+`<html><head><meta charset='${t}'><title>${o}</title></head><body></body></html>`),n.contentWindow}catch(e){}var r=document.createElement("meta");r.setAttribute("charset",t);try{var i=document.implementation.createHTMLDocument(o),l=(i.head.appendChild(r),e+i.documentElement.outerHTML);return n.setAttribute("srcdoc",l),n.contentWindow}catch(e){}return n.contentDocument.head.appendChild(r),n.contentDocument.title=o,n.contentWindow;function s(e){var t;return e?((t=document.createElement("div")).innerText=e,t.innerHTML):""}})()).document,e),n=((e,t)=>{let n={},o=e.getComputedStyle(t);return f.asArray(o).forEach(function(e){n[e]="width"===e||"height"===e?"auto":o.getPropertyValue(e)}),n})(n,e);var r=e;do{var i=r.parentElement;null!==i&&i.removeChild(r),r=i}while(r&&"BODY"!==r.tagName);return w[o]=n}})(e,t):{},u=n.style;f.asArray(i).forEach(function(e){var t,n=i.getPropertyValue(e),o=s[e],r=l?l.getPropertyValue(e):void 0;u.getPropertyValue(e)||(n!==o||l&&n!==r)&&(o=i.getPropertyPriority(e),r=u,n=n,o=o,t=0<=["background-clip"].indexOf(e=e),o?(r.setProperty(e,n,o),t&&r.setProperty("-webkit-"+e,n,o)):(r.setProperty(e,n),t&&r.setProperty("-webkit-"+e,n)))})}let v=null,w={},E=["ADDRESS","ARTICLE","ASIDE","BLOCKQUOTE","DETAILS","DIALOG","DD","DIV","DL","DT","FIELDSET","FIGCAPTION","FIGURE","FOOTER","FORM","H1","H2","H3","H4","H5","H6","HEADER","HGROUP","HR","LI","MAIN","NAV","OL","P","PRE","SECTION","SVG","TABLE","UL","math","svg","BODY","HEAD","HTML"]})(this);
+/*! dom-to-image-more 08-05-2025 */
+(l=>{let f=(()=>{let e=0;return{escape:function(e){return e.replace(/([.*+?^${}()|[\]/\\])/g,"\\$1")},isDataUrl:function(e){return-1!==e.search(/^(data:)/)},canvasToBlob:function(t){if(t.toBlob)return new Promise(function(e){t.toBlob(e)});return(r=>new Promise(function(e){var t=u(r.toDataURL().split(",")[1]),n=t.length,o=new Uint8Array(n);for(let e=0;e<n;e++)o[e]=t.charCodeAt(e);e(new Blob([o],{type:"image/png"}))}))(t)},resolveUrl:function(e,t){var n=document.implementation.createHTMLDocument(),o=n.createElement("base"),r=(n.head.appendChild(o),n.createElement("a"));return n.body.appendChild(r),o.href=t,r.href=e,r.href},getAndEncode:function(s){let e=d.impl.urlCache.find(function(e){return e.url===s});e||(e={url:s,promise:null},d.impl.urlCache.push(e));null===e.promise&&(d.impl.options.cacheBust&&(s+=(/\?/.test(s)?"&":"?")+(new Date).getTime()),e.promise=new Promise(function(t){let e=d.impl.options.httpTimeout,r=new XMLHttpRequest;if(r.onreadystatechange=function(){if(4===r.readyState)if(300<=r.status)n?t(n):l(`cannot fetch resource: ${s}, status: `+r.status);else{let e=new FileReader;e.onloadend=function(){t(e.result)},e.readAsDataURL(r.response)}},r.ontimeout=function(){n?t(n):l(`timeout of ${e}ms occured while fetching resource: `+s)},r.responseType="blob",r.timeout=e,0<d.impl.options.useCredentialsFilters.length&&(d.impl.options.useCredentials=0<d.impl.options.useCredentialsFilters.filter(e=>0<=s.search(e)).length),d.impl.options.useCredentials&&(r.withCredentials=!0),d.impl.options.corsImg&&0===s.indexOf("http")&&-1===s.indexOf(window.location.origin)){var i="POST"===(d.impl.options.corsImg.method||"GET").toUpperCase()?"POST":"GET";r.open(i,(d.impl.options.corsImg.url||"").replace("#{cors}",s),!0);let t=!1,n=d.impl.options.corsImg.headers||{},o=(Object.keys(n).forEach(function(e){-1!==n[e].indexOf("application/json")&&(t=!0),r.setRequestHeader(e,n[e])}),(e=>{try{return JSON.parse(JSON.stringify(e))}catch(e){l("corsImg.data is missing or invalid:"+e.toString())}})(d.impl.options.corsImg.data||""));Object.keys(o).forEach(function(e){"string"==typeof o[e]&&(o[e]=o[e].replace("#{cors}",s))}),r.send(t?JSON.stringify(o):o)}else r.open("GET",s,!0),r.send();let n;function l(e){console.error(e),t("")}d.impl.options.imagePlaceholder&&(i=d.impl.options.imagePlaceholder.split(/,/))&&i[1]&&(n=i[1])}));return e.promise},uid:function(){return"u"+("0000"+(Math.random()*Math.pow(36,4)<<0).toString(36)).slice(-4)+e++},delay:function(n){return function(t){return new Promise(function(e){setTimeout(function(){e(t)},n)})}},asArray:function(t){var n=[],o=t.length;for(let e=0;e<o;e++)n.push(t[e]);return n},escapeXhtml:function(e){return e.replace(/%/g,"%25").replace(/#/g,"%23").replace(/\n/g,"%0A")},makeImage:function(r){return"data:,"!==r?new Promise(function(e,t){let n=document.createElementNS("http://www.w3.org/2000/svg","svg"),o=new Image;d.impl.options.useCredentials&&(o.crossOrigin="use-credentials"),o.onload=function(){document.body.removeChild(n),window&&window.requestAnimationFrame?window.requestAnimationFrame(function(){e(o)}):e(o)},o.onerror=e=>{document.body.removeChild(n),t(e)},n.appendChild(o),o.src=r,document.body.appendChild(n)}):Promise.resolve()},width:function(e){var t=i(e,"width");if(!isNaN(t))return t;var t=i(e,"border-left-width"),n=i(e,"border-right-width");return e.scrollWidth+t+n},height:function(e){var t=i(e,"height");if(!isNaN(t))return t;var t=i(e,"border-top-width"),n=i(e,"border-bottom-width");return e.scrollHeight+t+n},getWindow:t,isElement:r,isElementHostForOpenShadowRoot:function(e){return r(e)&&null!==e.shadowRoot},isShadowRoot:n,isInShadowRoot:o,isHTMLElement:function(e){return e instanceof t(e).HTMLElement},isHTMLCanvasElement:function(e){return e instanceof t(e).HTMLCanvasElement},isHTMLInputElement:function(e){return e instanceof t(e).HTMLInputElement},isHTMLImageElement:function(e){return e instanceof t(e).HTMLImageElement},isHTMLLinkElement:function(e){return e instanceof t(e).HTMLLinkElement},isHTMLScriptElement:function(e){return e instanceof t(e).HTMLScriptElement},isHTMLStyleElement:function(e){return e instanceof t(e).HTMLStyleElement},isHTMLTextAreaElement:function(e){return e instanceof t(e).HTMLTextAreaElement},isShadowSlotElement:function(e){return o(e)&&e instanceof t(e).HTMLSlotElement},isSVGElement:function(e){return e instanceof t(e).SVGElement},isSVGRectElement:function(e){return e instanceof t(e).SVGRectElement},isDimensionMissing:function(e){return isNaN(e)||e<=0}};function t(e){e=e?e.ownerDocument:void 0;return(e?e.defaultView:void 0)||window||l}function n(e){return e instanceof t(e).ShadowRoot}function o(e){return null!=e&&void 0!==e.getRootNode&&n(e.getRootNode())}function r(e){return e instanceof t(e).Element}function i(t,n){if(t.nodeType===m){let e=h(t).getPropertyValue(n);if("px"===e.slice(-2))return e=e.slice(0,-2),parseFloat(e)}return NaN}})(),r=(()=>{let o=/url\((["']?)((?:\\?.)*?)\1\)/gm;return{inlineAll:function(t,o,r){if(!e(t))return Promise.resolve(t);return Promise.resolve(t).then(n).then(function(e){let n=Promise.resolve(t);return e.forEach(function(t){n=n.then(function(e){return i(e,t,o,r)})}),n})},shouldProcess:e,impl:{readUrls:n,inline:i,urlAsRegex:r}};function e(e){return-1!==e.search(o)}function n(e){for(var t,n=[];null!==(t=o.exec(e));)n.push(t[2]);return n.filter(function(e){return!f.isDataUrl(e)})}function r(e){return new RegExp(`url\\((["']?)(${f.escape(e)})\\1\\)`,"gm")}function i(n,o,t,e){return Promise.resolve(o).then(function(e){return t?f.resolveUrl(e,t):e}).then(e||f.getAndEncode).then(function(e){var t=r(o);return n.replace(t,`url($1${e}$1)`)})}})(),e={resolveAll:function(){return t().then(function(e){return Promise.all(e.map(function(e){return e.resolve()}))}).then(function(e){return e.join("\n")})},impl:{readAll:t}};function t(){return Promise.resolve(f.asArray(document.styleSheets)).then(function(e){let n=[];return e.forEach(function(t){var e=Object.getPrototypeOf(t);if(Object.prototype.hasOwnProperty.call(e,"cssRules"))try{f.asArray(t.cssRules||[]).forEach(n.push.bind(n))}catch(e){console.error("domtoimage: Error while reading CSS rules from "+t.href,e.toString())}}),n}).then(function(e){return e.filter(function(e){return e.type===CSSRule.FONT_FACE_RULE}).filter(function(e){return r.shouldProcess(e.style.getPropertyValue("src"))})}).then(function(e){return e.map(t)});function t(t){return{resolve:function(){var e=(t.parentStyleSheet||{}).href;return r.inlineAll(t.cssText,e)},src:function(){return t.style.getPropertyValue("src")}}}}let n={inlineAll:function t(e){if(!f.isElement(e))return Promise.resolve(e);return n(e).then(function(){return f.isHTMLImageElement(e)?o(e).inline():Promise.all(f.asArray(e.childNodes).map(function(e){return t(e)}))});function n(o){let e=["background","background-image"],t=e.map(function(t){let e=o.style.getPropertyValue(t),n=o.style.getPropertyPriority(t);return e?r.inlineAll(e).then(function(e){o.style.setProperty(t,e,n)}):Promise.resolve()});return Promise.all(t).then(function(){return o})}},impl:{newImage:o}};function o(n){return{inline:function(e){if(f.isDataUrl(n.src))return Promise.resolve();return Promise.resolve(n.src).then(e||f.getAndEncode).then(function(t){return new Promise(function(e){n.onload=e,n.onerror=e,n.src=t})})}}}let s={copyDefaultStyles:!0,imagePlaceholder:void 0,cacheBust:!1,useCredentials:!1,useCredentialsFilters:[],httpTimeout:3e4,styleCaching:"strict",corsImg:void 0,adjustClonedNode:void 0,filterStyles:void 0},d={toSvg:a,toPng:function(e,t){return i(e,t).then(function(e){return e.toDataURL()})},toJpeg:function(e,t){return i(e,t).then(function(e){return e.toDataURL("image/jpeg",(t?t.quality:void 0)||1)})},toBlob:function(e,t){return i(e,t).then(f.canvasToBlob)},toPixelData:function(t,e){return i(t,e).then(function(e){return e.getContext("2d").getImageData(0,0,f.width(t),f.height(t)).data})},toCanvas:i,impl:{fontFaces:e,images:n,util:f,inliner:r,urlCache:[],options:{}}},m=( true?module.exports=d:0,("undefined"!=typeof Node?Node.ELEMENT_NODE:void 0)||1),h=(void 0!==l?l.getComputedStyle:void 0)||("undefined"!=typeof window?window.getComputedStyle:void 0)||globalThis.getComputedStyle,u=(void 0!==l?l.atob:void 0)||("undefined"!=typeof window?window.atob:void 0)||globalThis.atob;function a(e,r){let t=d.impl.util.getWindow(e);var n=r=r||{};void 0===n.copyDefaultStyles?d.impl.options.copyDefaultStyles=s.copyDefaultStyles:d.impl.options.copyDefaultStyles=n.copyDefaultStyles,d.impl.options.imagePlaceholder=(void 0===n.imagePlaceholder?s:n).imagePlaceholder,d.impl.options.cacheBust=(void 0===n.cacheBust?s:n).cacheBust,d.impl.options.corsImg=(void 0===n.corsImg?s:n).corsImg,d.impl.options.useCredentials=(void 0===n.useCredentials?s:n).useCredentials,d.impl.options.useCredentialsFilters=(void 0===n.useCredentialsFilters?s:n).useCredentialsFilters,d.impl.options.httpTimeout=(void 0===n.httpTimeout?s:n).httpTimeout,d.impl.options.styleCaching=(void 0===n.styleCaching?s:n).styleCaching;let i=[];return Promise.resolve(e).then(function(e){if(e.nodeType===m)return e;var t=e,n=e.parentNode,o=document.createElement("span");return n.replaceChild(o,t),o.append(e),i.push({parent:n,child:t,wrapper:o}),o}).then(function(e){return function l(t,s,r,u){let e=s.filter;if(t===p||f.isHTMLScriptElement(t)||f.isHTMLStyleElement(t)||f.isHTMLLinkElement(t)||null!==r&&e&&!e(t))return Promise.resolve();return Promise.resolve(t).then(n).then(o).then(function(e){return c(e,a(t))}).then(i).then(function(e){return d(e,t)});function n(e){return f.isHTMLCanvasElement(e)?f.makeImage(e.toDataURL()):e.cloneNode(!1)}function o(e){return s.adjustClonedNode&&s.adjustClonedNode(t,e,!1),Promise.resolve(e)}function i(e){return s.adjustClonedNode&&s.adjustClonedNode(t,e,!0),Promise.resolve(e)}function a(e){return f.isElementHostForOpenShadowRoot(e)?e.shadowRoot:e}function c(n,e){let o=t(e),r=Promise.resolve();if(0!==o.length){let t=h(i(e));f.asArray(o).forEach(function(e){r=r.then(function(){return l(e,s,t,u).then(function(e){e&&n.appendChild(e)})})})}return r.then(function(){return n});function i(e){return f.isShadowRoot(e)?e.host:e}function t(t){if(f.isShadowSlotElement(t)){let e=t.assignedNodes();if(e&&0<e.length)return e}return t.childNodes}}function d(u,a){return!f.isElement(u)||f.isShadowSlotElement(a)?Promise.resolve(u):Promise.resolve().then(e).then(t).then(n).then(o).then(function(){return u});function e(){function o(e,t){t.font=e.font,t.fontFamily=e.fontFamily,t.fontFeatureSettings=e.fontFeatureSettings,t.fontKerning=e.fontKerning,t.fontSize=e.fontSize,t.fontStretch=e.fontStretch,t.fontStyle=e.fontStyle,t.fontVariant=e.fontVariant,t.fontVariantCaps=e.fontVariantCaps,t.fontVariantEastAsian=e.fontVariantEastAsian,t.fontVariantLigatures=e.fontVariantLigatures,t.fontVariantNumeric=e.fontVariantNumeric,t.fontVariationSettings=e.fontVariationSettings,t.fontWeight=e.fontWeight}function e(e,t){let n=h(e);n.cssText?(t.style.cssText=n.cssText,o(n,t.style)):(y(s,e,n,r,t),null===r&&(["inset-block","inset-block-start","inset-block-end"].forEach(e=>t.style.removeProperty(e)),["left","right","top","bottom"].forEach(e=>{t.style.getPropertyValue(e)&&t.style.setProperty(e,"0px")})))}e(a,u)}function t(){let s=f.uid();function t(r){let i=h(a,r),l=i.getPropertyValue("content");if(""!==l&&"none"!==l){let e=u.getAttribute("class")||"",t=(u.setAttribute("class",e+" "+s),document.createElement("style"));function n(){let e=`.${s}:`+r,t=(i.cssText?n:o)();return document.createTextNode(e+`{${t}}`);function n(){return`${i.cssText} content: ${l};`}function o(){let e=f.asArray(i).map(t).join("; ");return e+";";function t(e){let t=i.getPropertyValue(e),n=i.getPropertyPriority(e)?" !important":"";return e+": "+t+n}}}t.appendChild(n()),u.appendChild(t)}}[":before",":after"].forEach(function(e){t(e)})}function n(){f.isHTMLTextAreaElement(a)&&(u.innerHTML=a.value),f.isHTMLInputElement(a)&&u.setAttribute("value",a.value)}function o(){f.isSVGElement(u)&&(u.setAttribute("xmlns","http://www.w3.org/2000/svg"),f.isSVGRectElement(u))&&["width","height"].forEach(function(e){let t=u.getAttribute(e);t&&u.style.setProperty(e,t)})}}}(e,r,null,t)}).then(r.disableEmbedFonts?Promise.resolve(e):c).then(g).then(function(t){r.bgcolor&&(t.style.backgroundColor=r.bgcolor);r.width&&(t.style.width=r.width+"px");r.height&&(t.style.height=r.height+"px");r.style&&Object.keys(r.style).forEach(function(e){t.style[e]=r.style[e]});let e=null;"function"==typeof r.onclone&&(e=r.onclone(t));return Promise.resolve(e).then(function(){return t})}).then(function(e){let n=r.width||f.width(e),o=r.height||f.height(e);return Promise.resolve(e).then(function(e){return e.setAttribute("xmlns","http://www.w3.org/1999/xhtml"),(new XMLSerializer).serializeToString(e)}).then(f.escapeXhtml).then(function(e){var t=(f.isDimensionMissing(n)?' width="100%"':` width="${n}"`)+(f.isDimensionMissing(o)?' height="100%"':` height="${o}"`);return`<svg xmlns="http://www.w3.org/2000/svg"${(f.isDimensionMissing(n)?"":` width="${n}"`)+(f.isDimensionMissing(o)?"":` height="${o}"`)}><foreignObject${t}>${e}</foreignObject></svg>`}).then(function(e){return"data:image/svg+xml;charset=utf-8,"+e})}).then(function(e){for(;0<i.length;){var t=i.pop();t.parent.replaceChild(t.child,t.wrapper)}return e}).then(function(e){return d.impl.urlCache=[],(()=>{p&&(document.body.removeChild(p),p=null),v&&clearTimeout(v),v=setTimeout(()=>{v=null,w={}},2e4)})(),e})}function i(r,i){return a(r,i=i||{}).then(f.makeImage).then(function(e){var t="number"!=typeof i.scale?1:i.scale,n=((e,t)=>{let n=i.width||f.width(e),o=i.height||f.height(e);return f.isDimensionMissing(n)&&(n=f.isDimensionMissing(o)?300:2*o),f.isDimensionMissing(o)&&(o=n/2),(e=document.createElement("canvas")).width=n*t,e.height=o*t,i.bgcolor&&((t=e.getContext("2d")).fillStyle=i.bgcolor,t.fillRect(0,0,e.width,e.height)),e})(r,t),o=n.getContext("2d");return o.msImageSmoothingEnabled=!1,o.imageSmoothingEnabled=!1,e&&(o.scale(t,t),o.drawImage(e,0,0)),n})}let p=null;function c(n){return e.resolveAll().then(function(e){var t;return""!==e&&(t=document.createElement("style"),n.appendChild(t),t.appendChild(document.createTextNode(e))),n})}function g(e){return n.inlineAll(e).then(function(){return e})}function y(i,l,s,u,e){let a=d.impl.options.copyDefaultStyles?((t,e)=>{var n,o=(e=>("relaxed"!==t.styleCaching?e:e.filter((e,t,n)=>0===t||t===n.length-1)).join(">"))(e=(e=>{var t=[];do{if(e.nodeType===m){var n=e.tagName;if(t.push(n),E.includes(n))break}}while(e=e.parentNode);return t})(e));{if(w[o])return w[o];e=((e,t)=>{let n=e.body;do{var o=t.pop(),o=e.createElement(o);n.appendChild(o),n=o}while(0<t.length);return n.textContent="​",n})((n=(()=>{if(p)return p.contentWindow;t=document.characterSet||"UTF-8",e=(e=document.doctype)?(`<!DOCTYPE ${s(e.name)} ${s(e.publicId)} `+s(e.systemId)).trim()+">":"",(p=document.createElement("iframe")).id="domtoimage-sandbox-"+f.uid(),p.style.visibility="hidden",p.style.position="fixed",document.body.appendChild(p);var e,t,n=p,o="domtoimage-sandbox";try{return n.contentWindow.document.write(e+`<html><head><meta charset='${t}'><title>${o}</title></head><body></body></html>`),n.contentWindow}catch(e){}var r=document.createElement("meta");r.setAttribute("charset",t);try{var i=document.implementation.createHTMLDocument(o),l=(i.head.appendChild(r),e+i.documentElement.outerHTML);return n.setAttribute("srcdoc",l),n.contentWindow}catch(e){}return n.contentDocument.head.appendChild(r),n.contentDocument.title=o,n.contentWindow;function s(e){var t;return e?((t=document.createElement("div")).innerText=e,t.innerHTML):""}})()).document,e),n=((e,t)=>{let n={},o=e.getComputedStyle(t);return f.asArray(o).forEach(function(e){n[e]="width"===e||"height"===e?"auto":o.getPropertyValue(e)}),n})(n,e);var r=e;do{var i=r.parentElement;null!==i&&i.removeChild(r),r=i}while(r&&"BODY"!==r.tagName);return w[o]=n}})(i,l):{},c=e.style;f.asArray(s).forEach(function(e){var t,n,o,r;i.filterStyles&&!i.filterStyles(l,e)||(n=s.getPropertyValue(e),o=a[e],t=u?u.getPropertyValue(e):void 0,c.getPropertyValue(e))||(n!==o||u&&n!==t)&&(o=s.getPropertyPriority(e),t=c,n=n,o=o,r=0<=["background-clip"].indexOf(e=e),o?(t.setProperty(e,n,o),r&&t.setProperty("-webkit-"+e,n,o)):(t.setProperty(e,n),r&&t.setProperty("-webkit-"+e,n)))})}let v=null,w={},E=["ADDRESS","ARTICLE","ASIDE","BLOCKQUOTE","DETAILS","DIALOG","DD","DIV","DL","DT","FIELDSET","FIGCAPTION","FIGURE","FOOTER","FORM","H1","H2","H3","H4","H5","H6","HEADER","HGROUP","HR","LI","MAIN","NAV","OL","P","PRE","SECTION","SVG","TABLE","UL","math","svg","BODY","HEAD","HTML"]})(this);
 //# sourceMappingURL=dom-to-image-more.min.js.map
 
 /***/ }),
@@ -52427,7 +52669,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   length: () => (/* binding */ length),
 /* harmony export */   map: () => (/* binding */ map),
 /* harmony export */   size: () => (/* binding */ size),
-/* harmony export */   some: () => (/* binding */ some)
+/* harmony export */   some: () => (/* binding */ some),
+/* harmony export */   values: () => (/* binding */ values)
 /* harmony export */ });
 /**
  * Utility functions for working with EcmaScript objects.
@@ -52449,6 +52692,13 @@ const assign = Object.assign
  * @param {Object<string,any>} obj
  */
 const keys = Object.keys
+
+/**
+ * @template V
+ * @param {{[key:string]: V}} obj
+ * @return {Array<V>}
+ */
+const values = Object.values
 
 /**
  * @template V
@@ -62316,7 +62566,7 @@ class ToolManager {
         if (!tool)
             return;
         const interactors = [];
-        let target = e.target;
+        let target = e.closest(Element);
         while (target) {
             if (typeof target["interact"] === "function" && typeof target["propagatesUp"] === "function") {
                 interactors.push(target);

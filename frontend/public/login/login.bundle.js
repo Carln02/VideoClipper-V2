@@ -485,10 +485,21 @@ class RequestHandler {
             if (request.readyState !== 4)
                 return;
             if (request.status < 200 || request.status >= 300) {
-                onFailure(request.responseText);
+                onFailure(request.response);
                 return;
             }
-            parse ? onSuccess(JSON.parse(request.responseText)) : onSuccess(request.response);
+            if (parse) {
+                try {
+                    onSuccess(typeof request.response === "string"
+                        ? JSON.parse(request.response)
+                        : JSON.parse(new TextDecoder().decode(request.response)));
+                }
+                catch (err) {
+                    onFailure("Failed to parse JSON: " + err.message);
+                }
+            }
+            else
+                onSuccess(request.response);
         };
         request.open(method, url, true);
         if (!(body instanceof FormData)) {
@@ -5399,7 +5410,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   length: () => (/* binding */ length),
 /* harmony export */   map: () => (/* binding */ map),
 /* harmony export */   size: () => (/* binding */ size),
-/* harmony export */   some: () => (/* binding */ some)
+/* harmony export */   some: () => (/* binding */ some),
+/* harmony export */   values: () => (/* binding */ values)
 /* harmony export */ });
 /**
  * Utility functions for working with EcmaScript objects.
@@ -5421,6 +5433,13 @@ const assign = Object.assign
  * @param {Object<string,any>} obj
  */
 const keys = Object.keys
+
+/**
+ * @template V
+ * @param {{[key:string]: V}} obj
+ * @return {Array<V>}
+ */
+const values = Object.values
 
 /**
  * @template V
@@ -12832,7 +12851,7 @@ class ToolManager {
         if (!tool)
             return;
         const interactors = [];
-        let target = e.target;
+        let target = e.closest(Element);
         while (target) {
             if (typeof target["interact"] === "function" && typeof target["propagatesUp"] === "function") {
                 interactors.push(target);
