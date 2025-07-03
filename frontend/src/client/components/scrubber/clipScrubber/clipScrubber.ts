@@ -23,7 +23,7 @@ export class ClipScrubber extends Scrubber {
 
         if (!ClipScrubber.markingMenu) {
             ClipScrubber.markingMenu = new ScrubberMarkingMenu({scrubber: this});
-            this.director.canvas.content.addChild(ClipScrubber.markingMenu);
+            this.director.addChild(ClipScrubber.markingMenu);
         }
 
         if (properties.initialize) this.initializeUI();
@@ -46,10 +46,10 @@ export class ClipScrubber extends Scrubber {
         ClipScrubber.markingMenu.attachTo(this.markingMenuHandle,
             (e: TurboEvent) => {
                 ClipScrubber.markingMenu.scrubber = this;
-                ClipScrubber.markingMenu.show(true, this.scaled ? e.scaledPosition : e.position);
+                ClipScrubber.markingMenu.show(true, e.position);
             }, (e: TurboDragEvent) => {
                 ClipScrubber.markingMenu.scrubber = this;
-                ClipScrubber.markingMenu.show(undefined, this.scaled ? e.scaledOrigins.first : e.origins.first);
+                ClipScrubber.markingMenu.show(undefined, e.origins.first);
             });
     }
 }

@@ -4,6 +4,7 @@ import {
     auto,
     DefaultEventName,
     div,
+    Direction,
     flexRowCenter,
     icon,
     p,
@@ -29,6 +30,7 @@ export class TimelineView<
 
     public initialize() {
         super.initialize();
+         this.scrubber.orientation = this.model.orientation === Direction.horizontal ? Direction.vertical : Direction.horizontal;
         this.emitter.fire("totalDurationChanged");
     }
 
@@ -94,6 +96,10 @@ export class TimelineView<
 
         this.emitter.add("totalDurationChanged", () => {
             this.totalDurationText.textContent = formatMMSS(this.model.totalDuration);
+        });
+
+        this.emitter.add("orientationChanged", (value: Direction) => {
+            this.scrubber.orientation = value === Direction.horizontal ? Direction.vertical : Direction.horizontal;
         });
     }
 

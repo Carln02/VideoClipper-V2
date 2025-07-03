@@ -16,12 +16,14 @@ export class ScrubberMarkingMenu extends TurboMarkingMenu {
     }
 
     public constructor(properties: TurboMarkingMenuProperties) {
-        if (!properties.semiMinor) properties.semiMinor = 40;
-        if (!properties.semiMajor) properties.semiMajor = 40;
         super(properties);
         this.addClass("turbo-marking-menu");
 
         this.scrubber = properties.scrubber;
+
+        if (!properties.semiMinor) this.hasClass("marking-menu-v") ? properties.semiMinor = 40 : properties.semiMinor = 60;
+        if (!properties.semiMajor) properties.semiMajor = 40;
+
         this.onSelect = () => this.show(false);
         this.initializeEntries();
     }

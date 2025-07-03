@@ -18,8 +18,6 @@ export class Scrubber extends VcComponent<any, any, any, Project> {
 
     public scaled: boolean = false;
 
-    public orientation: Direction;
-
     //Whether it is currently scrubbing (fired by the user's action)
     private scrubbing: boolean = false;
 
@@ -30,9 +28,6 @@ export class Scrubber extends VcComponent<any, any, any, Project> {
     public constructor(properties: ScrubberProperties = {}, orientation: Direction = Direction.vertical) {
         super(properties);
         this.addClass("vc-scrubber");
-
-        this.orientation = orientation;
-        this.orientation == Direction.vertical ? this.addClass("vc-scrubber-v") : this.addClass("vc-scrubber-h");
 
         this.timeline = properties.timeline;
         this.scaled = properties.scaled ?? true;
@@ -74,5 +69,11 @@ export class Scrubber extends VcComponent<any, any, any, Project> {
             this.style.transform = `translate(0, calc(${value / basis}px - 50%))`;
         else
             this.style.transform = `translate(calc(${value / basis}px - 50%), 0)`;
+    }
+
+    @auto()
+    public set orientation(value: Direction) {
+        this.toggleClass("vc-scrubber-v", value === Direction.vertical);
+        this.toggleClass("vc-scrubber-h", value === Direction.horizontal);
     }
 }

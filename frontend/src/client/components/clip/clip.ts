@@ -24,11 +24,16 @@ export class Clip<
 > extends VcComponent<View, SyncedClip, Model, Project>  {
     public readonly timeline: Timeline;
 
-    public orientation: Direction = Direction.horizontal;
+    public get orientation(): Direction {
+        return this.model.orientation;
+    }
+    public set orientation(value: Direction) {
+        this.model.orientation = value;
+    }
 
     public onMediaDataChanged: (clip: this) => void = () => {};
 
-    public constructor(properties: ClipProperties<View, SyncedClip, Model>, orientation: Direction = Direction.horizontal) {
+    public constructor(properties: ClipProperties<View, SyncedClip, Model>) {
         super({...properties, generate: false});
         this.timeline = properties.timeline;
         this.mvc.generate({
@@ -38,9 +43,6 @@ export class Clip<
             handlerConstructors: [ClipTextHandler],
             controllerConstructors: [ClipThumbnailController]
         });
-
-        this.orientation = orientation;
-        this.orientation == Direction.horizontal ? this.addClass("vc-clip-h") : this.addClass("vc-clip-v");
 
         this.mvc.emitter.add("mediaId", async (value: string) => {
             this.model.updateMediaData(await this.director.mediaHandler.getMedia(value));

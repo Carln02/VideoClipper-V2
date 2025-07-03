@@ -13,7 +13,7 @@ export class ShootingTimeline extends Timeline<ShootingTimelineView> {
     public readonly renderer: ClipRenderer;
 
     public constructor(properties: ShootingTimelineProperties) {
-        super({...properties, viewConstructor: ShootingTimelineView});
+        super({...properties, viewConstructor: ShootingTimelineView, orientation: Direction.vertical});
         this.addClass("vc-shooting-timeline");
         this.scaled = true;
         if (properties.drawerProperties) this.view.drawer.setProperties(properties.drawerProperties);
@@ -21,7 +21,6 @@ export class ShootingTimeline extends Timeline<ShootingTimelineView> {
 
     protected onClipAdded(syncedClip: SyncedClip, id: number, blockKey: number): Clip {
         const clip = super.onClipAdded(syncedClip, id, blockKey, {viewConstructor: ClipView});
-        clip.orientation = Direction.vertical;
         this.view.scrubberContainer.addChild(clip, this.model.clipHandler.convertBlockScopeToIndex(id + 1, blockKey));
         return clip;
     }

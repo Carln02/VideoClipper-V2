@@ -38,6 +38,7 @@ export class Timeline<
             initialize: false
         });
 
+        this.model.orientation = properties.orientation ?? Direction.horizontal;
         this.model.onCardAdded = (cardId) => this.director.getNode(cardId) as Card;
         this.model.onClipAdded = (syncedClip, id, blockKey) => this.onClipAdded(syncedClip, id, blockKey);
         this.model.onClipChanged = () => this.reloadTime();
@@ -49,6 +50,7 @@ export class Timeline<
 
     protected onClipAdded(syncedClip: SyncedClip, id: number, blockKey: number, clipProperties: ClipProperties = {}): Clip {
         const clip = new Clip({...clipProperties, timeline: this, director: this.director});
+        clip.orientation = this.model.orientation;
         const snapToNext = id === this.model.indexInfo?.closestIntersection;
 
         clip.onMediaDataChanged = (clip: Clip) => {

@@ -2,7 +2,7 @@ import {Clip} from "../clip/clip";
 import {YArray} from "../../../yManagement/yManagement.types";
 import {SyncedClip} from "../clip/clip.types";
 import {TimelineIndexInfo} from "./timeline.types";
-import {auto, trim} from "turbodombuilder";
+import {auto, Direction, trim} from "turbodombuilder";
 import {TimelineClipHandler} from "./timeline.clipHandler";
 import {TimelineTimeHandler} from "./timeline.timeHandler";
 import {YManagerModel} from "../../../yManagement/yModel/types/yManagerModel";
@@ -143,5 +143,9 @@ export class TimelineModel extends YManagerModel<SyncedClip, Clip, number, YArra
         return this.getHandler("time") as TimelineTimeHandler;
     }
 
-
+    @auto()
+    public set orientation(value: Direction) {
+        this.fireCallback("orientationChanged", value);
+        this.getAllComponents().forEach(component => component.orientation = value);
+    }
 }

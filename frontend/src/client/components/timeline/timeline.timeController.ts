@@ -22,9 +22,16 @@ export class TimelineTimeController extends TurboController<Timeline, TimelineVi
     }
 
     public getTimeFromPosition(e: TurboEvent): number {
-        let offsetPosition = e.position.x - this.view.scrubberContainer.getBoundingClientRect().left;
-        if (offsetPosition < 0) offsetPosition = 0;
-        if (offsetPosition > this.element.width) offsetPosition = this.element.width;
-        return offsetPosition / this.element.width * this.model.totalDuration;
+        if( this.model.orientation === "horizontal" ) {
+            let offsetPosition = e.position.x - this.view.scrubberContainer.getBoundingClientRect().left;
+            if (offsetPosition < 0) offsetPosition = 0;
+            if (offsetPosition > this.element.width) offsetPosition = this.element.width;
+            return offsetPosition / this.element.width * this.model.totalDuration;
+        } else {
+            let offsetPosition = e.position.y - this.view.scrubberContainer.getBoundingClientRect().top;
+            if (offsetPosition < 0) offsetPosition = 0;
+            if (offsetPosition > this.element.height) offsetPosition = this.element.height;
+            return offsetPosition / this.element.height * this.model.totalDuration;
+        }
     }
 }

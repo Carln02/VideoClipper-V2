@@ -14,7 +14,7 @@ export class ClipView extends TurboView<Clip, ClipModel> {
      * @description Reloads the size of the clip element and thus, reloads as well the timeline.
      */
     protected reloadSize() {
-        this.element.setStyle(this.element.orientation == Direction.horizontal ? "width" : "height",
+        this.element.setStyle(this.model.orientation == Direction.horizontal ? "width" : "height",
             this.element.timeline?.pixelsPerSecondUnit * this.element.duration + "px");
         this.element.timeline.reloadTime();
     }
@@ -30,6 +30,12 @@ export class ClipView extends TurboView<Clip, ClipModel> {
         this.emitter.add("thumbnail", (value: string) => {
             this.thumbnailImage.show(true);
             this.thumbnailImage.src = value;
+        });
+
+        this.emitter.add("orientation", (value: Direction) => {
+            this.element.toggleClass("vc-clip-h", value === Direction.horizontal);
+            this.element.toggleClass("vc-clip-v", value === Direction.vertical);
+            this.reloadSize();
         });
     }
 

@@ -90,7 +90,7 @@
 
 /* Marking menu */
 .vc-clip-scrubber.vc-scrubber-h > div:last-child {
-    left: -1.6em;
+    right : -1.6em;
     width: 1em;
     height: 1em;
 

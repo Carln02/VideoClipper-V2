@@ -4,6 +4,7 @@ import {ClipTextHandler} from "./clip.textHandler";
 import { YArray } from "../../../yManagement/yManagement.types";
 import { SyncedText } from "../textElement/textElement.types";
 import { SyncedMedia } from "../../handlers/mediaHandler/mediaHandler.types";
+import { auto, Direction } from "turbodombuilder";
 
 export class ClipModel extends YComponentModel {
     private _metadata: SyncedMedia;
@@ -129,5 +130,10 @@ export class ClipModel extends YComponentModel {
 
     public get textHandler(): ClipTextHandler {
         return this.getHandler("text") as ClipTextHandler;
+    }
+    
+    @auto()
+    public set orientation(value: Direction) {
+        this.fireCallback("orientationChanged", value);
     }
 }
