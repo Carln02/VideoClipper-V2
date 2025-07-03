@@ -13,10 +13,10 @@ export class YUtilities {
      * @param {object} data - The initial data to populate the YMap with.
      * @returns {YMap} A new YMap instance.
      */
-    public static createYMap<DataType = object>(data: DataType): YMap {
+    public static createYMap<DataType = object>(data: DataType): YMap & DataType {
         const map = new YMap();
         for (const [key, value] of Object.entries(data)) map.set(key, value);
-        return map;
+        return map as YMap & DataType;
     }
 
     /**

@@ -3535,7 +3535,7 @@ class FlowModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
         this.lastViewBoxUpdate = 0;
         this.lastViewBoxValues = new turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.Point();
         this.branchesModel = new _flow_branchesModel__WEBPACK_IMPORTED_MODULE_1__.FlowBranchesModel();
-        this.tagsModel = new _flow_tagsModel__WEBPACK_IMPORTED_MODULE_3__.FlowTagsModel();
+        this.selectorModel = new _flow_tagsModel__WEBPACK_IMPORTED_MODULE_3__.FlowTagsModel();
     }
     get data() {
         return super.data;
@@ -3543,9 +3543,9 @@ class FlowModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
     set data(value) {
         super.data = value;
         this.branchesModel.data = this.getData("branches");
-        this.branchesModel.onAdded = (data) => this.onFlowBranchAdded(data);
-        this.tagsModel.data = this.tagsData;
-        this.tagsModel.onAdded = (data) => this.onFlowTagAdded(data);
+        this.branchesModel.onAdded = (data) => this.onFlowEntryAdded(data);
+        this.selectorModel.data = this.tagsData;
+        this.selectorModel.onAdded = (data) => this.onFlowSelectorAdded(data);
         _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_4__.YUtilities.deepObserveAll(this.data, () => this.fireCallback("__redraw"), "branches", "entries");
     }
     get currentBranchId() {
@@ -3592,7 +3592,7 @@ class FlowModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
         return this.branchesModel.getAllComponents();
     }
     get tags() {
-        return this.tagsModel.getAllComponents();
+        return this.selectorModel.getAllComponents();
     }
     get currentBranch() {
         return this.branchesModel.getInstance(this.currentBranchId);

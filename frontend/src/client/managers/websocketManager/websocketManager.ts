@@ -32,23 +32,30 @@ export class WebsocketManager {
         window.addEventListener("offline", this.handleDisconnect, {once: true});
 
         const tempProvider = new WebsocketProvider(this.serverUrl, this.room, this.ydoc, websocketOptions.options);
-        this.provider = new WebsocketProvider(this.serverUrl, this.room, this.ydoc, websocketOptions.options);
-        if (websocketOptions.debug) this.setupDebug();
 
-        this.provider.on("status", (event: { status: string }) => {
-            if (event.status === "disconnected" && this.onDisconnect) this.onDisconnect.fire();
-        });
+        requestAnimationFrame(() => {
+            this.provider = new WebsocketProvider(this.serverUrl, this.room, this.ydoc, websocketOptions.options);
+            if (websocketOptions.debug) this.setupDebug();
 
-        this.provider.on("sync", (isSynced: boolean) => {
-            if (!isSynced) return;
-            tempProvider.disconnect();
-            this.onConnect.fire();
-        });
+            this.provider.on("status", (event: { status: string }) => {
+                if (event.status === "disconnected" && this.onDisconnect) this.onDisconnect.fire();
+            });
 
-        if (this.provider.synced) requestAnimationFrame(() => {
-            tempProvider.disconnect();
-            this.onConnect.fire();
-        });
+            tempProvider.on("sync", (isSynced: boolean) => {
+               console.log(isSynced);
+            });
+
+            this.provider.on("sync", (isSynced: boolean) => {
+                if (!isSynced) return;
+                tempProvider.disconnect();
+                this.onConnect.fire();
+            });
+
+            if (this.provider.synced) requestAnimationFrame(() => {
+                tempProvider.disconnect();
+                this.onConnect.fire();
+            });
+        })
     }
 
     private get defaultUrl(): string {

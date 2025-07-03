@@ -10,3 +10,11 @@ export function randomColor(saturation: number | [number, number] = [50, 70], li
     if (typeof lightness != "number" && lightness.length >= 2) lightness = randomFromRange(lightness[0], lightness[1]);
     return "hsl(" + Math.random() * 360 + " " + saturation + " " + lightness + ")";
 }
+
+export function randomString(length: number = 12): string {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let result = "";
+
+    for (let i = 0; i < length; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+    return result;
+}

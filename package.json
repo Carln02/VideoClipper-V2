@@ -39,7 +39,7 @@
         "passport": "^0.7.0",
         "passport-google-oauth20": "^2.0.0",
         "redis": "^5.5.6",
-        "turbodombuilder": "0.8.96",
+        "turbodombuilder": "0.8.99",
         "webm-duration-fix": "^1.0.4",
         "ws": "^8.18.1",
         "y-indexeddb": "^9.0.12",

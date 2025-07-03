@@ -2,8 +2,7 @@ import {define} from "turbodombuilder";
 import {Flow} from "../../components/flow/flow";
 import {VcTool} from "../tool/tool";
 import {ToolType} from "../../directors/project/project.types";
-
-//TODO WITH JUNE
+import {FlowEntry} from "../../components/flowEntry/flowEntry";
 
 /**
  * @description Tool that handles creating flows and connecting nodes
@@ -14,6 +13,8 @@ export class ConnectionTool extends VcTool<ToolType> {
     private _currentFlowId: string;
 
     public lastNodeId: string = null;
+
+    public color: string = "#439482";
 
     //Interval indicating the frequency at which points are permanently added to the flow
     //A higher value will increase the smoothing effect of the flow
@@ -33,5 +34,9 @@ export class ConnectionTool extends VcTool<ToolType> {
     public get currentFlow(): Flow {
         if (!this._currentFlow) this._currentFlow = this.director.getFlow(this.currentFlowId);
         return this._currentFlow;
+    }
+
+    public get currentEntry(): FlowEntry {
+        return this.currentFlow?.currentEntry;
     }
 }

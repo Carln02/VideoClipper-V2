@@ -1,20 +1,19 @@
 import {define, Point} from "turbodombuilder";
 import "./flow.css";
-import {FlowPoint, SyncedFlow} from "./flow.types";
+import {SyncedFlow} from "./flow.types";
 import {FlowView} from "./flow.view";
 import {FlowModel} from "./flow.model";
-import {SyncedFlowBranch} from "../flowBranch/flowBranch.types";
-import {FlowBranchesHandler} from "./flow.branchesHandler";
-import {FlowSearchHandler} from "./flow.searchHandler";
-import {FlowBranch} from "../flowBranch/flowBranch";
-import {FlowCleaningHandler} from "./flow.cleaningHandler";
 import {VcComponent} from "../component/component";
 import {VcComponentProperties} from "../component/component.types";
 import {Project} from "../../directors/project/project";
 import {FlowIntersectionHandler} from "./flow.intersectionHandler";
 import {YMap} from "../../../yManagement/yManagement.types";
 import {YUtilities} from "../../../yManagement/yUtilities";
-import {FlowTag} from "../flowTag/flowTag";
+import {FlowSelector} from "../flowSelector/flowSelector";
+import {FlowEntry} from "../flowEntry/flowEntry";
+import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
+import {FlowEntryHandler} from "./flow.entryHandler";
+import {FlowUpdateHandler} from "./flow.updateHandler";
 
 /**
  * @description A reactiveComponent that represents a flow connecting cards
@@ -26,26 +25,25 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
         this.mvc.generate({
             viewConstructor: FlowView,
             modelConstructor: FlowModel,
-            handlerConstructors: [FlowBranchesHandler, FlowSearchHandler, FlowCleaningHandler, FlowIntersectionHandler],
+            handlerConstructors: [FlowIntersectionHandler, FlowEntryHandler, FlowUpdateHandler],
             data: properties.data,
             initialize: false
         });
 
-        this.model.onFlowBranchAdded = (data) => new FlowBranch({flow: this, data: data});
-        this.model.onFlowTagAdded = (data) => new FlowTag({flow: this, data: data, director: this.director});
+        this.model.onFlowEntryAdded = (data) => new FlowEntry({flow: this, data: data as YMap});
+        this.model.onFlowSelectorAdded = (data) => new FlowSelector({flow: this, data: data, director: this.director});
         this.mvc.initialize();
-        console.log(this.model.color)
     }
 
     public static createData(data?: SyncedFlow): YMap & SyncedFlow {
         if (!data) data = {};
-        if (!data.branches) data.branches = {"0": undefined};
+        if (!data.entries) data.entries = {};
         if (!data.tags) data.tags = [undefined];
         if (!data.defaultName) data.defaultName = "Flow";
 
-        Object.entries(data.branches).forEach(([key, branch]) => data.branches[key] = FlowBranch.createData(branch));
-        data.branches = YUtilities.createYMap(data.branches);
-        data.tags = YUtilities.createYArray(data.tags.map(tag => FlowTag.createData(tag)));
+        Object.entries(data.entries).forEach(([key, branch]) => data.entries[key] = FlowEntry.createData(branch));
+        data.entries = YUtilities.createYMap(data.entries);
+        data.tags = YUtilities.createYArray(data.tags.map(tag => FlowSelector.createData(tag)));
 
         return YUtilities.createYMap(data);
     }
@@ -58,74 +56,101 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
         return this.model.color;
     }
 
-    public get branches(): FlowBranch[] {
-        return this.model.branches;
+    public get defaultName(): string {
+        return this.model.defaultName;
     }
 
-    public get currentBranch(): FlowBranch {
-        return this.model.currentBranch;
+    public get entries(): FlowEntry[] {
+        return this.model.entries;
     }
 
-    public get currentBranchData(): SyncedFlowBranch {
-        return this.currentBranch.data;
+    public get currentEntry(): FlowEntry {
+        return this.model.currentEntry;
     }
 
-    public getBranchById(id: string): FlowBranch {
-        return this.model.branchHandler.getBranchById(id);
+    public get currentEntryData(): SyncedFlowEntry & YMap {
+        return this.currentEntry.data;
     }
 
-    /**
-     * @description Finds the last flow entry inside the given node's ID
-     * @param nodeId
-     */
-    public findNodeEntry(nodeId: string): FlowPoint {
-        return this.model.searchHandler.findNodeEntry(nodeId);
+    public getEntries(id: string): FlowEntry[] {
+        return this.model.entryHandler.getEntries(id);
     }
 
-    /**
-     * @description Finds the last flow entry inside the given node's ID
-     * @param nodeId
-     */
-    public findNodeEntries(nodeId: string): FlowPoint[] {
-        return this.model.searchHandler.findNodeEntries(nodeId);
+    // public getEntry(id: string): FlowEntry {
+    //     return this.model.entryHandler.getEntry(id);
+    // }
+
+    public createEntry(startNodeId: string): SyncedFlowEntry & YMap {
+        this.model.currentEntryId = startNodeId;
+        return this.model.entryHandler.createEntry({startNodeId: startNodeId, points: []});
     }
 
-    /**
-     * @description Finds the closest point in the flow to the given point
-     * @param point
-     */
-    public findClosestPoint(point: Point): FlowPoint {
-        return this.model.searchHandler.findClosestPoint(point);
+    public removeEntry(entry: FlowEntry): void {
+        return this.model.entryHandler.removeEntry(entry);
     }
+
+    public hasNode(id: string): boolean {
+        if (this.getEntries(id)?.length > 0) return true;
+        for (const entry of this.entries) {
+            if (entry.endNodeId === id) return true;
+        }
+        return false;
+    }
+
+    public createSelector(nodeId: string) {
+        return YUtilities.addInYArray(FlowSelector.createData({nodeId: nodeId, paths: []}), this.model.selectorsData);
+    }
+
+    // /**
+    //  * @description Finds the last flow entry inside the given node's ID
+    //  * @param nodeId
+    //  */
+    // public findNodeEntry(nodeId: string): FlowPoint {
+    //     return this.model.searchHandler.findNodeEntry(nodeId);
+    // }
+    //
+    // /**
+    //  * @description Finds the last flow entry inside the given node's ID
+    //  * @param nodeId
+    //  */
+    // public findNodeEntries(nodeId: string): FlowPoint[] {
+    //     return this.model.searchHandler.findNodeEntries(nodeId);
+    // }
+    //
+    // /**
+    //  * @description Finds the closest point in the flow to the given point
+    //  * @param point
+    //  */
+    // public findClosestPoint(point: Point): FlowPoint {
+    //     return this.model.searchHandler.findClosestPoint(point);
+    // }
 
     /**
      * @description Adds the provided point to the flow with the given ID. The node ID indicates the ID of the node
      * the point is in (or null), and isTemporary indicates whether the point is temporarily added to the flow as
      * part of user feedback (to not add it to the synced data).
      * @param p
-     * @param nodeId
      * @param isTemporary
      */
-    public addPoint(p: Point, nodeId?: string, isTemporary: boolean = false) {
-        this.model.currentBranch?.addPoint(p, nodeId, isTemporary);
+    public addPoint(p: Point, isTemporary: boolean = false) {
+        this.model.currentEntry?.addPoint(p, isTemporary);
         this.mvc.emitter.fire("__redraw");
     }
 
-    public async branchAtPoint(p: FlowPoint, branchPosition?: Point, nodeId?: string,
-                         createThirdBranch: boolean = true, isOverwritingSibling: boolean = false) {
-        return await this.model.branchHandler.branchAtPoint(p, branchPosition, nodeId, createThirdBranch, isOverwritingSibling);
-    }
+    // public async branchAtPoint(p: FlowPoint, branchPosition?: Point, nodeId?: string,
+    //                      createThirdBranch: boolean = true, isOverwritingSibling: boolean = false) {
+    //     return await this.model.branchHandler.branchAtPoint(p, branchPosition, nodeId, createThirdBranch, isOverwritingSibling);
+    // }
 
-    public endFlow() {
-        this.model.cleaningHandler.endFlow();
+    public updateAfterMovingNode(nodeId: string, deltaPosition: Point) {
+        return this.model.updateHandler.updateAfterMovingNode(nodeId, deltaPosition);
     }
 
     public updateOnDetachingNode(nodeId: string) {
-        this.model.branches.forEach(branch => branch.updateOnDetachingNode(nodeId));
-        this.model.cleaningHandler.removeUnnecessaryBranchesOrFlow();
+        this.model.updateHandler.updateOnDetachingNode(nodeId);
     }
 
-    public getPathsFromNode(nodeId: string): string[][] {
-        return this.model.branchHandler.getPathsFromNode(nodeId);
-    }
+    // public getPathsFromNode(nodeId: string): string[][] {
+    //     return this.model.branchHandler.getPathsFromNode(nodeId);
+    // }
 }

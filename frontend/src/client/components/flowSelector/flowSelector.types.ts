@@ -1,7 +1,7 @@
 import {YArray} from "../../../yManagement/yManagement.types";
 import {VcComponentProperties} from "../component/component.types";
-import {FlowTagView} from "./flowTag.view";
-import {FlowTagModel} from "./flowTag.model";
+import {FlowSelectorView} from "./flowSelector.view";
+import {FlowSelectorModel} from "./flowSelector.model";
 import {Flow} from "../flow/flow";
 import {SyncedFlowPath} from "../flowPath/flowPath.types";
 import {Project} from "../../directors/project/project";
@@ -10,11 +10,11 @@ import {Project} from "../../directors/project/project";
  * A flow tag might store a "nodeId" (as a root for traversal)
  * and "namedPaths" referencing branches.
  */
-export type SyncedFlowTag = {
+export type SyncedFlowSelector = {
     nodeId?: string;
     paths?: YArray<SyncedFlowPath> | SyncedFlowPath[];
 };
 
-export type FlowTagProperties = VcComponentProperties<FlowTagView, SyncedFlowTag, FlowTagModel, Project> & {
+export type FlowSelectorProperties = VcComponentProperties<FlowSelectorView, SyncedFlowSelector, FlowSelectorModel, Project> & {
     flow: Flow,
 };

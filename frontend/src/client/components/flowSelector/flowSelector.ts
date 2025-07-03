@@ -1,24 +1,26 @@
 import {define} from "turbodombuilder";
-import "./flowTag.css";
-import {FlowTagProperties, SyncedFlowTag} from "./flowTag.types";
+import "./flowSelector.css";
+import {FlowSelectorProperties, SyncedFlowSelector} from "./flowSelector.types";
 import {VcComponent} from "../component/component";
-import {FlowTagModel} from "./flowTag.model";
-import {FlowTagView} from "./flowTag.view";
+import {FlowSelectorModel} from "./flowSelector.model";
+import {FlowSelectorView} from "./flowSelector.view";
 import {Project} from "../../directors/project/project";
 import {YArray, YMap} from "../../../yManagement/yManagement.types";
 import {SyncedFlowPath} from "../flowPath/flowPath.types";
 import {FlowPath} from "../flowPath/flowPath";
 import {YUtilities} from "../../../yManagement/yUtilities";
 import {BranchingNode} from "../branchingNode/branchingNode";
+import {FlowSelectorPathHandler} from "./flowSelector.pathHandler";
 
-@define("vc-flow-tag")
-export class FlowTag extends VcComponent<FlowTagView, SyncedFlowTag, FlowTagModel, Project> {
-    public constructor(properties: FlowTagProperties) {
+@define("vc-flow-selector")
+export class FlowSelector extends VcComponent<FlowSelectorView, SyncedFlowSelector, FlowSelectorModel, Project> {
+    public constructor(properties: FlowSelectorProperties) {
         super(properties);
         this.mvc.generate({
-            viewConstructor: FlowTagView,
-            modelConstructor: FlowTagModel,
+            viewConstructor: FlowSelectorView,
+            modelConstructor: FlowSelectorModel,
             data: properties.data,
+            handlerConstructors: [FlowSelectorPathHandler],
             initialize: false
         });
 
@@ -27,12 +29,12 @@ export class FlowTag extends VcComponent<FlowTagView, SyncedFlowTag, FlowTagMode
         this.mvc.initialize();
     }
 
-    public static createData(data?: SyncedFlowTag): YMap & SyncedFlowTag {
+    public static createData(data?: SyncedFlowSelector): YMap & SyncedFlowSelector {
         if (!data) data = {};
         if (!data.nodeId) data.nodeId = "";
         if (!data.paths || data.paths.length === 0) data.paths = [undefined];
         data.paths = YUtilities.createYArray(data.paths.map(path => FlowPath.createData(path)));
-        return YUtilities.createYMap<SyncedFlowTag>(data);
+        return YUtilities.createYMap<SyncedFlowSelector>(data);
     }
 
     public get attachedNode(): BranchingNode {
@@ -47,9 +49,11 @@ export class FlowTag extends VcComponent<FlowTagView, SyncedFlowTag, FlowTagMode
         return this.model.pathsDataArray;
     }
 
-    public insertPath(pathData: YMap | SyncedFlowPath, index?: number) {
+    public insertPath(pathData: YMap & SyncedFlowPath, index?: number) {
         return this.model.insertPath(pathData, index);
     }
 
-
+    public updatePaths() {
+        this.model.pathHandler.updatePaths();
+    }
 }

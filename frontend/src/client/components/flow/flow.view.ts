@@ -35,8 +35,8 @@ export class FlowView extends TurboView<Flow, FlowModel> {
         if (Date.now() - this.model.lastViewBoxUpdate <= this.model.viewBoxUpdateRate) return;
         this.model.lastViewBoxUpdate = Date.now();
 
-        this.model.branches.forEach(branch => {
-            this.model.lastViewBoxValues = Point.max(this.model.lastViewBoxValues, branch.getMaxPoint());
+        this.model.entries.forEach(entry => {
+            this.model.lastViewBoxValues = Point.max(this.model.lastViewBoxValues, entry.getMaxPoint());
         });
 
         // Compute the dimensions by doubling the coordinates and adding the padding

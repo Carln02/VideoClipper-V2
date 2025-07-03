@@ -1,12 +1,13 @@
 import {Point, TurboView} from "turbodombuilder";
-import {FlowBranchModel} from "./flowBranch.model";
+import {FlowEntry} from "./flowEntry";
 import * as d3 from "d3";
-import {FlowBranch} from "./flowBranch";
+import {FlowEntryModel} from "./flowEntry.model";
 
-export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
+export class FlowEntryView extends TurboView<FlowEntry, FlowEntryModel> {
     public initialize() {
         super.initialize();
-        this.model.pathSelection = d3.select(this.element.element).append("path");
+        this.model.groupSelection = d3.select(this.element.element);
+        this.model.pathSelection = this.model.groupSelection.append("path");
         this.redraw();
     }
 
@@ -38,10 +39,11 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
      */
     private drawPath() {
         const points = this.model.points;
+        //TODO SUBSTRATE CONSTRAIN POINTS
         this.clearChevrons();
 
         if (points.length < 2) return;
-        const isOverwriting = this.model.isOverwriting;
+        // const isOverwriting = this.model.isOverwriting;
 
         //Generate the path data
         const lineGenerator = d3.line<Point>()
@@ -55,8 +57,8 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
         this.model.pathSelection
             .attr("class", "flow")
             .attr("d", pathData)
-            .attr("stroke-dasharray", isOverwriting ? "5, 5" : null)
-            .attr("opacity", isOverwriting ? 0.6 : 1)
+            // .attr("stroke-dasharray", isOverwriting ? "5, 5" : null)
+            .attr("opacity", 1)
             .attr("stroke", this.model.flow.color ?? "black")
             .attr("stroke-width", this.model.strokeWidth);
 
@@ -69,23 +71,21 @@ export class FlowBranchView extends TurboView<FlowBranch, FlowBranchModel> {
     }
 
     private drawChevrons() {
-        const isOverwriting = this.model.isOverwriting;
         const pathLength = this.model.path.getTotalLength();
 
-        for (let distance = this.model.chevronInterval; distance < pathLength; distance += this.model.chevronInterval) {
-            const point = this.model.path.getPointAtLength(distance);
-            const nextPoint = this.model.path.getPointAtLength(distance + 1);
-            //Compute angle
-            const angle = Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * (180 / Math.PI);
-            d3.select(this.element.element).append("path")
-                .attr("class", "chevron")
-                .attr("d", this.model.chevronShape)
-                .attr("transform", `translate(${point.x}, ${point.y}) rotate(${angle})`)
-                .attr("stroke", this.model.flow.color ?? "black")
-                .attr("stroke-linecap", "round")
-                .attr("stroke-linejoin", "round")
-                .attr("opacity", isOverwriting ? 0.6 : 1)
-                .attr("stroke-width", this.model.strokeWidth);
-        }
+        const point = this.model.path.getPointAtLength(pathLength / 2);
+        const nextPoint = this.model.path.getPointAtLength(pathLength / 2 + 1);
+        //Compute angle
+        const angle = Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * (180 / Math.PI);
+
+        this.model.groupSelection.append("path")
+            .attr("class", "chevron")
+            .attr("d", this.model.chevronShape)
+            .attr("transform", `translate(${point.x}, ${point.y}) rotate(${angle})`)
+            .attr("stroke", this.model.flow.color ?? "black")
+            .attr("stroke-linecap", "round")
+            .attr("stroke-linejoin", "round")
+            .attr("opacity", 1)
+            .attr("stroke-width", this.model.strokeWidth);
     }
 }

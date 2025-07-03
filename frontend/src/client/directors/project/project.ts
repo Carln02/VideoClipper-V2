@@ -2,7 +2,6 @@ import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {Card} from "../../components/card/card";
 import {auto, Coordinate, define, Point, ToolManager} from "turbodombuilder";
 import {Flow} from "../../components/flow/flow";
-import {FlowBranch} from "../../components/flowBranch/flowBranch";
 import {ToolPanel} from "../../panels/toolPanel/toolPanel";
 import {ShootingPanel} from "../../panels/shootingPanel/shootingPanel";
 import {TextPanel} from "../../panels/textPanel/textPanel";
@@ -139,10 +138,6 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
         this.model.media.set(id, YUtilities.createYMap(media) as SyncedMedia);
     }
 
-    public forEachBranch(callback: (branch: FlowBranch, flow: Flow) => void) {
-        this.flows.forEach(flow => flow.branches.forEach(branch => callback(branch, flow)));
-    }
-
     //CARDS
 
     public async createNewNode(position: Coordinate, id?: string): Promise<string> {
@@ -164,20 +159,12 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
         this.model.incrementFlowsCount();
         const defaultName = "Flow " + this.model.flowsCount;
         return await YUtilities.addInYMap(Flow.createData({
-            branches: {
-                "0": {
-                    entries: [{
-                        startNodeId: nodeId,
-                        endNodeId: nodeId,
-                        points: [position]
-                    }],
-                }
-            },
+            entries: {},
             tags: [{
                 nodeId: nodeId,
                 paths: [{
                     name: defaultName + " - 1",
-                    branchIds: ["0"]
+                    nodeIds: [nodeId]
                 }]
             }],
             defaultName: defaultName,
