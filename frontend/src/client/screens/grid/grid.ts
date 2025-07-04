@@ -8,6 +8,8 @@ import {ProjectScreens, Substrate, ToolType} from "../../directors/project/proje
 import {ShootTool} from "../../tools/shoot/shoot";
 import {NavigatorTool} from "../../tools/navigator/navigator";
 import {SelectionTool} from "../../tools/selection/selection";
+import {FlowEntry} from "../../components/flowEntry/flowEntry";
+import {Flow} from "../../components/flow/flow";
 
 @define("vc-grid")
 export class Grid extends VcComponent<any, any, any, Project> implements Substrate {
@@ -16,11 +18,15 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
 
     public readonly navigationManager: NavigationManager;
 
-    public gridElements: Array<Array<VcComponent>>;
-    public gridRoot : VcComponent;
+    public gridSize = [50,100];
 
-    public gridElementWidth : number;
-    public gridElementHeight : number;
+    public gridElements: string[][] = new Array(this.gridSize[0]).fill(false)
+                                    .map(() => new Array(this.gridSize[1]).fill(null)
+                                    ); //TODO dynamic?
+    public gridRoots : string[];
+
+    public gridElementWidth : number = 600;
+    public gridElementHeight : number = 600;
 
     //Main toolbar
     private readonly toolbar: Toolbar;
@@ -50,6 +56,8 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
         });
 
         this.initTools();
+
+        // this.initGrid();
     }
 
     public get toolManager(): ToolManager<ToolType> {
@@ -75,7 +83,7 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
         return this.navigationManager.scale;
     }
 
-    public addToGrid(x : number, y : number, element : VcComponent){
+    public addToGrid(x : number, y : number, element : string){
         this.gridElements[x][y] = element;
     }
 
@@ -87,6 +95,17 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
         return this.gridElements[x][y];
     }
 
+    public getGridPosition(element : string){
+        for(let i = 0; i < this.gridElements.length; i++){
+            for(let j = 0; j < this.gridElements[i].length; j++){
+                if(this.gridElements[i][j] === element){
+                    return new Point(i, j);
+                }
+            }
+        }
+        return new Point(-1, -1);
+    }
+
     public createConnection(x1 : number, y1 : number, x2 : number, y2 : number ){
         let element1 = this.gridElements[x1][y1];
         let element2 = this.gridElements[x2][y2];
@@ -94,34 +113,81 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
         console.log("creating connection from", element1, "to", element2); //TODO
     }
 
-    public updatePos(value : Coordinate, element : VcComponent){
-        let newValue = value;
+    public createConnectionRecursively(entry : FlowEntry, startNodePos ?: Point){
+        if(!startNodePos)  startNodePos = this.getGridPosition(entry.startNodeId);
+        if(this.getElement(startNodePos.x, startNodePos.y) !== entry.startNodeId) throw new Error("start node not in grid");
 
-        console.log("updating pos of", element, "to", newValue); //TODO
+        const endNodePos : Point = this.getNextBranchPos(startNodePos);
+        this.gridElements[endNodePos.x][endNodePos.y] = entry.endNodeId;
 
-        return newValue;
+
+        console.log(this.director.getNode(entry.startNodeId).title, this.director.getNode(entry.endNodeId).title);
+
+        this.director.getFlow(entry.flow.dataId).getEntries(entry.endNodeId)?.forEach(endEntry => {
+            this.createConnectionRecursively(endEntry, endNodePos);
+        });
     }
 
-    public updateGridView(){
-        //place the grid root at 0,0 then for each connection
+    public getNextBranchPos(value : Point){
+        if(!this.gridElements[value.x][value.y]) return value;
+        if(!this.gridElements[value.x][value.y +1]) return new Point(value.x, value.y + 1);
+        else return this.getNextBranchPos(new Point(value.x + 1, value.y));
     }
-    // public getNextPos(value: Point){
-    //     let x = value.x;
-    //     let y = value.y;
-    //     if(this.gridElements[x][y] === undefined){
-    //         return (value)
-    //     }
-    //     if (this.gridElements[x][y] !== undefined){
-    //         value = this.getNextPos(new Point(x+1, y));
-    //         value = this.getNextPos(new Point(x, y+1));
-    //     }
-    // }
+
+    public findRootNodes(flowID : string) : string[] {
+        let countEndNodes : Map<string, number> = new Map();
+        this.director.getFlow(flowID).getAllEntries().forEach(entry => {
+            countEndNodes.set(entry.startNodeId, 0);
+        });
+
+        // count the number of entries that end on each of the start nodes
+        this.director.getFlow(flowID).getAllEntries().forEach(entry => {
+            if(countEndNodes.has(entry.endNodeId))
+                countEndNodes.set(entry.endNodeId, countEndNodes.get(entry.endNodeId) + 1);
+        });
+
+        //get min value from the countEndNodes
+        let minValue = Math.min(...Array.from(countEndNodes.values()));
+
+        if (minValue > 0) console.warn("cycle detected");
+
+        // root nodes are the nodes with the min value
+        let rootNodes : string[] = [];
+        countEndNodes.forEach((value, key) => {
+            if(value === minValue) rootNodes.push(key);
+        });
+
+        return rootNodes;
+    }
+
+    // TODO handle multiple roots
+    public initGrid(flow : Flow){
+        this.gridRoots = this.findRootNodes(flow.dataId);
+        this.gridElements[0][0] = this.gridRoots[0];
+        let rootEntries = flow.getEntries(this.gridRoots[0]);
+        rootEntries.forEach(entry => {
+            this.createConnectionRecursively(entry);
+        });
+
+        for(let i = 0; i < this.gridElements.length; i++){
+            for(let j = 0; j < this.gridElements[i].length; j++) {
+                if(this.gridElements[i][j]){
+                    let value : Point = this.gridToScreen(i,j);
+
+                    let nodeID = this.gridElements[i][j];
+                    let node = this.director.getNode(nodeID);
+                    node.setStyle("transform", `translate3d(calc(${value.x}px - 50%), calc(${value.y}px - 50%), 0)`);
+                    console.log(value, node.title);
+                }
+                }
+            }
+    }
 
     public gridToScreen(x : number, y : number){
         return new Point(x * this.gridElementWidth, y * this.gridElementHeight);
     }
 
-    public screenToGrid(value : Coordinate){
+    public screenToGrid(value : Point){
         return new Point(value.x / this.gridElementWidth, value.y / this.gridElementHeight);
     }
 

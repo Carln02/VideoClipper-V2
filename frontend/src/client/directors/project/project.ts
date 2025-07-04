@@ -61,11 +61,15 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
             director: this
         });
 
-        this.model.onFlowAdded = data => new Flow({
-            parent: this.view.flowsParent,
-            data: data,
-            director: this
-        });
+        this.model.onFlowAdded = data => {
+            const flow = new Flow({
+                parent: this.view.flowsParent,
+                data: data,
+                director: this
+            });
+            requestAnimationFrame(()=> this.grid.initGrid(flow));
+            return flow;
+        }
 
 
         // this.currentType = ProjectScreens.canvas;

@@ -87,6 +87,10 @@ export class FlowEntry extends TurboProxiedElement<"g", FlowEntryView, SyncedFlo
         return this.model.intersectionHandler.closestPointOnPath(p, closestPoint, errorMargin, incrementValue);
     }
 
+    public get flow(){
+        return this.model.flow;
+    }
+
     /**
      * Splits an entry at the given point index into before/after + a new "split" entry.
      * Returns [beforeSplitEntry, splitEntry, afterSplitEntry].

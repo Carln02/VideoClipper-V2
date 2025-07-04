@@ -76,6 +76,10 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
         return this.model.entryHandler.getEntries(id);
     }
 
+    public getAllEntries(){
+        return this.model.entryHandler.getAllEntries();
+    }
+
     // public getEntry(id: string): FlowEntry {
     //     return this.model.entryHandler.getEntry(id);
     // }
