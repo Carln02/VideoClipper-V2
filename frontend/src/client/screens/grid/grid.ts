@@ -10,6 +10,7 @@ import {NavigatorTool} from "../../tools/navigator/navigator";
 import {SelectionTool} from "../../tools/selection/selection";
 import {FlowEntry} from "../../components/flowEntry/flowEntry";
 import {Flow} from "../../components/flow/flow";
+import ELK from "elkjs/lib/elk.bundled.js";
 
 @define("vc-grid")
 export class Grid extends VcComponent<any, any, any, Project> implements Substrate {
@@ -27,6 +28,10 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
 
     public gridElementWidth : number = 600;
     public gridElementHeight : number = 600;
+
+
+    //elk
+    public elk = new ELK();
 
     //Main toolbar
     private readonly toolbar: Toolbar;
@@ -83,14 +88,6 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
         return this.navigationManager.scale;
     }
 
-    public addToGrid(x : number, y : number, element : string){
-        this.gridElements[x][y] = element;
-    }
-
-    public removeFromGrid(x : number, y : number){
-        this.gridElements[x][y] = undefined;
-    }
-
     public getElement(x : number, y : number){
         return this.gridElements[x][y];
     }
@@ -106,13 +103,7 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
         return new Point(-1, -1);
     }
 
-    public createConnection(x1 : number, y1 : number, x2 : number, y2 : number ){
-        let element1 = this.gridElements[x1][y1];
-        let element2 = this.gridElements[x2][y2];
-
-        console.log("creating connection from", element1, "to", element2); //TODO
-    }
-
+    // grid Logic
     public createConnectionRecursively(entry : FlowEntry, startNodePos ?: Point){
         if(!startNodePos)  startNodePos = this.getGridPosition(entry.startNodeId);
         if(this.getElement(startNodePos.x, startNodePos.y) !== entry.startNodeId) throw new Error("start node not in grid");
@@ -162,27 +153,39 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
 
     // TODO handle multiple roots
     public initGrid(flow : Flow){
-        this.gridRoots = this.findRootNodes(flow.dataId);
-        this.gridElements[0][0] = this.gridRoots[0];
-        let rootEntries = flow.getEntries(this.gridRoots[0]);
-        rootEntries.forEach(entry => {
-            this.createConnectionRecursively(entry);
-        });
+        const ids = []
+        const graph = {
+            id: "root",
+            layoutOptions: { 'elk.algorithm': 'layered' },
+            children: [ ],
+            edges: [ ]
+        }
 
-        for(let i = 0; i < this.gridElements.length; i++){
-            for(let j = 0; j < this.gridElements[i].length; j++) {
-                if(this.gridElements[i][j]){
-                    let value : Point = this.gridToScreen(i,j);
+        flow.getAllEntries().forEach(entry => {
+                graph.edges.push({id: entry.dataId , sources: [entry.startNodeId], targets: [entry.endNodeId]});
 
-                    let nodeID = this.gridElements[i][j];
-                    let node = this.director.getNode(nodeID);
-                    node.setStyle("transform", `translate3d(calc(${value.x}px - 50%), calc(${value.y}px - 50%), 0)`);
-                    console.log(value, node.title);
-                }
-                }
-            }
+                if(ids.indexOf(entry.startNodeId) === -1) ids.push(entry.startNodeId);
+                if(ids.indexOf(entry.endNodeId) === -1) ids.push(entry.endNodeId);
+            });
+
+            ids.forEach(id => {
+                graph.children.push({id: id, width: 20, height: 20});
+            })
+
+            console.log(graph);
+
+        this.elk.layout(graph).then(console.log);
+
+        graph.children.forEach(graphNode => {
+            let value = new Point(graphNode.x, graphNode.y)
+            let nodeID = graphNode.id;
+            let node = this.director.getNode(nodeID);
+            node.setStyle("transform", `translate3d(calc(${value.x}px - 50%), calc(${value.y}px - 50%), 0)`);
+        })
+
     }
 
+    //Helpers
     public gridToScreen(x : number, y : number){
         return new Point(x * this.gridElementWidth, y * this.gridElementHeight);
     }

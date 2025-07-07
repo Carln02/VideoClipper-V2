@@ -128,7 +128,7 @@ export class Timeline<
     }
 
     public get width() {
-        const basis = this.scaled ? this.director.currentScreen.scale : 1;
+        const basis = this.scaled ? this.director.currentScreen?.scale : 1;
         return this.offsetWidth * basis;
     }
 

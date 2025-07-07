@@ -67,6 +67,7 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
                 data: data,
                 director: this
             });
+            console.log("animationframe");
             requestAnimationFrame(()=> this.grid.initGrid(flow));
             return flow;
         }
@@ -74,6 +75,7 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
 
         // this.currentType = ProjectScreens.canvas;
         this.currentType = ProjectScreens.grid;
+        // this.currentType = ;
 
         this.mvc.initialize();
 
