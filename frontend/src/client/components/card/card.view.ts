@@ -22,7 +22,7 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
     private titleElement: TurboInput;
     private durationElement: HTMLDivElement;
 
-    private playback: Playback;
+    public playback: Playback;
     private _metadataDrawer: MetadataDrawer;
     private _timeline: Timeline;
 

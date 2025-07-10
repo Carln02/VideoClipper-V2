@@ -67,14 +67,20 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
                 data: data,
                 director: this
             });
-            console.log("animationframe");
-            requestAnimationFrame(()=> this.grid.initGrid(flow));
+            // console.log("animationframe");
+            // requestAnimationFrame(()=> this.grid.initGrid(flow));
+            // wait 5 seconds and then all init grid
             return flow;
         }
 
+        setTimeout(()=> {
+            this.grid.initGrid()
+            console.log("animationframe");
+        } , 5000);
 
-        // this.currentType = ProjectScreens.canvas;
-        this.currentType = ProjectScreens.grid;
+
+        this.currentType = ProjectScreens.canvas;
+        // this.currentType = ProjectScreens.grid;
         // this.currentType = ;
 
         this.mvc.initialize();
@@ -118,6 +124,10 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
 
     public get flows(): Flow[] {
         return this.model.flows;
+    }
+
+    public get cards(): Card[] {
+        return this.model.cards;
     }
 
     public getFlow(id: string): Flow {
