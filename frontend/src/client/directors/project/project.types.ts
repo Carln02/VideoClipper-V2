@@ -8,6 +8,7 @@ import {DirectorProperties} from "../director/director.types";
 import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
 import {NavigationManager} from "../../managers/navigationManager/navigationManager";
 import {Coordinate, ElementTagMap, Point} from "turbodombuilder";
+import {FlowEntry} from "../../components/flowEntry/flowEntry";
 
 export enum ProjectScreens {
     home = "home",
@@ -46,5 +47,6 @@ export interface Substrate extends HTMLElement {
     readonly content?: HTMLDivElement;
     scale?: number;
     transform?(translation: Point, scale: number): void;
-    updatePos?:(value: Coordinate, element: Element) => Coordinate;
+    updatePos?(value: Coordinate, element: Element): Coordinate;
+    constrainFlowEntryPoints?(entry: FlowEntry, points: Point[]): Point[];
 }

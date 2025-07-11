@@ -1,8 +1,10 @@
-import {Point, TurboHandler} from "turbodombuilder";
+import {Point, TurboController} from "turbodombuilder";
 import {FlowIntersection} from "../flow/flow.types";
 import {FlowEntryModel} from "./flowEntry.model";
+import {FlowEntry} from "./flowEntry";
+import {FlowEntryView} from "./flowEntry.view";
 
-export class FlowEntryIntersectionHandler extends TurboHandler<FlowEntryModel> {
+export class FlowEntryIntersectionController extends TurboController<FlowEntry, FlowEntryView, FlowEntryModel> {
     public intersectsPoint(p: Point, errorMargin: number = 50, incrementValue: number = 1): boolean {
         const numPoints = Math.ceil(2 * Math.PI * errorMargin);
         for (let i = 0; i < numPoints; i += incrementValue) {
@@ -28,7 +30,7 @@ export class FlowEntryIntersectionHandler extends TurboHandler<FlowEntryModel> {
 
     public closestPointOnPath(p: Point, closestPoint: FlowIntersection, errorMargin: number = 50,
                               incrementValue: number = 10): FlowIntersection {
-        const definedPoints = this.model.points;
+        const definedPoints = this.element.points;
         const placedPoints = this.computePlacedPoints(this.model.path, incrementValue);
         let nextDefinedPointIndex = 1;
 

@@ -1,7 +1,9 @@
-import {Point, TurboHandler} from "turbodombuilder";
+import {Point, TurboController} from "turbodombuilder";
 import {FlowEntryModel} from "./flowEntry.model";
+import {FlowEntry} from "./flowEntry";
+import {FlowEntryView} from "./flowEntry.view";
 
-export class FlowEntryUpdateHandler extends TurboHandler<FlowEntryModel> {
+export class FlowEntryUpdateController extends TurboController<FlowEntry, FlowEntryView, FlowEntryModel> {
     /**
      * @description Updates all impacted flows after the node of the provided ID was moved by deltaPosition.
      * @param nodeId
@@ -12,13 +14,13 @@ export class FlowEntryUpdateHandler extends TurboHandler<FlowEntryModel> {
 
         //I move each point by deltaPosition multiplied by a moveFactor (linearly interpolated based on the number of
         // points and how close the current point is from the moved node) for a natural-looking update of the flow
-        for (let i = 0; i < this.model.points.length; i++) {
+        for (let i = 0; i < this.element.points.length; i++) {
             //Compute interpolation amount (both sides incremented by 1 to soften the effect)
-            let moveFactor = i / (this.model.points.length - 1);
+            let moveFactor = i / (this.element.points.length - 1);
             //Flip interpolation if points start from the given node (as then it should start high and end low)
             if (this.model.startNodeId == nodeId) moveFactor = 1 - moveFactor;
             //Update accordingly the point's coordinates
-            this.model.pointHandler.incrementPoint(i, deltaPosition.mul(moveFactor));
+            this.element.incrementPoint(i, deltaPosition.mul(moveFactor));
         }
     }
 }

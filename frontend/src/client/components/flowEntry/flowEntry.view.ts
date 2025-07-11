@@ -38,8 +38,7 @@ export class FlowEntryView extends TurboView<FlowEntry, FlowEntryModel> {
      * @private
      */
     private drawPath() {
-        const points = this.model.points;
-        //TODO SUBSTRATE CONSTRAIN POINTS
+        const points = this.element.points;
         this.clearChevrons();
 
         if (points.length < 2) return;

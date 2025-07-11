@@ -30,7 +30,7 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
             initialize: false
         });
 
-        this.model.onFlowEntryAdded = (data) => new FlowEntry({flow: this, data: data as YMap});
+        this.model.onFlowEntryAdded = (data) => new FlowEntry({flow: this, data: data as YMap, director: this.director});
         this.model.onFlowSelectorAdded = (data) => new FlowSelector({flow: this, data: data, director: this.director});
         this.mvc.initialize();
     }

@@ -1,22 +1,25 @@
 import {YMap} from "../../../yManagement/yManagement.types";
 import {YUtilities} from "../../../yManagement/yUtilities";
-import {FlowEntryProperties, SplitEntryData, SyncedFlowEntry} from "./flowEntry.types";
+import {FlowEntryProperties, SyncedFlowEntry} from "./flowEntry.types";
 import {FlowEntryModel} from "./flowEntry.model";
 import {Coordinate, Point, SvgNamespace, TurboProxiedElement} from "turbodombuilder";
 import {FlowEntryView} from "./flowEntry.view";
 import {FlowIntersection} from "../flow/flow.types";
-import {FlowEntryIntersectionHandler} from "./flowEntry.intersectionHandler";
-import {FlowEntryPointHandler} from "./flowEntry.pointHandler";
-import {FlowEntryUpdateHandler} from "./flowEntry.updateHandler";
+import {FlowEntryIntersectionController} from "./flowEntry.intersectionController";
+import {FlowEntryPointController} from "./flowEntry.pointController";
+import {Project} from "../../directors/project/project";
+import {FlowEntryUpdateController} from "./flowEntry.updateController";
 
 export class FlowEntry extends TurboProxiedElement<"g", FlowEntryView, SyncedFlowEntry & YMap, FlowEntryModel> {
+    public director: Project;
     public constructor(properties: FlowEntryProperties) {
         super({tag: "g", namespace: SvgNamespace});
+        this.director = properties.director;
         this.mvc.generate({
             viewConstructor: FlowEntryView,
             modelConstructor: FlowEntryModel,
             data: properties.data,
-            handlerConstructors: [FlowEntryIntersectionHandler, FlowEntryPointHandler, FlowEntryUpdateHandler],
+            controllerConstructors: [FlowEntryIntersectionController, FlowEntryPointController, FlowEntryUpdateController],
             initialize: false
         });
 
@@ -36,7 +39,7 @@ export class FlowEntry extends TurboProxiedElement<"g", FlowEntryView, SyncedFlo
     }
 
     public updateAfterMovingNode(nodeId: string, deltaPosition: Point) {
-        return this.model.updateHandler.updateAfterMovingNode(nodeId, deltaPosition);
+        return this.updateController.updateAfterMovingNode(nodeId, deltaPosition);
     }
 
     public get startNodeId(): string {
@@ -55,69 +58,52 @@ export class FlowEntry extends TurboProxiedElement<"g", FlowEntryView, SyncedFlo
         this.model.endNodeId = value;
     }
 
-    public get points(): Coordinate[] {
-        return this.model.points;
+    public get points(): Point[] {
+        return this.pointController.points;
     }
 
     public addPoint(point: Point, isTemporary: boolean = false) {
-        return this.model.pointHandler.addPoint(point, isTemporary);
+        return this.pointController.addPoint(point, isTemporary);
     }
 
     public removePoint(index: number) {
-        return this.model.pointHandler.removePoint(index);
+        return this.pointController.removePoint(index);
     }
 
     public incrementPoint(index: number, increment: Coordinate) {
-        return this.model.pointHandler.incrementPoint(index, increment);
+        return this.pointController.incrementPoint(index, increment);
     }
 
     public getMaxPoint(): Point {
-        return this.model.pointHandler.getMaxPoint();
+        return this.pointController.getMaxPoint();
     }
 
     public intersectsPoint(point: Point, errorMargin: number = 50, incrementValue: number = 1): boolean {
-        return this.model.intersectionHandler.intersectsPoint(point, errorMargin, incrementValue);
+        return this.intersectionController.intersectsPoint(point, errorMargin, incrementValue);
     }
 
     public intersectsArea(topLeft: Point, size: Point): boolean {
-        return this.model.intersectionHandler.intersectsArea(topLeft, size);
+        return this.intersectionController.intersectsArea(topLeft, size);
     }
 
     public closestPointOnPath(p: Point, closestPoint: FlowIntersection, errorMargin: number = 50, incrementValue: number = 10): FlowIntersection {
-        return this.model.intersectionHandler.closestPointOnPath(p, closestPoint, errorMargin, incrementValue);
+        return this.intersectionController.closestPointOnPath(p, closestPoint, errorMargin, incrementValue);
     }
 
     public get flow(){
         return this.model.flow;
     }
 
-    /**
-     * Splits an entry at the given point index into before/after + a new "split" entry.
-     * Returns [beforeSplitEntry, splitEntry, afterSplitEntry].
-     */
-    public splitAtPoint(splitPointIndex: number, nodeId: string, splitPoint: Coordinate): SplitEntryData {
+    protected get pointController(): FlowEntryPointController {
+        return this.mvc.getController("point") as FlowEntryPointController;
+    }
 
-        // Create before/after
-        const beforeSplit: SyncedFlowEntry = {
-            startNodeId: this.startNodeId,
-            endNodeId: nodeId,
-            points: [...this.points.slice(0, splitPointIndex), splitPoint]
-        };
+    protected get intersectionController(): FlowEntryIntersectionController {
+        return this.mvc.getController("intersection") as FlowEntryIntersectionController;
+    }
 
-        const afterSplit: SyncedFlowEntry = {
-            startNodeId: nodeId,
-            endNodeId: this.endNodeId,
-            points: [splitPoint, ...this.points.slice(splitPointIndex + 1)]
-        };
-
-        // The newly inserted "middle" entry (splitEntry).
-        const splitEntry: SyncedFlowEntry = {
-            startNodeId: nodeId,
-            endNodeId: nodeId,
-            points: [splitPoint]
-        };
-
-        return {beforeSplit: beforeSplit, splitEntry: splitEntry, afterSplit: afterSplit};
+    protected get updateController(): FlowEntryUpdateController {
+        return this.mvc.getController("update") as FlowEntryUpdateController;
     }
 
     public delete() {
