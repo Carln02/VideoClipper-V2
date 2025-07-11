@@ -45,7 +45,9 @@ export enum ToolType {
 export interface Substrate extends HTMLElement {
     readonly navigationManager?: NavigationManager;
     readonly content?: HTMLDivElement;
+    readonly curveConnections?: boolean;
     scale?: number;
+
     transform?(translation: Point, scale: number): void;
     updatePos?(value: Coordinate, element: Element): Coordinate;
     constrainFlowEntryPoints?(entry: FlowEntry, points: Point[]): Point[];

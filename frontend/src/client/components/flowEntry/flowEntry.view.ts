@@ -45,10 +45,10 @@ export class FlowEntryView extends TurboView<FlowEntry, FlowEntryModel> {
         // const isOverwriting = this.model.isOverwriting;
 
         //Generate the path data
-        const lineGenerator = d3.line<Point>()
+        let lineGenerator = d3.line<Point>()
             .x(d => d.x)
-            .y(d => d.y)
-            .curve(d3.curveNatural);
+            .y(d => d.y);
+        if (this.element.director.currentScreen.curveConnections) lineGenerator = lineGenerator.curve(d3.curveNatural);
 
         const pathData = lineGenerator(points.filter(p => !isNaN(p.x) && !isNaN(p.y)));
 

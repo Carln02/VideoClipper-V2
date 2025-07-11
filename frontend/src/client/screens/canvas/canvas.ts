@@ -21,6 +21,7 @@ export class Canvas extends VcComponent<any, any, any, Project>  implements Subs
 
     //Canvas's attached navigation manager
     public readonly navigationManager: NavigationManager;
+    public readonly curveConnections = true;
 
     //Main toolbar
     private readonly toolbar: Toolbar;
