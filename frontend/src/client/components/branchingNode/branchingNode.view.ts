@@ -10,10 +10,16 @@ export class BranchingNodeView<
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
 
+        this.emitter.add("gridOrigin", (value: Coordinate) => {
+            if (this.element.director.currentType !== ProjectScreens.grid) return;
+            this.element.setStyle("transform", `translate3d(${value.x}, ${value.y}, 0)`);
+        });
+
         this.emitter.add("origin", (value: Coordinate) => {
+            if (this.element.director.currentType === ProjectScreens.grid) return;
             // if (this.element.director.currentType === ProjectScreens.canvas)
-            this.element.director.currentScreen?.updatePos?.(value, this.element);
+            // this.element.director.currentScreen?.updatePos?.(value, this.element);
             this.element.setStyle("transform", `translate3d(calc(${value.x}px - 50%), calc(${value.y}px - 50%), 0)`);
-    });
+        });
     }
 }

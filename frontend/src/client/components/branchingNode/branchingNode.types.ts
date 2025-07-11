@@ -7,5 +7,6 @@ export enum BranchingNodeType {
 
 export type SyncedBranchingNode = {
     origin?: Coordinate,
+    gridOrigin?: Coordinate,
     type?: BranchingNodeType
 };
