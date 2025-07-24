@@ -104,20 +104,24 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
     }
 
     public drawAllConnections(){
-        const svg = d3.create('svg')
-        svg.attr("width", 5000).attr("height", 5000);
-        this.content.addChild(svg.node());
+        // const svg = d3.create('svg')
+        // svg.attr("width", 5000).attr("height", 5000);
+        // this.content.addChild(svg.node());
         this.director.flows.forEach(flow => {
             flow.getAllEntries().forEach(entry => {
-                svg.node().addChild(this.drawEntry(entry));
+                // svg.node().addChild(this.drawEntry(entry));
                 // entry.redraw(this.drawEntry(entry));
-
+                this.constrainFlowEntryPoints(entry, entry.points);
             })
             flow.redraw();
         })
     }
 
-    public drawEntry(entry : FlowEntry){
+    constrainFlowEntryPoints(entry: FlowEntry, points: Point[]):Point [] {
+        return this.drawEntry(entry);
+    }
+
+    public drawEntry(entry : FlowEntry) : Point[]{
         const startCor = this.parseTransformValues(this.director.getNode(entry.startNodeId).style.transform);
         const startPos = new Point(startCor.x,startCor.y).add(new Point(200 / 2, 150 / 2));
         const endCor = this.parseTransformValues(this.director.getNode(entry.endNodeId).style.transform);
@@ -138,28 +142,29 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
         linePositions.push([x, y]);
         linePositions.push([x, endPos.y]);
         linePositions.push([endPos.x, endPos.y]);
+        // return linePositions
 
-        console.log(this.director.getNode(entry.startNodeId), this.director.getNode(entry.endNodeId), linePositions);
+        // console.log(this.director.getNode(entry.startNodeId), this.director.getNode(entry.endNodeId), linePositions);
 
-        // return linePositions.map(([x,y]) => new Point(x, y));
+        return linePositions.map(([x,y]) => new Point(x, y));
         // return linePositions;
 
 
         // // use d3 to draw the line from positions
-        const line = d3.line()
-            .x(d => d[0])
-            .y(d => d[1]);
-
-        const pathData = line(linePositions.filter(p => !isNaN(p[0]) && !isNaN(p[1])));
+        // const line = d3.line()
+        //     .x(d => d[0])
+        //     .y(d => d[1]);
         //
-        const svg = d3.create('svg:path')
-            .attr("class", "flow")
-            .attr('d', pathData)
-            .attr('stroke', entry.flow.color || '#000') // Use flow color or default to black
-            .attr("opacity", 1)
-            .attr('stroke-width', 2)
-            .attr('fill', 'none');
-        return svg.node();
+        // const pathData = line(linePositions.filter(p => !isNaN(p[0]) && !isNaN(p[1])));
+        // //
+        // const svg = d3.create('svg:path')
+        //     .attr("class", "flow")
+        //     .attr('d', pathData)
+        //     .attr('stroke', entry.flow.color || '#000') // Use flow color or default to black
+        //     .attr("opacity", 1)
+        //     .attr('stroke-width', 2)
+        //     .attr('fill', 'none');
+        // return svg.node();
     }
 
     public getNearestGridSpace(card : Card) {
