@@ -1,6 +1,7 @@
 import {Coordinate} from "turbodombuilder";
 import {Flow} from "../flow/flow";
 import { YMap } from "../../../yManagement/yManagement.types";
+import {Project} from "../../directors/project/project";
 
 /**
  * A single node-to-node connection, with user-drawn geometry in "points".
@@ -21,4 +22,5 @@ export type SplitEntryData = {
 export type FlowEntryProperties = {
     flow: Flow;
     data: SyncedFlowEntry & YMap;
+    director: Project
 }

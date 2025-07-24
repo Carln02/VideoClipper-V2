@@ -13,6 +13,8 @@ import {FlowEntry} from "../../components/flowEntry/flowEntry";
 import {Flow} from "../../components/flow/flow";
 import ELK from "elkjs/lib/elk.bundled.js";
 import {Card} from "../../components/card/card";
+import * as d3 from "d3";
+import {line} from "d3";
 
 type canvasGridPoints = {
     canvasPoint: Point;
@@ -35,27 +37,11 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
 
     public readonly navigationManager: NavigationManager;
 
-    // public gridSize = [50,100];
-
-    // public gridElements: string[][] = new Array(this.gridSize[0]).fill(false)
-    //                                 .map(() => new Array(this.gridSize[1]).fill(null)
-    //                                 ); //TODO dynamic?
-    // public gridRoots : string[];
-
     public gridElementWidth : number = 300;
     public gridElementHeight : number = 300;
     public verticalPadding : number = 2;
     public horizontalPadding : number = 2;
 
-
-    public cardOldNewPointMap: Map<string, canvasGridPoints>;
-
-    public gridPointCardMap : Map<Point, string>
-
-
-
-    //elk
-    public elk = new ELK();
 
     //Main toolbar
     private readonly toolbar: Toolbar;
@@ -85,8 +71,6 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
         });
 
         this.initTools();
-
-        // this.initGrid();
     }
 
     public get toolManager(): ToolManager<ToolType> {
@@ -119,12 +103,62 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
     }
 
     public drawAllConnections(){
+        const svg = d3.create('svg')
+        svg.attr("width", 5000).attr("height", 5000);
+        this.content.addChild(svg.node());
         this.director.flows.forEach(flow => {
             flow.getAllEntries().forEach(entry => {
+                svg.node().addChild(this.drawEntry(entry));
+                // entry.redraw(this.drawEntry(entry));
 
             })
+            flow.redraw();
         })
+    }
 
+    public drawEntry(entry : FlowEntry){
+        const startCor = this.parseTransformValues(this.director.getNode(entry.startNodeId).style.transform);
+        const startPos = new Point(startCor.x,startCor.y).add(new Point(200 / 2, 150 / 2));
+        const endCor = this.parseTransformValues(this.director.getNode(entry.endNodeId).style.transform);
+        const endPos = new Point(endCor.x, endCor.y).add(new Point(200 / 2, 150 / 2));
+        console.log(startPos, endPos);
+
+        const linePositions : [[number, number]] = [[startPos.x, startPos.y]];
+
+        const direction = endPos.sub(startPos);
+        const directionIdentity = new Point(direction.x > 0 ? 1 : -1, direction.y > 0 ? 1 : -1);
+
+        const lineBendDistance = 160
+
+        const x = endPos.x - directionIdentity.x * lineBendDistance;
+        const y = startPos.y + directionIdentity.y * lineBendDistance;
+
+        linePositions.push([startPos.x, y]);
+        linePositions.push([x, y]);
+        linePositions.push([x, endPos.y]);
+        linePositions.push([endPos.x, endPos.y]);
+
+        console.log(this.director.getNode(entry.startNodeId), this.director.getNode(entry.endNodeId), linePositions);
+
+        // return linePositions.map(([x,y]) => new Point(x, y));
+        // return linePositions;
+
+
+        // // use d3 to draw the line from positions
+        const line = d3.line()
+            .x(d => d[0])
+            .y(d => d[1]);
+
+        const pathData = line(linePositions.filter(p => !isNaN(p[0]) && !isNaN(p[1])));
+        //
+        const svg = d3.create('svg:path')
+            .attr("class", "flow")
+            .attr('d', pathData)
+            .attr('stroke', entry.flow.color || '#000') // Use flow color or default to black
+            .attr("opacity", 1)
+            .attr('stroke-width', 2)
+            .attr('fill', 'none');
+        return svg.node();
     }
 
     public getNearestGridSpace(card : Card) {
@@ -160,6 +194,7 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
             this.getAllOverlaps(0).forEach(overlap => {
                 this.drawOverlapRect(overlap.overlapRect, 30000);
             })
+            this.drawAllConnections();
             return;
         }
 
@@ -199,6 +234,9 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
         setTimeout(() => debugRect.remove(), delay);
     }
 
+    public drawLinesFromPoints(){
+
+    }
     public getAllOverlaps(tolerance : number = 0){
         const allCards = this.director.cards;
         const allOverlaps : overlap[] = [];

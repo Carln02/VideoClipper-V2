@@ -8,8 +8,10 @@ import {FlowIntersection} from "../flow/flow.types";
 import {FlowEntryIntersectionHandler} from "./flowEntry.intersectionHandler";
 import {FlowEntryPointHandler} from "./flowEntry.pointHandler";
 import {FlowEntryUpdateHandler} from "./flowEntry.updateHandler";
+import {Project} from "../../directors/project/project";
 
 export class FlowEntry extends TurboProxiedElement<"g", FlowEntryView, SyncedFlowEntry & YMap, FlowEntryModel> {
+    public director: Project;
     public constructor(properties: FlowEntryProperties) {
         super({tag: "g", namespace: SvgNamespace});
         this.mvc.generate({
@@ -118,6 +120,10 @@ export class FlowEntry extends TurboProxiedElement<"g", FlowEntryView, SyncedFlo
         };
 
         return {beforeSplit: beforeSplit, splitEntry: splitEntry, afterSplit: afterSplit};
+    }
+
+    public redraw(points ?: Point[]){
+        this.view.redraw(true, points);
     }
 
     public delete() {

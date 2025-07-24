@@ -17,10 +17,10 @@ export class FlowEntryView extends TurboView<FlowEntry, FlowEntryModel> {
         this.emitter.add("__redraw", () => this.redraw(true));
     }
 
-    public redraw(force: boolean = false) {
+    public redraw(force: boolean = false, points ?: Point[]) {
         if (!force && this.model.lastRedraw && Date.now() - this.model.lastRedraw < this.model.redrawInterval) return;
         this.model.lastRedraw = Date.now();
-        this.drawPath();
+        this.drawPath(points);
         //TODO TRIGGER RECOMPUTING OF BOUNDING BOX
     }
 
@@ -37,9 +37,10 @@ export class FlowEntryView extends TurboView<FlowEntry, FlowEntryModel> {
      * @description Draws the points using D3's natural curve option and adds chevrons
      * @private
      */
-    private drawPath() {
-        const points = this.model.points;
+    private drawPath(points ?: Point[]) {
+        if(!points) points = this.model.points;
         //TODO SUBSTRATE CONSTRAIN POINTS
+
         this.clearChevrons();
 
         if (points.length < 2) return;

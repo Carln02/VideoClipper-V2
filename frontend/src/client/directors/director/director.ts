@@ -52,6 +52,7 @@ export class Director<
         const newScreen = this.getScreen(value);
 
         this._currentType = value;
+        console.log(oldScreen, newScreen, value)
         this.switchScreens(oldScreen, newScreen);
         this.onScreenChange.fire(oldScreen, newScreen, value);
     }

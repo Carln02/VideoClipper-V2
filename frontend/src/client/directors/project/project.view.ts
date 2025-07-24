@@ -31,16 +31,17 @@ export class ProjectView extends RootDirectorView<Project, ProjectModel> {
 
         this.toolPanel = new ToolPanel({director: this.element});
 
-        this.element.addScreen(new Canvas(this.element), ProjectScreens.canvas); //TODO where does this go
-        // this.element.addScreen(new Grid(this.element), ProjectScreens.grid);
+        // this.element.addScreen(new Canvas(this.element), ProjectScreens.canvas); //TODO where does this go
+        this.element.addScreen(new Grid(this.element), ProjectScreens.grid);
         this.element.addScreen(new Camera(this.element), ProjectScreens.camera);
+        console.log("screens added")
     }
 
     protected setupUILayout() {
         super.setupUILayout();
 
         this.element.addChild(this.toolPanel);
-        this.element.canvas.content.addChild([this.flowsParent, this.cardsParent]); //TODO where does this go
-        // this.element.grid.content.addChild([this.flowsParent, this.cardsParent]);
+        // this.element.canvas.content.addChild([this.flowsParent, this.cardsParent]); //TODO where does this go
+        this.element.grid.content.addChild([this.flowsParent, this.cardsParent]);
     }
 }

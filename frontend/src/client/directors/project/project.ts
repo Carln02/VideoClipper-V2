@@ -79,7 +79,7 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
         } , 5000);
 
 
-        this.currentType = ProjectScreens.canvas;
+        // this.currentType = ProjectScreens.canvas;
         // this.currentType = ProjectScreens.grid;
         // this.currentType = ;
 

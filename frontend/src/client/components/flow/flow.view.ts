@@ -30,7 +30,7 @@ export class FlowView extends TurboView<Flow, FlowModel> {
      * @description Updates the viewBox of the SVG to ensure the full path is visible (+ a padding)
      * @private
      */
-    private async updateViewBox() {
+    public async updateViewBox() {
         // Ensure updates occur at defined rate
         if (Date.now() - this.model.lastViewBoxUpdate <= this.model.viewBoxUpdateRate) return;
         this.model.lastViewBoxUpdate = Date.now();
