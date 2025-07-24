@@ -7,7 +7,7 @@ import {SplitEntryData, SyncedFlowEntry} from "./flowEntry.types";
 export class FlowEntryPointController extends TurboController<FlowEntry, FlowEntryView, FlowEntryModel> {
     public get points(): Point[] {
         const points = this.coordinates.map(coordinate => new Point(coordinate));
-        return this.element.director.currentScreen?.constrainFlowEntryPoints(this.element, points) ?? points;
+        return this.element.director.currentScreen?.constrainFlowEntryPoints?.(this.element, points) ?? points;
     }
 
     public get coordinates(): Coordinate[] {

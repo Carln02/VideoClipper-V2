@@ -15,6 +15,7 @@ import ELK from "elkjs/lib/elk.bundled.js";
 import {Card} from "../../components/card/card";
 import * as d3 from "d3";
 import {line} from "d3";
+import {BranchingNode} from "../../components/branchingNode/branchingNode";
 
 type canvasGridPoints = {
     canvasPoint: Point;
@@ -111,22 +112,32 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
             flow.getAllEntries().forEach(entry => {
                 // svg.node().addChild(this.drawEntry(entry));
                 // entry.redraw(this.drawEntry(entry));
-                this.constrainFlowEntryPoints(entry, entry.points);
+                // this.constrainFlowEntryPoints(entry, entry.points);
+                // entry = this.drawEntry(entry);
+                // console.log(entry.points);
+                // console.log("again", entry.points)
+                entry.redraw();
             })
             flow.redraw();
         })
     }
 
     constrainFlowEntryPoints(entry: FlowEntry, points: Point[]):Point [] {
+        // console.log('called constrainFlowEntryPoints', entry, points);
+        // this.director.cards.forEach(card => {
+        //     if (!card.gridOrigin) this.setGridOrigin(card);
+        // });
         return this.drawEntry(entry);
     }
 
     public drawEntry(entry : FlowEntry) : Point[]{
-        const startCor = this.parseTransformValues(this.director.getNode(entry.startNodeId).style.transform);
+
+        const startCor = this.getCardGridOrigin(this.director.getNode(entry.startNodeId));
+
         const startPos = new Point(startCor.x,startCor.y).add(new Point(200 / 2, 150 / 2));
-        const endCor = this.parseTransformValues(this.director.getNode(entry.endNodeId).style.transform);
+        const endCor = this.getCardGridOrigin(this.director.getNode(entry.endNodeId));
         const endPos = new Point(endCor.x, endCor.y).add(new Point(200 / 2, 150 / 2));
-        console.log(startPos, endPos);
+        // console.log(startPos, endPos);
 
         const linePositions : [[number, number]] = [[startPos.x, startPos.y]];
 
@@ -168,12 +179,14 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
     }
 
     public getNearestGridSpace(card : Card) {
-        const {x,y} = this.parseTransformValues(card.style.transform)
-        const point = new Point(x, y);
-
+        // const {x,y} = this.parseTransformValues(card.style.transform)
+        // const point = new Point(x, y);
+        // const point = card.gridOrigin;
+        const go = this.getCardGridOrigin(card);
+        const point = new Point(go.x, go.y);
 
         const topLeftPos = point.sub(point.mod(this.gridElementWidth, this.gridElementHeight));
-        console.log(topLeftPos);
+        // console.log(topLeftPos);
         const midPoint = topLeftPos.add(new Point(this.gridElementWidth / 2, this.gridElementHeight / 2));
         const directionIdentifier = midPoint.sub(point);
 
@@ -190,13 +203,15 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
         if(timesLeft === 0) return;
         const tolerance = Math.round((10000 - timesLeft)/500)
         const overlaps : overlap[] = this.getAllOverlaps(tolerance);
-        console.log(tolerance, overlaps.length, timesLeft);
+        // console.log(tolerance, overlaps.length, timesLeft);
 
         if (overlaps.length === 0) {
             this.director.cards.forEach(card => {
                 this.moveCard(card, this.getNearestGridSpace(card).gridPoint, false);
+                console.log("finalPos", card.gridOrigin);
+                this.setPosFromGridOrigin(card);
             });
-            console.log("disperse cards done", this.getAllOverlaps(0));
+            // console.log("disperse cards done", this.getAllOverlaps(0));
             this.getAllOverlaps(0).forEach(overlap => {
                 this.drawOverlapRect(overlap.overlapRect, 30000);
             })
@@ -280,16 +295,19 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
     }
 
     public moveCard(card : Card, point : Point, displacement : boolean){
-        const style = card.style.transform;
-        const { x, y } = this.parseTransformValues(style);
-        const pos = new Point(x, y);
+        // const style = card.style.transform;
+        // const { x, y } = this.parseTransformValues(style);
+        // const pos = new Point(x, y);
+
+        const pos = this.getCardGridOrigin(card);
 
         let value = point;
 
-
         if(displacement) value = point.add(pos);
-        // console.log(pos,point,value,displacement,x,y, card.title);
-        card.setStyle("transform", `translate3d(${value.x}px , ${value.y}px, 0)`);
+        // card.setStyle("transform", `translate3d(${value.x}px , ${value.y}px, 0)`);
+        // const finalCor = new Coordinate(value.x, value.y);
+        this.getCardGridOrigin(card).x = value.x;
+        this.getCardGridOrigin(card).y = value.y;
     }
 
     public parseTransformValues(transformStyle: string): { x: number, y: number } {
@@ -304,8 +322,31 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
         return { x, y };
     }
 
+    public getCardGridOrigin(card, cord?){
+        if(!card.gridOrigin) card.gridOrigin = card.origin;
+        if(cord){
+            card.gridOrigin.x = cord.x;
+            card.gridOrigin.y = cord.y;
+        }
+        return card.gridOrigin;
+    }
+
+    public setPosFromGridOrigin(card : Card){
+        const value = this.getCardGridOrigin(card);
+        card.setStyle("transform", `translate3d(${value.x}, ${value.y}, 0)`);
+        console.log(card.style.transform);
+    }
+
+    // public getCardGridOrigin(node : BranchingNode){
+    //     if(!node.gridOrigin) node.gridOrigin = node.origin;
+    //     console.log("node", node.gridOrigin);
+    //     return node.gridOrigin;
+    // }
+
     public getCardBoundingBox(card : Card): DOMRect{
-        const {x,y} = this.parseTransformValues(card.style.transform)
+        // const {x,y} = this.parsTransformValues(card.style.transform)
+        const x = this.getCardGridOrigin(card).x;
+        const y = this.getCardGridOrigin(card).y;
         const rect : DOMRect = new DOMRect(
             x + this.horizontalPadding/2,
             y - this.verticalPadding/2,

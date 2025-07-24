@@ -12,13 +12,16 @@ export class BranchingNodeView<
 
         this.emitter.add("gridOrigin", (value: Coordinate) => {
             if (this.element.director.currentType !== ProjectScreens.grid) return;
+            console.log("settting card pos to grid origin", value);
             this.element.setStyle("transform", `translate3d(${value.x}, ${value.y}, 0)`);
         });
 
         this.emitter.add("origin", (value: Coordinate) => {
+            console.log(this.element.director.currentType);
             if (this.element.director.currentType === ProjectScreens.grid) return;
             // if (this.element.director.currentType === ProjectScreens.canvas)
             // this.element.director.currentScreen?.updatePos?.(value, this.element);
+            console.log("settting card pos to origin", value);
             this.element.setStyle("transform", `translate3d(calc(${value.x}px - 50%), calc(${value.y}px - 50%), 0)`);
         });
     }

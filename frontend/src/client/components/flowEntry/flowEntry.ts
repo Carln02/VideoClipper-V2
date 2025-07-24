@@ -106,8 +106,8 @@ export class FlowEntry extends TurboProxiedElement<"g", FlowEntryView, SyncedFlo
         return this.mvc.getController("update") as FlowEntryUpdateController;
     }
 
-    public redraw(points ?: Point[]){
-        this.view.redraw(true, points);
+    public redraw(){
+        this.view.redraw(true);
     }
 
     public delete() {

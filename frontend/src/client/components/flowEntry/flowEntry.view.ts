@@ -17,7 +17,7 @@ export class FlowEntryView extends TurboView<FlowEntry, FlowEntryModel> {
         this.emitter.add("__redraw", () => this.redraw(true));
     }
 
-    public redraw(force: boolean = false, points ?: Point[]) {
+    public redraw(force: boolean = false) {
         if (!force && this.model.lastRedraw && Date.now() - this.model.lastRedraw < this.model.redrawInterval) return;
         this.model.lastRedraw = Date.now();
         this.drawPath();
@@ -51,7 +51,7 @@ export class FlowEntryView extends TurboView<FlowEntry, FlowEntryModel> {
         let lineGenerator = d3.line<Point>()
             .x(d => d.x)
             .y(d => d.y);
-        if (this.element.director.currentScreen.curveConnections) lineGenerator = lineGenerator.curve(d3.curveNatural);
+        if (this.element.director.currentScreen?.curveConnections) lineGenerator = lineGenerator.curve(d3.curveNatural);
 
         const pathData = lineGenerator(points.filter(p => !isNaN(p.x) && !isNaN(p.y)));
 
