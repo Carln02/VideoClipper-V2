@@ -9,4 +9,12 @@ export class BranchingNodeModel extends YComponentModel {
     public set origin(value: Coordinate) {
         this.setData("origin", value);
     }
+
+    public get gridOrigin(): Coordinate {
+        return this.getData("gridOrigin") as Coordinate;
+    }
+
+    public set gridOrigin(value: Coordinate) {
+        this.setData("gridOrigin", value);
+    }
 }

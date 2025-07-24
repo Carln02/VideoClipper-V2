@@ -36,6 +36,7 @@ export class Grid extends VcComponent<any, any, any, Project> implements Substra
     public readonly content: HTMLDivElement;
 
     public readonly navigationManager: NavigationManager;
+    public readonly curveConnections = false;
 
     public gridElementWidth : number = 300;
     public gridElementHeight : number = 300;

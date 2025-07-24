@@ -1,5 +1,5 @@
 import {BranchingNodeType, SyncedBranchingNode} from "./branchingNode.types";
-import {define, Point} from "turbodombuilder";
+import {Coordinate, define, Point} from "turbodombuilder";
 import "./branchingNode.css";
 import {BranchingNodeModel} from "./branchingNode.model";
 import {BranchingNodeView} from "./branchingNode.view";
@@ -50,6 +50,18 @@ export class BranchingNode<
      */
     public move(deltaPosition: Point) {
         this.model.origin = deltaPosition.add(this.model.origin).object;
+    }
+
+    public get origin(): Coordinate {
+        return this.model.origin;
+    }
+
+    public get gridOrigin(): Coordinate {
+        return this.model.gridOrigin;
+    }
+
+    public set gridOrigin(value: Coordinate) {
+        this.model.gridOrigin = value;
     }
 
     /**

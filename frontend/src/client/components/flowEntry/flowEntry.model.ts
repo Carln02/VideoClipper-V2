@@ -1,12 +1,8 @@
 import {YComponentModel} from "../../../yManagement/yModel/types/yComponentModel";
 import {auto, Coordinate, Point} from "turbodombuilder";
-import {SplitEntryData, SyncedFlowEntry} from "./flowEntry.types";
 import {YUtilities} from "../../../yManagement/yUtilities";
 import {Flow} from "../flow/flow";
 import d3 from "d3";
-import {FlowEntryPointHandler} from "./flowEntry.pointHandler";
-import {FlowEntryUpdateHandler} from "./flowEntry.updateHandler";
-import {FlowEntryIntersectionHandler} from "./flowEntry.intersectionHandler";
 
 export class FlowEntryModel extends YComponentModel {
     public flow: Flow;
@@ -64,17 +60,6 @@ export class FlowEntryModel extends YComponentModel {
         return this.getData("points");
     }
 
-    public get points(): Point[] {
-        return this.coordinates.map(coordinate => new Point(coordinate));
-    }
-
-    public get coordinates(): Coordinate[] {
-        const points = this.pointsData
-            .filter((point: Coordinate) => !!point);
-        if (this.temporaryPoint) points.push(this.temporaryPoint.object);
-        return points;
-    }
-
     /**
      * A temporary point added to the path, representing the cursor's position or the last touch point.
      */
@@ -85,46 +70,5 @@ export class FlowEntryModel extends YComponentModel {
 
     public get strokeWidth(): number {
         return this.highlighted ? this.highlightedStrokeWidth : this.defaultStrokeWidth;
-    }
-
-    /**
-     * Splits an entry at the given point index into before/after + a new "split" entry.
-     * Returns [beforeSplitEntry, splitEntry, afterSplitEntry].
-     */
-    public splitAtPoint(splitPointIndex: number, nodeId: string, splitPoint: Coordinate): SplitEntryData {
-
-        // Create before/after
-        const beforeSplit: SyncedFlowEntry = {
-            startNodeId: this.startNodeId,
-            endNodeId: nodeId,
-            points: [...this.points.slice(0, splitPointIndex), splitPoint]
-        };
-
-        const afterSplit: SyncedFlowEntry = {
-            startNodeId: nodeId,
-            endNodeId: this.endNodeId,
-            points: [splitPoint, ...this.points.slice(splitPointIndex + 1)]
-        };
-
-        // The newly inserted "middle" entry (splitEntry).
-        const splitEntry: SyncedFlowEntry = {
-            startNodeId: nodeId,
-            endNodeId: nodeId,
-            points: [splitPoint]
-        };
-
-        return {beforeSplit: beforeSplit, splitEntry: splitEntry, afterSplit: afterSplit};
-    }
-
-    public get pointHandler(): FlowEntryPointHandler {
-        return this.getHandler("point") as FlowEntryPointHandler;
-    }
-
-    public get updateHandler(): FlowEntryUpdateHandler {
-        return this.getHandler("update") as FlowEntryUpdateHandler;
-    }
-
-    public get intersectionHandler(): FlowEntryIntersectionHandler {
-        return this.getHandler("intersection") as FlowEntryIntersectionHandler;
     }
 }

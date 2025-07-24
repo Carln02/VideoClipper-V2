@@ -22,5 +22,5 @@ export type SplitEntryData = {
 export type FlowEntryProperties = {
     flow: Flow;
     data: SyncedFlowEntry & YMap;
-    director: Project
+    director: Project;
 }
