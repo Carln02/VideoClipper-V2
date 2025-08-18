@@ -4,6 +4,7 @@ import {
     auto,
     DefaultEventName,
     div,
+    Direction,
     flexRowCenter,
     icon,
     p,
@@ -14,7 +15,6 @@ import {
 } from "turbodombuilder";
 import {formatMMSS} from "../../utils/time";
 import {Scrubber} from "../scrubber/scrubber";
-import {takeRight} from "lodash";
 
 export class TimelineView<
     Element extends Timeline = Timeline,
@@ -30,6 +30,7 @@ export class TimelineView<
 
     public initialize() {
         super.initialize();
+         this.scrubber.orientation = this.model.orientation === Direction.horizontal ? Direction.vertical : Direction.horizontal;
         this.emitter.fire("totalDurationChanged");
     }
 
@@ -90,10 +91,19 @@ export class TimelineView<
             this.currentTimeText.textContent = formatMMSS(this.model.currentTime);
             //TODO NOT THE BEST FIX
             requestAnimationFrame(() => this.scrubber.translation = this.model.currentTime / this.model.totalDuration * this.element.width);
+            this.scrubber.orientation == "vertical" ?
+                this.scrubber.translation = this.model.currentTime / this.model.totalDuration * this.element.width
+                : this.scrubber.translation = this.model.currentTime / this.model.totalDuration * this.element.height;
+                //does not work lmao
+
         });
 
         this.emitter.add("totalDurationChanged", () => {
             this.totalDurationText.textContent = formatMMSS(this.model.totalDuration);
+        });
+
+        this.emitter.add("orientationChanged", (value: Direction) => {
+            this.scrubber.orientation = value === Direction.horizontal ? Direction.vertical : Direction.horizontal;
         });
     }
 

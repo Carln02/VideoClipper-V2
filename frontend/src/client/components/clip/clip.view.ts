@@ -1,6 +1,6 @@
 import {ClipModel} from "./clip.model";
 import {Clip} from "./clip";
-import {DefaultEventName, div, icon, img, TurboDragEvent, TurboView} from "turbodombuilder";
+import {DefaultEventName, Direction, div, icon, img, TurboDragEvent, TurboView} from "turbodombuilder";
 
 export class ClipView extends TurboView<Clip, ClipModel> {
     public clipContent: HTMLDivElement;
@@ -13,8 +13,9 @@ export class ClipView extends TurboView<Clip, ClipModel> {
      * @function reloadSize
      * @description Reloads the size of the clip element and thus, reloads as well the timeline.
      */
-    private reloadSize() {
-        this.element.setStyle("width", this.element.timeline?.pixelsPerSecondUnit * this.element.duration + "px");
+    protected reloadSize() {
+        this.element.setStyle(this.model.orientation == Direction.horizontal ? "width" : "height",
+            this.element.timeline?.pixelsPerSecondUnit * this.element.duration + "px");
         this.element.timeline.reloadTime();
     }
 
@@ -30,6 +31,12 @@ export class ClipView extends TurboView<Clip, ClipModel> {
             this.thumbnailImage.show(true);
             this.thumbnailImage.src = value;
         });
+
+        this.emitter.add("orientation", (value: Direction) => {
+            this.element.toggleClass("vc-clip-h", value === Direction.horizontal);
+            this.element.toggleClass("vc-clip-v", value === Direction.vertical);
+            this.reloadSize();
+        });
     }
 
     protected setupUIElements() {
@@ -44,21 +51,29 @@ export class ClipView extends TurboView<Clip, ClipModel> {
     }
 
     private generateHandles() {
-        this.leftHandle = div({classes: "clip-handle-left", children: icon({icon: "chevron-left"})});
-        this.rightHandle = div({classes: "clip-handle-right", children: icon({icon: "chevron-right"})});
+        if( this.element.orientation == Direction.horizontal ) {
+            this.leftHandle = div({classes: "clip-handle-left", children: icon({icon: "chevron-left"})});
+            this.rightHandle = div({classes: "clip-handle-right", children: icon({icon: "chevron-right"})});
 
-        this.generateHandleEvents(this.leftHandle, "left");
-        this.generateHandleEvents(this.rightHandle, "right");
+            this.generateHandleEvents(this.leftHandle, "left");
+            this.generateHandleEvents(this.rightHandle, "right");
+        } else {
+            this.leftHandle = div({classes: "clip-handle-top", children: icon({icon: "chevron-up"})});
+            this.rightHandle = div({classes: "clip-handle-bottom", children: icon({icon: "chevron-down"})});
+
+            this.generateHandleEvents(this.leftHandle, "top");
+            this.generateHandleEvents(this.rightHandle, "bottom");
+        }
     }
 
-    private generateHandleEvents(handle: HTMLDivElement, side: "left" | "right") {
+    private generateHandleEvents(handle: HTMLDivElement, side: "left" | "right" | "top" | "bottom") {
         handle.addEventListener(DefaultEventName.clickStart, (e: TurboDragEvent) => e.stopImmediatePropagation());
         handle.addEventListener(DefaultEventName.dragStart, (e: TurboDragEvent) => e.stopImmediatePropagation());
         handle.addEventListener(DefaultEventName.drag, (e: TurboDragEvent) => this.dragHandle(side, e));
         handle.addEventListener(DefaultEventName.dragEnd, () => this.model.normalizeTime());
     }
 
-    private dragHandle(side: "left" | "right", e: TurboDragEvent) {
+    private dragHandle(side: "left" | "right" | "top" | "bottom", e: TurboDragEvent) {
         e.stopImmediatePropagation();
         const delta = (this.element.timeline.scaled ? e.scaledDeltaPosition.x : e.deltaPosition.x)
             / this.element.timeline?.pixelsPerSecondUnit;

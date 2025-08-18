@@ -12,3 +12,7 @@ vc-app-bar turbo-icon {
     width: 2em;
     height: 2em;
 }
+
+vc-app-bar turbo-icon:hover {
+    cursor: pointer;
+}

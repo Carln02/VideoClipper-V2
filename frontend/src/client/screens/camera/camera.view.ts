@@ -14,7 +14,7 @@ export class CameraView extends TurboView<Camera, CameraModel> {
     public clipRenderer: ClipRenderer;
 
     public toolbar: Toolbar;
-    public timeline: Timeline;
+    public timeline: ShootingTimeline;
     public metadataDrawer: MetadataDrawer;
 
     initialize() {
@@ -36,7 +36,7 @@ export class CameraView extends TurboView<Camera, CameraModel> {
 
         this.timeline = new ShootingTimeline({
             drawerProperties: {
-                side: Side.top,
+                side: Side.right,
                 icon: "chevron",
                 offset: {[Open.open]: -4},
                 initiallyOpen: true

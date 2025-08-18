@@ -26,7 +26,8 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
 
     private shootingDiv: TurboSelectEntry;
     private backgroundColorDiv: TurboSelectEntry;
-    private toolsDiv: TurboSelectEntry;
+    private editTextDiv: TurboSelectEntry;
+    
     private animatedDiv: AnimatedContentSwitchingDiv;
 
     public initialize() {
@@ -41,7 +42,7 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
 
         this.modeSlider = new CaptureModeSlider({
             classes: "capture-mode-slider",
-            values: [CaptureMode.photo, CaptureMode.video, CaptureMode.create],
+            values: [CaptureMode.photo, CaptureMode.video, CaptureMode.create, CaptureMode.text],
         });
 
         this.captureTimer = new CaptureTimer();
@@ -55,7 +56,7 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
 
         this.shootingDiv = new TurboSelectEntry({value: "shooting", reflectValueOn: div()});
         this.backgroundColorDiv = new TurboSelectEntry({value: "backgroundColor", reflectValueOn: div()});
-        this.toolsDiv = new TurboSelectEntry({value: "tools", reflectValueOn: div()});
+        this.editTextDiv = new TurboSelectEntry({value: "editText", reflectValueOn: div()});
 
         this.animatedDiv = new AnimatedContentSwitchingDiv({values: [this.shootingDiv, this.backgroundColorDiv]});
     }

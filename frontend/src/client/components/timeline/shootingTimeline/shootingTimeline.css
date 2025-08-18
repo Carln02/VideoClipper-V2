@@ -1,59 +1,49 @@
-.vc-timeline.vc-shooting-timeline {
-    height: 100%;
-    display: flex;
-    width: 0;
-    right: 0;
+vc-shooting-timeline {
+    position: fixed;
+    /*
+    rotate: -90deg;
+    left: -40%;*/
+}
+
+.vc-shooting-timeline .turbo-drawer-panel {
+    align-content: center;
+}
+
+.vc-timeline.vc-shooting-timeline .shooting-timeline-container {
+    margin: 0.5em;
+    justify-content: space-around;
 }
 
 .vc-timeline.vc-shooting-timeline .scrubber-container {
     position: relative;
     border-radius: 0.35em;
-    height: 3.8em;
+    width: 3.8em;
+    height:100%;
+
     background-color: transparent;
 
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 }
 
-.vc-shooting-timeline .turbo-drawer {
+.vc-shooting-timeline .shooting-timeline-drawer {
     height: 120%;
     align-items: center;
 }
 
-.vc-shooting-timeline .turbo-drawer .turbo-drawer-panel-container {
+.vc-shooting-timeline .shooting-timeline-drawer .shooting-timeline-drawer-panel-container {
     height: 100%;
     display: flex;
-    background-color: transparent;
 }
 
-.vc-shooting-timeline .turbo-drawer .turbo-drawer-panel {
+.vc-shooting-timeline .shooting-timeline-drawer .shooting-timeline-drawer-panel {
     display: flex !important;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.vc-shooting-timeline .turbo-drawer .clips-container {
-    position: relative;
-    border-radius: 0.35em;
-    height: calc(6em - 2.4em);
-
-    display: flex;
-    flex-direction: row;
-
-    flex-grow: 1;
-
-    z-index: 2;
-}
-
 .vc-shooting-timeline .top-drawer {
     bottom: 1em;
-}
-
-.vc-shooting-timeline .right-drawer {
-    position: absolute;
-    left: 100%;
-    top: 50%;
-    transform: translateY(-50%);
 }
 
 .vc-shooting-timeline .play-button {
@@ -66,11 +56,11 @@
 }
 
 .vc-shooting-timeline vc-clip:nth-child(2) .vc-clip-content {
-    border-radius: 0.35em 0 0 0.35em;
+    border-radius: 0.35em 0.35em 0 0;
 }
 
 .vc-shooting-timeline vc-clip:last-child .vc-clip-content {
-    border-radius:  0 0.35em 0.35em 0;
+    border-radius:  0 0 0.35em 0.35em;
 }
 
 .vc-shooting-timeline vc-clip:last-child:nth-child(2) .vc-clip-content {

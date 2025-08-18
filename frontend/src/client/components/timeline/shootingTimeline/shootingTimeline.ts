@@ -1,4 +1,4 @@
-import {auto, define} from "turbodombuilder";
+import {auto, define, Direction} from "turbodombuilder";
 import {ClipRenderer} from "../../clipRenderer/clipRenderer";
 import {Clip} from "../../clip/clip";
 import "./shootingTimeline.css";
@@ -13,7 +13,7 @@ export class ShootingTimeline extends Timeline<ShootingTimelineView> {
     public readonly renderer: ClipRenderer;
 
     public constructor(properties: ShootingTimelineProperties) {
-        super({...properties, viewConstructor: ShootingTimelineView});
+        super({...properties, viewConstructor: ShootingTimelineView, orientation: Direction.vertical});
         this.addClass("vc-shooting-timeline");
         this.scaled = true;
         if (properties.drawerProperties) this.view.drawer.setProperties(properties.drawerProperties);
@@ -31,6 +31,10 @@ export class ShootingTimeline extends Timeline<ShootingTimelineView> {
     }
 
     public get width() {
+        return this.model.totalDuration * this.pixelsPerSecondUnit * ((this.scaled ? this.director.canvas.scale : 1) || 1);
+    }
+
+    public get height() {
         return this.model.totalDuration * this.pixelsPerSecondUnit * ((this.scaled ? this.director.canvas.scale : 1) || 1);
     }
 

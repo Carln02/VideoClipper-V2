@@ -1,5 +1,5 @@
 import "./clip.css";
-import {Coordinate, define, TurboDragEvent, TurboView} from "turbodombuilder";
+import {Coordinate, define, Direction, SideH, TurboDragEvent, TurboView} from "turbodombuilder";
 import {Timeline} from "../timeline/timeline";
 import {ClipProperties, SyncedClip} from "./clip.types";
 import {ClipModel} from "./clip.model";
@@ -26,6 +26,13 @@ export class Clip<
     Model extends ClipModel = ClipModel,
 > extends VcComponent<View, SyncedClip, Model, Project>  {
     public readonly timeline: Timeline;
+
+    public get orientation(): Direction {
+        return this.model.orientation;
+    }
+    public set orientation(value: Direction) {
+        this.model.orientation = value;
+    }
 
     public onMediaDataChanged: (clip: this) => void = () => {};
 

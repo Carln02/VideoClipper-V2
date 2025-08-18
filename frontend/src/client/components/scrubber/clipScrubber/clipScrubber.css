@@ -1,4 +1,6 @@
-.vc-scrubber.vc-clip-scrubber {
+/*********** Vertical clip scrubber ***********/
+
+.vc-scrubber.vc-clip-scrubber.vc-scrubber-v {
     position: absolute;
     bottom: 0;
 
@@ -14,12 +16,19 @@
     z-index: 2;
 }
 
-.vc-clip-scrubber > * {
+.vc-clip-scrubber.vc-scrubber-v > * {
     position: absolute;
     transform: translateX(0.01em);
 }
 
-.vc-clip-scrubber > :first-child {
+.vc-clip-scrubber.vc-scrubber-v > :first-child > svg {
+    width: 100%;
+    height: 100%;
+    fill: red;
+}
+
+/* Arrow */
+.vc-clip-scrubber.vc-scrubber-v > :first-child {
     top: -0.8em;
 
     width: 1em;
@@ -27,14 +36,61 @@
     padding: 0.5em;
 }
 
-.vc-clip-scrubber > :first-child > svg {
+/* Marking menu */
+.vc-clip-scrubber.vc-scrubber-v > div:last-child {
+    top: -1.6em;
+    width: 1em;
+    height: 1em;
+
+    border-radius: 2em;
+    background-color: pink;
+}
+
+
+
+/********** Horizontal clip scrubber **********/
+
+.vc-scrubber.vc-clip-scrubber.vc-scrubber-h {
+    position: absolute;
+    right: 0;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    height: 0.2em;
+    background-color: red;
+    width: calc(100% + 1em);
+    border-radius: 10px;
+
+    z-index: 2;
+}
+
+.vc-clip-scrubber.vc-scrubber-h > * {
+    position: absolute;
+    transform: translateY(0.01em);
+}
+
+.vc-clip-scrubber.vc-scrubber-h > :first-child > svg {
     width: 100%;
     height: 100%;
     fill: red;
+    rotate: -90deg;
 }
 
-.vc-clip-scrubber > div:last-child {
-    top: -1.6em;
+/* Arrow*/
+.vc-clip-scrubber.vc-scrubber-h > :first-child {
+    left: -0.8em;
+    top: -0.9em;
+
+    width: 1em;
+    height: 1em;
+    padding: 0.5em;
+}
+
+/* Marking menu */
+.vc-clip-scrubber.vc-scrubber-h > div:last-child {
+    right : -1.6em;
     width: 1em;
     height: 1em;
 

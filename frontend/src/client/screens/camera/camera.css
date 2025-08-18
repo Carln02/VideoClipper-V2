@@ -15,6 +15,7 @@ vc-camera {
 vc-camera vc-timeline {
     position: absolute;
     top: calc(100% - 3em);
+    left:100%;
 }
 
 vc-camera > #capture-bar {
@@ -41,3 +42,4 @@ vc-camera > #capture-bar > div:last-child {
 vc-camera .vc-renderer {
     position: absolute;
 }
+

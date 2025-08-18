@@ -1,5 +1,5 @@
 import "./scrubberMarkingMenu.css";
-import {define, Point, TurboMarkingMenu, TurboMarkingMenuProperties, TurboSelectEntry} from "turbodombuilder";
+import {auto, define, Direction, Point, TurboMarkingMenu, TurboMarkingMenuProperties, TurboSelectEntry} from "turbodombuilder";
 import {ScrubberMenu} from "./scrubberMarkingMenu.types";
 import {Scrubber} from "../scrubber/scrubber";
 import {Clip} from "../clip/clip";
@@ -8,15 +8,22 @@ import {Timeline} from "../timeline/timeline";
 
 @define()
 export class ScrubberMarkingMenu extends TurboMarkingMenu {
-    public scrubber: Scrubber;
+    //public scrubber: Scrubber;
+    @auto()
+    public set scrubber(value: Scrubber) {
+        this.toggleClass("marking-menu-v", value.orientation === Direction.vertical);
+        this.toggleClass("marking-menu-h", value.orientation === Direction.horizontal);
+    }
 
     public constructor(properties: TurboMarkingMenuProperties) {
-        if (!properties.semiMinor) properties.semiMinor = 40;
-        if (!properties.semiMajor) properties.semiMajor = 40;
         super(properties);
         this.addClass("turbo-marking-menu");
 
         this.scrubber = properties.scrubber;
+
+        if (!properties.semiMinor) this.hasClass("marking-menu-v") ? properties.semiMinor = 40 : properties.semiMinor = 60;
+        if (!properties.semiMajor) properties.semiMajor = 40;
+
         this.onSelect = () => this.show(false);
         this.initializeEntries();
     }
@@ -45,33 +52,13 @@ export class ScrubberMarkingMenu extends TurboMarkingMenu {
         }));
 
         this.addEntry(new TurboSelectEntry({
-            value: ScrubberMenu.insertCard, text: "Insert Card",
+            value: ScrubberMenu.insertCard, text: "Split in card",
             action: () => {}
-        }));
-
-        this.addEntry(new TurboSelectEntry({
-            value: ScrubberMenu.trimRight, text: "Trim Right",
-            action: () => this.clip.endTime -= this.clip.duration - this.clipInfo.offset
-        }));
-
-        this.addEntry(new TurboSelectEntry({
-            value: ScrubberMenu.deleteRight, text: "Delete Right",
-            action: () => this.timeline.removeClipAt(this.clipInfo.clipIndex + 1)
         }));
 
         this.addEntry(new TurboSelectEntry({
             value: ScrubberMenu.delete, text: "Delete",
             action: () => this.timeline.removeClipAt(this.clipInfo.clipIndex)
-        }));
-
-        this.addEntry(new TurboSelectEntry({
-            value: ScrubberMenu.trimLeft, text: "Trim Left",
-            action: () => this.clip.startTime += this.clipInfo.offset
-        }));
-
-        this.addEntry(new TurboSelectEntry({
-            value: ScrubberMenu.deleteLeft, text: "Delete Left",
-            action: () => this.timeline.removeClipAt(this.clipInfo.clipIndex - 1)
         }));
 
         this.addEntry(new TurboSelectEntry({
@@ -89,10 +76,11 @@ export class ScrubberMarkingMenu extends TurboMarkingMenu {
         const isBetweenClips = this.clipInfo.distanceFromClosestIntersection < 0.2;
         const clipIndex = this.clipInfo.clipIndex;
 
-        this.enable(isBetweenClips && clipIndex !== 0, ScrubberMenu.deleteRight);
-        this.enable(isBetweenClips && clipIndex !== this.timeline.clips.length - 1, ScrubberMenu.deleteLeft);
+        //this.enable(isBetweenClips && clipIndex !== 0, ScrubberMenu.deleteRight);
+        //this.enable(isBetweenClips && clipIndex !== this.timeline.clips.length - 1, ScrubberMenu.deleteLeft);
 
-        this.enable(!isBetweenClips, ScrubberMenu.trimLeft, ScrubberMenu.trimRight, ScrubberMenu.delete,
+        //this.enable(!isBetweenClips, ScrubberMenu.trimLeft, ScrubberMenu.trimRight, ScrubberMenu.delete,
+        this.enable(!isBetweenClips, ScrubberMenu.delete,
             ScrubberMenu.split, ScrubberMenu.mute, ScrubberMenu.hide, ScrubberMenu.reshoot);
 
         if (!isBetweenClips) {

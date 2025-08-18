@@ -1,5 +1,5 @@
 import {ClipProperties, SyncedClip} from "../clip/clip.types";
-import {auto, define, TurboEvent} from "turbodombuilder";
+import {auto, define, TurboEvent, Direction} from "turbodombuilder";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {Clip} from "../clip/clip";
 import "./timeline.css";
@@ -38,6 +38,7 @@ export class Timeline<
             initialize: false
         });
 
+        this.model.orientation = properties.orientation ?? Direction.horizontal;
         this.model.onCardAdded = (cardId) => this.director.getNode(cardId) as Card;
         this.model.onClipAdded = (syncedClip, id, blockKey) => this.onClipAdded(syncedClip, id, blockKey);
         this.model.onClipChanged = () => this.reloadTime();
@@ -49,6 +50,7 @@ export class Timeline<
 
     protected onClipAdded(syncedClip: SyncedClip, id: number, blockKey: number, clipProperties: ClipProperties = {}): Clip {
         const clip = new Clip({...clipProperties, timeline: this, director: this.director});
+        clip.orientation = this.model.orientation;
         const snapToNext = id === this.model.indexInfo?.closestIntersection && this.model.indexInfo?.closestIntersection > 0;
 
         clip.onMediaDataChanged = (clip: Clip) => {
@@ -128,6 +130,11 @@ export class Timeline<
     public get width() {
         const basis = this.scaled ? this.director.canvas.scale : 1;
         return this.offsetWidth * basis;
+    }
+
+    public get height() {
+        const basis = this.scaled ? this.director.canvas.scale : 1;
+        return this.offsetHeight * basis;
     }
 
     public async addClip(clip: SyncedClip & YMap, index?: number): Promise<number> {
