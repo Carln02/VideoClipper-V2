@@ -30,6 +30,10 @@ body::-webkit-scrollbar {
     font-family: "Inter", sans-serif;
 }
 
+h2 {
+    font-size: 1.4rem;
+}
+
 .icon {
     display: inline-block;
     max-width: 2.5em;

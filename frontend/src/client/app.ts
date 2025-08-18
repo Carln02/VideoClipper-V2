@@ -5,4 +5,5 @@ import {RootDirector} from "./directors/rootDirector/rootDirector";
 
 RootDirector.initialize();
 const app = new App({parent: document.body});
+app.preventDefaultEvents = false;
 app.currentType = AppScreens.home;

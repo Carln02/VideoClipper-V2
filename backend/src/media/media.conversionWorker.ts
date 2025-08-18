@@ -5,20 +5,21 @@ import fs from "fs";
 
 if (!isMainThread) {
     const {inputPath} = workerData;
-    console.log(inputPath);
     const outputPath = path.format({
         ...path.parse(inputPath),
-        base: undefined, // Clear base so `name + ext` is used
+        base: undefined,
         ext: ".mp4"
     });
-    console.log(outputPath);
 
     const ffmpeg = spawn("ffmpeg", [
         "-i", inputPath,
+        "-r", "30",
         "-c:v", "libx264",
+        "-pix_fmt", "yuv420p",
         "-preset", "fast",
         "-crf", "23",
         "-c:a", "aac",
+        "-movflags", "+faststart",
         outputPath
     ]);
 

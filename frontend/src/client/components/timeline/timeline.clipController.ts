@@ -26,9 +26,9 @@ export class TimelineClipController extends TurboController<Timeline, TimelineVi
         return this.model.clipHandler;
     }
 
-    protected reloadCurrentClip() {
+    public reloadCurrentClip() {
         this.model.indexInfo = this.clipHandler.getClipIndexAtTimestamp();
-        this.element.director.contextManager.setContext(this.model.currentClip, 2, this.model.currentClip.selected);
+        if (this.model.currentClip.selected) this.element.director.contextManager.setContext(this.model.currentClip, 2, true);
 
         this.element.renderer.setFrame(this.element.renderer.visibilityMode == ClipRendererVisibility.ghosting
             ? this.model.currentGhostingClip : this.model.currentClip, this.model.indexInfo?.offset);

@@ -28,8 +28,8 @@ export class Camera extends VcComponent<CameraView, object, CameraModel, Project
 
         this.mvc.emitter.add("recordedMedia", async (media: SyncedMedia, blob?: Blob) => {
             await this.director.mediaHandler.saveMedia(media, blob);
-            const clipData = Clip.createData({endTime: (media?.duration ?? 5), mediaId: media.id});
-            await this.card.addClip(clipData, this.view.timeline.currentClipInfo.closestIntersection);
+            await this.card.addClip(Clip.createData({endTime: (media?.duration ?? 5), mediaId: media.id}),
+                this.view.timeline.currentClipInfo.closestIntersection);
         });
     }
 

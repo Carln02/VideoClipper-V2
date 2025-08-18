@@ -182,6 +182,7 @@ export class Clip<
         if (localSplitTime < this.startTime || localSplitTime > this.endTime) return;
         const newData = Clip.createData((this.data as any as YMap).toJSON());
         newData.set("startTime", localSplitTime);
+        newData.set("color", randomColor());
         this.endTime = localSplitTime;
         return newData;
     }

@@ -19,9 +19,10 @@ export class GroupController {
 
     public createGroup = async (req: any, res: any) => {
         try {
-            const {name, ownerId} = req.body;
-            if (!name || !ownerId) throw new Error("Group name and ownerId are required");
-            const group = await this.groupRepo.createGroup(name, new ObjectId(ownerId));
+            const {name} = req.body;
+            const user = req.user;
+            if (!name || !user || !ObjectId.isValid(user._id)) throw new Error("Group name and user are required");
+            const group = await this.groupRepo.createGroup(name, new ObjectId(user._id));
             respondSuccess(res, group);
         } catch (err: any) {
             respondFailure(res, err.message);

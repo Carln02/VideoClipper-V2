@@ -76,6 +76,8 @@ export class ClipRendererModel extends RendererModel {
     }
 
     public setClipWithOffset(clip: Clip, offset: number = 0, index: number = this.currentIndex) {
+        if (clip) offset += clip.startTime;
+
         const prevClip = this.videoClips[index];
         if (clip != prevClip) this.videoClips[index] = clip;
 

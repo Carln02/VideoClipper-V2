@@ -59,6 +59,14 @@ export class FlowEntry extends TurboProxiedElement<"g", FlowEntryView, SyncedFlo
         return this.model.points;
     }
 
+    public get highlighted(): boolean {
+        return this.model.highlighted;
+    }
+
+    public set highlighted(value: boolean) {
+        this.model.highlighted = value;
+    }
+
     public addPoint(point: Point, isTemporary: boolean = false) {
         return this.model.pointHandler.addPoint(point, isTemporary);
     }

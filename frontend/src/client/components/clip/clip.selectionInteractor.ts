@@ -23,6 +23,7 @@ export class ClipSelectionInteractor extends TurboInteractor<ToolType, Clip, Cli
     }
 
     public click() {
+        console.log("EWFFEWEFWEFW")
         this.contextManager.setContext(this.element, 2, true);
     }
 

@@ -768,10 +768,21 @@ class RequestHandler {
             if (request.readyState !== 4)
                 return;
             if (request.status < 200 || request.status >= 300) {
-                onFailure(request.responseText);
+                onFailure(request.response);
                 return;
             }
-            parse ? onSuccess(JSON.parse(request.responseText)) : onSuccess(request.response);
+            if (parse) {
+                try {
+                    onSuccess(typeof request.response === "string"
+                        ? JSON.parse(request.response)
+                        : JSON.parse(new TextDecoder().decode(request.response)));
+                }
+                catch (err) {
+                    onFailure("Failed to parse JSON: " + err.message);
+                }
+            }
+            else
+                onSuccess(request.response);
         };
         request.open(method, url, true);
         if (!(body instanceof FormData)) {
@@ -870,24 +881,29 @@ class WebsocketManager {
         window.addEventListener("online", this.handleConnect, { once: true });
         window.addEventListener("offline", this.handleDisconnect, { once: true });
         const tempProvider = new y_websocket__WEBPACK_IMPORTED_MODULE_1__.WebsocketProvider(this.serverUrl, this.room, this.ydoc, websocketOptions.options);
-        this.provider = new y_websocket__WEBPACK_IMPORTED_MODULE_1__.WebsocketProvider(this.serverUrl, this.room, this.ydoc, websocketOptions.options);
-        if (websocketOptions.debug)
-            this.setupDebug();
-        this.provider.on("status", (event) => {
-            if (event.status === "disconnected" && this.onDisconnect)
-                this.onDisconnect.fire();
-        });
-        this.provider.on("sync", (isSynced) => {
-            if (!isSynced)
-                return;
-            tempProvider.disconnect();
-            this.onConnect.fire();
-        });
-        if (this.provider.synced)
-            requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            this.provider = new y_websocket__WEBPACK_IMPORTED_MODULE_1__.WebsocketProvider(this.serverUrl, this.room, this.ydoc, websocketOptions.options);
+            if (websocketOptions.debug)
+                this.setupDebug();
+            this.provider.on("status", (event) => {
+                if (event.status === "disconnected" && this.onDisconnect)
+                    this.onDisconnect.fire();
+            });
+            tempProvider.on("sync", (isSynced) => {
+                console.log(isSynced);
+            });
+            this.provider.on("sync", (isSynced) => {
+                if (!isSynced)
+                    return;
                 tempProvider.disconnect();
                 this.onConnect.fire();
             });
+            if (this.provider.synced)
+                requestAnimationFrame(() => {
+                    tempProvider.disconnect();
+                    this.onConnect.fire();
+                });
+        });
     }
     get defaultUrl() {
         const isSecure = window.location.protocol === "https:";
@@ -11306,6 +11322,8 @@ function addListenerManipulationToElementPrototype() {
      */
     Node.prototype.addListener = function _addListener(type, listener, boundTo = this, options) {
         const wrappedListener = ((e) => {
+            if (typeof options === "object" && !options?.propagate)
+                e.stopPropagation();
             if (typeof listener === "object" && listener.handleEvent)
                 listener.handleEvent(e);
             if (typeof listener === "function")
@@ -13395,23 +13413,23 @@ let TurboEventManager = class TurboEventManager extends TurboElement {
                 this.applyEventNames(TurboKeyEventName);
             }
             if (!this.disabledEventTypes.disableWheelEvents) {
-                document.body.addListener("wheel", this.wheel, this, { passive: false });
+                document.body.addListener("wheel", this.wheel, this, { passive: false, propagate: true });
                 this.applyEventNames(TurboWheelEventName);
             }
             if (!this.disabledEventTypes.disableMoveEvent) {
                 this.applyEventNames(TurboMoveName);
             }
             if (!this.disabledEventTypes.disableMouseEvents) {
-                document.body.addListener("mousedown", this.pointerDown);
-                document.body.addListener("mousemove", this.pointerMove);
-                document.body.addListener("mouseup", this.pointerUp);
-                document.body.addListener("mouseleave", this.pointerLeave);
+                document.body.addListener("mousedown", this.pointerDown, this, { propagate: true });
+                document.body.addListener("mousemove", this.pointerMove, this, { propagate: true });
+                document.body.addListener("mouseup", this.pointerUp, this, { propagate: true });
+                document.body.addListener("mouseleave", this.pointerLeave, this, { propagate: true });
             }
             if (!this.disabledEventTypes.disableTouchEvents) {
-                document.body.addListener("touchstart", this.pointerDown, this, { passive: false });
-                document.body.addListener("touchmove", this.pointerMove, this, { passive: false });
-                document.body.addListener("touchend", this.pointerUp, this, { passive: false });
-                document.body.addListener("touchcancel", this.pointerUp, this, { passive: false });
+                document.body.addListener("touchstart", this.pointerDown, this, { passive: false, propagate: true });
+                document.body.addListener("touchmove", this.pointerMove, this, { passive: false, propagate: true });
+                document.body.addListener("touchend", this.pointerUp, this, { passive: false, propagate: true });
+                document.body.addListener("touchcancel", this.pointerUp, this, { passive: false, propagate: true });
             }
             if (!this.disabledEventTypes.disableMouseEvents || !this.disabledEventTypes.disableTouchEvents) {
                 if (!this.disabledEventTypes.disableClickEvents)
@@ -13880,7 +13898,7 @@ class ToolManager {
         if (!tool)
             return;
         const interactors = [];
-        let target = e.target;
+        let target = e.closest(Element, true, ClosestOrigin.position);
         while (target) {
             if (typeof target["interact"] === "function" && typeof target["propagatesUp"] === "function") {
                 interactors.push(target);
@@ -16187,13 +16205,13 @@ let TurboSelectWheel = class TurboSelectWheel extends TurboSelect {
     }
     setupUIListeners() {
         super.setupUIListeners();
-        document.addListener(DefaultEventName.drag, (e) => {
+        document.body.addListener(DefaultEventName.drag, (e) => {
             if (!this.dragging)
                 return;
             e.stopImmediatePropagation();
             this.currentPosition += this.computeDragValue(e.scaledDeltaPosition);
         });
-        document.addListener(DefaultEventName.dragEnd, (e) => {
+        document.body.addListener(DefaultEventName.dragEnd, (e) => {
             if (!this.dragging)
                 return;
             e.stopImmediatePropagation();

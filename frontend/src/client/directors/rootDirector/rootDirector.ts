@@ -61,7 +61,6 @@ export class RootDirector<
     public set preventDefaultEvents(value: boolean) {
         this.eventManager.defaultState.preventDefaultTouch = value;
         this.eventManager.defaultState.preventDefaultMouse = value;
+        this.eventManager.defaultState.preventDefaultWheel = value;
     }
-
-    publ
 }

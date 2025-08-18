@@ -6,24 +6,65 @@ vc-home {
     height: 100%;
 }
 
+vc-home .popup-card {
+    display: flex;
+    min-width: 200px;
+    align-items: flex-start;
+}
+
+vc-home .popup-card turbo-input {
+    width: 100%;
+}
+
 vc-home > #groups-panel {
     min-width: 200px;
-    width: 20%;
+    width: 17%;
     background-color: var(--white);
     border-right: 0.2em solid var(--grey-2);
+    overflow-y: auto;
+    padding: 2em;
+}
+
+vc-home > #main-panel {
+    flex-grow: 1;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+}
+
+vc-home .title-div {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    align-items: center;
+}
+
+vc-home .title-div > :first-child {
+    flex-grow: 1;
 }
 
 vc-home #groups-select {
     display: flex;
     flex-direction: column;
     gap: 0.6em;
+    width: auto;
+    margin-top: 24px;
 
-    width: calc(100% - 4em);
-    margin: 2em;
 }
 
 vc-home #groups-select > * {
     padding: 0.8em 1.6em;
     border-radius: 0.4em;
     border: 0.1em solid var(--grey-2);
+}
+
+vc-home #projects-select {
+    display: grid;
+    gap: 44px;
+    width: 100%;
+
+    grid-template-columns: repeat(auto-fit, minmax(max(200px, calc(25% - 44px)), 1fr));
+    grid-auto-rows: minmax(200px, auto);
 }

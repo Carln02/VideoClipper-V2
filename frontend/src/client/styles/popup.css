@@ -7,3 +7,7 @@
     flex-direction: column;
     gap: 1em;
 }
+
+turbo-popup {
+    z-index: 2;
+}

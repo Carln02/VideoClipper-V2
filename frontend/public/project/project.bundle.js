@@ -804,6 +804,106 @@ Resizer = __decorate([
 
 /***/ }),
 
+/***/ "./frontend/src/client/components/branchingNode/branchingNode.connectionInteractor.ts":
+/*!********************************************************************************************!*\
+  !*** ./frontend/src/client/components/branchingNode/branchingNode.connectionInteractor.ts ***!
+  \********************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   BranchingNodeConnectionInteractor: () => (/* binding */ BranchingNodeConnectionInteractor)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+/* harmony import */ var _utils_computation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/computation */ "./frontend/src/client/utils/computation.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+class BranchingNodeConnectionInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
+    constructor() {
+        super(...arguments);
+        this.tool = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.connection;
+        this.propagateUp = {
+            [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.move]: true,
+            [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.dragEnd]: true,
+        };
+    }
+    initializeFlow(e, tool) {
+        return __awaiter(this, void 0, void 0, function* () {
+            //Reset drawing time
+            tool.lastDrawnTime = Date.now();
+            tool.lastNodeId = this.element.dataId; //TODO MAYBE CRASHES - GO BACK TO e.closest()
+            const existingFlow = this.element.director.flows.find(flow => flow.color === tool.color);
+            if (existingFlow) {
+                tool.currentFlowId = existingFlow.dataId;
+                if (!existingFlow.hasNode(tool.lastNodeId))
+                    existingFlow.createSelector(tool.lastNodeId);
+            }
+            else {
+                tool.currentFlowId = yield this.element.director.createNewFlow(e.scaledPosition, tool.lastNodeId, tool.color);
+            }
+        });
+    }
+    //On click --> create a point if the click is inside a node, otherwise cancel flow
+    click(e, tool) {
+        tool.lastNodeId = this.element.dataId;
+        //If no current flow --> try to initialize one
+        if (!tool.currentFlow)
+            return this.initializeFlow(e, tool);
+        //Add a point to this flow, with the closestNode's ID
+        tool.currentFlow.addPoint(e.scaledPosition);
+    }
+    dragStart(e, tool) {
+        //Return if already creating/editing a flow
+        if (tool.currentFlowId)
+            return;
+        this.initializeFlow(e, tool);
+    }
+    //On drag --> draw flow
+    drag(e, tool) {
+        //Return if no current flow
+        if (!tool.currentFlow)
+            return;
+        if (tool.currentEntry) {
+            if (tool.currentEntry.startNodeId === this.model.dataId)
+                return;
+            const lastPoint = (0,_utils_computation__WEBPACK_IMPORTED_MODULE_2__.getClosestPointOnEdge)(e.position, this.element.querySelector("vc-playback").getBoundingClientRect());
+            //TODO USE CONSTRAINTS INSTEAD
+            tool.currentEntry.addPoint(this.element.director.canvas.navigationManager.computePositionRelativeToCanvas(lastPoint));
+            tool.currentEntry.endEntry(this.model.dataId);
+        }
+        tool.currentFlow.createEntry(this.model.dataId);
+        // //Check if drawing a temporary or permanent point
+        // //If drawing into a new node --> ignore interval and add a point. This ensures that when a user hits a
+        // // new node, it is added to the flow
+        // const isTemporary = Date.now() - tool.lastDrawnTime <= tool.drawingInterval
+        //     && this.element.dataId == tool.lastNodeId;
+        // //If the point is permanent --> update last drawn time and last node
+        // if (!isTemporary) {
+        //     tool.lastDrawnTime = Date.now();
+        //     tool.lastNodeId = this.element.dataId;
+        // }
+        //
+        // console.log(tool.lastNodeId);
+        // //Add point
+        // tool.currentFlow?.addPoint(e.scaledPosition, this.element.dataId, isTemporary);
+    }
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/components/branchingNode/branchingNode.css":
 /*!************************************************************************!*\
   !*** ./frontend/src/client/components/branchingNode/branchingNode.css ***!
@@ -936,7 +1036,7 @@ class BranchingNodeSelectionInteractor extends turbodombuilder__WEBPACK_IMPORTED
     drag(e) {
         //TODO CHECK SUBSTRATE
         this.model.origin = e.scaledDeltaPosition.add(this.model.origin).object;
-        this.element.director.forEachBranch((branch) => branch.updateAfterMovingNode(this.element.dataId, e.scaledDeltaPosition));
+        this.element.director.flows.forEach((flow) => flow.updateAfterMovingNode(this.element.dataId, e.scaledDeltaPosition));
     }
 }
 
@@ -963,12 +1063,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
 /* harmony import */ var _branchingNode_selectionInteractor__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./branchingNode.selectionInteractor */ "./frontend/src/client/components/branchingNode/branchingNode.selectionInteractor.ts");
 /* harmony import */ var _branchingNode_deleteInteractor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./branchingNode.deleteInteractor */ "./frontend/src/client/components/branchingNode/branchingNode.deleteInteractor.ts");
+/* harmony import */ var _branchingNode_connectionInteractor__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./branchingNode.connectionInteractor */ "./frontend/src/client/components/branchingNode/branchingNode.connectionInteractor.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
 
 
 
@@ -993,7 +1095,8 @@ let BranchingNode = class BranchingNode extends _component_component__WEBPACK_IM
                 viewConstructor: _branchingNode_view__WEBPACK_IMPORTED_MODULE_4__.BranchingNodeView,
                 modelConstructor: _branchingNode_model__WEBPACK_IMPORTED_MODULE_3__.BranchingNodeModel,
                 data: properties.data,
-                interactorConstructors: [_branchingNode_selectionInteractor__WEBPACK_IMPORTED_MODULE_7__.BranchingNodeSelectionInteractor, _branchingNode_deleteInteractor__WEBPACK_IMPORTED_MODULE_8__.BranchingNodeDeleteInteractor]
+                interactorConstructors: [_branchingNode_selectionInteractor__WEBPACK_IMPORTED_MODULE_7__.BranchingNodeSelectionInteractor, _branchingNode_deleteInteractor__WEBPACK_IMPORTED_MODULE_8__.BranchingNodeDeleteInteractor,
+                    _branchingNode_connectionInteractor__WEBPACK_IMPORTED_MODULE_9__.BranchingNodeConnectionInteractor]
             });
     }
     static createData(data) {
@@ -1574,6 +1677,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _branchingNode_branchingNode_selectionInteractor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../branchingNode/branchingNode.selectionInteractor */ "./frontend/src/client/components/branchingNode/branchingNode.selectionInteractor.ts");
 /* harmony import */ var _card_shootingInteractor__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./card.shootingInteractor */ "./frontend/src/client/components/card/card.shootingInteractor.ts");
 /* harmony import */ var _card_createCardInteractor__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./card.createCardInteractor */ "./frontend/src/client/components/card/card.createCardInteractor.ts");
+/* harmony import */ var _branchingNode_branchingNode_connectionInteractor__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../branchingNode/branchingNode.connectionInteractor */ "./frontend/src/client/components/branchingNode/branchingNode.connectionInteractor.ts");
+/* harmony import */ var _branchingNode_branchingNode_deleteInteractor__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../branchingNode/branchingNode.deleteInteractor */ "./frontend/src/client/components/branchingNode/branchingNode.deleteInteractor.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1600,6 +1705,8 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
+
 /**
  * @description Class representing a card
  */
@@ -1610,7 +1717,8 @@ let Card = class Card extends _branchingNode_branchingNode__WEBPACK_IMPORTED_MOD
             viewConstructor: _card_view__WEBPACK_IMPORTED_MODULE_4__.CardView,
             modelConstructor: _card_model__WEBPACK_IMPORTED_MODULE_3__.CardModel,
             data: properties.data,
-            interactorConstructors: [_branchingNode_branchingNode_selectionInteractor__WEBPACK_IMPORTED_MODULE_8__.BranchingNodeSelectionInteractor, _card_shootingInteractor__WEBPACK_IMPORTED_MODULE_9__.CardShootingInteractor, _card_createCardInteractor__WEBPACK_IMPORTED_MODULE_10__.CardCreateCardInteractor]
+            interactorConstructors: [_branchingNode_branchingNode_selectionInteractor__WEBPACK_IMPORTED_MODULE_8__.BranchingNodeSelectionInteractor, _card_shootingInteractor__WEBPACK_IMPORTED_MODULE_9__.CardShootingInteractor,
+                _card_createCardInteractor__WEBPACK_IMPORTED_MODULE_10__.CardCreateCardInteractor, _branchingNode_branchingNode_connectionInteractor__WEBPACK_IMPORTED_MODULE_11__.BranchingNodeConnectionInteractor, _branchingNode_branchingNode_deleteInteractor__WEBPACK_IMPORTED_MODULE_12__.BranchingNodeDeleteInteractor]
         });
         this.renderer.card = this;
     }
@@ -1670,17 +1778,6 @@ let Card = class Card extends _branchingNode_branchingNode__WEBPACK_IMPORTED_MOD
      */
     editTitle() {
         this.view.editTitle();
-    }
-    /**
-     * @function delete
-     * @description Deletes the node data from the Yjs document, destroys all its attached components (including this),
-     * amd updates the attached flows accordingly.
-     */
-    delete() {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.director.createNewNode(this.model.origin, this.dataId);
-            this.director.delete(this);
-        });
     }
     addClip(clip, index) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -1887,14 +1984,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
 /* harmony import */ var _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../yManagement/yModel/types/yComponentModel */ "./frontend/src/yManagement/yModel/types/yComponentModel.ts");
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-
 
 
 class ClipModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_1__.YComponentModel {
@@ -1906,17 +1995,26 @@ class ClipModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
     get data() {
         return super.data;
     }
-    set data(value) {
-        super.data = value;
+    set data(data) {
+        super.data = data;
         //TODO MAKE IT TOGGLEABLE
         _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__.YUtilities.deepObserveAny(this.data, () => this.fireCallback("reload_thumbnail"), "startTime", "endTime", "backgroundFill", "mediaId", "content");
     }
-    set metadata(value) {
+    get metadata() {
+        var _a;
+        return (_a = this.getBlock("metadata")) === null || _a === void 0 ? void 0 : _a.data;
+    }
+    setMetadata(value, id) {
+        this.setBlock(value, id, "metadata");
+    }
+    get metadataType() {
+        var _a;
+        return (_a = this.metadata) === null || _a === void 0 ? void 0 : _a.get("type");
     }
     set blob(value) {
-        var _a, _b;
+        var _a;
         this._uri = value ? URL.createObjectURL(value) : null;
-        this._videoDuration = ((_a = this.metadata) === null || _a === void 0 ? void 0 : _a.type) == "video" ? (_b = this.metadata) === null || _b === void 0 ? void 0 : _b.duration : null;
+        this._videoDuration = this.metadataType == "video" ? (_a = this.metadata) === null || _a === void 0 ? void 0 : _a.get("duration") : null;
     }
     get uri() {
         return this._uri;
@@ -1958,10 +2056,7 @@ class ClipModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
         this.setData("backgroundFill", value);
     }
     get mediaId() {
-        return this.getData("mediaId");
-    }
-    set mediaId(value) {
-        this.setData("mediaId", value);
+        return this.getBlockId("metadata");
     }
     get thumbnail() {
         return this.getData("thumbnail");
@@ -1997,9 +2092,6 @@ class ClipModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
         return this.getHandler("text");
     }
 }
-__decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.auto)()
-], ClipModel.prototype, "metadata", null);
 
 
 /***/ }),
@@ -2226,13 +2318,18 @@ let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MO
             interactorConstructors: [_clip_selectionInteractor__WEBPACK_IMPORTED_MODULE_11__.ClipSelectionInteractor, _clip_deleteInteractor__WEBPACK_IMPORTED_MODULE_12__.ClipDeleteInteractor, _clip_shootingInteractor__WEBPACK_IMPORTED_MODULE_13__.ClipShootingInteractor]
         });
         this.mvc.emitter.add("mediaId", (value) => __awaiter(this, void 0, void 0, function* () {
-            this.model.metadata = this.director.mediaHandler.getMediaMetadata(value);
-            // this.model.blob = await this.director.mediaHandler.getMedia(value);
+            this.model.setMetadata(this.director.mediaHandler.getMediaMetadata(value), value);
+            this.model.blob = yield this.director.mediaHandler.getMedia(value);
             //TODO maybe remove this? idk
             // if (media.metadata?.thumbnail) {
             //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
             // }
             this.onMediaDataChanged(this);
+        }));
+        this.mvc.emitter.addWithBlock("convert", "metadata", (value) => __awaiter(this, void 0, void 0, function* () {
+            if (!value)
+                return;
+            this.model.blob = yield this.director.mediaHandler.getMedia(value);
         }));
     }
     static createData(data) {
@@ -2274,6 +2371,9 @@ let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MO
     }
     get metadata() {
         return this.model.metadata;
+    }
+    get metadataType() {
+        return this.model.metadataType;
     }
     get videoDuration() {
         return this.model.videoDuration;
@@ -2549,13 +2649,12 @@ class ClipRendererFrameController extends turbodombuilder__WEBPACK_IMPORTED_MODU
     }
     setCurrentClipBackground(clip_1) {
         return __awaiter(this, arguments, void 0, function* (clip, forceCanvas = false) {
-            var _a;
             if (!clip)
                 this.model.currentCanvasFill = null;
             else if (clip.backgroundFill)
                 this.model.currentCanvasFill = clip.backgroundFill;
             else if (clip.mediaId) {
-                if (((_a = clip.metadata) === null || _a === void 0 ? void 0 : _a.type) == "image")
+                if (clip.metadataType == "image")
                     this.model.currentCanvasFill = clip.uri;
                 else
                     this.model.currentCanvasFill = forceCanvas ? this.view.video : null;
@@ -2881,12 +2980,11 @@ class ClipRendererVideoController extends _renderer_renderer_videoController__WE
     }
     playNext() {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
             this.model.currentIndex++;
             const clip = this.model.getClip();
             if (!clip)
                 return;
-            if (((_a = clip.metadata) === null || _a === void 0 ? void 0 : _a.type) == "video") {
+            if (clip.metadataType == "video") {
                 this.view.showVideo();
                 yield this.play();
             }
@@ -2899,8 +2997,8 @@ class ClipRendererVideoController extends _renderer_renderer_videoController__WE
             play: { get: () => super.play }
         });
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
-            if (((_b = (_a = this.model.getClip()) === null || _a === void 0 ? void 0 : _a.metadata) === null || _b === void 0 ? void 0 : _b.type) == "video")
+            var _a;
+            if (((_a = this.model.getClip()) === null || _a === void 0 ? void 0 : _a.metadataType) == "video")
                 yield _super.play.call(this);
         });
     }
@@ -3054,241 +3152,6 @@ class VcComponent extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboElem
 
 /***/ }),
 
-/***/ "./frontend/src/client/components/flow/flow.branchesHandler.ts":
-/*!*********************************************************************!*\
-  !*** ./frontend/src/client/components/flow/flow.branchesHandler.ts ***!
-  \*********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowBranchesHandler: () => (/* binding */ FlowBranchesHandler)
-/* harmony export */ });
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _flowBranch_flowBranch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../flowBranch/flowBranch */ "./frontend/src/client/components/flowBranch/flowBranch.ts");
-/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
-/* harmony import */ var _ungap_structured_clone__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @ungap/structured-clone */ "./node_modules/@ungap/structured-clone/esm/index.js");
-/* harmony import */ var _flowPath_flowPath_model__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../flowPath/flowPath.model */ "./frontend/src/client/components/flowPath/flowPath.model.ts");
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-
-
-
-class FlowBranchesHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
-    getBranchById(id) {
-        return this.model.branchesModel.getInstance(id);
-    }
-    getBranchDataById(id) {
-        return this.getBranchById(id).data;
-    }
-    getBranchId(branch) {
-        for (const [key, value] of this.model.branchesModel.data) {
-            if (value == branch.data)
-                return key;
-        }
-        return null;
-    }
-    removeBranch(branch) {
-        if (branch.dataId)
-            this.removeBranchAt(branch.dataId);
-        else
-            this.removeBranchAt(this.getBranchId(branch));
-    }
-    removeBranchAt(id) {
-        this.model.branchesModel.data.delete(id);
-    }
-    /**
-     * @description Branches the flow with the given ID at the provided point, cutting the original flow into two
-     * branches at this point's flow entry, and creating a new branch starting from the point's flow entry with all
-     * the points up to the target.
-     * @param p
-     * @param branchPosition
-     * @param nodeId
-     * @param createThirdBranch
-     * @param isOverwritingSibling
-     */
-    branchAtPoint(p_1, branchPosition_1, nodeId_1) {
-        return __awaiter(this, arguments, void 0, function* (p, branchPosition, nodeId, createThirdBranch = true, isOverwritingSibling = false) {
-            if (!this.model.data || !p || p.branchId == undefined || p.entryIndex == undefined)
-                return;
-            //TODO HANDLE CASE WHERE ALRDY BRANCHED/FROM THE BEGINNING OF FLOW
-            const parentBranchId = p.branchId;
-            const entryIndex = p.entryIndex;
-            const parentBranch = this.model.branchHandler.getBranchById(parentBranchId);
-            const originalEntry = parentBranch.getEntry(p.entryIndex);
-            const splitPointIndex = p.pointIndex != undefined ? p.pointIndex : Math.floor(originalEntry.points.length - 1 / 2);
-            const originalEntries = parentBranch.entriesData.toJSON();
-            const { beforeSplit, splitEntry, afterSplit } = originalEntry.splitAtPoint(splitPointIndex, nodeId, branchPosition
-                ? new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point(this.model.intersectionHandler.closestPointOnPath(branchPosition, 200).point).object
-                : originalEntry.points[splitPointIndex]);
-            parentBranch.spliceEntries(entryIndex - 1, undefined, (0,_ungap_structured_clone__WEBPACK_IMPORTED_MODULE_4__["default"])(beforeSplit));
-            const newChildId = yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_2__.YUtilities.addInYMap(_flowBranch_flowBranch__WEBPACK_IMPORTED_MODULE_1__.FlowBranch.createData({
-                entries: (0,_ungap_structured_clone__WEBPACK_IMPORTED_MODULE_4__["default"])([afterSplit, ...originalEntries.slice(entryIndex + 1)])
-            }), this.model.branchesModel.data);
-            if (this.model.currentBranchId == parentBranchId)
-                this.model.currentBranchId = newChildId;
-            // this.getBranchById(newChildId).setConnectedBranches(parentBranch.connectedBranches);
-            // parentBranch.setConnectedBranches([newChildId]);
-            if (createThirdBranch) {
-                this.model.currentBranchId = yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_2__.YUtilities.addInYMap(_flowBranch_flowBranch__WEBPACK_IMPORTED_MODULE_1__.FlowBranch.createData({
-                    entries: [(0,_ungap_structured_clone__WEBPACK_IMPORTED_MODULE_4__["default"])(splitEntry)],
-                    overwriting: isOverwritingSibling ? newChildId : undefined,
-                }), this.model.branchesModel.data);
-                // parentBranch.addConnectedBranch(this.model.currentBranchId);
-            }
-            this.updateConnectionsAfterBranching(parentBranchId, newChildId, createThirdBranch ? this.model.currentBranchId : undefined);
-            // const branchOnNode = nodeId != undefined
-            //     || (!branchPosition && parentBranch.getEntry(entryIndex).startNodeId
-            //         == parentBranch.getEntry(entryIndex).endNodeId);
-            //TODO UPDATE CONNECTIONS
-            // this.utilities.loopOnFlowTagEntries((namedPath) => {
-            //     const i = namedPath.branchIndices.indexOf(parentBranchIndex);
-            //     if (i >= 0) namedPath.branchIndices.splice(i, 0, firstChildIndex);
-            // });
-            //TODO optimize
-            // this.optimizeBranches();
-            //TODO RELOAD PATHS
-            // const newNamedPaths = new Map<SyncedFlowTag, YProxiedArray<NamedFlowPath, NamedFlowPathData>>();
-            // this.utilities.loopOnFlowTagEntries((namedPath, tag) => {
-            //     const i = namedPath.branchIndices.indexOf(parentBranchIndex);
-            //     if (i < 0) return;
-            //     const nextIndex = this.utilities.findNextTagNameIndex(namedPath.name);
-            //     if (!newNamedPaths.get(tag)) newNamedPaths.set(tag, [] as YProxiedArray<NamedFlowPath>);
-            //     newNamedPaths.get(tag)!.push({
-            //         name: namedPath.name,
-            //         index: nextIndex,
-            //         branchIndices: [
-            //             ...namedPath.branchIndices.slice(0, i + 1),
-            //             secondChildIndex
-            //         ]
-            //     });
-            // });
-            // newNamedPaths.forEach((paths, tag) => tag.namedPaths.push(...paths));
-        });
-    }
-    updateConnectionsAfterBranching(parentBranchId, firstChildBranchId, secondChildBranchId) {
-        const parentBranch = this.getBranchById(parentBranchId);
-        this.getBranchById(firstChildBranchId).setConnectedBranches(parentBranch.connectedBranches);
-        parentBranch.setConnectedBranches([firstChildBranchId]);
-        if (secondChildBranchId)
-            parentBranch.addConnectedBranch(secondChildBranchId);
-        this.model.tags.forEach(tag => {
-            tag.pathsArray.forEach((pathData, index) => {
-                const path = new _flowPath_flowPath_model__WEBPACK_IMPORTED_MODULE_3__.FlowPathModel(pathData);
-                const parentBranchIndex = path.branchIdsArray.indexOf(parentBranchId);
-                if (parentBranchIndex < 0)
-                    return;
-                path.insertBranchAt(firstChildBranchId, parentBranchIndex + 1);
-                if (secondChildBranchId)
-                    tag.insertPath({
-                        branchIds: [...path.branchIdsArray.slice(0, parentBranchIndex + 1), secondChildBranchId],
-                        name: this.model.defaultName + " - " + (tag.pathsArray.length + 1),
-                    }, index + 1);
-            });
-        });
-    }
-    getPathsFromNode(nodeId) {
-        const entries = this.model.searchHandler.findNodeEntries(nodeId);
-        const paths = [];
-        const recurGetPath = (path) => {
-            var _a;
-            const childIndices = ((_a = this.model.branches[path.length - 1]) === null || _a === void 0 ? void 0 : _a.connectedBranchesArray) || [];
-            if (childIndices.length == 0) {
-                if (path.length > 0)
-                    paths.push([...path]);
-                return;
-            }
-            for (const id of childIndices)
-                recurGetPath([...path, id]);
-        };
-        entries.forEach(entry => recurGetPath([entry.branchId]));
-        return paths;
-    }
-}
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/components/flow/flow.branchesModel.ts":
-/*!*******************************************************************!*\
-  !*** ./frontend/src/client/components/flow/flow.branchesModel.ts ***!
-  \*******************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowBranchesModel: () => (/* binding */ FlowBranchesModel)
-/* harmony export */ });
-/* harmony import */ var _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../yManagement/yModel/types/yManagerModel */ "./frontend/src/yManagement/yModel/types/yManagerModel.ts");
-
-class FlowBranchesModel extends _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_0__.YManagerModel {
-}
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/components/flow/flow.cleaningHandler.ts":
-/*!*********************************************************************!*\
-  !*** ./frontend/src/client/components/flow/flow.cleaningHandler.ts ***!
-  \*********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowCleaningHandler: () => (/* binding */ FlowCleaningHandler)
-/* harmony export */ });
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-
-class FlowCleaningHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
-    /**
-     * @description Removes the branches in the flow with the given ID if they don't represent a path that at least
-     * connects two nodes, and removes the flow if it is empty.
-     */
-    removeUnnecessaryBranchesOrFlow() {
-        for (const branch of this.model.branches) {
-            if (branch.checkIfUnnecessary()) {
-                branch.clearDrawing();
-                this.model.branchHandler.removeBranch(branch);
-            }
-        }
-        // TODO MOVE TO DOCUMENT MANAGER
-        // // Delete the flow if it has no branches
-        // if (this.model.branches.length == 0) {
-        //     this.flow.delete();
-        //     return null;
-        // }
-    }
-    /**
-     * @description Ends the flow with the given ID by removing
-     */
-    endFlow() {
-        for (const branch of this.model.branches) {
-            branch.endBranch();
-            //If branch is temporary --> overwrite target branch
-            //TODO if (branch.isOverwriting) this.flow.branchingHandler.overwriteBranch(currentBranch.overwriting, this.currentBranchIndex);
-        }
-        //Clean up the flow
-        this.removeUnnecessaryBranchesOrFlow();
-        //Optimize it
-        //TODO this.flow.branchingHandler.optimizeBranches();
-    }
-}
-
-
-/***/ }),
-
 /***/ "./frontend/src/client/components/flow/flow.css":
 /*!******************************************************!*\
   !*** ./frontend/src/client/components/flow/flow.css ***!
@@ -3342,6 +3205,104 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
+/***/ "./frontend/src/client/components/flow/flow.entryHandler.ts":
+/*!******************************************************************!*\
+  !*** ./frontend/src/client/components/flow/flow.entryHandler.ts ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FlowEntryHandler: () => (/* binding */ FlowEntryHandler)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../yManagement/yModel/types/yManagerModel */ "./frontend/src/yManagement/yModel/types/yManagerModel.ts");
+/* harmony import */ var _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../yManagement/yManagement.types */ "./frontend/src/yManagement/yManagement.types.ts");
+/* harmony import */ var _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../flowEntry/flowEntry */ "./frontend/src/client/components/flowEntry/flowEntry.ts");
+
+
+
+
+class FlowEntryHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
+    constructor(model) {
+        super(model);
+        this.entryModel = new _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_1__.YManagerModel();
+        this.entryModel.onAdded = array => {
+            const manager = new _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_1__.YManagerModel(array);
+            manager.onAdded = data => { var _a; return (_a = this.onFlowEntryAdded) === null || _a === void 0 ? void 0 : _a.call(this, data); };
+            return manager;
+        };
+    }
+    getData() {
+        return this.entryModel.data;
+    }
+    setData(data) {
+        this.entryModel.data = data;
+    }
+    getAllEntries() {
+        return this.entryModel.getAllComponents()
+            .flatMap(manager => manager.getAllComponents());
+    }
+    getAllEntriesData() {
+        const results = [];
+        this.entryModel.getAllData().forEach(arr => {
+            arr.forEach(entry => results.push(entry));
+        });
+        return results;
+    }
+    getEntriesData(id) {
+        return this.entryModel.getData(id);
+    }
+    getEntries(id) {
+        var _a;
+        return ((_a = this.entryModel.getInstance(id)) === null || _a === void 0 ? void 0 : _a.getAllComponents()) || [];
+    }
+    createEntry(data) {
+        if (!data || !data.startNodeId)
+            return null;
+        const entry = _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_3__.FlowEntry.createData(data);
+        this.addEntry(entry, data.startNodeId);
+        return entry;
+    }
+    addEntry(entry, id) {
+        if (entry instanceof _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_3__.FlowEntry)
+            entry = entry.data;
+        if (!id)
+            id = entry.get("startNodeId");
+        if (!this.entryModel.getData(id))
+            this.entryModel.setData(id, new _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_2__.YArray());
+        this.entryModel.getData(id).push([entry]);
+    }
+    removeEntry(entry) {
+        if (!entry)
+            return;
+        const arr = this.entryModel.getData(entry.startNodeId);
+        if (!arr)
+            return;
+        arr.forEach((arrEntry, id) => {
+            if (arrEntry !== entry.data)
+                return;
+            arr.delete(id);
+        });
+    }
+    getNodesIds() {
+        const ids = [];
+        const pushIdIfValid = (id) => {
+            if (id !== undefined && (ids.length <= 0 || ids[ids.length - 1] !== id))
+                ids.push(id);
+        };
+        this.model.entriesDataArray.forEach((entry) => {
+            pushIdIfValid(entry.get("startNodeId"));
+            pushIdIfValid(entry.get("endNodeId"));
+        });
+        return ids;
+    }
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/components/flow/flow.intersectionHandler.ts":
 /*!*************************************************************************!*\
   !*** ./frontend/src/client/components/flow/flow.intersectionHandler.ts ***!
@@ -3357,23 +3318,23 @@ __webpack_require__.r(__webpack_exports__);
 
 class FlowIntersectionHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
     intersectsPoint(p, errorMargin = 50, incrementValue = 1) {
-        for (const branch of this.model.branches) {
-            if (branch.intersectsPoint(p, errorMargin, incrementValue))
+        for (const entry of this.model.entries) {
+            if (entry.intersectsPoint(p, errorMargin, incrementValue))
                 return true;
         }
         return false;
     }
     intersectsArea(topLeft, size) {
-        for (const branch of this.model.branches) {
-            if (branch.intersectsArea(topLeft, size))
+        for (const entry of this.model.entries) {
+            if (entry.intersectsArea(topLeft, size))
                 return true;
         }
         return false;
     }
     closestPointOnPath(p, errorMargin = 50, incrementValue = 10) {
         let closestPoint = null;
-        for (const branch of this.model.branches) {
-            closestPoint = branch.closestPointOnPath(p, closestPoint, errorMargin, incrementValue);
+        for (const entry of this.model.entries) {
+            closestPoint = entry.closestPointOnPath(p, closestPoint, errorMargin, incrementValue);
         }
         return closestPoint;
     }
@@ -3394,11 +3355,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   FlowModel: () => (/* binding */ FlowModel)
 /* harmony export */ });
 /* harmony import */ var _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../yManagement/yModel/types/yComponentModel */ "./frontend/src/yManagement/yModel/types/yComponentModel.ts");
-/* harmony import */ var _flow_branchesModel__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./flow.branchesModel */ "./frontend/src/client/components/flow/flow.branchesModel.ts");
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _flow_tagsModel__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./flow.tagsModel */ "./frontend/src/client/components/flow/flow.tagsModel.ts");
-/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
-
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+/* harmony import */ var _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../yManagement/yModel/types/yManagerModel */ "./frontend/src/yManagement/yModel/types/yManagerModel.ts");
 
 
 
@@ -3406,58 +3365,53 @@ __webpack_require__.r(__webpack_exports__);
 class FlowModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_0__.YComponentModel {
     constructor(data) {
         super(data);
-        this._currentBranchId = "0";
         // Added margin to the computed viewBox
         this.viewBoxPadding = 200;
         // Rate at which the viewBox updates
         this.viewBoxUpdateRate = 200;
         // Keeps track of the last time the viewBox was updated
         this.lastViewBoxUpdate = 0;
-        this.lastViewBoxValues = new turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.Point();
-        this.branchesModel = new _flow_branchesModel__WEBPACK_IMPORTED_MODULE_1__.FlowBranchesModel();
-        this.selectorModel = new _flow_tagsModel__WEBPACK_IMPORTED_MODULE_3__.FlowTagsModel();
+        this.lastViewBoxValues = new turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Point();
+        this.selectorModel = new _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_3__.YManagerModel();
     }
     get data() {
         return super.data;
     }
     set data(value) {
         super.data = value;
-        this.branchesModel.data = this.getData("branches");
-        this.branchesModel.onAdded = (data) => this.onFlowEntryAdded(data);
-        this.selectorModel.data = this.tagsData;
+        this.entryHandler.setData(this.getData("entries"));
+        this.entryHandler.onFlowEntryAdded = (data) => this.onFlowEntryAdded(data);
+        this.selectorModel.data = this.selectorsData;
         this.selectorModel.onAdded = (data) => this.onFlowSelectorAdded(data);
-        _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_4__.YUtilities.deepObserveAll(this.data, () => this.fireCallback("__redraw"), "branches", "entries");
+        _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_2__.YUtilities.deepObserveAll(this.data, () => {
+            this.fireCallback("__redraw");
+            this.selectorModel.getAllComponents().forEach(selector => selector.updatePaths());
+        }, "entries");
     }
-    get currentBranchId() {
-        return this._currentBranchId;
+    get currentEntry() {
+        const entries = this.entryHandler.getEntries(this.currentEntryId);
+        return entries === null || entries === void 0 ? void 0 : entries[(entries === null || entries === void 0 ? void 0 : entries.length) - 1];
     }
-    set currentBranchId(value) {
-        this.currentBranch.redraw(true);
-        this._currentBranchId = value;
-    }
-    get searchHandler() {
-        return this.getHandler("search");
-    }
-    get branchHandler() {
-        return this.getHandler("branches");
-    }
-    get cleaningHandler() {
-        return this.getHandler("cleaning");
+    get entryHandler() {
+        return this.getHandler("entry");
     }
     get intersectionHandler() {
         return this.getHandler("intersection");
     }
-    get branchesData() {
-        return this.getData("branchesData");
+    get updateHandler() {
+        return this.getHandler("update");
     }
-    get branchesDataArray() {
-        return this.branchesModel.getAllData();
+    get entriesData() {
+        return this.getData("entries");
     }
-    get tagsData() {
+    get entriesDataArray() {
+        return this.entryHandler.getAllEntriesData();
+    }
+    get selectorsData() {
         return this.getData("tags");
     }
-    get tagsDataArray() {
-        return this.tagsData.toArray();
+    get selectorsDataArray() {
+        return this.selectorsData.toArray();
     }
     get defaultName() {
         return this.getData("defaultName");
@@ -3468,111 +3422,12 @@ class FlowModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
     set color(value) {
         this.setData("color", value);
     }
-    get branches() {
-        return this.branchesModel.getAllComponents();
+    get entries() {
+        return this.entryHandler.getAllEntries();
     }
-    get tags() {
+    get selectors() {
         return this.selectorModel.getAllComponents();
     }
-    get currentBranch() {
-        return this.branchesModel.getInstance(this.currentBranchId);
-    }
-}
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/components/flow/flow.searchHandler.ts":
-/*!*******************************************************************!*\
-  !*** ./frontend/src/client/components/flow/flow.searchHandler.ts ***!
-  \*******************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowSearchHandler: () => (/* binding */ FlowSearchHandler)
-/* harmony export */ });
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-
-//DONE
-class FlowSearchHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
-    /**
-     * @function findNodeEntry
-     * @description Finds the first flow entry inside the given node's ID.
-     * @param {string} nodeId - The ID of the node.
-     * @returns {FlowPoint} - The first flow entry that is inside the node with given ID.
-     */
-    findNodeEntry(nodeId) {
-        for (const branch of this.model.branches) {
-            const nodeEntry = branch.findNodeEntry(nodeId);
-            if (nodeEntry)
-                return nodeEntry;
-        }
-        return null;
-    }
-    /**
-     * @description Finds the last flow entry inside the given node's ID
-     * @param nodeId
-     */
-    findNodeEntries(nodeId) {
-        const entries = [];
-        for (const branch of this.model.branches)
-            entries.push(...branch.findNodeEntries(nodeId));
-        return entries;
-    }
-    /**
-     * @description Finds the closest point in the flow to the given point
-     * @param id
-     * @param point
-     */
-    findClosestPoint(point) {
-        return {};
-        //TODO
-        //Initialize closest point data and minimum distance
-        // let closestPoint: FlowPoint = {};
-        // let minDistance = Infinity;
-        //
-        // //Loop on all entries of the flow
-        // this.utilities.reverseLoopOnFlowEntries((entry: SyncedFlowEntry, branch: SyncedFlowBranch,
-        //                                          entryIndex: number, branchIndex: number) => {
-        //     //Loop on points
-        //     entry.points.forEach((p: Coordinate, index: number) => {
-        //         //Compute distance
-        //         const distance = Point.dist(p, point);
-        //         //If smaller --> update the closest point and save new distance
-        //         if (distance < minDistance) {
-        //             closestPoint = {
-        //                 branchIndex: branchIndex,
-        //                 entryIndex: entryIndex,
-        //                 lastNodeId: entry.startNodeId,
-        //                 pointIndex: index
-        //             };
-        //             minDistance = distance;
-        //         }
-        //     })
-        // });
-        // return closestPoint;
-    }
-}
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/components/flow/flow.tagsModel.ts":
-/*!***************************************************************!*\
-  !*** ./frontend/src/client/components/flow/flow.tagsModel.ts ***!
-  \***************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowTagsModel: () => (/* binding */ FlowTagsModel)
-/* harmony export */ });
-/* harmony import */ var _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../yManagement/yModel/types/yManagerModel */ "./frontend/src/yManagement/yModel/types/yManagerModel.ts");
-
-class FlowTagsModel extends _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_0__.YManagerModel {
 }
 
 
@@ -3593,30 +3448,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _flow_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./flow.css */ "./frontend/src/client/components/flow/flow.css");
 /* harmony import */ var _flow_view__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./flow.view */ "./frontend/src/client/components/flow/flow.view.ts");
 /* harmony import */ var _flow_model__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./flow.model */ "./frontend/src/client/components/flow/flow.model.ts");
-/* harmony import */ var _flow_branchesHandler__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./flow.branchesHandler */ "./frontend/src/client/components/flow/flow.branchesHandler.ts");
-/* harmony import */ var _flow_searchHandler__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./flow.searchHandler */ "./frontend/src/client/components/flow/flow.searchHandler.ts");
-/* harmony import */ var _flowBranch_flowBranch__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../flowBranch/flowBranch */ "./frontend/src/client/components/flowBranch/flowBranch.ts");
-/* harmony import */ var _flow_cleaningHandler__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./flow.cleaningHandler */ "./frontend/src/client/components/flow/flow.cleaningHandler.ts");
-/* harmony import */ var _component_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../component/component */ "./frontend/src/client/components/component/component.ts");
-/* harmony import */ var _flow_intersectionHandler__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./flow.intersectionHandler */ "./frontend/src/client/components/flow/flow.intersectionHandler.ts");
-/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
-/* harmony import */ var _flowTag_flowTag__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../flowTag/flowTag */ "./frontend/src/client/components/flowTag/flowTag.ts");
+/* harmony import */ var _component_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../component/component */ "./frontend/src/client/components/component/component.ts");
+/* harmony import */ var _flow_intersectionHandler__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./flow.intersectionHandler */ "./frontend/src/client/components/flow/flow.intersectionHandler.ts");
+/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+/* harmony import */ var _flowSelector_flowSelector__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../flowSelector/flowSelector */ "./frontend/src/client/components/flowSelector/flowSelector.ts");
+/* harmony import */ var _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../flowEntry/flowEntry */ "./frontend/src/client/components/flowEntry/flowEntry.ts");
+/* harmony import */ var _flow_entryHandler__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./flow.entryHandler */ "./frontend/src/client/components/flow/flow.entryHandler.ts");
+/* harmony import */ var _flow_updateHandler__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./flow.updateHandler */ "./frontend/src/client/components/flow/flow.updateHandler.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
 
 
 
@@ -3631,34 +3475,33 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 /**
  * @description A reactiveComponent that represents a flow connecting cards
  */
-let Flow = class Flow extends _component_component__WEBPACK_IMPORTED_MODULE_8__.VcComponent {
+let Flow = class Flow extends _component_component__WEBPACK_IMPORTED_MODULE_4__.VcComponent {
     constructor(properties = {}) {
         super(properties);
         this.mvc.generate({
             viewConstructor: _flow_view__WEBPACK_IMPORTED_MODULE_2__.FlowView,
             modelConstructor: _flow_model__WEBPACK_IMPORTED_MODULE_3__.FlowModel,
-            handlerConstructors: [_flow_branchesHandler__WEBPACK_IMPORTED_MODULE_4__.FlowBranchesHandler, _flow_searchHandler__WEBPACK_IMPORTED_MODULE_5__.FlowSearchHandler, _flow_cleaningHandler__WEBPACK_IMPORTED_MODULE_7__.FlowCleaningHandler, _flow_intersectionHandler__WEBPACK_IMPORTED_MODULE_9__.FlowIntersectionHandler],
+            handlerConstructors: [_flow_intersectionHandler__WEBPACK_IMPORTED_MODULE_5__.FlowIntersectionHandler, _flow_entryHandler__WEBPACK_IMPORTED_MODULE_9__.FlowEntryHandler, _flow_updateHandler__WEBPACK_IMPORTED_MODULE_10__.FlowUpdateHandler],
             data: properties.data,
             initialize: false
         });
-        this.model.onFlowBranchAdded = (data) => new _flowBranch_flowBranch__WEBPACK_IMPORTED_MODULE_6__.FlowBranch({ flow: this, data: data });
-        this.model.onFlowTagAdded = (data) => new _flowTag_flowTag__WEBPACK_IMPORTED_MODULE_11__.FlowTag({ flow: this, data: data, director: this.director });
+        this.model.onFlowEntryAdded = (data) => new _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_8__.FlowEntry({ flow: this, data: data });
+        this.model.onFlowSelectorAdded = (data) => new _flowSelector_flowSelector__WEBPACK_IMPORTED_MODULE_7__.FlowSelector({ flow: this, data: data, director: this.director });
         this.mvc.initialize();
-        console.log(this.model.color);
     }
     static createData(data) {
         if (!data)
             data = {};
-        if (!data.branches)
-            data.branches = { "0": undefined };
+        if (!data.entries)
+            data.entries = {};
         if (!data.tags)
             data.tags = [undefined];
         if (!data.defaultName)
             data.defaultName = "Flow";
-        Object.entries(data.branches).forEach(([key, branch]) => data.branches[key] = _flowBranch_flowBranch__WEBPACK_IMPORTED_MODULE_6__.FlowBranch.createData(branch));
-        data.branches = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__.YUtilities.createYMap(data.branches);
-        data.tags = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__.YUtilities.createYArray(data.tags.map(tag => _flowTag_flowTag__WEBPACK_IMPORTED_MODULE_11__.FlowTag.createData(tag)));
-        return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__.YUtilities.createYMap(data);
+        Object.entries(data.entries).forEach(([key, branch]) => data.entries[key] = _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_8__.FlowEntry.createData(branch));
+        data.entries = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__.YUtilities.createYMap(data.entries);
+        data.tags = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__.YUtilities.createYArray(data.tags.map(tag => _flowSelector_flowSelector__WEBPACK_IMPORTED_MODULE_7__.FlowSelector.createData(tag)));
+        return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__.YUtilities.createYMap(data);
     }
     get svg() {
         return this.view.svg;
@@ -3666,72 +3509,143 @@ let Flow = class Flow extends _component_component__WEBPACK_IMPORTED_MODULE_8__.
     get color() {
         return this.model.color;
     }
-    get branches() {
-        return this.model.branches;
+    get defaultName() {
+        return this.model.defaultName;
     }
-    get currentBranch() {
-        return this.model.currentBranch;
+    get entries() {
+        return this.model.entries;
     }
-    get currentBranchData() {
-        return this.currentBranch.data;
+    get currentEntry() {
+        return this.model.currentEntry;
     }
-    getBranchById(id) {
-        return this.model.branchHandler.getBranchById(id);
+    get currentEntryData() {
+        return this.currentEntry.data;
     }
-    /**
-     * @description Finds the last flow entry inside the given node's ID
-     * @param nodeId
-     */
-    findNodeEntry(nodeId) {
-        return this.model.searchHandler.findNodeEntry(nodeId);
+    getEntries(id) {
+        return this.model.entryHandler.getEntries(id);
     }
-    /**
-     * @description Finds the last flow entry inside the given node's ID
-     * @param nodeId
-     */
-    findNodeEntries(nodeId) {
-        return this.model.searchHandler.findNodeEntries(nodeId);
+    // public getEntry(id: string): FlowEntry {
+    //     return this.model.entryHandler.getEntry(id);
+    // }
+    createEntry(startNodeId) {
+        this.model.currentEntryId = startNodeId;
+        return this.model.entryHandler.createEntry({ startNodeId: startNodeId, points: [] });
     }
-    /**
-     * @description Finds the closest point in the flow to the given point
-     * @param point
-     */
-    findClosestPoint(point) {
-        return this.model.searchHandler.findClosestPoint(point);
+    removeEntry(entry) {
+        return this.model.entryHandler.removeEntry(entry);
     }
+    hasNode(id) {
+        var _a;
+        if (((_a = this.getEntries(id)) === null || _a === void 0 ? void 0 : _a.length) > 0)
+            return true;
+        for (const entry of this.entries) {
+            if (entry.endNodeId === id)
+                return true;
+        }
+        return false;
+    }
+    createSelector(nodeId) {
+        return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__.YUtilities.addInYArray(_flowSelector_flowSelector__WEBPACK_IMPORTED_MODULE_7__.FlowSelector.createData({ nodeId: nodeId, paths: [] }), this.model.selectorsData);
+    }
+    // /**
+    //  * @description Finds the last flow entry inside the given node's ID
+    //  * @param nodeId
+    //  */
+    // public findNodeEntry(nodeId: string): FlowPoint {
+    //     return this.model.searchHandler.findNodeEntry(nodeId);
+    // }
+    //
+    // /**
+    //  * @description Finds the last flow entry inside the given node's ID
+    //  * @param nodeId
+    //  */
+    // public findNodeEntries(nodeId: string): FlowPoint[] {
+    //     return this.model.searchHandler.findNodeEntries(nodeId);
+    // }
+    //
+    // /**
+    //  * @description Finds the closest point in the flow to the given point
+    //  * @param point
+    //  */
+    // public findClosestPoint(point: Point): FlowPoint {
+    //     return this.model.searchHandler.findClosestPoint(point);
+    // }
     /**
      * @description Adds the provided point to the flow with the given ID. The node ID indicates the ID of the node
      * the point is in (or null), and isTemporary indicates whether the point is temporarily added to the flow as
      * part of user feedback (to not add it to the synced data).
      * @param p
-     * @param nodeId
      * @param isTemporary
      */
-    addPoint(p, nodeId, isTemporary = false) {
+    addPoint(p, isTemporary = false) {
         var _a;
-        (_a = this.model.currentBranch) === null || _a === void 0 ? void 0 : _a.addPoint(p, nodeId, isTemporary);
+        (_a = this.model.currentEntry) === null || _a === void 0 ? void 0 : _a.addPoint(p, isTemporary);
         this.mvc.emitter.fire("__redraw");
     }
-    branchAtPoint(p_1, branchPosition_1, nodeId_1) {
-        return __awaiter(this, arguments, void 0, function* (p, branchPosition, nodeId, createThirdBranch = true, isOverwritingSibling = false) {
-            return yield this.model.branchHandler.branchAtPoint(p, branchPosition, nodeId, createThirdBranch, isOverwritingSibling);
-        });
-    }
-    endFlow() {
-        this.model.cleaningHandler.endFlow();
+    // public async branchAtPoint(p: FlowPoint, branchPosition?: Point, nodeId?: string,
+    //                      createThirdBranch: boolean = true, isOverwritingSibling: boolean = false) {
+    //     return await this.model.branchHandler.branchAtPoint(p, branchPosition, nodeId, createThirdBranch, isOverwritingSibling);
+    // }
+    updateAfterMovingNode(nodeId, deltaPosition) {
+        return this.model.updateHandler.updateAfterMovingNode(nodeId, deltaPosition);
     }
     updateOnDetachingNode(nodeId) {
-        this.model.branches.forEach(branch => branch.updateOnDetachingNode(nodeId));
-        this.model.cleaningHandler.removeUnnecessaryBranchesOrFlow();
-    }
-    getPathsFromNode(nodeId) {
-        return this.model.branchHandler.getPathsFromNode(nodeId);
+        this.model.updateHandler.updateOnDetachingNode(nodeId);
     }
 };
 Flow = __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-flow")
 ], Flow);
 
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/components/flow/flow.updateHandler.ts":
+/*!*******************************************************************!*\
+  !*** ./frontend/src/client/components/flow/flow.updateHandler.ts ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FlowUpdateHandler: () => (/* binding */ FlowUpdateHandler)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+
+class FlowUpdateHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
+    /**
+     * @description Updates all impacted flows after the node of the provided ID was moved by deltaPosition.
+     * @param nodeId
+     * @param deltaPosition
+     */
+    updateAfterMovingNode(nodeId, deltaPosition) {
+        if (!nodeId)
+            return;
+        const flowEntries = this.model.entries;
+        for (let i = 0; i < flowEntries.length; i++) {
+            const entry = flowEntries[i];
+            if (entry.startNodeId != nodeId && entry.endNodeId != nodeId)
+                continue;
+            entry.updateAfterMovingNode(nodeId, deltaPosition);
+        }
+    }
+    updateOnDetachingNode(nodeId) {
+        if (!nodeId)
+            return;
+        const flowEntries = this.model.entries;
+        for (let i = flowEntries.length - 1; i >= 0; i--) {
+            const entry = flowEntries[i];
+            console.log("REF: ", nodeId, "\nSTART: ", entry.startNodeId, "\nEND: ", entry.endNodeId, "\nMATCHING: ", entry.startNodeId === nodeId || entry.endNodeId === nodeId);
+            // If the entry is not connected to the card on any end --> skip it
+            if (entry.startNodeId != nodeId && entry.endNodeId != nodeId)
+                continue;
+            //Otherwise --> delete entry
+            entry.delete();
+        }
+    }
+}
 
 
 /***/ }),
@@ -3785,8 +3699,8 @@ class FlowView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
             if (Date.now() - this.model.lastViewBoxUpdate <= this.model.viewBoxUpdateRate)
                 return;
             this.model.lastViewBoxUpdate = Date.now();
-            this.model.branches.forEach(branch => {
-                this.model.lastViewBoxValues = turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point.max(this.model.lastViewBoxValues, branch.getMaxPoint());
+            this.model.entries.forEach(entry => {
+                this.model.lastViewBoxValues = turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point.max(this.model.lastViewBoxValues, entry.getMaxPoint());
             });
             // Compute the dimensions by doubling the coordinates and adding the padding
             const width = this.model.lastViewBoxValues.x * 2 + this.model.viewBoxPadding * 2;
@@ -3803,214 +3717,20 @@ class FlowView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
 
 /***/ }),
 
-/***/ "./frontend/src/client/components/flowBranch/flowBranch.cleaningHandler.ts":
-/*!*********************************************************************************!*\
-  !*** ./frontend/src/client/components/flowBranch/flowBranch.cleaningHandler.ts ***!
-  \*********************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowBranchCleaningHandler: () => (/* binding */ FlowBranchCleaningHandler)
-/* harmony export */ });
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-
-class FlowBranchCleaningHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
-    checkIfUnnecessary() {
-        const entriesArray = this.model.entries;
-        //If less than 2 entries --> unnecessary
-        if (entriesArray.length < 2)
-            return true;
-        //Otherwise, if more than 2 entries --> keep
-        else if (entriesArray.length > 2)
-            return false;
-        //If 2 entries that do not each belong to a node --> unnecessary
-        return (!entriesArray[0].startNodeId || entriesArray[0].startNodeId.length === 0)
-            || (!entriesArray[1].startNodeId || entriesArray[1].startNodeId.length === 0)
-            || entriesArray[0].startNodeId != entriesArray[0].endNodeId
-            || entriesArray[1].startNodeId != entriesArray[1].endNodeId;
-    }
-    endBranch() {
-        //Clear temporary point
-        this.model.temporaryPoint = null;
-        const entriesArray = this.model.entries;
-        // if (entriesArray.length < 2) return;
-        const lastEntry = entriesArray[entriesArray.length - 1];
-        //If flow ends with an entry that doesn't have an end node --> the flow was stopped outside a node --> remove
-        //the last entry and save
-        if (!lastEntry.endNodeId || lastEntry.endNodeId === "")
-            this.model.entryHandler.removeEntryAt(entriesArray.length - 1);
-    }
-}
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/components/flowBranch/flowBranch.connectionHandler.ts":
+/***/ "./frontend/src/client/components/flowEntry/flowEntry.intersectionHandler.ts":
 /*!***********************************************************************************!*\
-  !*** ./frontend/src/client/components/flowBranch/flowBranch.connectionHandler.ts ***!
+  !*** ./frontend/src/client/components/flowEntry/flowEntry.intersectionHandler.ts ***!
   \***********************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowBranchConnectionHandler: () => (/* binding */ FlowBranchConnectionHandler)
-/* harmony export */ });
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../yManagement/yManagement.types */ "./frontend/src/yManagement/yManagement.types.ts");
-
-
-class FlowBranchConnectionHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
-    get connectedBranchesCount() {
-        return this.model.connectedBranches.length;
-    }
-    isConnectedTo(branch) {
-        for (const entry of this.model.connectedBranches.toArray()) {
-            if (entry == branch)
-                return true;
-        }
-        return false;
-    }
-    isConnectedToAll(...branches) {
-        for (const branch of branches) {
-            if (!this.isConnectedTo(branch))
-                return false;
-        }
-        return true;
-    }
-    addConnectedBranch(...branches) {
-        for (const branch of branches) {
-            if (!this.isConnectedTo(branch))
-                this.model.connectedBranches.push([branch]);
-        }
-    }
-    clearConnectedBranches() {
-        this.model.connectedBranches.delete(0, this.connectedBranchesCount);
-    }
-    setConnectedBranches(branches) {
-        if (branches instanceof _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_1__.YArray)
-            branches = branches.toArray();
-        this.clearConnectedBranches();
-        this.addConnectedBranch(...branches);
-    }
-}
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/components/flowBranch/flowBranch.entryHandler.ts":
-/*!******************************************************************************!*\
-  !*** ./frontend/src/client/components/flowBranch/flowBranch.entryHandler.ts ***!
-  \******************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowBranchEntryHandler: () => (/* binding */ FlowBranchEntryHandler)
-/* harmony export */ });
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../yManagement/yManagement.types */ "./frontend/src/yManagement/yManagement.types.ts");
-/* harmony import */ var _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../yManagement/yModel/types/yManagerModel */ "./frontend/src/yManagement/yModel/types/yManagerModel.ts");
-/* harmony import */ var _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../flowEntry/flowEntry */ "./frontend/src/client/components/flowEntry/flowEntry.ts");
-
-
-
-
-class FlowBranchEntryHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
-    constructor(model) {
-        super(model);
-        this.entriesModel = new _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_2__.YManagerModel();
-        this.entriesModel.onAdded = entry => new _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_3__.FlowEntry(entry);
-    }
-    setData(data, initialize = false) {
-        this.entriesModel.data = data;
-    }
-    initializeModel() {
-        this.entriesModel.initialize();
-    }
-    getEntries() {
-        return this.entriesModel.getAllComponents();
-    }
-    getEntry(index) {
-        return this.entriesModel.getInstance(index);
-    }
-    createEntry(data) {
-        return _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_3__.FlowEntry.createData(data);
-    }
-    addEntry(entry, index) {
-        if (entry instanceof _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_3__.FlowEntry)
-            entry = entry.data;
-        if (index === undefined || index === null || index > this.model.entriesDataArray.length - 1) {
-            this.model.entriesData.push([entry]);
-        }
-        else {
-            if (index < 0)
-                index = 0;
-            this.model.entriesData.insert(index, [entry]);
-        }
-    }
-    addNewEntry(data, index) {
-        this.addEntry((data instanceof _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_1__.YMap || data instanceof _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_3__.FlowEntry) ? data : this.createEntry(data), index);
-    }
-    removeEntryAt(index) {
-        const length = this.model.entriesDataArray.length;
-        if (index === undefined || index === null || index > length - 1)
-            index = length - 1;
-        else if (index < 0)
-            index = 0;
-        this.model.entriesData.delete(index);
-    }
-    removeEntry(entry) {
-        const array = this.model.entriesDataArray;
-        if (!array.includes(entry.data))
-            return;
-        this.removeEntryAt(array.indexOf(entry.data));
-    }
-    setEntry(entry, index) {
-        this.removeEntryAt(index);
-        this.addEntry(entry.data, index);
-    }
-    spliceEntries(start, deleteCount, ...entries) {
-        if (deleteCount == undefined)
-            deleteCount = this.model.entriesData.length - start;
-        for (let i = start + deleteCount - 1; i > start; i--)
-            this.removeEntryAt(i);
-        entries === null || entries === void 0 ? void 0 : entries.forEach(entry => this.addNewEntry(entry), start);
-    }
-    getNodesIds() {
-        const ids = [];
-        const pushIdIfValid = (id) => {
-            if (id !== undefined && (ids.length <= 0 || ids[ids.length - 1] !== id))
-                ids.push(id);
-        };
-        this.model.entriesDataArray.forEach((entry) => {
-            pushIdIfValid(entry.get("startNodeId"));
-            pushIdIfValid(entry.get("endNodeId"));
-        });
-        return ids;
-    }
-}
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/components/flowBranch/flowBranch.intersectionHandler.ts":
-/*!*************************************************************************************!*\
-  !*** ./frontend/src/client/components/flowBranch/flowBranch.intersectionHandler.ts ***!
-  \*************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowBranchIntersectionHandler: () => (/* binding */ FlowBranchIntersectionHandler)
+/* harmony export */   FlowEntryIntersectionHandler: () => (/* binding */ FlowEntryIntersectionHandler)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 
-class FlowBranchIntersectionHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
+class FlowEntryIntersectionHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
     intersectsPoint(p, errorMargin = 50, incrementValue = 1) {
         const numPoints = Math.ceil(2 * Math.PI * errorMargin);
         for (let i = 0; i < numPoints; i += incrementValue) {
@@ -4076,16 +3796,16 @@ class FlowBranchIntersectionHandler extends turbodombuilder__WEBPACK_IMPORTED_MO
 
 /***/ }),
 
-/***/ "./frontend/src/client/components/flowBranch/flowBranch.model.ts":
-/*!***********************************************************************!*\
-  !*** ./frontend/src/client/components/flowBranch/flowBranch.model.ts ***!
-  \***********************************************************************/
+/***/ "./frontend/src/client/components/flowEntry/flowEntry.model.ts":
+/*!*********************************************************************!*\
+  !*** ./frontend/src/client/components/flowEntry/flowEntry.model.ts ***!
+  \*********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowBranchModel: () => (/* binding */ FlowBranchModel)
+/* harmony export */   FlowEntryModel: () => (/* binding */ FlowEntryModel)
 /* harmony export */ });
 /* harmony import */ var _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../yManagement/yModel/types/yComponentModel */ "./frontend/src/yManagement/yModel/types/yComponentModel.ts");
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
@@ -4099,10 +3819,9 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
-class FlowBranchModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_0__.YComponentModel {
+class FlowEntryModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_0__.YComponentModel {
     constructor() {
         super(...arguments);
-        this.lastNode = null;
         this.defaultStrokeWidth = 1;
         this.highlightedStrokeWidth = 3;
         this.redrawInterval = 100;
@@ -4115,52 +3834,37 @@ class FlowBranchModel extends _yManagement_yModel_types_yComponentModel__WEBPACK
     }
     set data(value) {
         super.data = value;
-        _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_2__.YUtilities.deepObserveAny(this.data, () => this.fireCallback("__redraw"), "entries");
-    }
-    initialize(blockKey = this.defaultBlockKey) {
-        var _a;
-        super.initialize(blockKey);
-        (_a = this.entryHandler) === null || _a === void 0 ? void 0 : _a.setData(this.entriesData);
-        // this.entryHandler.initializeModel();
+        _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_2__.YUtilities.deepObserveAny(this.data, () => this.fireCallback("__redraw"), "points");
     }
     get path() {
         return this.pathSelection.node();
     }
-    get entriesData() {
-        return this.getData("entries");
+    set highlighted(value) {
+        this.fireCallback("__redraw");
     }
-    get entriesDataArray() {
-        var _a;
-        return (_a = this.entriesData) === null || _a === void 0 ? void 0 : _a.toArray();
+    get startNodeId() {
+        return this.getData("startNodeId");
     }
-    get entries() {
-        return this.entryHandler.getEntries();
+    set startNodeId(value) {
+        this.setData("startNodeId", value);
     }
-    get connectedBranches() {
-        return this.getData("connectedBranches");
+    get endNodeId() {
+        return this.getData("endNodeId");
     }
-    get connectedBranchesArray() {
-        return this.connectedBranches.toArray();
+    set endNodeId(value) {
+        this.setData("endNodeId", value);
     }
-    get isOverwriting() {
-        const overwriting = this.overwriting;
-        return overwriting && overwriting.length > 0;
-    }
-    get overwriting() {
-        return this.getData("overwriting");
-    }
-    set overwriting(value) {
-        this.setData("overwriting", value);
-    }
-    get flowId() {
-        var _a;
-        return (_a = this.flow) === null || _a === void 0 ? void 0 : _a.dataId;
+    get pointsData() {
+        return this.getData("points");
     }
     get points() {
-        var _a;
-        const points = (_a = this.entriesDataArray) === null || _a === void 0 ? void 0 : _a.flatMap(cardWithConnections => cardWithConnections.get("points")).filter((point) => !!point).map((point) => new turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Point(point));
+        return this.coordinates.map(coordinate => new turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Point(coordinate));
+    }
+    get coordinates() {
+        const points = this.pointsData
+            .filter((point) => !!point);
         if (this.temporaryPoint)
-            points.push(this.temporaryPoint);
+            points.push(this.temporaryPoint.object);
         return points;
     }
     /**
@@ -4169,23 +3873,35 @@ class FlowBranchModel extends _yManagement_yModel_types_yComponentModel__WEBPACK
     set temporaryPoint(point) {
         this.fireCallback("temporaryPoint");
     }
-    set highlighted(value) {
-        this.fireCallback("__redraw");
-    }
     get strokeWidth() {
         return this.highlighted ? this.highlightedStrokeWidth : this.defaultStrokeWidth;
     }
-    get entryHandler() {
-        return this.getHandler("entry");
+    /**
+     * Splits an entry at the given point index into before/after + a new "split" entry.
+     * Returns [beforeSplitEntry, splitEntry, afterSplitEntry].
+     */
+    splitAtPoint(splitPointIndex, nodeId, splitPoint) {
+        // Create before/after
+        const beforeSplit = {
+            startNodeId: this.startNodeId,
+            endNodeId: nodeId,
+            points: [...this.points.slice(0, splitPointIndex), splitPoint]
+        };
+        const afterSplit = {
+            startNodeId: nodeId,
+            endNodeId: this.endNodeId,
+            points: [splitPoint, ...this.points.slice(splitPointIndex + 1)]
+        };
+        // The newly inserted "middle" entry (splitEntry).
+        const splitEntry = {
+            startNodeId: nodeId,
+            endNodeId: nodeId,
+            points: [splitPoint]
+        };
+        return { beforeSplit: beforeSplit, splitEntry: splitEntry, afterSplit: afterSplit };
     }
     get pointHandler() {
         return this.getHandler("point");
-    }
-    get searchHandler() {
-        return this.getHandler("search");
-    }
-    get cleaningHandler() {
-        return this.getHandler("cleaning");
     }
     get updateHandler() {
         return this.getHandler("update");
@@ -4193,43 +3909,39 @@ class FlowBranchModel extends _yManagement_yModel_types_yComponentModel__WEBPACK
     get intersectionHandler() {
         return this.getHandler("intersection");
     }
-    get connectionHandler() {
-        return this.getHandler("connection");
-    }
 }
 __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.auto)()
-], FlowBranchModel.prototype, "temporaryPoint", null);
+], FlowEntryModel.prototype, "highlighted", null);
 __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.auto)()
-], FlowBranchModel.prototype, "highlighted", null);
+], FlowEntryModel.prototype, "temporaryPoint", null);
 
 
 /***/ }),
 
-/***/ "./frontend/src/client/components/flowBranch/flowBranch.pointHandler.ts":
-/*!******************************************************************************!*\
-  !*** ./frontend/src/client/components/flowBranch/flowBranch.pointHandler.ts ***!
-  \******************************************************************************/
+/***/ "./frontend/src/client/components/flowEntry/flowEntry.pointHandler.ts":
+/*!****************************************************************************!*\
+  !*** ./frontend/src/client/components/flowEntry/flowEntry.pointHandler.ts ***!
+  \****************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowBranchPointHandler: () => (/* binding */ FlowBranchPointHandler)
+/* harmony export */   FlowEntryPointHandler: () => (/* binding */ FlowEntryPointHandler)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 
-class FlowBranchPointHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
+class FlowEntryPointHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
     /**
      * @description Adds the provided point to the flow with the given ID. The node ID indicates the ID of the node
      * the point is in (or null), and isTemporary indicates whether the point is temporarily added to the flow as
      * part of user feedback (to not add it to the synced data).
      * @param p
-     * @param nodeId
      * @param isTemporary
      */
-    addPoint(p, nodeId, isTemporary = false) {
+    addPoint(p, isTemporary = false) {
         if (!p)
             return;
         //If isTemporary --> set temporary point and return
@@ -4237,38 +3949,22 @@ class FlowBranchPointHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
             this.model.temporaryPoint = p;
             return;
         }
-        //Clear temporary point and update flow's lastNode
+        //Clear temporary point
         this.model.temporaryPoint = null;
-        this.model.lastNode = nodeId;
-        //Create an entry if none exist
-        if (this.model.entries.length == 0) {
-            if (!nodeId)
-                return;
-            this.model.entryHandler.addNewEntry({ startNodeId: nodeId, endNodeId: nodeId });
-        }
-        //Get last entry
-        const currentEntry = this.model.entries[this.model.entries.length - 1];
-        //Now adding the point...
-        //Point inside of same last node --> just add it
-        if (currentEntry.startNodeId == nodeId && currentEntry.endNodeId == nodeId)
-            currentEntry.addPoint(p);
-        //Otherwise, if point in a new node --> add a flow entry starting and ending at that node, as well as the point
-        else if (nodeId) {
-            if (!currentEntry.endNodeId)
-                currentEntry.endNodeId = nodeId;
-            this.model.entryHandler.addNewEntry({ startNodeId: nodeId, endNodeId: nodeId, points: [p.object] });
-        }
-        //Otherwise (point outside a node)
-        else {
-            //Last entry doesn't have an end node --> entry connects two nodes (the second is still unknown) --> just
-            //add the point as part of the entry
-            if (!currentEntry.endNodeId)
-                currentEntry.addPoint(p);
-            //Otherwise --> create a new entry that connects the last node and a future unknown node, and add to
-            //it the point
-            else
-                this.model.entryHandler.addNewEntry({ startNodeId: currentEntry.endNodeId, points: [p.object] });
-        }
+        let point = p;
+        if (point instanceof turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point)
+            point = point.object;
+        this.model.setData("points", [...this.model.pointsData, point]);
+    }
+    removePoint(index) {
+        const points = this.model.points;
+        points.splice(index, 1);
+        this.model.setData("points", points);
+    }
+    incrementPoint(index, increment) {
+        const points = this.model.coordinates;
+        points[index] = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point(points[index]).add(increment).object;
+        this.model.setData("points", points);
     }
     getMaxPoint() {
         let maxPoint = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point();
@@ -4292,147 +3988,25 @@ class FlowBranchPointHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
 
 /***/ }),
 
-/***/ "./frontend/src/client/components/flowBranch/flowBranch.searchHandler.ts":
-/*!*******************************************************************************!*\
-  !*** ./frontend/src/client/components/flowBranch/flowBranch.searchHandler.ts ***!
-  \*******************************************************************************/
+/***/ "./frontend/src/client/components/flowEntry/flowEntry.ts":
+/*!***************************************************************!*\
+  !*** ./frontend/src/client/components/flowEntry/flowEntry.ts ***!
+  \***************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowBranchSearchHandler: () => (/* binding */ FlowBranchSearchHandler)
+/* harmony export */   FlowEntry: () => (/* binding */ FlowEntry)
 /* harmony export */ });
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-
-class FlowBranchSearchHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
-    /**
-     * @description Finds the last flow entry inside the given node's ID
-     * @param nodeId
-     */
-    findNodeEntry(nodeId) {
-        const flowEntries = this.model.entries;
-        if (!flowEntries)
-            return null;
-        //Loop on entries
-        for (let entryIndex = 0; entryIndex < flowEntries.length; entryIndex++) {
-            const entry = flowEntries[entryIndex];
-            //If entry is inside the given node --> store it
-            if (entry.startNodeId == nodeId && entry.endNodeId == nodeId) {
-                return {
-                    flowId: this.model.flowId,
-                    branchId: this.model.dataId,
-                    entryIndex: entryIndex,
-                    lastNodeId: entry.startNodeId
-                };
-            }
-        }
-        return null;
-    }
-    /**
-     * @description Finds the last flow entry inside the given node's ID
-     * @param nodeId
-     */
-    findNodeEntries(nodeId) {
-        const flowEntries = this.model.entries;
-        if (!flowEntries)
-            return [];
-        const results = [];
-        //Loop on entries
-        for (let entryIndex = 0; entryIndex < flowEntries.length; entryIndex++) {
-            const entry = flowEntries[entryIndex];
-            //If entry is inside the given node --> store it
-            if (entry.startNodeId == nodeId && entry.endNodeId == nodeId) {
-                results.push({
-                    flowId: this.model.flowId,
-                    branchId: this.model.dataId,
-                    entryIndex: entryIndex,
-                    lastNodeId: entry.startNodeId
-                });
-            }
-        }
-        return results;
-    }
-    /**
-     * @description Finds the closest point in the flow to the given point
-     * @param point
-     */
-    findClosestPoint(point) {
-        //Initialize closest point data and minimum distance
-        let closestPoint = null;
-        let minDistance = Infinity;
-        const flowEntries = this.model.entries;
-        //Loop on all entries of the flow
-        for (let entryIndex = flowEntries.length - 1; entryIndex >= 0; entryIndex--) {
-            const entry = flowEntries[entryIndex];
-            //Loop on points
-            entry.points.forEach((p, index) => {
-                //Compute distance
-                const distance = turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point.dist(p, point);
-                //If smaller --> update the closest point and save new distance
-                if (distance < minDistance) {
-                    closestPoint = {
-                        flowId: this.model.flowId,
-                        branchId: this.model.dataId,
-                        entryIndex: entryIndex,
-                        lastNodeId: entry.startNodeId,
-                        pointIndex: index
-                    };
-                    minDistance = distance;
-                }
-            });
-        }
-        return closestPoint;
-    }
-    findPointFromIndex(index) {
-        let count = 0;
-        let pointData = null;
-        const flowEntries = this.model.entries;
-        for (let entryIndex = 0; entryIndex < flowEntries.length; entryIndex++) {
-            const entry = flowEntries[entryIndex];
-            if (count + entry.points.length < index) {
-                count += entry.points.length;
-                continue;
-            }
-            pointData = {
-                flowId: this.model.flowId,
-                branchId: this.model.dataId,
-                entryIndex: entryIndex,
-                lastNodeId: entry.startNodeId,
-                pointIndex: index - count
-            };
-            break;
-        }
-        return pointData;
-    }
-}
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/components/flowBranch/flowBranch.ts":
-/*!*****************************************************************!*\
-  !*** ./frontend/src/client/components/flowBranch/flowBranch.ts ***!
-  \*****************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowBranch: () => (/* binding */ FlowBranch)
-/* harmony export */ });
-/* harmony import */ var _flowBranch_model__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./flowBranch.model */ "./frontend/src/client/components/flowBranch/flowBranch.model.ts");
-/* harmony import */ var _flowBranch_view__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./flowBranch.view */ "./frontend/src/client/components/flowBranch/flowBranch.view.ts");
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _flowBranch_searchHandler__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./flowBranch.searchHandler */ "./frontend/src/client/components/flowBranch/flowBranch.searchHandler.ts");
-/* harmony import */ var _flowBranch_updateHandler__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./flowBranch.updateHandler */ "./frontend/src/client/components/flowBranch/flowBranch.updateHandler.ts");
-/* harmony import */ var _flowBranch_pointHandler__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./flowBranch.pointHandler */ "./frontend/src/client/components/flowBranch/flowBranch.pointHandler.ts");
-/* harmony import */ var _flowBranch_entryHandler__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./flowBranch.entryHandler */ "./frontend/src/client/components/flowBranch/flowBranch.entryHandler.ts");
-/* harmony import */ var _flowBranch_cleaningHandler__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./flowBranch.cleaningHandler */ "./frontend/src/client/components/flowBranch/flowBranch.cleaningHandler.ts");
-/* harmony import */ var _flowBranch_intersectionHandler__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./flowBranch.intersectionHandler */ "./frontend/src/client/components/flowBranch/flowBranch.intersectionHandler.ts");
-/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
-/* harmony import */ var _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../flowEntry/flowEntry */ "./frontend/src/client/components/flowEntry/flowEntry.ts");
-/* harmony import */ var _flowBranch_connectionHandler__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./flowBranch.connectionHandler */ "./frontend/src/client/components/flowBranch/flowBranch.connectionHandler.ts");
+/* harmony import */ var _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../yManagement/yManagement.types */ "./frontend/src/yManagement/yManagement.types.ts");
+/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+/* harmony import */ var _flowEntry_model__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./flowEntry.model */ "./frontend/src/client/components/flowEntry/flowEntry.model.ts");
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _flowEntry_view__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./flowEntry.view */ "./frontend/src/client/components/flowEntry/flowEntry.view.ts");
+/* harmony import */ var _flowEntry_intersectionHandler__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./flowEntry.intersectionHandler */ "./frontend/src/client/components/flowEntry/flowEntry.intersectionHandler.ts");
+/* harmony import */ var _flowEntry_pointHandler__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./flowEntry.pointHandler */ "./frontend/src/client/components/flowEntry/flowEntry.pointHandler.ts");
+/* harmony import */ var _flowEntry_updateHandler__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./flowEntry.updateHandler */ "./frontend/src/client/components/flowEntry/flowEntry.updateHandler.ts");
 
 
 
@@ -4441,21 +4015,15 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-
-
-
-class FlowBranch extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.TurboProxiedElement {
+class FlowEntry extends turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.TurboProxiedElement {
     constructor(properties) {
         var _a;
-        super({ tag: "g", namespace: turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.SvgNamespace });
+        super({ tag: "g", namespace: turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.SvgNamespace });
         this.mvc.generate({
-            viewConstructor: _flowBranch_view__WEBPACK_IMPORTED_MODULE_1__.FlowBranchView,
-            modelConstructor: _flowBranch_model__WEBPACK_IMPORTED_MODULE_0__.FlowBranchModel,
+            viewConstructor: _flowEntry_view__WEBPACK_IMPORTED_MODULE_4__.FlowEntryView,
+            modelConstructor: _flowEntry_model__WEBPACK_IMPORTED_MODULE_2__.FlowEntryModel,
             data: properties.data,
-            handlerConstructors: [_flowBranch_searchHandler__WEBPACK_IMPORTED_MODULE_3__.FlowBranchSearchHandler, _flowBranch_updateHandler__WEBPACK_IMPORTED_MODULE_4__.FlowBranchUpdateHandler, _flowBranch_pointHandler__WEBPACK_IMPORTED_MODULE_5__.FlowBranchPointHandler,
-                _flowBranch_entryHandler__WEBPACK_IMPORTED_MODULE_6__.FlowBranchEntryHandler, _flowBranch_cleaningHandler__WEBPACK_IMPORTED_MODULE_7__.FlowBranchCleaningHandler, _flowBranch_intersectionHandler__WEBPACK_IMPORTED_MODULE_8__.FlowBranchIntersectionHandler,
-                _flowBranch_connectionHandler__WEBPACK_IMPORTED_MODULE_11__.FlowBranchConnectionHandler],
+            handlerConstructors: [_flowEntry_intersectionHandler__WEBPACK_IMPORTED_MODULE_5__.FlowEntryIntersectionHandler, _flowEntry_pointHandler__WEBPACK_IMPORTED_MODULE_6__.FlowEntryPointHandler, _flowEntry_updateHandler__WEBPACK_IMPORTED_MODULE_7__.FlowEntryUpdateHandler],
             initialize: false
         });
         this.model.flow = properties.flow;
@@ -4463,112 +4031,47 @@ class FlowBranch extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.TurboProxi
         this.mvc.initialize();
     }
     static createData(data) {
+        if (data instanceof _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_0__.YMap)
+            return data;
         if (!data)
             data = {};
-        if (!data.entries)
-            data.entries = [];
-        if (!data.connectedBranches)
-            data.connectedBranches = [];
-        if (!data.overwriting)
-            data.overwriting = "";
-        data.entries = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_9__.YUtilities.createYArray(data.entries.map(entry => _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_10__.FlowEntry.createData(entry)));
-        data.connectedBranches = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_9__.YUtilities.createYArray(data.connectedBranches);
-        return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_9__.YUtilities.createYMap(data);
-    }
-    get highlighted() {
-        return this.model.highlighted;
-    }
-    set highlighted(value) {
-        this.model.highlighted = value;
-    }
-    get flow() {
-        return this.model.flow;
-    }
-    get entriesData() {
-        return this.model.entriesData;
-    }
-    get entries() {
-        return this.model.entries;
-    }
-    get entriesArray() {
-        return this.model.entriesDataArray;
-    }
-    get connectedBranches() {
-        return this.model.connectedBranches;
-    }
-    get connectedBranchesArray() {
-        return this.model.connectedBranchesArray;
-    }
-    get isOverwriting() {
-        return this.model.isOverwriting;
-    }
-    get overwriting() {
-        return this.model.overwriting;
-    }
-    redraw(force = false) {
-        return this.view.redraw(force);
-    }
-    clearDrawing() {
-        return this.view.clearDrawing();
-    }
-    getEntry(index) {
-        return this.model.entryHandler.getEntry(index);
-    }
-    spliceEntries(start, deleteCount, ...entries) {
-        return this.model.entryHandler.spliceEntries(start, deleteCount, ...entries);
-    }
-    getNodesIds() {
-        return this.model.entryHandler.getNodesIds();
-    }
-    /**
-     * @description Adds the provided point to the flow with the given ID. The node ID indicates the ID of the node
-     * the point is in (or null), and isTemporary indicates whether the point is temporarily added to the flow as
-     * part of user feedback (to not add it to the synced data).
-     * @param p
-     * @param nodeId
-     * @param isTemporary
-     */
-    addPoint(p, nodeId, isTemporary = false) {
-        this.model.pointHandler.addPoint(p, nodeId, isTemporary);
-    }
-    getMaxPoint() {
-        return this.model.pointHandler.getMaxPoint();
-    }
-    /**
-     * @description Finds the last flow entry inside the given node's ID
-     * @param nodeId
-     */
-    findNodeEntry(nodeId) {
-        return this.model.searchHandler.findNodeEntry(nodeId);
-    }
-    /**
-     * @description Finds the last flow entry inside the given node's ID
-     * @param nodeId
-     */
-    findNodeEntries(nodeId) {
-        return this.model.searchHandler.findNodeEntries(nodeId);
-    }
-    /**
-     * @description Finds the closest point in the flow to the given point
-     * @param point
-     */
-    findClosestPoint(point) {
-        return this.model.searchHandler.findClosestPoint(point);
-    }
-    findPointFromIndex(index) {
-        return this.model.searchHandler.findPointFromIndex(index);
-    }
-    checkIfUnnecessary() {
-        return this.model.cleaningHandler.checkIfUnnecessary();
-    }
-    endBranch() {
-        return this.model.cleaningHandler.endBranch();
+        if (!data.startNodeId)
+            data.startNodeId = "";
+        if (!data.endNodeId)
+            data.endNodeId = "";
+        if (!data.points)
+            data.points = [];
+        return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_1__.YUtilities.createYMap(data);
     }
     updateAfterMovingNode(nodeId, deltaPosition) {
         return this.model.updateHandler.updateAfterMovingNode(nodeId, deltaPosition);
     }
-    updateOnDetachingNode(nodeId) {
-        return this.model.updateHandler.updateOnDetachingNode(nodeId);
+    get startNodeId() {
+        return this.model.startNodeId;
+    }
+    set startNodeId(value) {
+        this.model.startNodeId = value;
+    }
+    get endNodeId() {
+        return this.model.endNodeId;
+    }
+    set endNodeId(value) {
+        this.model.endNodeId = value;
+    }
+    get points() {
+        return this.model.points;
+    }
+    addPoint(point, isTemporary = false) {
+        return this.model.pointHandler.addPoint(point, isTemporary);
+    }
+    removePoint(index) {
+        return this.model.pointHandler.removePoint(index);
+    }
+    incrementPoint(index, increment) {
+        return this.model.pointHandler.incrementPoint(index, increment);
+    }
+    getMaxPoint() {
+        return this.model.pointHandler.getMaxPoint();
     }
     intersectsPoint(point, errorMargin = 50, incrementValue = 1) {
         return this.model.intersectionHandler.intersectsPoint(point, errorMargin, incrementValue);
@@ -4579,35 +4082,61 @@ class FlowBranch extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.TurboProxi
     closestPointOnPath(p, closestPoint, errorMargin = 50, incrementValue = 10) {
         return this.model.intersectionHandler.closestPointOnPath(p, closestPoint, errorMargin, incrementValue);
     }
-    setConnectedBranches(branches) {
-        return this.model.connectionHandler.setConnectedBranches(branches);
+    /**
+     * Splits an entry at the given point index into before/after + a new "split" entry.
+     * Returns [beforeSplitEntry, splitEntry, afterSplitEntry].
+     */
+    splitAtPoint(splitPointIndex, nodeId, splitPoint) {
+        // Create before/after
+        const beforeSplit = {
+            startNodeId: this.startNodeId,
+            endNodeId: nodeId,
+            points: [...this.points.slice(0, splitPointIndex), splitPoint]
+        };
+        const afterSplit = {
+            startNodeId: nodeId,
+            endNodeId: this.endNodeId,
+            points: [splitPoint, ...this.points.slice(splitPointIndex + 1)]
+        };
+        // The newly inserted "middle" entry (splitEntry).
+        const splitEntry = {
+            startNodeId: nodeId,
+            endNodeId: nodeId,
+            points: [splitPoint]
+        };
+        return { beforeSplit: beforeSplit, splitEntry: splitEntry, afterSplit: afterSplit };
     }
-    addConnectedBranch(...branches) {
-        return this.model.connectionHandler.addConnectedBranch(...branches);
+    delete() {
+        this.view.clearDrawing();
+        this.model.flow.removeEntry(this);
     }
-    getCardsInBranch() {
-        // const
-        // return this.model.entries.map()
+    endEntry(endNodeId) {
+        if (endNodeId)
+            this.endNodeId = endNodeId;
+        if (!this.endNodeId)
+            return this.delete();
+        if (this.model.temporaryPoint)
+            this.addPoint(this.model.temporaryPoint, false);
     }
 }
 
 
 /***/ }),
 
-/***/ "./frontend/src/client/components/flowBranch/flowBranch.updateHandler.ts":
-/*!*******************************************************************************!*\
-  !*** ./frontend/src/client/components/flowBranch/flowBranch.updateHandler.ts ***!
-  \*******************************************************************************/
+/***/ "./frontend/src/client/components/flowEntry/flowEntry.updateHandler.ts":
+/*!*****************************************************************************!*\
+  !*** ./frontend/src/client/components/flowEntry/flowEntry.updateHandler.ts ***!
+  \*****************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowBranchUpdateHandler: () => (/* binding */ FlowBranchUpdateHandler)
+/* harmony export */   FlowEntryUpdateHandler: () => (/* binding */ FlowEntryUpdateHandler)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 
-class FlowBranchUpdateHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
+class FlowEntryUpdateHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
     /**
      * @description Updates all impacted flows after the node of the provided ID was moved by deltaPosition.
      * @param nodeId
@@ -4616,72 +4145,43 @@ class FlowBranchUpdateHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
     updateAfterMovingNode(nodeId, deltaPosition) {
         if (!nodeId)
             return;
-        const flowEntries = this.model.entries;
-        for (let i = 0; i < flowEntries.length; i++) {
-            const entry = flowEntries[i];
-            const points = entry.points;
-            if (entry.startNodeId != nodeId && entry.endNodeId != nodeId)
-                continue;
-            //If the flow entry represents points inside the node that has moved --> increment all points' coordinates
-            // by deltaPosition
-            if (entry.startNodeId == nodeId && entry.endNodeId == nodeId) {
-                points.forEach((_, index) => entry.incrementPoint(index, deltaPosition));
-            }
-            //Otherwise --> the entry corresponds to points connecting the moved node with another node. Thus, I move each
-            //point by deltaPosition multiplied by a moveFactor (linearly interpolated based on the number of points and
-            // how close the current point is from the moved node) for a natural-looking update of the flow
-            else {
-                for (let i = 0; i < points.length; i++) {
-                    //Compute interpolation amount (both sides incremented by 1 to soften the effect)
-                    let moveFactor = i / points.length;
-                    //Flip interpolation if points start from the given node (as then it should start high and end low)
-                    if (entry.startNodeId == nodeId)
-                        moveFactor = 1 - moveFactor;
-                    //Update accordingly the point's coordinates
-                    entry.incrementPoint(i, deltaPosition.mul(moveFactor));
-                }
-            }
+        //I move each point by deltaPosition multiplied by a moveFactor (linearly interpolated based on the number of
+        // points and how close the current point is from the moved node) for a natural-looking update of the flow
+        for (let i = 0; i < this.model.points.length; i++) {
+            //Compute interpolation amount (both sides incremented by 1 to soften the effect)
+            let moveFactor = i / (this.model.points.length - 1);
+            //Flip interpolation if points start from the given node (as then it should start high and end low)
+            if (this.model.startNodeId == nodeId)
+                moveFactor = 1 - moveFactor;
+            //Update accordingly the point's coordinates
+            this.model.pointHandler.incrementPoint(i, deltaPosition.mul(moveFactor));
         }
-    }
-    updateOnDetachingNode(nodeId) {
-        if (!nodeId)
-            return;
-        const flowEntries = this.model.entries;
-        for (let i = flowEntries.length - 1; i >= 0; i--) {
-            const entry = flowEntries[i];
-            // If the entry is not connected to the card on any end --> skip it
-            if (entry.startNodeId != nodeId && entry.endNodeId != nodeId)
-                continue;
-            //Otherwise --> delete entry
-            this.model.entryHandler.removeEntryAt(i);
-            return true;
-        }
-        return false;
     }
 }
 
 
 /***/ }),
 
-/***/ "./frontend/src/client/components/flowBranch/flowBranch.view.ts":
-/*!**********************************************************************!*\
-  !*** ./frontend/src/client/components/flowBranch/flowBranch.view.ts ***!
-  \**********************************************************************/
+/***/ "./frontend/src/client/components/flowEntry/flowEntry.view.ts":
+/*!********************************************************************!*\
+  !*** ./frontend/src/client/components/flowEntry/flowEntry.view.ts ***!
+  \********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowBranchView: () => (/* binding */ FlowBranchView)
+/* harmony export */   FlowEntryView: () => (/* binding */ FlowEntryView)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3 */ "./node_modules/d3/src/index.js");
 
 
-class FlowBranchView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
+class FlowEntryView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
     initialize() {
         super.initialize();
-        this.model.pathSelection = d3__WEBPACK_IMPORTED_MODULE_1__.select(this.element.element).append("path");
+        this.model.groupSelection = d3__WEBPACK_IMPORTED_MODULE_1__.select(this.element.element);
+        this.model.pathSelection = this.model.groupSelection.append("path");
         this.redraw();
     }
     setupChangedCallbacks() {
@@ -4710,10 +4210,11 @@ class FlowBranchView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboV
     drawPath() {
         var _a;
         const points = this.model.points;
+        //TODO SUBSTRATE CONSTRAIN POINTS
         this.clearChevrons();
         if (points.length < 2)
             return;
-        const isOverwriting = this.model.isOverwriting;
+        // const isOverwriting = this.model.isOverwriting;
         //Generate the path data
         const lineGenerator = d3__WEBPACK_IMPORTED_MODULE_1__.line()
             .x(d => d.x)
@@ -4724,8 +4225,8 @@ class FlowBranchView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboV
         this.model.pathSelection
             .attr("class", "flow")
             .attr("d", pathData)
-            .attr("stroke-dasharray", isOverwriting ? "5, 5" : null)
-            .attr("opacity", isOverwriting ? 0.6 : 1)
+            // .attr("stroke-dasharray", isOverwriting ? "5, 5" : null)
+            .attr("opacity", 1)
             .attr("stroke", (_a = this.model.flow.color) !== null && _a !== void 0 ? _a : "black")
             .attr("stroke-width", this.model.strokeWidth);
         this.drawChevronsDelayed();
@@ -4736,251 +4237,20 @@ class FlowBranchView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboV
     }
     drawChevrons() {
         var _a;
-        const isOverwriting = this.model.isOverwriting;
         const pathLength = this.model.path.getTotalLength();
-        for (let distance = this.model.chevronInterval; distance < pathLength; distance += this.model.chevronInterval) {
-            const point = this.model.path.getPointAtLength(distance);
-            const nextPoint = this.model.path.getPointAtLength(distance + 1);
-            //Compute angle
-            const angle = Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * (180 / Math.PI);
-            d3__WEBPACK_IMPORTED_MODULE_1__.select(this.element.element).append("path")
-                .attr("class", "chevron")
-                .attr("d", this.model.chevronShape)
-                .attr("transform", `translate(${point.x}, ${point.y}) rotate(${angle})`)
-                .attr("stroke", (_a = this.model.flow.color) !== null && _a !== void 0 ? _a : "black")
-                .attr("stroke-linecap", "round")
-                .attr("stroke-linejoin", "round")
-                .attr("opacity", isOverwriting ? 0.6 : 1)
-                .attr("stroke-width", this.model.strokeWidth);
-        }
-    }
-}
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/components/flowEntry/flowEntry.model.ts":
-/*!*********************************************************************!*\
-  !*** ./frontend/src/client/components/flowEntry/flowEntry.model.ts ***!
-  \*********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowEntryModel: () => (/* binding */ FlowEntryModel)
-/* harmony export */ });
-/* harmony import */ var _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../yManagement/yModel/types/yComponentModel */ "./frontend/src/yManagement/yModel/types/yComponentModel.ts");
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-
-
-class FlowEntryModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_0__.YComponentModel {
-    get startNodeId() {
-        return this.getData("startNodeId");
-    }
-    set startNodeId(value) {
-        this.setData("startNodeId", value);
-    }
-    get endNodeId() {
-        return this.getData("endNodeId");
-    }
-    set endNodeId(value) {
-        this.setData("endNodeId", value);
-    }
-    get points() {
-        return this.getData("points");
-    }
-    addPoint(point) {
-        if (point instanceof turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Point)
-            point = point.object;
-        const points = this.points;
-        points.push(point);
-        this.setData("points", points);
-    }
-    removePoint(index) {
-        const points = this.points;
-        points.splice(index, 1);
-        this.setData("points", points);
-    }
-    incrementPoint(index, increment) {
-        const points = this.points;
-        points[index].x += increment.x;
-        points[index].y += increment.y;
-        this.setData("points", points);
-    }
-    /**
-     * Splits an entry at the given point index into before/after + a new "split" entry.
-     * Returns [beforeSplitEntry, splitEntry, afterSplitEntry].
-     */
-    splitAtPoint(splitPointIndex, nodeId, splitPoint) {
-        // Create before/after
-        const beforeSplit = {
-            startNodeId: this.startNodeId,
-            endNodeId: nodeId,
-            points: [...this.points.slice(0, splitPointIndex), splitPoint]
-        };
-        const afterSplit = {
-            startNodeId: nodeId,
-            endNodeId: this.endNodeId,
-            points: [splitPoint, ...this.points.slice(splitPointIndex + 1)]
-        };
-        // The newly inserted "middle" entry (splitEntry).
-        const splitEntry = {
-            startNodeId: nodeId,
-            endNodeId: nodeId,
-            points: [splitPoint]
-        };
-        return { beforeSplit: beforeSplit, splitEntry: splitEntry, afterSplit: afterSplit };
-    }
-}
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/components/flowEntry/flowEntry.ts":
-/*!***************************************************************!*\
-  !*** ./frontend/src/client/components/flowEntry/flowEntry.ts ***!
-  \***************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowEntry: () => (/* binding */ FlowEntry)
-/* harmony export */ });
-/* harmony import */ var _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../yManagement/yManagement.types */ "./frontend/src/yManagement/yManagement.types.ts");
-/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
-/* harmony import */ var _flowEntry_model__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./flowEntry.model */ "./frontend/src/client/components/flowEntry/flowEntry.model.ts");
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-
-
-
-
-class FlowEntry {
-    static createData(data) {
-        if (data instanceof _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_0__.YMap)
-            return data;
-        if (!data)
-            data = {};
-        if (!data.startNodeId)
-            data.startNodeId = "";
-        if (!data.endNodeId)
-            data.endNodeId = "";
-        if (!data.points)
-            data.points = [];
-        return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_1__.YUtilities.createYMap(data);
-    }
-    constructor(data) {
-        this.mvc = new turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.MvcHandler({
-            modelConstructor: _flowEntry_model__WEBPACK_IMPORTED_MODULE_2__.FlowEntryModel,
-            data: data,
-            generate: true
-        });
-    }
-    get model() {
-        return this.mvc.model;
-    }
-    get data() {
-        return this.model.data;
-    }
-    set data(data) {
-        this.model.data = data;
-    }
-    get startNodeId() {
-        return this.model.startNodeId;
-    }
-    set startNodeId(value) {
-        this.model.startNodeId = value;
-    }
-    get endNodeId() {
-        return this.model.endNodeId;
-    }
-    set endNodeId(value) {
-        this.model.endNodeId = value;
-    }
-    get points() {
-        return this.model.points;
-    }
-    addPoint(point) {
-        return this.model.points.push(point);
-    }
-    removePoint(index) {
-        return this.model.removePoint(index);
-    }
-    incrementPoint(index, increment) {
-        return this.model.incrementPoint(index, increment);
-    }
-    /**
-     * Splits an entry at the given point index into before/after + a new "split" entry.
-     * Returns [beforeSplitEntry, splitEntry, afterSplitEntry].
-     */
-    splitAtPoint(splitPointIndex, nodeId, splitPoint) {
-        // Create before/after
-        const beforeSplit = {
-            startNodeId: this.startNodeId,
-            endNodeId: nodeId,
-            points: [...this.points.slice(0, splitPointIndex), splitPoint]
-        };
-        const afterSplit = {
-            startNodeId: nodeId,
-            endNodeId: this.endNodeId,
-            points: [splitPoint, ...this.points.slice(splitPointIndex + 1)]
-        };
-        // The newly inserted "middle" entry (splitEntry).
-        const splitEntry = {
-            startNodeId: nodeId,
-            endNodeId: nodeId,
-            points: [splitPoint]
-        };
-        return { beforeSplit: beforeSplit, splitEntry: splitEntry, afterSplit: afterSplit };
-    }
-}
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/components/flowPath/flowPath.entryCardHandler.ts":
-/*!******************************************************************************!*\
-  !*** ./frontend/src/client/components/flowPath/flowPath.entryCardHandler.ts ***!
-  \******************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowPathEntryCardHandler: () => (/* binding */ FlowPathEntryCardHandler)
-/* harmony export */ });
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-
-class FlowPathEntryCardHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
-    pushIdIfValid(newData, id) {
-        if (id === undefined)
-            return false;
-        if (newData.length > 0 && newData[newData.length - 1] === id)
-            return false;
-        newData.push(id);
-        return true;
-    }
-    updateCardsModel(entriesModel) {
-        const newData = [];
-        entriesModel.getAllBlockKeys().forEach(blockKey => {
-            entriesModel.getBlock(blockKey).data.toArray().forEach((entry, id) => {
-                this.pushIdIfValid(newData, entry.get("startNodeId"));
-                this.pushIdIfValid(newData, entry.get("endNodeId"));
-            });
-        });
-        const cardIds = this.model.cardIds;
-        const current = this.model.cardIdsArray;
-        let changeStart = 0;
-        while (changeStart < newData.length &&
-            changeStart < current.length &&
-            newData[changeStart] === current[changeStart]) {
-            changeStart++;
-        }
-        if (changeStart === newData.length && changeStart === current.length)
-            return;
-        cardIds.delete(changeStart, current.length - changeStart);
-        cardIds.insert(changeStart, newData.slice(changeStart));
+        const point = this.model.path.getPointAtLength(pathLength / 2);
+        const nextPoint = this.model.path.getPointAtLength(pathLength / 2 + 1);
+        //Compute angle
+        const angle = Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * (180 / Math.PI);
+        this.model.groupSelection.append("path")
+            .attr("class", "chevron")
+            .attr("d", this.model.chevronShape)
+            .attr("transform", `translate(${point.x}, ${point.y}) rotate(${angle})`)
+            .attr("stroke", (_a = this.model.flow.color) !== null && _a !== void 0 ? _a : "black")
+            .attr("stroke-linecap", "round")
+            .attr("stroke-linejoin", "round")
+            .attr("opacity", 1)
+            .attr("stroke-width", this.model.strokeWidth);
     }
 }
 
@@ -5005,16 +4275,10 @@ __webpack_require__.r(__webpack_exports__);
 class FlowPathModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_0__.YComponentModel {
     constructor(data) {
         super(data);
-        this.branchIdsModel = new _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_1__.YManagerModel();
         this.entriesModel = new _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_1__.YManagerModel();
-        this.branchIdsModel.onAdded = (branchId, branchIndex) => { var _a; return this.entriesModel.setBlock((_a = this.flow.getBranchById(branchId)) === null || _a === void 0 ? void 0 : _a.entriesData, branchId, branchIndex); };
-        this.entriesModel.onAdded = () => { var _a; return (_a = this.entryCardHandler) === null || _a === void 0 ? void 0 : _a.updateCardsModel(this.entriesModel); };
-        this.entriesModel.onDeleted = () => { var _a; return (_a = this.entryCardHandler) === null || _a === void 0 ? void 0 : _a.updateCardsModel(this.entriesModel); };
     }
     initialize(blockKey = this.defaultBlockKey) {
         super.initialize(blockKey);
-        if (blockKey === this.defaultBlockKey)
-            this.branchIdsModel.data = this.branchIds;
     }
     get name() {
         return this.getData("name");
@@ -5028,31 +4292,11 @@ class FlowPathModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_I
     set index(value) {
         this.setData("index", value);
     }
-    get branchIds() {
-        return this.getData("branchIds");
+    get nodeIds() {
+        return this.getData("nodeIds");
     }
-    set branchIds(value) {
-        this.setData("branchIds", value);
-    }
-    get branchIdsArray() {
-        var _a;
-        return (_a = this.branchIds) === null || _a === void 0 ? void 0 : _a.toArray();
-    }
-    get cardIds() {
-        return this.getData("cardIds");
-    }
-    get cardIdsArray() {
-        return this.cardIds.toJSON();
-    }
-    insertBranchAt(branchId, index) {
-        if (index == undefined || index >= this.branchIdsArray.length)
-            return this.branchIds.push([branchId]);
-        if (index < 0)
-            index = 0;
-        this.branchIds.insert(index, [branchId]);
-    }
-    get entryCardHandler() {
-        return this.getHandler("entryCard");
+    get nodeIdsArray() {
+        return this.nodeIds.toJSON();
     }
 }
 
@@ -5073,7 +4317,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
 /* harmony import */ var _flowPath_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./flowPath.model */ "./frontend/src/client/components/flowPath/flowPath.model.ts");
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _flowPath_entryCardHandler__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./flowPath.entryCardHandler */ "./frontend/src/client/components/flowPath/flowPath.entryCardHandler.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -5083,22 +4326,20 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
-
 let FlowPath = class FlowPath extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.TurboSelectEntry {
     static createData(data) {
+        var _a;
         if (!data)
             data = {};
         if (!data.name)
             data.name = "Flow Path";
-        data.branchIds = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__.YUtilities.createYArray(data.branchIds ? data.branchIds : ["0"]);
-        data.cardIds = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__.YUtilities.createYArray([]);
+        data.nodeIds = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__.YUtilities.createYArray((_a = data.nodeIds) !== null && _a !== void 0 ? _a : []);
         return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__.YUtilities.createYMap(data);
     }
     constructor(properties) {
         super(properties);
         this.mvc.generate({
             modelConstructor: _flowPath_model__WEBPACK_IMPORTED_MODULE_1__.FlowPathModel,
-            handlerConstructors: [_flowPath_entryCardHandler__WEBPACK_IMPORTED_MODULE_3__.FlowPathEntryCardHandler],
             data: properties.data,
             initialize: false
         });
@@ -5114,14 +4355,12 @@ let FlowPath = class FlowPath extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2
     setupUIListeners() {
         super.setupUIListeners();
         this.onSelected = (b) => {
-            var _a, _b;
-            (_a = this.model.flow.branches) === null || _a === void 0 ? void 0 : _a.forEach(branch => {
-                var _a;
-                branch.highlighted = (_a = this.branchIdsArray) === null || _a === void 0 ? void 0 : _a.includes(branch.dataId);
-            });
-            if (!b)
-                return;
-            (_b = this.model.flow.branches) === null || _b === void 0 ? void 0 : _b.forEach(branch => { var _a; return branch.highlighted = (_a = this.branchIdsArray) === null || _a === void 0 ? void 0 : _a.includes(branch.dataId); });
+            // this.model.flow.branches?.forEach(branch => {
+            //     branch.highlighted = this.branchIdsArray?.includes(branch.dataId)
+            // });
+            // if (!b) return;
+            // this.model.flow.branches?.forEach(branch =>
+            //     branch.highlighted = this.branchIdsArray?.includes(branch.dataId));
         };
     }
     get name() {
@@ -5136,23 +4375,11 @@ let FlowPath = class FlowPath extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2
     set index(value) {
         this.model.index = value;
     }
-    get branchIds() {
-        return this.model.branchIds;
+    get nodeIds() {
+        return this.model.nodeIds;
     }
-    set branchIds(value) {
-        this.model.branchIds = value;
-    }
-    get branchIdsArray() {
-        return this.model.branchIdsArray;
-    }
-    get cardIds() {
-        return this.model.cardIds;
-    }
-    get cardIdsArray() {
-        return this.model.cardIdsArray;
-    }
-    insertBranchAt(branchId, index) {
-        return this.model.insertBranchAt(branchId, index);
+    get nodeIdsArray() {
+        return this.model.nodeIdsArray;
     }
 };
 FlowPath = __decorate([
@@ -5163,10 +4390,10 @@ FlowPath = __decorate([
 
 /***/ }),
 
-/***/ "./frontend/src/client/components/flowTag/flowTag.css":
-/*!************************************************************!*\
-  !*** ./frontend/src/client/components/flowTag/flowTag.css ***!
-  \************************************************************/
+/***/ "./frontend/src/client/components/flowSelector/flowSelector.css":
+/*!**********************************************************************!*\
+  !*** ./frontend/src/client/components/flowSelector/flowSelector.css ***!
+  \**********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -5186,7 +4413,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_flowTag_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../../../node_modules/css-loader/dist/cjs.js!./flowTag.css */ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/flowTag/flowTag.css");
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_flowSelector_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../../../node_modules/css-loader/dist/cjs.js!./flowSelector.css */ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/flowSelector/flowSelector.css");
 
       
       
@@ -5206,26 +4433,26 @@ options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WE
 options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
 options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
 
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_flowTag_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_flowSelector_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
 
 
 
 
-       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_flowTag_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_flowTag_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_flowTag_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_flowSelector_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_flowSelector_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_flowSelector_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
 
 
 /***/ }),
 
-/***/ "./frontend/src/client/components/flowTag/flowTag.model.ts":
-/*!*****************************************************************!*\
-  !*** ./frontend/src/client/components/flowTag/flowTag.model.ts ***!
-  \*****************************************************************/
+/***/ "./frontend/src/client/components/flowSelector/flowSelector.model.ts":
+/*!***************************************************************************!*\
+  !*** ./frontend/src/client/components/flowSelector/flowSelector.model.ts ***!
+  \***************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowTagModel: () => (/* binding */ FlowTagModel)
+/* harmony export */   FlowSelectorModel: () => (/* binding */ FlowSelectorModel)
 /* harmony export */ });
 /* harmony import */ var _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../yManagement/yManagement.types */ "./frontend/src/yManagement/yManagement.types.ts");
 /* harmony import */ var _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../yManagement/yModel/types/yComponentModel */ "./frontend/src/yManagement/yModel/types/yComponentModel.ts");
@@ -5235,7 +4462,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-class FlowTagModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_1__.YComponentModel {
+class FlowSelectorModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_1__.YComponentModel {
     constructor(data) {
         super(data);
         this.onPathAdded = () => { };
@@ -5286,29 +4513,129 @@ class FlowTagModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IM
             index = 0;
         this.pathsData.insert(index, [pathData]);
     }
+    get pathHandler() {
+        return this.getHandler("path");
+    }
 }
 
 
 /***/ }),
 
-/***/ "./frontend/src/client/components/flowTag/flowTag.ts":
-/*!***********************************************************!*\
-  !*** ./frontend/src/client/components/flowTag/flowTag.ts ***!
-  \***********************************************************/
+/***/ "./frontend/src/client/components/flowSelector/flowSelector.pathHandler.ts":
+/*!*********************************************************************************!*\
+  !*** ./frontend/src/client/components/flowSelector/flowSelector.pathHandler.ts ***!
+  \*********************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowTag: () => (/* binding */ FlowTag)
+/* harmony export */   FlowSelectorPathHandler: () => (/* binding */ FlowSelectorPathHandler)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _flowTag_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./flowTag.css */ "./frontend/src/client/components/flowTag/flowTag.css");
+/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+/* harmony import */ var _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../flowPath/flowPath */ "./frontend/src/client/components/flowPath/flowPath.ts");
+
+
+
+class FlowSelectorPathHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
+    updatePaths() {
+        const oldPaths = this.model.pathsData.toJSON();
+        const newPaths = [];
+        this.recurFindPaths(this.model.nodeId, [], newPaths);
+        this.setPathNames(oldPaths, newPaths);
+        this.model.pathsData = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_1__.YUtilities.createYArray(newPaths.map(path => _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_2__.FlowPath.createData(path)));
+    }
+    recurFindPaths(currentNodeId, currentPath, paths) {
+        currentPath.push(currentNodeId);
+        const entries = this.model.flow.getEntries(currentNodeId);
+        if (!entries || entries.length === 0) {
+            paths.push({ nodeIds: [...currentPath] });
+        }
+        else {
+            for (const entry of entries) {
+                const nextNodeId = entry.endNodeId;
+                if (!nextNodeId || currentPath.includes(nextNodeId))
+                    continue;
+                this.recurFindPaths(nextNodeId, [...currentPath], paths);
+            }
+        }
+    }
+    setPathNames(oldPaths, newPaths) {
+        var _a;
+        for (const path of newPaths) {
+            const oldMatch = this.matchExactPathName(path, oldPaths);
+            if (!oldMatch)
+                continue;
+            path.name = oldMatch.name;
+            this.deleteEntry(oldMatch, oldPaths);
+        }
+        for (const path of newPaths.filter(path => !path.name)) {
+            const oldMatch = this.matchSimilarPathName(path, oldPaths);
+            if (!oldMatch)
+                continue;
+            path.name = oldMatch.name;
+            this.deleteEntry(oldMatch, oldPaths);
+        }
+        const usedNames = new Set(newPaths.map(p => p.name).filter(Boolean));
+        for (const path of newPaths.filter(p => !p.name)) {
+            const baseName = (_a = this.model.flow.defaultName) !== null && _a !== void 0 ? _a : "Path";
+            let counter = 1;
+            while (usedNames.has(`${baseName} ${counter}`))
+                counter++;
+            path.name = `${baseName} ${counter}`;
+            usedNames.add(path.name);
+        }
+    }
+    matchExactPathName(path, oldPaths) {
+        return oldPaths.find(oldPath => { var _a, _b; return ((_a = oldPath.nodeIds) === null || _a === void 0 ? void 0 : _a.join(",")) === ((_b = path.nodeIds) === null || _b === void 0 ? void 0 : _b.join(",")); });
+    }
+    matchSimilarPathName(path, oldPaths) {
+        return oldPaths.find(oldPath => {
+            var _a, _b;
+            const oldNodeIds = (_a = oldPath.nodeIds) !== null && _a !== void 0 ? _a : [];
+            const newNodeIds = (_b = path.nodeIds) !== null && _b !== void 0 ? _b : [];
+            if (Math.abs(oldNodeIds.length - newNodeIds.length) > 1)
+                return false;
+            let diffCount = 0;
+            for (let i = 0; i < Math.min(oldNodeIds.length, newNodeIds.length); i++) {
+                if (oldNodeIds[i] !== newNodeIds[i])
+                    diffCount++;
+            }
+            return diffCount <= 1;
+        });
+    }
+    deleteEntry(entry, oldArray) {
+        const index = oldArray.indexOf(entry);
+        if (index < 0)
+            return false;
+        oldArray.splice(index, 1);
+        return true;
+    }
+}
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/components/flowSelector/flowSelector.ts":
+/*!*********************************************************************!*\
+  !*** ./frontend/src/client/components/flowSelector/flowSelector.ts ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FlowSelector: () => (/* binding */ FlowSelector)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _flowSelector_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./flowSelector.css */ "./frontend/src/client/components/flowSelector/flowSelector.css");
 /* harmony import */ var _component_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../component/component */ "./frontend/src/client/components/component/component.ts");
-/* harmony import */ var _flowTag_model__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./flowTag.model */ "./frontend/src/client/components/flowTag/flowTag.model.ts");
-/* harmony import */ var _flowTag_view__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./flowTag.view */ "./frontend/src/client/components/flowTag/flowTag.view.ts");
+/* harmony import */ var _flowSelector_model__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./flowSelector.model */ "./frontend/src/client/components/flowSelector/flowSelector.model.ts");
+/* harmony import */ var _flowSelector_view__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./flowSelector.view */ "./frontend/src/client/components/flowSelector/flowSelector.view.ts");
 /* harmony import */ var _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../flowPath/flowPath */ "./frontend/src/client/components/flowPath/flowPath.ts");
 /* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+/* harmony import */ var _flowSelector_pathHandler__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./flowSelector.pathHandler */ "./frontend/src/client/components/flowSelector/flowSelector.pathHandler.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -5322,13 +4649,15 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
-let FlowTag = class FlowTag extends _component_component__WEBPACK_IMPORTED_MODULE_2__.VcComponent {
+
+let FlowSelector = class FlowSelector extends _component_component__WEBPACK_IMPORTED_MODULE_2__.VcComponent {
     constructor(properties) {
         super(properties);
         this.mvc.generate({
-            viewConstructor: _flowTag_view__WEBPACK_IMPORTED_MODULE_4__.FlowTagView,
-            modelConstructor: _flowTag_model__WEBPACK_IMPORTED_MODULE_3__.FlowTagModel,
+            viewConstructor: _flowSelector_view__WEBPACK_IMPORTED_MODULE_4__.FlowSelectorView,
+            modelConstructor: _flowSelector_model__WEBPACK_IMPORTED_MODULE_3__.FlowSelectorModel,
             data: properties.data,
+            handlerConstructors: [_flowSelector_pathHandler__WEBPACK_IMPORTED_MODULE_7__.FlowSelectorPathHandler],
             initialize: false
         });
         this.model.flow = properties.flow;
@@ -5357,31 +4686,34 @@ let FlowTag = class FlowTag extends _component_component__WEBPACK_IMPORTED_MODUL
     insertPath(pathData, index) {
         return this.model.insertPath(pathData, index);
     }
+    updatePaths() {
+        this.model.pathHandler.updatePaths();
+    }
 };
-FlowTag = __decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-flow-tag")
-], FlowTag);
+FlowSelector = __decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-flow-selector")
+], FlowSelector);
 
 
 
 /***/ }),
 
-/***/ "./frontend/src/client/components/flowTag/flowTag.view.ts":
-/*!****************************************************************!*\
-  !*** ./frontend/src/client/components/flowTag/flowTag.view.ts ***!
-  \****************************************************************/
+/***/ "./frontend/src/client/components/flowSelector/flowSelector.view.ts":
+/*!**************************************************************************!*\
+  !*** ./frontend/src/client/components/flowSelector/flowSelector.view.ts ***!
+  \**************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FlowTagView: () => (/* binding */ FlowTagView)
+/* harmony export */   FlowSelectorView: () => (/* binding */ FlowSelectorView)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 /* harmony import */ var _playback_playback__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../playback/playback */ "./frontend/src/client/components/playback/playback.ts");
 
 
-class FlowTagView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
+class FlowSelectorView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
     addPathEntry(path, index) {
         this.wheel.addEntry(path, index);
         if (!this.wheel.selectedEntry)
@@ -5782,7 +5114,7 @@ let Playback = class Playback extends _component_component__WEBPACK_IMPORTED_MOD
             this.card = properties.card;
     }
     set path(value) {
-        this.view.timeline.cardIds = value.cardIds;
+        this.view.timeline.cardIds = value.nodeIds;
     }
     set card(value) {
         this.view.timeline.card = value;
@@ -6265,10 +5597,8 @@ class RendererVideoController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
                 handleSeek();
             };
             const handleSeek = () => {
-                console.log("SEEKINGGGG");
                 video.addEventListener("seeked", seekListener);
                 setTimeout(() => video.currentTime = Math.round(seekTime * 100) / 100, delay);
-                console.log(video.indexInParent());
             };
             const seekListener = () => {
                 video.removeEventListener("seeked", seekListener);
@@ -6283,9 +5613,6 @@ class RendererVideoController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
                 handleSeek();
             else
                 video.addEventListener("canplay", loadListener);
-            video.addEventListener("timeupdate", () => {
-                console.log("Time:", video.currentTime);
-            });
         });
     }
 }
@@ -6482,10 +5809,13 @@ let ClipScrubber = ClipScrubber_1 = class ClipScrubber extends _scrubber__WEBPAC
     }
     setupUIListeners() {
         super.setupUIListeners();
+        this.markingMenuHandle.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.drag, (e) => e.stopImmediatePropagation());
         ClipScrubber_1.markingMenu.attachTo(this.markingMenuHandle, (e) => {
+            e.stopImmediatePropagation();
             ClipScrubber_1.markingMenu.scrubber = this;
             ClipScrubber_1.markingMenu.show(true, this.scaled ? e.scaledPosition : e.position);
         }, (e) => {
+            e.stopImmediatePropagation();
             ClipScrubber_1.markingMenu.scrubber = this;
             ClipScrubber_1.markingMenu.show(undefined, this.scaled ? e.scaledOrigins.first : e.origins.first);
         });
@@ -7580,10 +6910,9 @@ class TimelineClipController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2_
         var _a;
         this.model.indexInfo = this.clipHandler.getClipIndexAtTimestamp();
         this.element.director.contextManager.setContext(this.model.currentClip, 2, this.model.currentClip.selected);
-        if (this.element.renderer.isPlaying)
-            return;
         this.element.renderer.setFrame(this.element.renderer.visibilityMode == _clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_1__.ClipRendererVisibility.ghosting
             ? this.model.currentGhostingClip : this.model.currentClip, (_a = this.model.indexInfo) === null || _a === void 0 ? void 0 : _a.offset);
+        this.emitter.fire("clipReloaded");
     }
     snapToClosest(entry = this.model.indexInfo) {
         let index = typeof entry == "number" ? entry : entry.closestIntersection;
@@ -7928,24 +7257,19 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 class TimelinePlayController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboController {
     setupChangedCallbacks() {
         super.setupChangedCallbacks();
-        this.emitter.add("playButtonClicked", () => {
-            this.play();
-            (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.video)({
-                parent: document.body,
-                controls: true,
-                src: this.clipHandler.getClipAt(0).uri,
-                style: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.css) `
-                    position: absolute;
-                    display: block;
-                    width: 500px;
-                    top: 20px;
-                    left: 20px;
-                `
-            });
-        });
+        this.emitter.add("playButtonClicked", () => this.play());
+        let wasPlaying = false;
         this.emitter.add("containerClicked", () => {
-            if (this.element.isPlaying)
-                this.play(true);
+            if (!this.element.isPlaying)
+                return;
+            wasPlaying = true;
+            this.play(false, false);
+        });
+        this.emitter.add("clipReloaded", () => {
+            if (!wasPlaying)
+                return;
+            wasPlaying = false;
+            this.play(true);
         });
     }
     get renderer() {
@@ -7980,8 +7304,9 @@ class TimelinePlayController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
         });
     }
     play() {
-        return __awaiter(this, arguments, void 0, function* (play = !this.renderer.isPlaying) {
-            this.view.updatePlayButtonIcon(play);
+        return __awaiter(this, arguments, void 0, function* (play = !this.renderer.isPlaying, updateIcon = true) {
+            if (updateIcon)
+                this.view.updatePlayButtonIcon(play);
             if (this.model.nextTimer)
                 clearTimeout(this.model.nextTimer);
             if (this.model.playTimer)
@@ -8020,7 +7345,6 @@ class TimelineTimeController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
             if (this.element.card)
                 this.element.card.duration = this.model.totalDuration;
         });
-        this.view.scrubber.onScrubbing = (e) => this.emitter.fire("containerClicked", e);
         this.emitter.add("containerClicked", (e) => {
             this.model.currentTime = this.getTimeFromPosition(e);
         });
@@ -8189,7 +7513,7 @@ let Timeline = class Timeline extends _component_component__WEBPACK_IMPORTED_MOD
             this.clipController.snapToClosest();
         else
             this.clipController.snapAtEnd();
-        this.clipController.reloadCurrentClip();
+        // this.clipController.reloadCurrentClip();
     }
     get clips() {
         return this.model.getAllComponents();
@@ -8316,6 +7640,7 @@ class TimelineView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboVie
     }
     setupUIListeners() {
         super.setupUIListeners();
+        this.scrubber.onScrubbing = (e) => this.emitter.fire("containerClicked", e);
         this.scrubberContainer.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, (e) => this.emitter.fire("containerClicked", e));
         this.playButton.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, (e) => {
             e.stopImmediatePropagation();
@@ -8587,6 +7912,76 @@ class ProjectCardsModel extends _yManagement_yModel_types_yManagerModel__WEBPACK
 
 /***/ }),
 
+/***/ "./frontend/src/client/directors/project/project.connectionInteractor.ts":
+/*!*******************************************************************************!*\
+  !*** ./frontend/src/client/directors/project/project.connectionInteractor.ts ***!
+  \*******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ProjectConnectionInteractor: () => (/* binding */ ProjectConnectionInteractor)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _project_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./project.types */ "./frontend/src/client/directors/project/project.types.ts");
+/* harmony import */ var _utils_computation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/computation */ "./frontend/src/client/utils/computation.ts");
+
+
+
+class ProjectConnectionInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
+    constructor() {
+        super(...arguments);
+        this.tool = _project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.connection;
+    }
+    //On click --> create a point if the click is inside a node, otherwise cancel flow
+    click(_, tool) {
+        this.endAndClear(tool);
+    }
+    move(e, tool) {
+        var _a;
+        (_a = tool.currentFlow) === null || _a === void 0 ? void 0 : _a.addPoint(e.scaledPosition, true);
+    }
+    //On drag --> draw flow
+    drag(e, tool) {
+        var _a;
+        //Return if no current flow
+        if (!tool.currentFlow || !tool.currentEntry)
+            return;
+        if (tool.currentEntry.points.length < 2) {
+            const lastNode = this.element.getNode(tool.currentEntry.startNodeId).querySelector("vc-playback");
+            if (!lastNode)
+                return;
+            const firstPoint = (0,_utils_computation__WEBPACK_IMPORTED_MODULE_2__.getClosestPointOnEdge)(e.position, lastNode.getBoundingClientRect());
+            //TODO USE CONSTRAINTS INSTEAD
+            tool.currentEntry.addPoint(this.element.canvas.navigationManager.computePositionRelativeToCanvas(firstPoint));
+        }
+        //Check if drawing a temporary or permanent point
+        //If drawing into a new node --> ignore interval and add a point. This ensures that when a user hits a
+        // new node, it is added to the flow
+        const isTemporary = Date.now() - tool.lastDrawnTime <= tool.drawingInterval;
+        //If the point is permanent --> update last drawn time and last node
+        if (!isTemporary) {
+            tool.lastDrawnTime = Date.now();
+            tool.lastNodeId = null;
+        }
+        //Add point
+        (_a = tool.currentFlow) === null || _a === void 0 ? void 0 : _a.addPoint(e.scaledPosition, isTemporary);
+    }
+    dragEnd(_, tool) {
+        //Drag end --> end the flow and clear current reference
+        this.endAndClear(tool);
+    }
+    endAndClear(tool) {
+        tool.currentEntry.endEntry();
+        tool.currentFlowId = null;
+        tool.lastNodeId = null;
+    }
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/directors/project/project.createCardInteractor.ts":
 /*!*******************************************************************************!*\
   !*** ./frontend/src/client/directors/project/project.createCardInteractor.ts ***!
@@ -8716,8 +8111,6 @@ class ProjectModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IM
         this.enabledCallbacks = false;
         this.cardsModel = new _project_cardsModel__WEBPACK_IMPORTED_MODULE_2__.ProjectCardsModel();
         this.cardsModel.onAdded = (data, id, blockKey) => {
-            console.log(data);
-            console.log("CARD ADDED");
             if (data.get("type") == _components_branchingNode_branchingNode_types__WEBPACK_IMPORTED_MODULE_0__.BranchingNodeType.node)
                 return this.onBranchingNodeAdded(data, id, blockKey);
             else
@@ -8884,6 +8277,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _project_selectionInteractor__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./project.selectionInteractor */ "./frontend/src/client/directors/project/project.selectionInteractor.ts");
 /* harmony import */ var _project_createCardInteractor__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./project.createCardInteractor */ "./frontend/src/client/directors/project/project.createCardInteractor.ts");
 /* harmony import */ var _project_navigationInteractor__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./project.navigationInteractor */ "./frontend/src/client/directors/project/project.navigationInteractor.ts");
+/* harmony import */ var _project_connectionInteractor__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./project.connectionInteractor */ "./frontend/src/client/directors/project/project.connectionInteractor.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8916,6 +8310,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_12__.RootDirector {
     constructor(properties) {
         var _a;
@@ -8929,7 +8324,8 @@ let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED
             modelConstructor: _project_model__WEBPACK_IMPORTED_MODULE_9__.ProjectModel,
             viewConstructor: _project_view__WEBPACK_IMPORTED_MODULE_8__.ProjectView,
             data: (_a = properties.document) === null || _a === void 0 ? void 0 : _a.getMap("document_content"),
-            interactorConstructors: [_project_selectionInteractor__WEBPACK_IMPORTED_MODULE_14__.ProjectSelectionInteractor, _project_createCardInteractor__WEBPACK_IMPORTED_MODULE_15__.ProjectCreateCardInteractor, _project_navigationInteractor__WEBPACK_IMPORTED_MODULE_16__.ProjectNavigationInteractor],
+            interactorConstructors: [_project_selectionInteractor__WEBPACK_IMPORTED_MODULE_14__.ProjectSelectionInteractor, _project_createCardInteractor__WEBPACK_IMPORTED_MODULE_15__.ProjectCreateCardInteractor,
+                _project_navigationInteractor__WEBPACK_IMPORTED_MODULE_16__.ProjectNavigationInteractor, _project_connectionInteractor__WEBPACK_IMPORTED_MODULE_17__.ProjectConnectionInteractor],
             initialize: false
         });
         this.model.onBranchingNodeAdded = data => new _components_branchingNode_branchingNode__WEBPACK_IMPORTED_MODULE_0__.BranchingNode({
@@ -8998,9 +8394,6 @@ let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED
     setMedia(id, media) {
         this.model.media.set(id, _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__.YUtilities.createYMap(media));
     }
-    forEachBranch(callback) {
-        this.flows.forEach(flow => flow.branches.forEach(branch => callback(branch, flow)));
-    }
     //CARDS
     createNewNode(position, id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -9026,20 +8419,12 @@ let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED
             this.model.incrementFlowsCount();
             const defaultName = "Flow " + this.model.flowsCount;
             return yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__.YUtilities.addInYMap(_components_flow_flow__WEBPACK_IMPORTED_MODULE_3__.Flow.createData({
-                branches: {
-                    "0": {
-                        entries: [{
-                                startNodeId: nodeId,
-                                endNodeId: nodeId,
-                                points: [position]
-                            }],
-                    }
-                },
+                entries: {},
                 tags: [{
                         nodeId: nodeId,
                         paths: [{
                                 name: defaultName + " - 1",
-                                branchIds: ["0"]
+                                nodeIds: [nodeId]
                             }]
                     }],
                 defaultName: defaultName,
@@ -9602,7 +8987,7 @@ class MediaHandler extends _requestHandler_requestHandler__WEBPACK_IMPORTED_MODU
             if (cachedMedia)
                 return cachedMedia.blob;
             return new Promise((resolve) => {
-                this.makeRequest(this.url + id, "GET", id, response => resolve(response), error => console.error("Upload failed", error), false, "blob");
+                this.makeRequest(this.url + id, "GET", id, response => resolve(response), error => console.error("Download failed", error), false, "blob");
             });
         });
     }
@@ -9648,12 +9033,8 @@ class MediaHandler extends _requestHandler_requestHandler__WEBPACK_IMPORTED_MODU
             const formData = new FormData();
             formData.append("id", String(data.id));
             formData.append("video", data.blob, `${data.id}.webm`);
-            console.log("CREATED FORM", formData.get("id"));
             return new Promise((resolve) => {
-                this.makeRequest(this.url + "convert/", "POST", formData, (msg) => {
-                    console.log(msg);
-                    resolve(true);
-                }, error => console.error("Failed to convert video", error), false);
+                this.makeRequest(this.url + "convert/", "POST", formData, () => resolve(true), error => console.error("Failed to convert video", error), false);
             });
         });
     }
@@ -9688,10 +9069,21 @@ class RequestHandler {
             if (request.readyState !== 4)
                 return;
             if (request.status < 200 || request.status >= 300) {
-                onFailure(request.responseText);
+                onFailure(request.response);
                 return;
             }
-            parse ? onSuccess(JSON.parse(request.responseText)) : onSuccess(request.response);
+            if (parse) {
+                try {
+                    onSuccess(typeof request.response === "string"
+                        ? JSON.parse(request.response)
+                        : JSON.parse(new TextDecoder().decode(request.response)));
+                }
+                catch (err) {
+                    onFailure("Failed to parse JSON: " + err.message);
+                }
+            }
+            else
+                onSuccess(request.response);
         };
         request.open(method, url, true);
         if (!(body instanceof FormData)) {
@@ -10120,24 +9512,29 @@ class WebsocketManager {
         window.addEventListener("online", this.handleConnect, { once: true });
         window.addEventListener("offline", this.handleDisconnect, { once: true });
         const tempProvider = new y_websocket__WEBPACK_IMPORTED_MODULE_1__.WebsocketProvider(this.serverUrl, this.room, this.ydoc, websocketOptions.options);
-        this.provider = new y_websocket__WEBPACK_IMPORTED_MODULE_1__.WebsocketProvider(this.serverUrl, this.room, this.ydoc, websocketOptions.options);
-        if (websocketOptions.debug)
-            this.setupDebug();
-        this.provider.on("status", (event) => {
-            if (event.status === "disconnected" && this.onDisconnect)
-                this.onDisconnect.fire();
-        });
-        this.provider.on("sync", (isSynced) => {
-            if (!isSynced)
-                return;
-            tempProvider.disconnect();
-            this.onConnect.fire();
-        });
-        if (this.provider.synced)
-            requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            this.provider = new y_websocket__WEBPACK_IMPORTED_MODULE_1__.WebsocketProvider(this.serverUrl, this.room, this.ydoc, websocketOptions.options);
+            if (websocketOptions.debug)
+                this.setupDebug();
+            this.provider.on("status", (event) => {
+                if (event.status === "disconnected" && this.onDisconnect)
+                    this.onDisconnect.fire();
+            });
+            tempProvider.on("sync", (isSynced) => {
+                console.log(isSynced);
+            });
+            this.provider.on("sync", (isSynced) => {
+                if (!isSynced)
+                    return;
                 tempProvider.disconnect();
                 this.onConnect.fire();
             });
+            if (this.provider.synced)
+                requestAnimationFrame(() => {
+                    tempProvider.disconnect();
+                    this.onConnect.fire();
+                });
+        });
     }
     get defaultUrl() {
         const isSecure = window.location.protocol === "https:";
@@ -11340,12 +10737,8 @@ class CameraRecordingController extends turbodombuilder__WEBPACK_IMPORTED_MODULE
             this.model.setRecordedMedia(media, undefined);
             const blob = new Blob(this.model.recordedChunks, { type: "video/webm" });
             this.model.recordedChunks = [];
-            console.log("CONVERTING MEDIA");
-            const convert = yield this.mediaHandler.convertMedia({ id: media.id, blob: blob });
-            console.log(convert);
-            if (!convert)
+            if (!(yield this.mediaHandler.convertMedia({ id: media.id, blob: blob })))
                 return;
-            console.log("MEDIA CONVERTED");
             this.mediaHandler.getMediaMetadata(media.id).converting = false;
             //TODO make clip listen for change in converting value --> reload video
             // const mp4Blob = await response.blob();
@@ -11658,12 +11051,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
 /* harmony import */ var _tools_shoot_shoot__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../tools/shoot/shoot */ "./frontend/src/client/tools/shoot/shoot.ts");
 /* harmony import */ var _tools_selection_selection__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../tools/selection/selection */ "./frontend/src/client/tools/selection/selection.ts");
+/* harmony import */ var _tools_connection_connection__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../tools/connection/connection */ "./frontend/src/client/tools/connection/connection.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
 
 
 
@@ -11693,6 +11088,7 @@ let Canvas = class Canvas extends _components_component_component__WEBPACK_IMPOR
                 _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.createCard,
                 _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.createText,
                 _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.delete,
+                new _tools_connection_connection__WEBPACK_IMPORTED_MODULE_9__.ConnectionTool({ name: _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.connection, toolManager: this.toolManager, director: this.director }),
                 new _tools_shoot_shoot__WEBPACK_IMPORTED_MODULE_7__.ShootTool({ name: _directors_project_project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.shoot, toolManager: this.toolManager, director: this.director }),
             ]
         });
@@ -11783,6 +11179,66 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
        /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_main_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_main_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_main_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/tools/connection/connection.ts":
+/*!************************************************************!*\
+  !*** ./frontend/src/client/tools/connection/connection.ts ***!
+  \************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ConnectionTool: () => (/* binding */ ConnectionTool)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _tool_tool__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../tool/tool */ "./frontend/src/client/tools/tool/tool.ts");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+/**
+ * @description Tool that handles creating flows and connecting nodes
+ */
+let ConnectionTool = class ConnectionTool extends _tool_tool__WEBPACK_IMPORTED_MODULE_1__.VcTool {
+    constructor() {
+        super(...arguments);
+        this.lastNodeId = null;
+        this.color = "#439482";
+        //Interval indicating the frequency at which points are permanently added to the flow
+        //A higher value will increase the smoothing effect of the flow
+        this.drawingInterval = 150;
+        //The last time a point was added permanently (used for when drawing flows)
+        this.lastDrawnTime = 0;
+    }
+    get currentFlowId() {
+        return this._currentFlowId;
+    }
+    set currentFlowId(value) {
+        this._currentFlowId = value;
+        this._currentFlow = undefined;
+    }
+    get currentFlow() {
+        if (!this._currentFlow)
+            this._currentFlow = this.director.getFlow(this.currentFlowId);
+        return this._currentFlow;
+    }
+    get currentEntry() {
+        var _a;
+        return (_a = this.currentFlow) === null || _a === void 0 ? void 0 : _a.currentEntry;
+    }
+};
+ConnectionTool = __decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("connection-tool")
+], ConnectionTool);
+
 
 
 /***/ }),
@@ -12045,6 +11501,72 @@ VcTool = __decorate([
 
 /***/ }),
 
+/***/ "./frontend/src/client/utils/computation.ts":
+/*!**************************************************!*\
+  !*** ./frontend/src/client/utils/computation.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getAxisFromSide: () => (/* binding */ getAxisFromSide),
+/* harmony export */   getClippedBoundingRect: () => (/* binding */ getClippedBoundingRect),
+/* harmony export */   getClosestPointOnEdge: () => (/* binding */ getClosestPointOnEdge)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+
+function getAxisFromSide(side) {
+    if (side === turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.top || side === turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.bottom)
+        return "y";
+    if (side === turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.left || side === turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.right)
+        return "x";
+}
+function getClosestPointOnEdge(pointer, rect) {
+    console.log(rect);
+    console.log(pointer);
+    const closestPoint = {
+        x: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.trim)(pointer.x, rect.right, rect.left),
+        y: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.trim)(pointer.y, rect.bottom, rect.top)
+    };
+    console.log(closestPoint);
+    let closestSide = turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.top;
+    Object.values(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side).forEach(side => {
+        console.log(side + ": " + Math.abs(closestPoint[getAxisFromSide(side)] - rect[side]));
+        if (Math.abs(closestPoint[getAxisFromSide(side)] - rect[side])
+            < Math.abs(closestPoint[getAxisFromSide(closestSide)] - rect[closestSide]))
+            closestSide = side;
+    });
+    closestPoint[getAxisFromSide(closestSide)] = rect[closestSide];
+    return new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point(closestPoint);
+}
+function getClippedBoundingRect(el) {
+    const rect = el.getBoundingClientRect();
+    const style = getComputedStyle(el);
+    // Calculate the border sizes
+    const borderLeft = parseFloat(style.borderLeftWidth) || 0;
+    const borderTop = parseFloat(style.borderTopWidth) || 0;
+    // Use clientWidth/clientHeight to get content + padding (excludes overflow)
+    const width = el.clientWidth;
+    const height = el.clientHeight;
+    return {
+        left: rect.left + borderLeft,
+        top: rect.top + borderTop,
+        right: rect.left + borderLeft + width,
+        bottom: rect.top + borderTop + height,
+        width: width,
+        height: height,
+        x: rect.top + borderTop,
+        y: rect.left + borderLeft,
+        toJSON: function () {
+            throw new Error("Function not implemented.");
+        }
+    };
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/utils/crypto.ts":
 /*!*********************************************!*\
   !*** ./frontend/src/client/utils/crypto.ts ***!
@@ -12098,7 +11620,8 @@ function randomId(length = 8) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   randomColor: () => (/* binding */ randomColor),
-/* harmony export */   randomFromRange: () => (/* binding */ randomFromRange)
+/* harmony export */   randomFromRange: () => (/* binding */ randomFromRange),
+/* harmony export */   randomString: () => (/* binding */ randomString)
 /* harmony export */ });
 function randomFromRange(n1, n2) {
     if (typeof n1 != "number" || typeof n2 != "number")
@@ -12113,6 +11636,13 @@ function randomColor(saturation = [50, 70], lightness = [70, 85]) {
     if (typeof lightness != "number" && lightness.length >= 2)
         lightness = randomFromRange(lightness[0], lightness[1]);
     return "hsl(" + Math.random() * 360 + " " + saturation + " " + lightness + ")";
+}
+function randomString(length = 12) {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let result = "";
+    for (let i = 0; i < length; i++)
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    return result;
 }
 
 
@@ -12350,6 +11880,9 @@ class YManagerModel extends _yModel__WEBPACK_IMPORTED_MODULE_1__.YModel {
             (_a = block === null || block === void 0 ? void 0 : block.instances) === null || _a === void 0 ? void 0 : _a.forEach(instance => this.removeInstance(instance));
             (_b = block === null || block === void 0 ? void 0 : block.instances) === null || _b === void 0 ? void 0 : _b.clear();
         });
+    }
+    getAllData(blockKey = this.defaultComputationBlockKey) {
+        return super.getAllData(blockKey);
     }
     /**
      * @function fireKeyChangedCallback
@@ -12821,363 +12354,6 @@ class YUtilities {
         });
     }
 }
-
-
-/***/ }),
-
-/***/ "./node_modules/@ungap/structured-clone/esm/deserialize.js":
-/*!*****************************************************************!*\
-  !*** ./node_modules/@ungap/structured-clone/esm/deserialize.js ***!
-  \*****************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   deserialize: () => (/* binding */ deserialize)
-/* harmony export */ });
-/* harmony import */ var _types_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./types.js */ "./node_modules/@ungap/structured-clone/esm/types.js");
-
-
-const env = typeof self === 'object' ? self : globalThis;
-
-const deserializer = ($, _) => {
-  const as = (out, index) => {
-    $.set(index, out);
-    return out;
-  };
-
-  const unpair = index => {
-    if ($.has(index))
-      return $.get(index);
-
-    const [type, value] = _[index];
-    switch (type) {
-      case _types_js__WEBPACK_IMPORTED_MODULE_0__.PRIMITIVE:
-      case _types_js__WEBPACK_IMPORTED_MODULE_0__.VOID:
-        return as(value, index);
-      case _types_js__WEBPACK_IMPORTED_MODULE_0__.ARRAY: {
-        const arr = as([], index);
-        for (const index of value)
-          arr.push(unpair(index));
-        return arr;
-      }
-      case _types_js__WEBPACK_IMPORTED_MODULE_0__.OBJECT: {
-        const object = as({}, index);
-        for (const [key, index] of value)
-          object[unpair(key)] = unpair(index);
-        return object;
-      }
-      case _types_js__WEBPACK_IMPORTED_MODULE_0__.DATE:
-        return as(new Date(value), index);
-      case _types_js__WEBPACK_IMPORTED_MODULE_0__.REGEXP: {
-        const {source, flags} = value;
-        return as(new RegExp(source, flags), index);
-      }
-      case _types_js__WEBPACK_IMPORTED_MODULE_0__.MAP: {
-        const map = as(new Map, index);
-        for (const [key, index] of value)
-          map.set(unpair(key), unpair(index));
-        return map;
-      }
-      case _types_js__WEBPACK_IMPORTED_MODULE_0__.SET: {
-        const set = as(new Set, index);
-        for (const index of value)
-          set.add(unpair(index));
-        return set;
-      }
-      case _types_js__WEBPACK_IMPORTED_MODULE_0__.ERROR: {
-        const {name, message} = value;
-        return as(new env[name](message), index);
-      }
-      case _types_js__WEBPACK_IMPORTED_MODULE_0__.BIGINT:
-        return as(BigInt(value), index);
-      case 'BigInt':
-        return as(Object(BigInt(value)), index);
-      case 'ArrayBuffer':
-        return as(new Uint8Array(value).buffer, value);
-      case 'DataView': {
-        const { buffer } = new Uint8Array(value);
-        return as(new DataView(buffer), value);
-      }
-    }
-    return as(new env[type](value), index);
-  };
-
-  return unpair;
-};
-
-/**
- * @typedef {Array<string,any>} Record a type representation
- */
-
-/**
- * Returns a deserialized value from a serialized array of Records.
- * @param {Record[]} serialized a previously serialized value.
- * @returns {any}
- */
-const deserialize = serialized => deserializer(new Map, serialized)(0);
-
-
-/***/ }),
-
-/***/ "./node_modules/@ungap/structured-clone/esm/index.js":
-/*!***********************************************************!*\
-  !*** ./node_modules/@ungap/structured-clone/esm/index.js ***!
-  \***********************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
-/* harmony export */   deserialize: () => (/* reexport safe */ _deserialize_js__WEBPACK_IMPORTED_MODULE_0__.deserialize),
-/* harmony export */   serialize: () => (/* reexport safe */ _serialize_js__WEBPACK_IMPORTED_MODULE_1__.serialize)
-/* harmony export */ });
-/* harmony import */ var _deserialize_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./deserialize.js */ "./node_modules/@ungap/structured-clone/esm/deserialize.js");
-/* harmony import */ var _serialize_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./serialize.js */ "./node_modules/@ungap/structured-clone/esm/serialize.js");
-
-
-
-/**
- * @typedef {Array<string,any>} Record a type representation
- */
-
-/**
- * Returns an array of serialized Records.
- * @param {any} any a serializable value.
- * @param {{transfer?: any[], json?: boolean, lossy?: boolean}?} options an object with
- * a transfer option (ignored when polyfilled) and/or non standard fields that
- * fallback to the polyfill if present.
- * @returns {Record[]}
- */
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (typeof structuredClone === "function" ?
-  /* c8 ignore start */
-  (any, options) => (
-    options && ('json' in options || 'lossy' in options) ?
-      (0,_deserialize_js__WEBPACK_IMPORTED_MODULE_0__.deserialize)((0,_serialize_js__WEBPACK_IMPORTED_MODULE_1__.serialize)(any, options)) : structuredClone(any)
-  ) :
-  (any, options) => (0,_deserialize_js__WEBPACK_IMPORTED_MODULE_0__.deserialize)((0,_serialize_js__WEBPACK_IMPORTED_MODULE_1__.serialize)(any, options)));
-  /* c8 ignore stop */
-
-
-
-
-/***/ }),
-
-/***/ "./node_modules/@ungap/structured-clone/esm/serialize.js":
-/*!***************************************************************!*\
-  !*** ./node_modules/@ungap/structured-clone/esm/serialize.js ***!
-  \***************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   serialize: () => (/* binding */ serialize)
-/* harmony export */ });
-/* harmony import */ var _types_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./types.js */ "./node_modules/@ungap/structured-clone/esm/types.js");
-
-
-const EMPTY = '';
-
-const {toString} = {};
-const {keys} = Object;
-
-const typeOf = value => {
-  const type = typeof value;
-  if (type !== 'object' || !value)
-    return [_types_js__WEBPACK_IMPORTED_MODULE_0__.PRIMITIVE, type];
-
-  const asString = toString.call(value).slice(8, -1);
-  switch (asString) {
-    case 'Array':
-      return [_types_js__WEBPACK_IMPORTED_MODULE_0__.ARRAY, EMPTY];
-    case 'Object':
-      return [_types_js__WEBPACK_IMPORTED_MODULE_0__.OBJECT, EMPTY];
-    case 'Date':
-      return [_types_js__WEBPACK_IMPORTED_MODULE_0__.DATE, EMPTY];
-    case 'RegExp':
-      return [_types_js__WEBPACK_IMPORTED_MODULE_0__.REGEXP, EMPTY];
-    case 'Map':
-      return [_types_js__WEBPACK_IMPORTED_MODULE_0__.MAP, EMPTY];
-    case 'Set':
-      return [_types_js__WEBPACK_IMPORTED_MODULE_0__.SET, EMPTY];
-    case 'DataView':
-      return [_types_js__WEBPACK_IMPORTED_MODULE_0__.ARRAY, asString];
-  }
-
-  if (asString.includes('Array'))
-    return [_types_js__WEBPACK_IMPORTED_MODULE_0__.ARRAY, asString];
-
-  if (asString.includes('Error'))
-    return [_types_js__WEBPACK_IMPORTED_MODULE_0__.ERROR, asString];
-
-  return [_types_js__WEBPACK_IMPORTED_MODULE_0__.OBJECT, asString];
-};
-
-const shouldSkip = ([TYPE, type]) => (
-  TYPE === _types_js__WEBPACK_IMPORTED_MODULE_0__.PRIMITIVE &&
-  (type === 'function' || type === 'symbol')
-);
-
-const serializer = (strict, json, $, _) => {
-
-  const as = (out, value) => {
-    const index = _.push(out) - 1;
-    $.set(value, index);
-    return index;
-  };
-
-  const pair = value => {
-    if ($.has(value))
-      return $.get(value);
-
-    let [TYPE, type] = typeOf(value);
-    switch (TYPE) {
-      case _types_js__WEBPACK_IMPORTED_MODULE_0__.PRIMITIVE: {
-        let entry = value;
-        switch (type) {
-          case 'bigint':
-            TYPE = _types_js__WEBPACK_IMPORTED_MODULE_0__.BIGINT;
-            entry = value.toString();
-            break;
-          case 'function':
-          case 'symbol':
-            if (strict)
-              throw new TypeError('unable to serialize ' + type);
-            entry = null;
-            break;
-          case 'undefined':
-            return as([_types_js__WEBPACK_IMPORTED_MODULE_0__.VOID], value);
-        }
-        return as([TYPE, entry], value);
-      }
-      case _types_js__WEBPACK_IMPORTED_MODULE_0__.ARRAY: {
-        if (type) {
-          let spread = value;
-          if (type === 'DataView') {
-            spread = new Uint8Array(value.buffer);
-          }
-          else if (type === 'ArrayBuffer') {
-            spread = new Uint8Array(value);
-          }
-          return as([type, [...spread]], value);
-        }
-
-        const arr = [];
-        const index = as([TYPE, arr], value);
-        for (const entry of value)
-          arr.push(pair(entry));
-        return index;
-      }
-      case _types_js__WEBPACK_IMPORTED_MODULE_0__.OBJECT: {
-        if (type) {
-          switch (type) {
-            case 'BigInt':
-              return as([type, value.toString()], value);
-            case 'Boolean':
-            case 'Number':
-            case 'String':
-              return as([type, value.valueOf()], value);
-          }
-        }
-
-        if (json && ('toJSON' in value))
-          return pair(value.toJSON());
-
-        const entries = [];
-        const index = as([TYPE, entries], value);
-        for (const key of keys(value)) {
-          if (strict || !shouldSkip(typeOf(value[key])))
-            entries.push([pair(key), pair(value[key])]);
-        }
-        return index;
-      }
-      case _types_js__WEBPACK_IMPORTED_MODULE_0__.DATE:
-        return as([TYPE, value.toISOString()], value);
-      case _types_js__WEBPACK_IMPORTED_MODULE_0__.REGEXP: {
-        const {source, flags} = value;
-        return as([TYPE, {source, flags}], value);
-      }
-      case _types_js__WEBPACK_IMPORTED_MODULE_0__.MAP: {
-        const entries = [];
-        const index = as([TYPE, entries], value);
-        for (const [key, entry] of value) {
-          if (strict || !(shouldSkip(typeOf(key)) || shouldSkip(typeOf(entry))))
-            entries.push([pair(key), pair(entry)]);
-        }
-        return index;
-      }
-      case _types_js__WEBPACK_IMPORTED_MODULE_0__.SET: {
-        const entries = [];
-        const index = as([TYPE, entries], value);
-        for (const entry of value) {
-          if (strict || !shouldSkip(typeOf(entry)))
-            entries.push(pair(entry));
-        }
-        return index;
-      }
-    }
-
-    const {message} = value;
-    return as([TYPE, {name: type, message}], value);
-  };
-
-  return pair;
-};
-
-/**
- * @typedef {Array<string,any>} Record a type representation
- */
-
-/**
- * Returns an array of serialized Records.
- * @param {any} value a serializable value.
- * @param {{json?: boolean, lossy?: boolean}?} options an object with a `lossy` or `json` property that,
- *  if `true`, will not throw errors on incompatible types, and behave more
- *  like JSON stringify would behave. Symbol and Function will be discarded.
- * @returns {Record[]}
- */
- const serialize = (value, {json, lossy} = {}) => {
-  const _ = [];
-  return serializer(!(json || lossy), !!json, new Map, _)(value), _;
-};
-
-
-/***/ }),
-
-/***/ "./node_modules/@ungap/structured-clone/esm/types.js":
-/*!***********************************************************!*\
-  !*** ./node_modules/@ungap/structured-clone/esm/types.js ***!
-  \***********************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ARRAY: () => (/* binding */ ARRAY),
-/* harmony export */   BIGINT: () => (/* binding */ BIGINT),
-/* harmony export */   DATE: () => (/* binding */ DATE),
-/* harmony export */   ERROR: () => (/* binding */ ERROR),
-/* harmony export */   MAP: () => (/* binding */ MAP),
-/* harmony export */   OBJECT: () => (/* binding */ OBJECT),
-/* harmony export */   PRIMITIVE: () => (/* binding */ PRIMITIVE),
-/* harmony export */   REGEXP: () => (/* binding */ REGEXP),
-/* harmony export */   SET: () => (/* binding */ SET),
-/* harmony export */   VOID: () => (/* binding */ VOID)
-/* harmony export */ });
-const VOID       = -1;
-const PRIMITIVE  = 0;
-const ARRAY      = 1;
-const OBJECT     = 2;
-const DATE       = 3;
-const REGEXP     = 4;
-const MAP        = 5;
-const SET        = 6;
-const ERROR      = 7;
-const BIGINT     = 8;
-// export const SYMBOL = 9;
 
 
 /***/ }),
@@ -13860,10 +13036,10 @@ vc-flow path {
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/flowTag/flowTag.css":
-/*!**************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/flowTag/flowTag.css ***!
-  \**************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/flowSelector/flowSelector.css":
+/*!************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/flowSelector/flowSelector.css ***!
+  \************************************************************************************************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -13880,7 +13056,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `vc-flow-tag {
+___CSS_LOADER_EXPORT___.push([module.id, `vc-flow-selector {
     position: absolute;
     right: 100%;
 
@@ -13894,9 +13070,9 @@ ___CSS_LOADER_EXPORT___.push([module.id, `vc-flow-tag {
     gap: 1em;
 }
 
-vc-flow-tag > turbo-icon {
+vc-flow-selector > turbo-icon {
     height: 1.3em;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/flowTag/flowTag.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,WAAW;;IAEX,SAAS;IACT,sBAAsB;IACtB,YAAY;IACZ,0BAA0B;;IAE1B,aAAa;IACb,mBAAmB;IACnB,QAAQ;AACZ;;AAEA;IACI,aAAa;AACjB","sourcesContent":["vc-flow-tag {\r\n    position: absolute;\r\n    right: 100%;\r\n\r\n    top: 20px;\r\n    background-color: cyan;\r\n    padding: 1em;\r\n    border-radius: 6px 0 0 6px;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    gap: 1em;\r\n}\r\n\r\nvc-flow-tag > turbo-icon {\r\n    height: 1.3em;\r\n}"],"sourceRoot":""}]);
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/flowSelector/flowSelector.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,WAAW;;IAEX,SAAS;IACT,sBAAsB;IACtB,YAAY;IACZ,0BAA0B;;IAE1B,aAAa;IACb,mBAAmB;IACnB,QAAQ;AACZ;;AAEA;IACI,aAAa;AACjB","sourcesContent":["vc-flow-selector {\r\n    position: absolute;\r\n    right: 100%;\r\n\r\n    top: 20px;\r\n    background-color: cyan;\r\n    padding: 1em;\r\n    border-radius: 6px 0 0 6px;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    gap: 1em;\r\n}\r\n\r\nvc-flow-selector > turbo-icon {\r\n    height: 1.3em;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -59742,6 +58918,8 @@ function addListenerManipulationToElementPrototype() {
      */
     Node.prototype.addListener = function _addListener(type, listener, boundTo = this, options) {
         const wrappedListener = ((e) => {
+            if (typeof options === "object" && !options?.propagate)
+                e.stopPropagation();
             if (typeof listener === "object" && listener.handleEvent)
                 listener.handleEvent(e);
             if (typeof listener === "function")
@@ -61831,23 +61009,23 @@ let TurboEventManager = class TurboEventManager extends TurboElement {
                 this.applyEventNames(TurboKeyEventName);
             }
             if (!this.disabledEventTypes.disableWheelEvents) {
-                document.body.addListener("wheel", this.wheel, this, { passive: false });
+                document.body.addListener("wheel", this.wheel, this, { passive: false, propagate: true });
                 this.applyEventNames(TurboWheelEventName);
             }
             if (!this.disabledEventTypes.disableMoveEvent) {
                 this.applyEventNames(TurboMoveName);
             }
             if (!this.disabledEventTypes.disableMouseEvents) {
-                document.body.addListener("mousedown", this.pointerDown);
-                document.body.addListener("mousemove", this.pointerMove);
-                document.body.addListener("mouseup", this.pointerUp);
-                document.body.addListener("mouseleave", this.pointerLeave);
+                document.body.addListener("mousedown", this.pointerDown, this, { propagate: true });
+                document.body.addListener("mousemove", this.pointerMove, this, { propagate: true });
+                document.body.addListener("mouseup", this.pointerUp, this, { propagate: true });
+                document.body.addListener("mouseleave", this.pointerLeave, this, { propagate: true });
             }
             if (!this.disabledEventTypes.disableTouchEvents) {
-                document.body.addListener("touchstart", this.pointerDown, this, { passive: false });
-                document.body.addListener("touchmove", this.pointerMove, this, { passive: false });
-                document.body.addListener("touchend", this.pointerUp, this, { passive: false });
-                document.body.addListener("touchcancel", this.pointerUp, this, { passive: false });
+                document.body.addListener("touchstart", this.pointerDown, this, { passive: false, propagate: true });
+                document.body.addListener("touchmove", this.pointerMove, this, { passive: false, propagate: true });
+                document.body.addListener("touchend", this.pointerUp, this, { passive: false, propagate: true });
+                document.body.addListener("touchcancel", this.pointerUp, this, { passive: false, propagate: true });
             }
             if (!this.disabledEventTypes.disableMouseEvents || !this.disabledEventTypes.disableTouchEvents) {
                 if (!this.disabledEventTypes.disableClickEvents)
@@ -62316,7 +61494,7 @@ class ToolManager {
         if (!tool)
             return;
         const interactors = [];
-        let target = e.target;
+        let target = e.closest(Element, true, ClosestOrigin.position);
         while (target) {
             if (typeof target["interact"] === "function" && typeof target["propagatesUp"] === "function") {
                 interactors.push(target);
@@ -64623,13 +63801,13 @@ let TurboSelectWheel = class TurboSelectWheel extends TurboSelect {
     }
     setupUIListeners() {
         super.setupUIListeners();
-        document.addListener(DefaultEventName.drag, (e) => {
+        document.body.addListener(DefaultEventName.drag, (e) => {
             if (!this.dragging)
                 return;
             e.stopImmediatePropagation();
             this.currentPosition += this.computeDragValue(e.scaledDeltaPosition);
         });
-        document.addListener(DefaultEventName.dragEnd, (e) => {
+        document.body.addListener(DefaultEventName.dragEnd, (e) => {
             if (!this.dragging)
                 return;
             e.stopImmediatePropagation();
@@ -76616,7 +75794,6 @@ __webpack_require__.r(__webpack_exports__);
 
 _directors_rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_1__.RootDirector.initialize();
 const project = new _directors_project_project__WEBPACK_IMPORTED_MODULE_2__.Project({ parent: document.body });
-console.log("HIIII");
 const segments = window.location.pathname.split("/").filter(Boolean);
 const projectId = segments[segments.length - 1];
 if (!Number.parseInt(projectId))

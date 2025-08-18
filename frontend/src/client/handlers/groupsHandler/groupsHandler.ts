@@ -29,8 +29,26 @@ export class GroupsHandler extends RequestHandler {
     }
 
     public async getProjectsForGroup(groupId: ObjectId): Promise<ProjectData[]> {
+        if (!groupId) {
+            const arr: ProjectData[] = [];
+            for (const group of this.groups) arr.push(...(await this.getProjectsForGroup(group._id)));
+            return arr;
+        }
+
         const res = await fetch(`${this.serverUrl}api/projects?groupId=${groupId}`, {credentials: "include",});
         if (!res.ok) throw new Error("Failed to load projects for group");
+        return await res.json();
+    }
+
+    public async createGroup(groupName: string): Promise<Group> {
+        const res = await fetch(`${this.serverUrl}api/groups`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            credentials: "include",
+            body: JSON.stringify({name: groupName}),
+        });
+
+        if (!res.ok) throw new Error("Failed to create group");
         return await res.json();
     }
 
@@ -56,9 +74,23 @@ export class GroupsHandler extends RequestHandler {
         }
 
         const project = await res.json();
-        console.log("ROOM", `PROJECT:${project._id}`);
 
         const doc = this.getOrCreateYDoc(project._id);
         return {doc: doc, websocket: new WebsocketManager(`PROJECT:${project._id}`, doc)};
+    }
+
+    public async deleteProject(projectId: ObjectId): Promise<void> {
+        const res = await fetch(`${this.serverUrl}api/projects/${projectId}`, {
+            method: "DELETE",
+            credentials: "include",
+        });
+
+        if (!res.ok) {
+            if (res.status === 403) throw new Error("Access denied");
+            if (res.status === 404) throw new Error("Project not found");
+            throw new Error("Unknown error");
+        }
+
+        this.docs.delete(projectId.toString());
     }
 }

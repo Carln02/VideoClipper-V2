@@ -38,10 +38,7 @@ export class TimelineModel extends YManagerModel<SyncedClip, Clip, number, YArra
         }
         this.cardsModel.onDeleted = () => {};
 
-        this.onAdded = (syncedClip, id, blockKey) => {
-
-            return this.onClipAdded(syncedClip, id, blockKey);
-        };
+        this.onAdded = (syncedClip, id, blockKey) => this.onClipAdded(syncedClip, id, blockKey);
 
         const oldUpdated = this.onUpdated;
         this.onUpdated = (syncedClip, clip, id, blockKey) => {

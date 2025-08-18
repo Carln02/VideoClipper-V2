@@ -89,6 +89,10 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
         return this.model.entryHandler.removeEntry(entry);
     }
 
+    public getEntriesFromNodesList(nodes: string[]): FlowEntry[] {
+        return this.model.entryHandler.getEntriesFromNodesList(nodes);
+    }
+
     public hasNode(id: string): boolean {
         if (this.getEntries(id)?.length > 0) return true;
         for (const entry of this.entries) {
@@ -100,30 +104,6 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
     public createSelector(nodeId: string) {
         return YUtilities.addInYArray(FlowSelector.createData({nodeId: nodeId, paths: []}), this.model.selectorsData);
     }
-
-    // /**
-    //  * @description Finds the last flow entry inside the given node's ID
-    //  * @param nodeId
-    //  */
-    // public findNodeEntry(nodeId: string): FlowPoint {
-    //     return this.model.searchHandler.findNodeEntry(nodeId);
-    // }
-    //
-    // /**
-    //  * @description Finds the last flow entry inside the given node's ID
-    //  * @param nodeId
-    //  */
-    // public findNodeEntries(nodeId: string): FlowPoint[] {
-    //     return this.model.searchHandler.findNodeEntries(nodeId);
-    // }
-    //
-    // /**
-    //  * @description Finds the closest point in the flow to the given point
-    //  * @param point
-    //  */
-    // public findClosestPoint(point: Point): FlowPoint {
-    //     return this.model.searchHandler.findClosestPoint(point);
-    // }
 
     /**
      * @description Adds the provided point to the flow with the given ID. The node ID indicates the ID of the node
@@ -137,11 +117,6 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
         this.mvc.emitter.fire("__redraw");
     }
 
-    // public async branchAtPoint(p: FlowPoint, branchPosition?: Point, nodeId?: string,
-    //                      createThirdBranch: boolean = true, isOverwritingSibling: boolean = false) {
-    //     return await this.model.branchHandler.branchAtPoint(p, branchPosition, nodeId, createThirdBranch, isOverwritingSibling);
-    // }
-
     public updateAfterMovingNode(nodeId: string, deltaPosition: Point) {
         return this.model.updateHandler.updateAfterMovingNode(nodeId, deltaPosition);
     }
@@ -149,8 +124,4 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
     public updateOnDetachingNode(nodeId: string) {
         this.model.updateHandler.updateOnDetachingNode(nodeId);
     }
-
-    // public getPathsFromNode(nodeId: string): string[][] {
-    //     return this.model.branchHandler.getPathsFromNode(nodeId);
-    // }
 }

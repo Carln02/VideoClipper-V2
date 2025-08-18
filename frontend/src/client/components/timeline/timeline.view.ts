@@ -14,6 +14,7 @@ import {
 } from "turbodombuilder";
 import {formatMMSS} from "../../utils/time";
 import {Scrubber} from "../scrubber/scrubber";
+import {takeRight} from "lodash";
 
 export class TimelineView<
     Element extends Timeline = Timeline,
@@ -73,8 +74,8 @@ export class TimelineView<
 
         this.scrubber.onScrubbing = (e: TurboDragEvent) => this.emitter.fire("containerClicked", e);
 
-        this.scrubberContainer.addEventListener(DefaultEventName.click, (e: TurboEvent) =>
-            this.emitter.fire("containerClicked", e));
+        this.scrubberContainer.addListener(DefaultEventName.click, (e: TurboEvent) =>
+            this.emitter.fire("containerClicked", e), this.scrubberContainer, {propagate: true});
 
         this.playButton.addListener(DefaultEventName.click, (e: TurboEvent) => {
                 e.stopImmediatePropagation();
@@ -87,7 +88,8 @@ export class TimelineView<
 
         this.emitter.add("currentTimeChanged", () => {
             this.currentTimeText.textContent = formatMMSS(this.model.currentTime);
-            this.scrubber.translation = this.model.currentTime / this.model.totalDuration * this.element.width;
+            //TODO NOT THE BEST FIX
+            requestAnimationFrame(() => this.scrubber.translation = this.model.currentTime / this.model.totalDuration * this.element.width);
         });
 
         this.emitter.add("totalDurationChanged", () => {

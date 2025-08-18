@@ -49,17 +49,16 @@ export class Timeline<
 
     protected onClipAdded(syncedClip: SyncedClip, id: number, blockKey: number, clipProperties: ClipProperties = {}): Clip {
         const clip = new Clip({...clipProperties, timeline: this, director: this.director});
-        const snapToNext = id === this.model.indexInfo?.closestIntersection;
+        const snapToNext = id === this.model.indexInfo?.closestIntersection && this.model.indexInfo?.closestIntersection > 0;
 
         clip.onMediaDataChanged = (clip: Clip) => {
             if (clip != this.model.currentClip) return;
-            this.renderer.setFrame(clip, this.model.indexInfo?.offset);
+            this.clipController.reloadCurrentClip();
         };
 
         requestAnimationFrame(() => {
             clip.data = syncedClip;
             if (snapToNext) this.snapToClosest(id + 1);
-            if (clip != this.model.currentClip) this.renderer.setFrame(clip, this.model.indexInfo?.offset);
         });
 
         return clip;
@@ -103,8 +102,7 @@ export class Timeline<
         if (!this.card) return;
         const selectedClip = this.director.contextManager.getContext(2);
         if (selectedClip && selectedClip[0] instanceof Clip) this.clipController.snapToClosest();
-        else this.clipController.snapAtEnd();
-        // this.clipController.reloadCurrentClip();
+        else requestAnimationFrame(() => this.clipController.snapAtEnd());
     }
 
     public get clips(): Clip[] {

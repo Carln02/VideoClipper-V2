@@ -34,12 +34,17 @@ export class ProjectController {
 
     public deleteProject = async (req: any, res: any) => {
         try {
-            const {id} = req.body;
-            if (!id || !ObjectId.isValid(id)) throw new Error("Invalid project ID");
+            const projectId = req.params.id;
+            const user = req.user;
+            if (!projectId || !ObjectId.isValid(projectId) || !user) return this.handleProjectAccessFailure(req, res);
 
-            await this.projectRepo.deleteProject(new ObjectId(id));
+            const hasAccess = await this.projectRepo.userHasAccessToProject(user._id, new ObjectId(projectId));
+            if (!hasAccess) return this.handleProjectAccessFailure(req, res);
+
+            await this.projectRepo.deleteProject(new ObjectId(projectId));
             respondSuccess(res);
         } catch (err: any) {
+            console.log(err);
             respondFailure(res, err.message);
         }
     };
@@ -47,7 +52,6 @@ export class ProjectController {
     public accessProject = async (req: Request, res: Response) => {
         const projectId = req.params.id;
         const user = req.user;
-
         if (!user || !ObjectId.isValid(projectId)) return this.handleProjectAccessFailure(req, res);
 
         const hasAccess = await this.projectRepo.userHasAccessToProject(user._id, new ObjectId(projectId));
