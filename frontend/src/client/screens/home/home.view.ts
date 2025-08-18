@@ -77,7 +77,7 @@ export class HomeView extends TurboView<Home> {
             classes: "popup-card",
             viewportMargin: 20,
             offsetFromParent: 12,
-            parentAnchor: {x: 0, y: 100},
+            parentAnchor: {x: 50, y: 100},
             popupAnchor: {x: 0, y: 0},
         });
 
@@ -92,7 +92,7 @@ export class HomeView extends TurboView<Home> {
         groupsTitleEl.addChild([h2({text: "Groups"}), this.addGroupButton]);
 
         const titleEl = div({classes: "title-div"});
-        titleEl.addChild([this.mainPanelTitle, this.addProjectButton]);
+        titleEl.addChild([this.mainPanelTitle, this.shareGroupButton, this.addProjectButton]);
 
         this.groupsPanel.addChild([groupsTitleEl, this.groupsSelect]);
         this.mainPanel.addChild([titleEl, this.projectsSelect]);
@@ -162,10 +162,9 @@ export class HomeView extends TurboView<Home> {
         this.shareGroupPopupButton.addListener(DefaultEventName.click, async () => {
             const email = this.shareGroupPopupEmailField.value as string;
             if (!email || email.length === 0) return;
-
-            const group = await this.element.director.groupsHandler.createGroup(name);
-            this.groupsSelect.select(this.generateGroup(group));
-            this.addGroupPopup.show(false);
+            const addMember = await this.element.director.groupsHandler.addGroupMember(email, this.groupsSelect.selectedSecondaryValue);
+            if (addMember) this.addGroupPopup.show(false);
+            else this.shareGroupPopupEmailField.value = "";
         });
     }
 
@@ -191,6 +190,7 @@ export class HomeView extends TurboView<Home> {
                 this.mainPanelTitle.textContent = group.name;
                 this.generateProjects(group._id);
             }
+            this.shareGroupButton.show(group._id && !(group.name === "My Projects" && group.members.length === 1));
         };
 
         if (!group._id) this.groupsSelect.select(entry);

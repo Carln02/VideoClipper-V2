@@ -23,11 +23,7 @@ export class AppBarView extends TurboView<AppBar> {
         super.setupUIListeners();
 
         this.fullscreenToggle.addListener(DefaultEventName.click, () => this.toggleFullscreen());
-        this.backButton.addListener(DefaultEventName.click, () => {
-            //TODO
-            // leave_room();
-            // show_projects();
-        });
+        this.backButton.addListener(DefaultEventName.click, () => window.location.href = window.location.origin);
     }
 
     private toggleFullscreen() {

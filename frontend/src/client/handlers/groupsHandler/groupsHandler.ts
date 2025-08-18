@@ -52,6 +52,17 @@ export class GroupsHandler extends RequestHandler {
         return await res.json();
     }
 
+    public async addGroupMember(email: string, groupId: ObjectId): Promise<boolean> {
+        const res = await fetch(`${this.serverUrl}api/groups/add-member`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            credentials: "include",
+            body: JSON.stringify({email: email, groupId: groupId}),
+        });
+
+        return res.ok;
+    }
+
     public async createProject(projectName: string, groupId: ObjectId): Promise<ProjectData> {
         const res = await fetch(`${this.serverUrl}api/projects`, {
             method: "POST",

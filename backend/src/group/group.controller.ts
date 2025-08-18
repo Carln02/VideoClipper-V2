@@ -31,10 +31,14 @@ export class GroupController {
 
     public addMember = async (req: any, res: any) => {
         try {
-            const {groupId, userId, role} = req.body;
-            if (!groupId || !userId || !role) throw new Error("Missing parameters");
+            const {groupId, email} = req.body;
+            const user = req.user;
+            if (!groupId || !email || !user) throw new Error("Missing parameters");
 
-            await this.groupRepo.addMember(new ObjectId(groupId), new ObjectId(userId), role);
+            const group = await this.groupRepo.getGroup(new ObjectId(groupId));
+            if (!group) throw new Error("Group doesn't exist");
+            if (group.ownerId.toString() !== user._id.toString()) throw new Error("Missing permission");
+            await this.groupRepo.addMember(new ObjectId(groupId), email, "editor");
             respondSuccess(res);
         } catch (err: any) {
             respondFailure(res, err.message);

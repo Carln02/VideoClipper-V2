@@ -20,7 +20,10 @@ export class GroupRepository {
         return group;
     }
 
-    public async addMember(groupId: ObjectId, userId: ObjectId, role: GroupRole): Promise<void> {
+    public async addMember(groupId: ObjectId, userEmail: string, role: GroupRole): Promise<void> {
+        const user = await this.repos.userRepository.findByEmail(userEmail);
+        if (!user) throw new Error("User does not exist");
+        const userId = user._id;
         await this.collection.updateOne(
             {_id: groupId},
             {$push: {members: {userId, role}}}
