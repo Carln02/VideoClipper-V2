@@ -14,5 +14,9 @@ project.groupsHandler.openProject(projectId as any).then(({doc, websocket}) => {
     websocket.onConnect.add(() => {
         project.document = doc;
         project.currentType = ProjectScreens.canvas;
+
+        const url = new URL(window.location.href);
+        const flowId = url.searchParams.get("flow");
+
     });
 });

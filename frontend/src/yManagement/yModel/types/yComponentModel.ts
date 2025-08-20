@@ -9,7 +9,7 @@ import {MvcBlockKeyType} from "turbodombuilder";
  * callbacks at the keys that changed through the emitter.
  */
 export class YComponentModel extends YModel<any, YMap, string> {
-    protected observeChanges(event: YMapEvent, blockKey?: MvcBlockKeyType<"map">): void {
+    protected observeChanges(event: YMapEvent, transaction: any, blockKey?: MvcBlockKeyType<"map">): void {
         event.keysChanged.forEach(key => {
             const change = event.changes.keys.get(key);
             if (!change) {

@@ -1,6 +1,6 @@
 import {ClipModel} from "./clip.model";
 import {Clip} from "./clip";
-import {DefaultEventName, Direction, div, icon, img, TurboDragEvent, TurboView} from "turbodombuilder";
+import {DefaultEventName, Direction, div, icon, img, Side, TurboDragEvent, TurboView} from "turbodombuilder";
 
 export class ClipView extends TurboView<Clip, ClipModel> {
     public clipContent: HTMLDivElement;
@@ -51,22 +51,22 @@ export class ClipView extends TurboView<Clip, ClipModel> {
     }
 
     private generateHandles() {
-        if( this.element.orientation == Direction.horizontal ) {
-            this.leftHandle = div({classes: "clip-handle-left", children: icon({icon: "chevron-left"})});
-            this.rightHandle = div({classes: "clip-handle-right", children: icon({icon: "chevron-right"})});
+        if (this.element.orientation === Direction.horizontal) {
+            this.leftHandle = div({classes: "clip-handle clip-handle-left", children: icon({icon: "chevron-left"})});
+            this.rightHandle = div({classes: "clip-handle clip-handle-right", children: icon({icon: "chevron-right"})});
 
-            this.generateHandleEvents(this.leftHandle, "left");
-            this.generateHandleEvents(this.rightHandle, "right");
+            this.generateHandleEvents(this.leftHandle, Side.left);
+            this.generateHandleEvents(this.rightHandle, Side.right);
         } else {
-            this.leftHandle = div({classes: "clip-handle-top", children: icon({icon: "chevron-up"})});
-            this.rightHandle = div({classes: "clip-handle-bottom", children: icon({icon: "chevron-down"})});
+            this.leftHandle = div({classes: "clip-handle clip-handle-top", children: icon({icon: "chevron-up"})});
+            this.rightHandle = div({classes: "clip-handle clip-handle-bottom", children: icon({icon: "chevron-down"})});
 
-            this.generateHandleEvents(this.leftHandle, "top");
-            this.generateHandleEvents(this.rightHandle, "bottom");
+            this.generateHandleEvents(this.leftHandle, Side.top);
+            this.generateHandleEvents(this.rightHandle, Side.bottom);
         }
     }
 
-    private generateHandleEvents(handle: HTMLDivElement, side: "left" | "right" | "top" | "bottom") {
+    private generateHandleEvents(handle: HTMLDivElement, side: Side) {
         handle.addEventListener(DefaultEventName.clickStart, (e: TurboDragEvent) => e.stopImmediatePropagation());
         handle.addEventListener(DefaultEventName.dragStart, (e: TurboDragEvent) => e.stopImmediatePropagation());
         handle.addEventListener(DefaultEventName.drag, (e: TurboDragEvent) => this.dragHandle(side, e));

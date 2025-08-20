@@ -30,7 +30,7 @@ export type YDataBlock<
     DataType = any,
     IdType extends string | number | symbol = any
 > = MvcDataBlock<DataType, IdType> & {
-    observer: (event: YEvent) => void,
+    observer: (event: YEvent, transaction: any) => void,
     data: DataType,
 };
 

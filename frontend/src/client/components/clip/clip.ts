@@ -1,5 +1,5 @@
 import "./clip.css";
-import {Coordinate, define, Direction, SideH, TurboDragEvent, TurboView} from "turbodombuilder";
+import {Coordinate, define, Direction, TurboDragEvent, TurboView} from "turbodombuilder";
 import {Timeline} from "../timeline/timeline";
 import {ClipProperties, SyncedClip} from "./clip.types";
 import {ClipModel} from "./clip.model";
@@ -51,18 +51,17 @@ export class Clip<
         this.mvc.emitter.add("mediaId", async (value: string) => {
             this.model.setMetadata(this.director.mediaHandler.getMediaMetadata(value), value);
             this.model.blob = await this.director.mediaHandler.getMedia(value);
-            //TODO maybe remove this? idk
-            // if (media.metadata?.thumbnail) {
-            //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
-            // }
-
             this.onMediaDataChanged(this);
         });
 
         this.mvc.emitter.addWithBlock("convert", "metadata", async (value: string) => {
             if (!value) return;
             this.model.blob = await this.director.mediaHandler.getMedia(value);
-        })
+        });
+
+        requestAnimationFrame(() => {
+            if (!this.model.thumbnail) this.mvc.emitter.fire("reload_thumbnail");
+        });
     }
 
     public static createData(data?: SyncedClip): YMap & SyncedClip {

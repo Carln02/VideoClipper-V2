@@ -114,7 +114,7 @@ export abstract class YModel<
     public createBlock(value: YType, id?: IdType, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey): BlockType {
         return {
             ...super.createBlock(value, id),
-            observer: (event: YEvent) => this.observeChanges(event, blockKey)
+            observer: (event: YEvent, transaction) => this.observeChanges(event, transaction, blockKey)
         } as BlockType;
     }
 
@@ -147,7 +147,7 @@ export abstract class YModel<
         block?.data?.observe(block?.observer);
     }
 
-    protected abstract observeChanges(event: YEvent, blockKey?: MvcBlockKeyType<BlocksType>): void;
+    protected abstract observeChanges(event: YEvent, transaction: any, blockKey?: MvcBlockKeyType<BlocksType>): void;
 
     /**
      * @function getAllKeys
@@ -173,7 +173,8 @@ export abstract class YModel<
      * @param {MvcBlockKeyType<BlocksType>} [blockKey=this.defaultComputationBlockKey] - The block key.
      * @returns {((event: YEvent) => void)[]} Array of observers.
      */
-    protected getAllObservers(blockKey: MvcBlockKeyType<BlocksType> = this.defaultComputationBlockKey): ((event: YEvent) => void)[] {
+    protected getAllObservers(blockKey: MvcBlockKeyType<BlocksType> = this.defaultComputationBlockKey)
+        : ((event: YEvent, transaction: any) => void)[] {
         return this.getAllBlocks(blockKey).map(block => block.observer);
     }
 }

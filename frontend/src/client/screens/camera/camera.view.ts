@@ -3,7 +3,6 @@ import {Camera} from "./camera";
 import {CameraModel} from "./camera.model";
 import {ClipRenderer} from "../../components/clipRenderer/clipRenderer";
 import {Toolbar} from "../../components/toolbar/toolbar";
-import {Timeline} from "../../components/timeline/timeline";
 import {MetadataDrawer} from "../../components/metadataDrawer/metadataDrawer";
 import {Renderer} from "../../components/renderer/renderer";
 import {ShootingTimeline} from "../../components/timeline/shootingTimeline/shootingTimeline";

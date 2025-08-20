@@ -129,7 +129,11 @@ export class YManagerModel<
         if (typeof instance === "object" && "remove" in instance && typeof instance.remove == "function") instance?.remove();
     }
 
-    protected observeChanges(event: YEvent, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey) {
+    protected observeChanges(event: YEvent, transaction: any, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey) {
+        //TODO
+        const isLocal = !!transaction?.local;
+        const origin  = transaction?.origin;
+
         if (event instanceof YMapEvent) {
             event.keysChanged.forEach(key => {
                 const change = event.changes.keys.get(key);

@@ -3,5 +3,6 @@ export enum CaptureMode {
     video = "VIDEO",
     create = "CREATE",
     text = "TEXT",
-    videoShooting = "VIDEO SHOOTING"
+    videoShooting = "VIDEO SHOOTING",
+    edit = "EDIT",
 }

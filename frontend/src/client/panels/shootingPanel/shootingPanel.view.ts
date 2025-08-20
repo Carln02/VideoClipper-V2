@@ -3,7 +3,15 @@ import {ShootingPanel} from "./shootingPanel";
 import {ShootingPanelModel} from "./shootingPanel.model";
 import {CaptureButton} from "../../components/captureButton/captureButton";
 import {CaptureTimer} from "../../components/captureTimer/captureTimer";
-import {DefaultEventName, div, spacer, TurboIconToggle, TurboSelectEntry, TurboSelectWheel} from "turbodombuilder";
+import {
+    ClickMode,
+    DefaultEventName,
+    div,
+    spacer,
+    TurboIconToggle,
+    TurboSelectEntry,
+    TurboSelectWheel
+} from "turbodombuilder";
 import {BackgroundSelector} from "../../components/backgroundSelector/backgroundSelector";
 import {CaptureMode} from "./shootingPanel.types";
 import {
@@ -11,7 +19,7 @@ import {
 } from "../../components/animationComponents/animatedContentSwitchingDiv/animatedContentSwitchingDiv";
 import {ClipRendererVisibility} from "../../components/clipRenderer/clipRenderer.types";
 import {CaptureModeSlider} from "../../components/captureModeSlider/captureModeSlider";
-import {ProjectScreens} from "../../directors/project/project.types";
+import {ProjectScreens, ToolType} from "../../directors/project/project.types";
 
 export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, ShootingPanelModel> {
     private captureButton: CaptureButton;
@@ -42,7 +50,7 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
 
         this.modeSlider = new CaptureModeSlider({
             classes: "capture-mode-slider",
-            values: [CaptureMode.photo, CaptureMode.video, CaptureMode.create, CaptureMode.text],
+            values: [CaptureMode.photo, CaptureMode.video, CaptureMode.create, CaptureMode.edit],
         });
 
         this.captureTimer = new CaptureTimer();
@@ -125,7 +133,9 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
     }
 
     public refresh(mode: CaptureMode = this.model.mode) {
-        if (mode == CaptureMode.create) this.element.camera.visible = true;
+        const isCreateOrEdit = mode === CaptureMode.create || mode === CaptureMode.text;
+
+        if (isCreateOrEdit) this.element.camera.visible = true;
         // this.camera.fillCanvas(this.backgroundSelector.selectedValue);
         else if (mode == CaptureMode.videoShooting) {
             this.element.camera.visibilityMode = ClipRendererVisibility.hidden;
@@ -134,13 +144,18 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
         }
         else this.element.camera.visible = false;
 
+        this.element.director.toolManager.setTool(mode === CaptureMode.edit
+                ? this.element.director.toolManager.getToolByName(ToolType.selection)
+                : this.element.director.toolManager.getToolByName(ToolType.shoot),
+            ClickMode.left);
+
         this.modeSlider.show(mode != CaptureMode.videoShooting);
         this.captureButton.updateState(mode);
         // this.backgroundSelector.show(this.mode == CaptureMode.create);
 
-        this.ghost.show(mode != CaptureMode.create);
-        this.switchCamera.show(mode != CaptureMode.create);
+        this.ghost.show(!isCreateOrEdit);
+        this.switchCamera.show(!isCreateOrEdit);
         this.microphone.show(mode == CaptureMode.video || mode == CaptureMode.videoShooting);
-        this.animatedDiv.select(mode == CaptureMode.create ? this.backgroundColorDiv : this.shootingDiv);
+        this.animatedDiv.select(isCreateOrEdit ? this.backgroundColorDiv : this.shootingDiv);
     }
 }
