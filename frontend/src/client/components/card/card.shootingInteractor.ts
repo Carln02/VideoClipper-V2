@@ -16,5 +16,9 @@ export class CardShootingInteractor extends TurboInteractor<ToolType, Card, Card
         this.element.director.camera.card = this.element;
         this.element.director.toolPanel.changePanel(ToolType.shoot);
         this.element.director.camera.startStream();
+
+        const url = new URL(window.location.href);
+        url.searchParams.set("card", this.element.dataId);
+        history.pushState(null, "", url.toString());
     }
 }

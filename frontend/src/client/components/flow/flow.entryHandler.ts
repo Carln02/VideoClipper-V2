@@ -13,6 +13,7 @@ export class FlowEntryHandler extends TurboHandler<FlowModel> {
         YMap
     >;
 
+    public onUpdated: () => void = () => {};
     public onFlowEntryAdded: (data: SyncedFlowEntry) => FlowEntry;
 
     public constructor(model: FlowModel) {
@@ -22,6 +23,12 @@ export class FlowEntryHandler extends TurboHandler<FlowModel> {
             const manager = new YManagerModel<SyncedFlowEntry & YMap, FlowEntry, number, YArray>(array);
             manager.onAdded =  data => this.onFlowEntryAdded?.(data);
             return manager;
+        }
+
+        const oldUpdated = this.entryModel.onUpdated;
+        this.entryModel.onUpdated = (data, instance, id, blockKey) => {
+            oldUpdated(data, instance, id, blockKey);
+            this.onUpdated();
         }
     }
 

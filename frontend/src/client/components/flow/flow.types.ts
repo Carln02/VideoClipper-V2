@@ -10,7 +10,7 @@ import {SyncedFlowSelector} from "../flowSelector/flowSelector.types";
  */
 export type SyncedFlow = {
     entries?: YMap<YArray<SyncedFlowEntry>> | Record<string, SyncedFlowEntry[]>;
-    tags?: YArray<SyncedFlowSelector> | SyncedFlowSelector[];
+    selectors?: YMap<SyncedFlowSelector> | Record<string, SyncedFlowSelector>;
     defaultName?: string;
     color?: string;
 };

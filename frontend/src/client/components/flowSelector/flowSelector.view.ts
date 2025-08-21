@@ -8,8 +8,8 @@ export class FlowSelectorView extends TurboView<FlowSelector, FlowSelectorModel>
     private wheel: TurboSelectWheel<string, string, FlowPath>;
     private playButton: TurboIcon;
 
-    public addPathEntry(path: FlowPath, index: number) {
-        this.wheel.addEntry(path, index);
+    public addPathEntry(path: FlowPath) {
+        this.wheel.addEntry(path);
         if (!this.wheel.selectedEntry) this.wheel.select(path);
     }
 
@@ -33,11 +33,24 @@ export class FlowSelectorView extends TurboView<FlowSelector, FlowSelectorModel>
     protected setupUIListeners() {
         super.setupUIListeners();
         this.playButton.addListener(DefaultEventName.click, () => this.playPath(this.wheel.selectedEntry));
+        this.wheel.onSelect = () => this.updateHighlightedEntries();
     }
 
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
         this.emitter.add("nodeId", () => this.element.attachedNode?.addChild(this.element));
+        this.emitter.add("update_paths", () => {
+            this.model.pathHandler.updatePaths();
+            requestAnimationFrame(() => this.updateHighlightedEntries());
+        });
+    }
+
+    private updateHighlightedEntries() {
+        this.wheel.entries.forEach(entry => {
+            if (entry === this.wheel.selectedEntry) return;
+            entry.highlightEntries(false);
+        });
+        this.wheel.selectedEntry.highlightEntries(true);
     }
 
     private playPath(path: FlowPath) {

@@ -38,12 +38,13 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
     public static createData(data?: SyncedFlow): YMap & SyncedFlow {
         if (!data) data = {};
         if (!data.entries) data.entries = {};
-        if (!data.tags) data.tags = [undefined];
+        if (!data.selectors) data.selectors = {};
         if (!data.defaultName) data.defaultName = "Flow";
 
         Object.entries(data.entries).forEach(([key, branch]) => data.entries[key] = FlowEntry.createData(branch));
+        Object.entries(data.selectors).forEach(([key, selector]) => data.selectors[key] = FlowSelector.createData(selector));
         data.entries = YUtilities.createYMap(data.entries);
-        data.tags = YUtilities.createYArray(data.tags.map(tag => FlowSelector.createData(tag)));
+        data.selectors = YUtilities.createYMap(data.selectors);
 
         return YUtilities.createYMap(data);
     }
@@ -102,7 +103,7 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
     }
 
     public createSelector(nodeId: string) {
-        return YUtilities.addInYArray(FlowSelector.createData({nodeId: nodeId, paths: []}), this.model.selectorsData);
+        return YUtilities.addInYMap(FlowSelector.createData({nodeId: nodeId}), this.model.selectorsData);
     }
 
     /**

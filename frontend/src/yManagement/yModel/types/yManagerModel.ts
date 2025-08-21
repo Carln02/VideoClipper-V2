@@ -126,7 +126,7 @@ export class YManagerModel<
     }
 
     private removeInstance(instance: ComponentType) {
-        if (typeof instance === "object" && "remove" in instance && typeof instance.remove == "function") instance?.remove();
+        if (instance && typeof instance === "object" && "remove" in instance && typeof instance.remove == "function") instance?.remove();
     }
 
     protected observeChanges(event: YEvent, transaction: any, blockKey: MvcBlockKeyType<BlocksType> = this.defaultBlockKey) {

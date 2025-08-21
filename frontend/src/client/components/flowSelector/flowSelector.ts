@@ -5,7 +5,7 @@ import {VcComponent} from "../component/component";
 import {FlowSelectorModel} from "./flowSelector.model";
 import {FlowSelectorView} from "./flowSelector.view";
 import {Project} from "../../directors/project/project";
-import {YArray, YMap} from "../../../yManagement/yManagement.types";
+import {YMap} from "../../../yManagement/yManagement.types";
 import {SyncedFlowPath} from "../flowPath/flowPath.types";
 import {FlowPath} from "../flowPath/flowPath";
 import {YUtilities} from "../../../yManagement/yUtilities";
@@ -25,15 +25,17 @@ export class FlowSelector extends VcComponent<FlowSelectorView, SyncedFlowSelect
         });
 
         this.model.flow = properties.flow;
-        this.model.onPathAdded = (path, index) => this.view.addPathEntry(path, index);
+        this.model.onPathAdded = (path) => this.view.addPathEntry(path);
         this.mvc.initialize();
+        this.updatePaths();
     }
 
     public static createData(data?: SyncedFlowSelector): YMap & SyncedFlowSelector {
         if (!data) data = {};
         if (!data.nodeId) data.nodeId = "";
-        if (!data.paths || data.paths.length === 0) data.paths = [undefined];
-        data.paths = YUtilities.createYArray(data.paths.map(path => FlowPath.createData(path)));
+        if (!data.paths) data.paths = {};
+        for (const key in data.paths) data.paths[key] = FlowPath.createData(data.paths[key]);
+        data.paths = YUtilities.createYMap(data.paths);
         return YUtilities.createYMap<SyncedFlowSelector>(data);
     }
 
@@ -41,19 +43,15 @@ export class FlowSelector extends VcComponent<FlowSelectorView, SyncedFlowSelect
         return this.director.getNode(this.model.nodeId);
     }
 
-    public get paths(): YArray<SyncedFlowPath & YMap> {
+    public get paths(): YMap<SyncedFlowPath & YMap> {
         return this.model.pathsData;
     }
 
-    public get pathsArray(): (SyncedFlowPath & YMap)[] {
-        return this.model.pathsDataArray;
-    }
-
-    public insertPath(pathData: YMap & SyncedFlowPath, index?: number) {
-        return this.model.insertPath(pathData, index);
+    public setPath(pathData: YMap & SyncedFlowPath, id?: string) {
+        return this.model.setPath(pathData, id);
     }
 
     public updatePaths() {
-        this.model.pathHandler.updatePaths();
+        this.mvc.emitter.fire("update_paths");
     }
 }

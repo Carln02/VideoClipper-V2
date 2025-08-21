@@ -1,18 +1,17 @@
 import {TurboHandler} from "turbodombuilder";
 import {FlowSelectorModel} from "./flowSelector.model";
 import {SyncedFlowPath} from "../flowPath/flowPath.types";
-import {YUtilities} from "../../../yManagement/yUtilities";
-import {FlowPath} from "../flowPath/flowPath";
 
 export class FlowSelectorPathHandler extends TurboHandler<FlowSelectorModel> {
     public updatePaths() {
-        const oldPaths: SyncedFlowPath[] = this.model.pathsData.toJSON();
-        const newPaths: SyncedFlowPath[] = [];
+        const oldPaths: Record<string, SyncedFlowPath> = this.model.pathsData.toJSON();
+        const newUnnamedPaths: SyncedFlowPath[] = [];
 
-        this.recurFindPaths(this.model.nodeId, [], newPaths);
-        this.setPathNames(oldPaths, newPaths);
+        this.recurFindPaths(this.model.nodeId, [], newUnnamedPaths);
+        this.setPathNames(oldPaths, newUnnamedPaths);
 
-        this.model.pathsData = YUtilities.createYArray(newPaths.map(path => FlowPath.createData(path)));
+        console.log(oldPaths);
+        for (const id of Object.keys(oldPaths)) this.model.removePath(id);
     }
 
     private recurFindPaths(currentNodeId: string, currentPath: string[], paths: SyncedFlowPath[]) {
@@ -30,54 +29,78 @@ export class FlowSelectorPathHandler extends TurboHandler<FlowSelectorModel> {
         }
     }
 
-    private setPathNames(oldPaths: SyncedFlowPath[], newPaths: SyncedFlowPath[]) {
-        for (const path of newPaths) {
-            const oldMatch = this.matchExactPathName(path, oldPaths);
-            if (!oldMatch) continue;
-            path.name = oldMatch.name;
-            this.deleteEntry(oldMatch, oldPaths);
-        }
+    private setPathNames(oldPaths: Record<string, SyncedFlowPath>, newUnnamedPaths: SyncedFlowPath[]) {
+        const newPaths: Record<string, SyncedFlowPath> = {};
 
-        for (const path of newPaths.filter(path => !path.name)) {
-            const oldMatch = this.matchSimilarPathName(path, oldPaths);
-            if (!oldMatch) continue;
-            path.name = oldMatch.name;
-            this.deleteEntry(oldMatch, oldPaths);
-        }
+        for (const path of newUnnamedPaths)
+            this.namePath(this.matchExactPath(path, oldPaths), path, newPaths, oldPaths, false);
+        for (const path of newUnnamedPaths.filter(path => !path.name))
+            this.namePath(this.matchOffByOnePath(path, oldPaths), path, newPaths, oldPaths);
+        for (const path of newUnnamedPaths.filter(path => !path.name))
+            this.namePath(this.matchOffBySectionPath(path, oldPaths), path, newPaths, oldPaths);
 
-        const usedNames = new Set(newPaths.map(p => p.name).filter(Boolean));
-        for (const path of newPaths.filter(p => !p.name)) {
-            const baseName = this.model.flow.defaultName ?? "Path";
-            let counter = 1;
-            while (usedNames.has(`${baseName} ${counter}`)) counter++;
+        const usedNames = new Set(Object.values(newPaths).map(p => p.name));
+        const baseName = this.model.flow.defaultName ?? "Path";
+        let counter = 0;
+
+        for (const path of newUnnamedPaths.filter(p => !p.name)) {
+            do counter++;
+            while (usedNames.has(`${baseName} ${counter}`));
             path.name = `${baseName} ${counter}`;
-            usedNames.add(path.name);
+            this.model.setPath(path);
         }
     }
 
-    private matchExactPathName(path: SyncedFlowPath, oldPaths: SyncedFlowPath[]): SyncedFlowPath {
-        return oldPaths.find(oldPath =>
-            oldPath.nodeIds?.join(",") === path.nodeIds?.join(","));
+    private namePath(match: string, path: SyncedFlowPath, newPaths: Record<string, SyncedFlowPath>,
+                     oldPaths: Record<string, SyncedFlowPath>, setData: boolean = true) {
+        if (!match) return;
+        console.log("MATCH!", path, oldPaths[match]);
+        console.log(setData);
+        newPaths[match] = path;
+        path.name = oldPaths[match].name;
+        delete oldPaths[match];
+        if (setData) this.model.setPath(path, match);
     }
 
-    private matchSimilarPathName(path: SyncedFlowPath, oldPaths: SyncedFlowPath[]): SyncedFlowPath {
-        return oldPaths.find(oldPath => {
+    private matchExactPath(path: SyncedFlowPath, oldPaths: Record<string, SyncedFlowPath>): string | undefined {
+        for (const [id, oldPath] of Object.entries(oldPaths)) {
+            if (!oldPath) continue;
+            if (oldPath.nodeIds?.join(",") === path.nodeIds?.join(",")) return id;
+        }
+        return undefined;
+    }
+
+    private matchOffByOnePath(path: SyncedFlowPath, oldPaths: Record<string, SyncedFlowPath>): string | undefined {
+        const newNodeIds = path.nodeIds ?? [];
+        for (const [id, oldPath] of Object.entries(oldPaths)) {
+            if (!oldPath) continue;
             const oldNodeIds = oldPath.nodeIds ?? [];
-            const newNodeIds = path.nodeIds ?? [];
-            if (Math.abs(oldNodeIds.length - newNodeIds.length) > 1) return false;
+            if (Math.abs(oldNodeIds.length - newNodeIds.length) > 1) continue;
 
             let diffCount = 0;
             for (let i = 0; i < Math.min(oldNodeIds.length, newNodeIds.length); i++) {
                 if (oldNodeIds[i] !== newNodeIds[i]) diffCount++;
             }
-            return diffCount <= 1;
-        });
+            if (diffCount <= 1) return id;
+        }
+        return undefined;
     }
 
-    private deleteEntry(entry: any, oldArray: any[]): boolean {
-        const index = oldArray.indexOf(entry);
-        if (index < 0) return false;
-        oldArray.splice(index, 1);
-        return true;
+    private matchOffBySectionPath(path: SyncedFlowPath, oldPaths: Record<string, SyncedFlowPath>): string | undefined {
+        const newNodeIds = path.nodeIds ?? [];
+        for (const [id, oldPath] of Object.entries(oldPaths)) {
+            if (!oldPath) continue;
+            const oldNodeIds = oldPath.nodeIds ?? [];
+
+            let diffSectionCount = 0;
+            let prevWasDiff = false;
+            for (let i = 0; i < Math.min(oldNodeIds.length, newNodeIds.length); i++) {
+                const isDiff = oldNodeIds[i] !== newNodeIds[i];
+                if (isDiff && !prevWasDiff) diffSectionCount++;
+                prevWasDiff = isDiff;
+            }
+            if (diffSectionCount === 0 || diffSectionCount === 1 && prevWasDiff) return id;
+        }
+        return undefined;
     }
 }

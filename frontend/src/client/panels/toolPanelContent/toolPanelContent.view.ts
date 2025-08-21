@@ -1,4 +1,4 @@
-import {div, icon, TurboIcon, TurboModel, TurboView} from "turbodombuilder";
+import {DefaultEventName, div, icon, TurboIcon, TurboModel, TurboView} from "turbodombuilder";
 import {ToolPanelContent} from "./toolPanelContent";
 
 export class ToolPanelContentView<
@@ -30,5 +30,9 @@ export class ToolPanelContentView<
                 children: [this.cancelButton, this.saveButton, this.backButton]
             })
         );
+    }
+
+    protected setupUIListeners() {
+        this.backButton.addListener(DefaultEventName.click, () => history.back());
     }
 }

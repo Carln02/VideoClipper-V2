@@ -1,4 +1,4 @@
-import {YArray} from "../../../yManagement/yManagement.types";
+import {YMap} from "../../../yManagement/yManagement.types";
 import {VcComponentProperties} from "../component/component.types";
 import {FlowSelectorView} from "./flowSelector.view";
 import {FlowSelectorModel} from "./flowSelector.model";
@@ -12,7 +12,7 @@ import {Project} from "../../directors/project/project";
  */
 export type SyncedFlowSelector = {
     nodeId?: string;
-    paths?: YArray<SyncedFlowPath> | SyncedFlowPath[];
+    paths?: YMap<SyncedFlowPath> | Record<string, SyncedFlowPath>;
 };
 
 export type FlowSelectorProperties = VcComponentProperties<FlowSelectorView, SyncedFlowSelector, FlowSelectorModel, Project> & {

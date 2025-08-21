@@ -42,6 +42,6 @@ export class FlowPathModel extends YComponentModel {
     }
 
     public get nodeIdsArray(): string[] {
-        return this.nodeIds.toJSON();
+        return this.nodeIds?.toJSON() || [];
     }
 }

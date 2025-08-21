@@ -11,11 +11,12 @@ import {FlowEntry} from "../flowEntry/flowEntry";
 import {FlowUpdateHandler} from "./flow.updateHandler";
 import {YManagerModel} from "../../../yManagement/yModel/types/yManagerModel";
 import {SyncedFlowSelector} from "../flowSelector/flowSelector.types";
+import {decodeAny} from "lib0/buffer";
 
 export class FlowModel extends YComponentModel {
     public currentEntryId: string;
 
-    public readonly selectorModel: YManagerModel<SyncedFlowSelector, FlowSelector, number, YArray>;
+    public readonly selectorModel: YManagerModel<SyncedFlowSelector, FlowSelector, string, YMap>;
 
     // Added margin to the computed viewBox
     public readonly viewBoxPadding = 200 as const;
@@ -42,14 +43,12 @@ export class FlowModel extends YComponentModel {
 
         this.entryHandler.setData(this.getData("entries"));
         this.entryHandler.onFlowEntryAdded = (data) => this.onFlowEntryAdded(data);
+        this.entryHandler.onUpdated = () =>
+            this.selectorModel.getAllComponents().forEach(selector => selector.updatePaths());
 
         this.selectorModel.data = this.selectorsData;
         this.selectorModel.onAdded = (data) => this.onFlowSelectorAdded(data);
-
-        YUtilities.deepObserveAll(this.data, () => {
-            this.fireCallback("__redraw");
-            this.selectorModel.getAllComponents().forEach(selector => selector.updatePaths());
-        }, "entries");
+        YUtilities.deepObserveAll(this.data, () => this.fireCallback("__redraw"), "entries");
     }
 
     public get currentEntry(): FlowEntry {
@@ -77,12 +76,8 @@ export class FlowModel extends YComponentModel {
         return this.entryHandler.getAllEntriesData();
     }
 
-    public get selectorsData(): YArray<SyncedFlowSelector> {
-        return this.getData("tags");
-    }
-
-    public get selectorsDataArray(): SyncedFlowSelector[] {
-        return this.selectorsData.toArray();
+    public get selectorsData(): YMap<SyncedFlowSelector> {
+        return this.getData("selectors");
     }
 
     public get defaultName(): string {

@@ -117,8 +117,6 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
         this.modeSlider.onSelect = ((b, entry) => {
             if (b) this.model.mode = entry.value as CaptureMode;
         });
-
-        this.backButton.addListener(DefaultEventName.click, () => this.element.director.currentType = ProjectScreens.canvas);
     }
 
     protected setupChangedCallbacks() {

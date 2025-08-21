@@ -1,4 +1,4 @@
-import {YArray, YMap} from "../../../yManagement/yManagement.types";
+import {YMap} from "../../../yManagement/yManagement.types";
 import {YComponentModel} from "../../../yManagement/yModel/types/yComponentModel";
 import {SyncedFlowPath} from "../flowPath/flowPath.types";
 import {FlowPath} from "../flowPath/flowPath";
@@ -6,20 +6,22 @@ import {YManagerModel} from "../../../yManagement/yModel/types/yManagerModel";
 import {MvcBlockKeyType} from "turbodombuilder";
 import {Flow} from "../flow/flow";
 import {FlowSelectorPathHandler} from "./flowSelector.pathHandler";
+import {randomString} from "../../utils/random";
 
 export class FlowSelectorModel extends YComponentModel {
-    private pathsModel: YManagerModel<SyncedFlowPath, FlowPath, number, YArray>;
+    private pathsModel: YManagerModel<SyncedFlowPath, FlowPath, string, YMap>;
     public flow: Flow;
 
-    public onPathAdded: (path: FlowPath, index: number) => void = () => {};
+    public onPathAdded: (path: FlowPath, id: string) => void = () => {};
 
     public constructor(data?: any) {
         super(data);
 
         this.pathsModel = new YManagerModel();
-        this.pathsModel.onAdded = (pathData: SyncedFlowPath & YMap, index: number) => {
+        this.pathsModel.onAdded = (pathData: SyncedFlowPath & YMap, id: string) => {
+            console.log("ADDEDDDDDDD");
             const path = new FlowPath({value: pathData.get("name"), data: pathData, flow: this.flow});
-            this.onPathAdded?.(path, index);
+            this.onPathAdded?.(path, id);
             return path;
         }
     }
@@ -29,14 +31,14 @@ export class FlowSelectorModel extends YComponentModel {
         if (blockKey === this.defaultBlockKey) this.pathsModel.data = this.pathsData;
     }
 
-    public get data(): any {
-        return super.data;
-    }
-
-    public set data(value: any) {
-        super.data = value;
-        // YUtilities.deepObserveAny(this.data, () => this.fireCallback("pathsChanged"), "paths");
-    }
+    // public get data(): any {
+    //     return super.data;
+    // }
+    //
+    // public set data(value: any) {
+    //     super.data = value;
+    //     // YUtilities.deepObserveAny(this.data, () => this.fireCallback("pathsChanged"), "paths");
+    // }
 
     public get nodeId(): string {
         return this.getData("nodeId");
@@ -46,27 +48,32 @@ export class FlowSelectorModel extends YComponentModel {
         this.setData("nodeId", value);
     }
 
-    public get pathsData(): YArray<SyncedFlowPath & YMap> {
+    public get pathsData(): YMap<SyncedFlowPath & YMap> {
         return this.getData("paths");
     }
 
-    public set pathsData(value: YArray<SyncedFlowPath>) {
+    public set pathsData(value: YMap<SyncedFlowPath>) {
         this.setData("paths", value);
-    }
-
-    public get pathsDataArray(): (SyncedFlowPath & YMap)[] {
-        return this.pathsData.toArray();
     }
 
     public get paths(): FlowPath[] {
         return this.pathsModel.getAllComponents();
     }
 
-    public insertPath(pathData: YMap & SyncedFlowPath, index?: number) {
+    public setPath(pathData: SyncedFlowPath, id?: string) {
+        if (!id || typeof id !== "string") {
+            const paths = this.pathsData.toJSON();
+            do id = randomString();
+            while (paths[id]);
+        }
         if (!(pathData instanceof YMap)) pathData = FlowPath.createData(pathData);
-        if (index == undefined || index >= this.pathsDataArray.length) return this.pathsData.push([pathData]);
-        if (index < 0) index = 0;
-        this.pathsData.insert(index, [pathData]);
+        this.pathsData.set(id, pathData as YMap);
+    }
+
+    public removePath(id: string) {
+        console.log("REMOVE PATH");
+        if (!id || typeof id !== "string") return;
+        this.pathsData.delete(id);
     }
 
     public get pathHandler(): FlowSelectorPathHandler {

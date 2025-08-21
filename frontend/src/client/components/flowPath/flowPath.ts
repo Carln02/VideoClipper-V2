@@ -32,16 +32,6 @@ export class FlowPath extends TurboSelectEntry<string, string, "p", TurboView, S
         this.setStyle("padding", "6px").setStyle("whiteSpace", "nowrap");
     }
 
-    protected setupUIListeners() {
-        super.setupUIListeners();
-
-        this.onSelected = (b: boolean) => {
-            if (!b) return;
-            this.model.flow.entries.forEach(entry => entry.highlighted = false);
-            this.model.flow.getEntriesFromNodesList(this.nodeIdsArray).forEach(entry => entry.highlighted = true);
-        };
-    }
-
     public get name(): string {
         return this.model.name;
     }
@@ -64,5 +54,9 @@ export class FlowPath extends TurboSelectEntry<string, string, "p", TurboView, S
 
     public get nodeIdsArray(): string[] {
         return this.model.nodeIdsArray;
+    }
+
+    public highlightEntries(b: boolean) {
+        this.model.flow.getEntriesFromNodesList(this.nodeIdsArray).forEach(entry => entry.highlighted = b);
     }
 }

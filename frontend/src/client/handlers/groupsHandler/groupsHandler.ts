@@ -71,6 +71,7 @@ export class GroupsHandler extends RequestHandler {
             body: JSON.stringify({name: projectName, groupId}),
         });
 
+        console.log(res)
         if (!res.ok) throw new Error("Failed to create project");
         return await res.json();
     }
