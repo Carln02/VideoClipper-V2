@@ -6,6 +6,7 @@ export function getAxisFromSide(side: Side): "x" | "y" {
 }
 
 export function getClosestPointOnEdge(pointer: Coordinate, rect: DOMRect): Point {
+
     const closestPoint = {
         x:  trim(pointer.x, rect.right, rect.left),
         y: trim(pointer.y, rect.bottom, rect.top)
@@ -19,6 +20,11 @@ export function getClosestPointOnEdge(pointer: Coordinate, rect: DOMRect): Point
 
     closestPoint[getAxisFromSide(closestSide)] = rect[closestSide];
     return new Point(closestPoint);
+}
+
+export function pointInsideRect(point: Coordinate, rect: DOMRect, margin: number = 5): boolean {
+    return (point.x < rect.right + margin && point.x > rect.left - margin)
+        && (point.y < rect.bottom + margin && point.y > rect.top - margin);
 }
 
 export function getClippedBoundingRect(el: Element): DOMRect {

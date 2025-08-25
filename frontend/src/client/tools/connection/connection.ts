@@ -18,9 +18,13 @@ export class ConnectionTool extends VcTool<ToolType> {
 
     //Interval indicating the frequency at which points are permanently added to the flow
     //A higher value will increase the smoothing effect of the flow
-    public readonly drawingInterval: number = 150 as const;
+    public readonly drawingInterval: number = 300 as const;
     //The last time a point was added permanently (used for when drawing flows)
     public lastDrawnTime: number = 0;
+
+    public activate() {
+        this.clear();
+    }
 
     public get currentFlowId(): string {
         return this._currentFlowId;
@@ -38,5 +42,11 @@ export class ConnectionTool extends VcTool<ToolType> {
 
     public get currentEntry(): FlowEntry {
         return this.currentFlow?.currentEntry;
+    }
+
+    public clear() {
+        this.currentFlow?.clearCurrentEntry();
+        this.currentFlowId = null;
+        this.lastNodeId = null;
     }
 }

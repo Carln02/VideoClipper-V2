@@ -14,6 +14,7 @@ import {FlowEntry} from "../flowEntry/flowEntry";
 import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 import {FlowEntryHandler} from "./flow.entryHandler";
 import {FlowUpdateHandler} from "./flow.updateHandler";
+import {FlowPath} from "../flowPath/flowPath";
 
 /**
  * @description A reactiveComponent that represents a flow connecting cards
@@ -77,6 +78,10 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
         return this.model.entryHandler.getEntries(id);
     }
 
+    public get paths(): FlowPath[] {
+        return this.model.selectors.flatMap(selector => selector.paths);
+    }
+
     // public getEntry(id: string): FlowEntry {
     //     return this.model.entryHandler.getEntry(id);
     // }
@@ -124,5 +129,9 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
 
     public updateOnDetachingNode(nodeId: string) {
         this.model.updateHandler.updateOnDetachingNode(nodeId);
+    }
+
+    public clearCurrentEntry() {
+        this.model.currentEntryId = null;
     }
 }

@@ -7,10 +7,11 @@ import {CaptureFlowSelectorModel} from "./captureFlowSelector.model";
 import {VcComponent} from "../component/component";
 import {VcComponentProperties} from "../component/component.types";
 import {ProjectScreens} from "../../directors/project/project.types";
+import {Project} from "../../directors/project/project";
 
 @define("vc-capture-flow-selector")
-export class CaptureFlowSelector extends VcComponent<CaptureFlowSelectorView, any, CaptureFlowSelectorModel> {
-    public constructor(properties: VcComponentProperties<CaptureFlowSelectorView, any, CaptureFlowSelectorModel> = {}) {
+export class CaptureFlowSelector extends VcComponent<CaptureFlowSelectorView, any, CaptureFlowSelectorModel, Project> {
+    public constructor(properties: VcComponentProperties<CaptureFlowSelectorView, any, CaptureFlowSelectorModel, Project> = {}) {
         super(properties);
         this.mvc.generate({
             viewConstructor: CaptureFlowSelectorView,
@@ -40,5 +41,9 @@ export class CaptureFlowSelector extends VcComponent<CaptureFlowSelectorView, an
     public stopTimer(): number {
         this.model.isTimerShown = false;
         return this.model.totalTimeInSeconds;
+    }
+
+    public refresh(): void {
+        this.view.refresh();
     }
 }

@@ -70,4 +70,8 @@ export class FlowPath extends TurboSelectEntry<string, string, "input", TurboVie
     public highlightEntries(b: boolean) {
         this.model.flow.getEntriesFromNodesList(this.nodeIdsArray).forEach(entry => entry.highlighted = b);
     }
+
+    public hasNode(id: string): boolean {
+        return this.nodeIdsArray.includes(id);
+    }
 }

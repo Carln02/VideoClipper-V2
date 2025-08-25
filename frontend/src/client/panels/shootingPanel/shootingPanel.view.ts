@@ -131,6 +131,7 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
     }
 
     public refresh(mode: CaptureMode = this.model.mode) {
+        this.captureFlowSelector.refresh();
         const isCreateOrEdit = mode === CaptureMode.create || mode === CaptureMode.text;
 
         if (isCreateOrEdit) this.element.camera.visible = true;

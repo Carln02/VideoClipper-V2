@@ -1,18 +1,25 @@
-import {DefaultEventName, TurboDragEvent, TurboEvent, TurboInteractor} from "turbodombuilder";
+import {DefaultEventName, MvcInteractorProperties, TurboDragEvent, TurboEvent, TurboInteractor} from "turbodombuilder";
 import {ToolType} from "../../directors/project/project.types";
 import {BranchingNode} from "./branchingNode";
 import {BranchingNodeModel} from "./branchingNode.model";
 import {BranchingNodeView} from "./branchingNode.view";
 import {ConnectionTool} from "../../tools/connection/connection";
-import {getClosestPointOnEdge} from "../../utils/computation";
+import {getClosestPointOnEdge, pointInsideRect} from "../../utils/computation";
 
 export class BranchingNodeConnectionInteractor extends TurboInteractor<ToolType, BranchingNode, BranchingNodeView, BranchingNodeModel> {
     public tool = ToolType.connection;
+
+    public target: HTMLElement;
 
     public propagateUp = {
         [DefaultEventName.move]: true,
         [DefaultEventName.dragEnd]: true,
     };
+
+    public constructor(properties: MvcInteractorProperties<BranchingNode, BranchingNodeView, BranchingNodeModel>) {
+        super(properties);
+        requestAnimationFrame(() => this.target = this.element.querySelector("vc-playback"));
+    }
 
     private async initializeFlow(e: TurboEvent, tool: ConnectionTool) {
         //Reset drawing time
@@ -39,6 +46,7 @@ export class BranchingNodeConnectionInteractor extends TurboInteractor<ToolType,
     }
 
     public dragStart(e: TurboDragEvent, tool: ConnectionTool) {
+        tool.clear();
         //Return if already creating/editing a flow
         if (tool.currentFlowId) return;
         this.initializeFlow(e, tool);
@@ -48,10 +56,14 @@ export class BranchingNodeConnectionInteractor extends TurboInteractor<ToolType,
     public drag(e: TurboDragEvent, tool: ConnectionTool) {
         //Return if no current flow
         if (!tool.currentFlow) return;
+
+        //TODO: PROBLEM FOR LATER FIX THIS STUPID THING
+        const cardRect = this.target.getBoundingClientRect();
+        if (!pointInsideRect(e.position, cardRect, 0)) return;
+
         if (tool.currentEntry) {
             if (tool.currentEntry.startNodeId === this.model.dataId) return;
-
-            const lastPoint = getClosestPointOnEdge(e.position, this.element.querySelector("vc-playback").getBoundingClientRect());
+            const lastPoint = getClosestPointOnEdge(e.position, cardRect);
             //TODO USE CONSTRAINTS INSTEAD
             tool.currentEntry.addPoint(this.element.director.canvas.navigationManager.computePositionRelativeToCanvas(lastPoint));
             tool.currentEntry.endEntry(this.model.dataId);

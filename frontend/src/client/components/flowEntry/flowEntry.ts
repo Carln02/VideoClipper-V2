@@ -125,6 +125,7 @@ export class FlowEntry extends TurboProxiedElement<"g", FlowEntryView, SyncedFlo
     }
 
     public delete() {
+        console.log("ENTRY DELETED")
         this.view.clearDrawing();
         this.model.flow.removeEntry(this);
     }

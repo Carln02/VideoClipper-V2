@@ -14,7 +14,7 @@ export class CardShootingInteractor extends TurboInteractor<ToolType, Card, Card
     public click() {
         this.element.director.currentType = ProjectScreens.camera;
         this.element.director.camera.card = this.element;
-        this.element.director.toolPanel.changePanel(ToolType.shoot);
+        // this.element.director.toolPanel.changePanel(ToolType.shoot);
         this.element.director.camera.startStream();
 
         const url = new URL(window.location.href);

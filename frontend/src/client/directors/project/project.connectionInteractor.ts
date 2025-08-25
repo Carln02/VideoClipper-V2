@@ -50,8 +50,7 @@ export class ProjectConnectionInteractor extends TurboInteractor<ToolType, Proje
     }
 
     private endAndClear(tool: ConnectionTool) {
-        tool.currentEntry.endEntry();
-        tool.currentFlowId = null;
-        tool.lastNodeId = null;
+        tool.currentEntry?.endEntry();
+        tool.clear();
     }
 }

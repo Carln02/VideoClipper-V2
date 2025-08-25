@@ -9,8 +9,9 @@ import {CameraCaptureHandler} from "./camera.captureHandler";
 import {VcComponent} from "../../components/component/component";
 import {Clip} from "../../components/clip/clip";
 import {Project} from "../../directors/project/project";
-import {ProjectScreens} from "../../directors/project/project.types";
+import {ProjectScreens, ToolType} from "../../directors/project/project.types";
 import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
+import {ShootingPanel} from "../../panels/shootingPanel/shootingPanel";
 
 @define("vc-camera")
 export class Camera extends VcComponent<CameraView, object, CameraModel, Project> {
@@ -37,6 +38,7 @@ export class Camera extends VcComponent<CameraView, object, CameraModel, Project
     public set card(value: Card) {
         this.view.timeline.card = value;
         this.view.metadataDrawer.card = value;
+        (this.director.toolPanel.getPanel(ToolType.shoot, ProjectScreens.camera) as ShootingPanel).refresh();
     }
 
     public get frameWidth() {

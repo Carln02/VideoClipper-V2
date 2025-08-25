@@ -43,8 +43,8 @@ export class FlowSelector extends VcComponent<FlowSelectorView, SyncedFlowSelect
         return this.director.getNode(this.model.nodeId);
     }
 
-    public get paths(): YMap<SyncedFlowPath & YMap> {
-        return this.model.pathsData;
+    public get paths(): FlowPath[] {
+        return this.model.paths;
     }
 
     public setPath(pathData: YMap & SyncedFlowPath, id?: string) {

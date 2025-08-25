@@ -25,7 +25,7 @@ export class Scrubber extends VcComponent<any, any, any, Project> {
     public onScrubbing: (e: TurboDragEvent) => void;
     public onScrubbingEnd: (e: TurboDragEvent) => void;
 
-    public constructor(properties: ScrubberProperties = {}, orientation: Direction = Direction.vertical) {
+    public constructor(properties: ScrubberProperties = {}) {
         super(properties);
         this.addClass("vc-scrubber");
 

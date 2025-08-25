@@ -1,4 +1,4 @@
-import {auto, define, Side, TurboIconSwitch} from "turbodombuilder";
+import {define, Side, TurboIconSwitch} from "turbodombuilder";
 import {ClipRenderer} from "../../clipRenderer/clipRenderer";
 import {Clip} from "../../clip/clip";
 import "./clipTimeline.css";
@@ -31,11 +31,6 @@ export class ClipTimeline extends Timeline<ClipTimelineView> {
         const clip = super.onClipAdded(syncedClip, id, blockKey, {viewConstructor: ClipView});
         this.view.scrubberContainer.addChild(clip, this.model.clipHandler.convertBlockScopeToIndex(id + 1, blockKey));
         return clip;
-    }
-
-    @auto()
-    public set scaled(value: boolean) {
-        if (this.view && this.view.scrubber) this.view.scrubber.scaled = value;
     }
 
     public get width() {

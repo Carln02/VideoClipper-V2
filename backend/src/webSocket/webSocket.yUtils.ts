@@ -44,6 +44,7 @@ export class WebSocketYUtils {
             const ldb = new LeveldbPersistence(this.persistenceDir);
             this.persistence = {
                 provider: ldb,
+                //TODO CHECKKKKKKKKK
                 bindState: async (docName, ydoc) => {
                     const persistedYdoc = await ldb.getYDoc(docName);
                     const persistedContent = persistedYdoc.getMap("document_content");
@@ -54,17 +55,6 @@ export class WebSocketYUtils {
                         await ldb.storeUpdate(docName, update);
                         // await this.persistence?.provider.storeUpdate(docName, update);
                     });
-
-                    // if (persistedContent.size === 0) {
-                    //     // Only initialize if no persisted state exists
-                    //     console.log("🆕 Initializing new document content");
-                    //     const content = ydoc.getMap("document_content");
-                    //     content.set("cards", new Y.Map());
-                    //     content.set("branchingNodes", new Y.Map());
-                    //     content.set("flows", new Y.Map());
-                    //     content.set("media", new Y.Map());
-                    //     content.set("counters", new Y.Map([["cards", 0], ["flows", 0]]));
-                    // }
                 },
                 writeState: async (docName, ydoc) => {
                     await ldb.storeUpdate(docName, Y.encodeStateAsUpdateV2(ydoc));

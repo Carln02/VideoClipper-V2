@@ -30,8 +30,10 @@ export class Clip<
     public get orientation(): Direction {
         return this.model.orientation;
     }
+
     public set orientation(value: Direction) {
         this.model.orientation = value;
+        this.toggleClass("vertical-clip", value === Direction.vertical);
     }
 
     public onMediaDataChanged: (clip: this) => void = () => {};

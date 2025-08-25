@@ -85,12 +85,22 @@ vc-clip turbo-icon {
 vc-clip .thumbnail {
     position: relative;
     margin: 0.3em;
-    max-width: calc(100% - 0.6em);
-    height: calc(100% - 0.6em);
-    aspect-ratio: 1.33;
-
-    object-fit: cover;
     border-radius: 0.1em;
+
+    aspect-ratio: 1.33;
+    max-width: calc(100% - 0.6em);
+    max-height: calc(100% - 0.6em);
+    height: calc(100% - 0.6em);
+    object-fit: cover;
+}
+
+vc-clip.vertical-clip .thumbnail {
+    position: absolute;
+    bottom: 0;
+
+    width: calc(100% - 0.6em);
+    height: auto;
+    aspect-ratio: 0.77;
 }
 
 vc-clip-renderer#snapshot-renderer {

@@ -11,7 +11,6 @@ import {FlowEntry} from "../flowEntry/flowEntry";
 import {FlowUpdateHandler} from "./flow.updateHandler";
 import {YManagerModel} from "../../../yManagement/yModel/types/yManagerModel";
 import {SyncedFlowSelector} from "../flowSelector/flowSelector.types";
-import {decodeAny} from "lib0/buffer";
 
 export class FlowModel extends YComponentModel {
     public currentEntryId: string;

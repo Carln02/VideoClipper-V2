@@ -1,4 +1,13 @@
-import {div, p, Shown, StatefulReifect, TurboDropdown, TurboView} from "turbodombuilder";
+import {
+    Direction,
+    div,
+    p,
+    Shown,
+    StatefulReifect,
+    TurboSelectEntry,
+    TurboSelectWheel,
+    TurboView
+} from "turbodombuilder";
 import {CaptureFlowSelector} from "./captureFlowSelector";
 import {CaptureFlowSelectorModel} from "./captureFlowSelector.model";
 
@@ -6,14 +15,14 @@ export class CaptureFlowSelectorView extends TurboView<CaptureFlowSelector, Capt
     public timerText: HTMLElement;
 
     private selectorDiv: HTMLElement;
-    private flowSelector: TurboDropdown;
-    private pathSelector: TurboDropdown;
+    private flowSelector: TurboSelectWheel;
+    private pathSelector: TurboSelectWheel;
 
     protected setupUIElements() {
         this.timerText = p();
         this.selectorDiv = div();
-        this.flowSelector = new TurboDropdown({});
-        this.pathSelector = new TurboDropdown({});
+        this.flowSelector = new TurboSelectWheel({direction: Direction.vertical});
+        this.pathSelector = new TurboSelectWheel({direction: Direction.vertical});
 
         const showTransition = new StatefulReifect({
             states: [Shown.visible, Shown.hidden],
@@ -44,5 +53,27 @@ export class CaptureFlowSelectorView extends TurboView<CaptureFlowSelector, Capt
 
     private padNumber(num: number, length: number = 2): string {
         return num.toString().padStart(length, "0");
+    }
+
+    public refresh(): void {
+        console.log("REFRESHINGGGGGGGGG");
+        this.flowSelector.values = this.element.director.flows
+            .filter(flow => flow.hasNode(this.element.card.dataId))
+            .map(flow => new TurboSelectEntry({
+                value: flow.color,
+                secondaryValue: flow.dataId,
+                onSelected: (b) => {
+                    if (!b) return;
+                    this.pathSelector.values = flow.paths
+                        .filter(path => path.hasNode(this.element.card.id))
+                        .map(path => new TurboSelectEntry({
+                            value: path.name,
+                            secondaryValue: path.id
+                        }));
+                }
+            }));
+        console.log(this.flowSelector.values);
+
+        if (this.flowSelector.values.length > 0) this.flowSelector.select(this.flowSelector.values[0]);
     }
 }

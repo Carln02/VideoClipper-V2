@@ -28,4 +28,8 @@ export class ShootingPanel extends ToolPanelContent<ToolType, ShootingPanelView,
     public get card(): Card {
         return this.camera.card;
     }
+
+    public refresh() {
+        this.view.refresh();
+    }
 }

@@ -17,9 +17,9 @@ export class FlowEntryModel extends YComponentModel {
     public readonly defaultStrokeWidth: number = 1 as const;
     public readonly highlightedStrokeWidth: number = 3 as const;
 
-    public readonly redrawInterval: number = 100 as const;
-    public readonly chevronInterval = 300 as const;
-    public readonly chevronTimeout = 200 as const;
+    public readonly redrawInterval: number = 50 as const;
+    public readonly chevronInterval = 500 as const;
+    public readonly chevronTimeout = 300 as const;
     public readonly chevronShape = "M 0 -6 L 12 0 L 0 6" as const;
 
     public lastRedraw: number;

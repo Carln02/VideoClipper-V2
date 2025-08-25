@@ -1,27 +1,48 @@
-vc-shooting-timeline {
+.vc-shooting-timeline.vc-timeline {
     position: fixed;
-    /*
-    rotate: -90deg;
-    left: -40%;*/
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    color: white;
 }
 
-.vc-shooting-timeline .turbo-drawer-panel {
-    align-content: center;
+.vc-shooting-timeline p {
+    text-align: center;
 }
 
-.vc-timeline.vc-shooting-timeline .shooting-timeline-container {
-    margin: 0.5em;
-    justify-content: space-around;
+.vc-shooting-timeline.vc-timeline .icon > svg {
+    fill: white;
+}
+
+.vc-shooting-timeline .turbo-drawer {
+    height: 100%;
+}
+
+.vc-shooting-timeline.vc-timeline .turbo-drawer-thumb {
+    background-color: black;
+}
+
+.vc-shooting-timeline.vc-timeline .turbo-drawer-panel-container {
+    height: 100%;
+}
+
+.vc-shooting-timeline.vc-timeline .turbo-drawer-panel-container .turbo-drawer-panel {
+    height: calc(100% - 4em);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    background-color: black;
+    border-radius: 0;
+    padding: 2em;
 }
 
 .vc-timeline.vc-shooting-timeline .scrubber-container {
-    position: relative;
+    flex-grow: 1;
     border-radius: 0.35em;
-    width: 3.8em;
-    height:100%;
-
+    width: 5em;
     background-color: transparent;
-
     display: flex;
     flex-direction: column;
 }
