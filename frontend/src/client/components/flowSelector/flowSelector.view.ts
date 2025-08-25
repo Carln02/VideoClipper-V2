@@ -3,8 +3,10 @@ import {FlowSelector} from "./flowSelector";
 import {FlowSelectorModel} from "./flowSelector.model";
 import {Playback} from "../playback/playback";
 import {FlowPath} from "../flowPath/flowPath";
+import {YUtilities} from "../../../yManagement/yUtilities";
 
 export class FlowSelectorView extends TurboView<FlowSelector, FlowSelectorModel> {
+    // @ts-ignore
     private wheel: TurboSelectWheel<string, string, FlowPath>;
     private playButton: TurboIcon;
 
@@ -16,6 +18,7 @@ export class FlowSelectorView extends TurboView<FlowSelector, FlowSelectorModel>
     protected setupUIElements() {
         super.setupUIElements();
 
+        // @ts-ignore
         this.wheel = new TurboSelectWheel<string, string, FlowPath>({
             direction: Direction.vertical,
             values: [],
@@ -43,6 +46,7 @@ export class FlowSelectorView extends TurboView<FlowSelector, FlowSelectorModel>
             this.model.pathHandler.updatePaths();
             requestAnimationFrame(() => this.updateHighlightedEntries());
         });
+        YUtilities.deepObserveAny(this.model.data, () => this.wheel.select(this.wheel.selectedEntry), "name");
     }
 
     private updateHighlightedEntries() {
@@ -50,7 +54,7 @@ export class FlowSelectorView extends TurboView<FlowSelector, FlowSelectorModel>
             if (entry === this.wheel.selectedEntry) return;
             entry.highlightEntries(false);
         });
-        this.wheel.selectedEntry.highlightEntries(true);
+        this.wheel.selectedEntry?.highlightEntries(true);
     }
 
     private playPath(path: FlowPath) {

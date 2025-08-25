@@ -1,11 +1,12 @@
 import {FlowPathProperties, SyncedFlowPath} from "./flowPath.types";
 import {YUtilities} from "../../../yManagement/yUtilities";
 import {FlowPathModel} from "./flowPath.model";
-import {define, TurboSelectEntry, TurboView} from "turbodombuilder";
+import {DefaultEventName, define, input, TurboSelectEntry, TurboView} from "turbodombuilder";
 import {YArray, YMap} from "../../../yManagement/yManagement.types";
+import "./flowPath.css";
 
 @define()
-export class FlowPath extends TurboSelectEntry<string, string, "p", TurboView, SyncedFlowPath & YMap, FlowPathModel> {
+export class FlowPath extends TurboSelectEntry<string, string, "input", TurboView, SyncedFlowPath & YMap, FlowPathModel> {
     public static createData(data?: SyncedFlowPath) {
         if (!data) data = {};
         if (!data.name) data.name = "Flow Path";
@@ -14,6 +15,7 @@ export class FlowPath extends TurboSelectEntry<string, string, "p", TurboView, S
     }
 
     public constructor(properties: FlowPathProperties) {
+        properties.element = input({type: "text"});
         super(properties);
         this.mvc.generate({
             modelConstructor: FlowPathModel,
@@ -22,14 +24,23 @@ export class FlowPath extends TurboSelectEntry<string, string, "p", TurboView, S
         });
 
         this.model.flow = properties.flow;
-        this.mvc.emitter.add("name", () => this.value = this.model.name);
+        this.mvc.emitter.add("name", () => {
+            this.element.size = Math.max(this.name.length - 4, 0);
+            this.value = this.model.name;
+            this.element.value = this.model.name;
+        });
+
         this.mvc.initialize();
         this.initializeUI();
     }
 
-    public initializeUI() {
-        super.initializeUI();
-        this.setStyle("padding", "6px").setStyle("whiteSpace", "nowrap");
+    protected setupUIListeners() {
+        this.element.addListener(DefaultEventName.input, () => this.name = this.element.value || "");
+        this.addListener(DefaultEventName.click, (e) => {
+            if (!this.selected) return;
+            this.element.focus();
+        });
+        document.addListener(DefaultEventName.clickStart, () => this.element.blur());
     }
 
     public get name(): string {

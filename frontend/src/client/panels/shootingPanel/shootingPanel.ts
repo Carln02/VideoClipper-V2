@@ -6,6 +6,7 @@ import {ShootingPanelModel} from "./shootingPanel.model";
 import {Camera} from "../../screens/camera/camera";
 import {ToolPanelContentProperties} from "../toolPanelContent/toolPanelContent.types";
 import {ToolType} from "../../directors/project/project.types";
+import {Card} from "../../components/card/card";
 
 @define()
 export class ShootingPanel extends ToolPanelContent<ToolType, ShootingPanelView, object, ShootingPanelModel> {
@@ -22,5 +23,9 @@ export class ShootingPanel extends ToolPanelContent<ToolType, ShootingPanelView,
 
     public get camera(): Camera {
         return this.director.camera;
+    }
+
+    public get card(): Card {
+        return this.camera.card;
     }
 }

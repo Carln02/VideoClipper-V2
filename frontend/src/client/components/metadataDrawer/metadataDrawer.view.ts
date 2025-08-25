@@ -79,6 +79,6 @@ export class MetadataDrawerView extends TurboView<MetadataDrawer, MetadataDrawer
 
     public initialize() {
         super.initialize();
-        this.tabbedMenu.select("Metadata");
+        requestAnimationFrame(() => this.tabbedMenu.select("Metadata"));
     }
 }

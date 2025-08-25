@@ -13,6 +13,6 @@ export type SyncedFlowPath = {
     nodeIds?: string[],
 };
 
-export type FlowPathProperties = TurboSelectEntryProperties<string, string, "p", TurboView, SyncedFlowPath & YMap, FlowPathModel> & {
+export type FlowPathProperties = TurboSelectEntryProperties<string, string, "input", TurboView, SyncedFlowPath & YMap, FlowPathModel> & {
     flow: Flow;
 };

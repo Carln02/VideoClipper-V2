@@ -1,3 +1,7 @@
+.turbo-marking-menu {
+    z-index: 10;
+}
+
 .turbo-marking-menu > turbo-select-entry {
     position: absolute;
     height: 1.5rem;

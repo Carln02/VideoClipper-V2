@@ -69,10 +69,12 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
 
         this.currentType = ProjectScreens.canvas;
 
-        this.toolPanel.addPanel(new ShootingPanel({
+        const shootingPanel = new ShootingPanel({
             toolPanel: this.toolPanel,
             director: this
-        }), ToolType.shoot, ProjectScreens.camera);
+        });
+        this.toolPanel.addPanel(shootingPanel, ToolType.shoot, ProjectScreens.camera);
+        this.toolPanel.addPanel(shootingPanel, ToolType.selection, ProjectScreens.camera);
         this.toolPanel.addPanel(new TextPanel({
             toolPanel: this.toolPanel,
             director: this

@@ -9830,7 +9830,7 @@ class ShootingPanelView extends _toolPanelContent_toolPanelContent_view__WEBPACK
             classes: "capture-mode-slider",
             values: [_shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.photo, _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.video, _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.create],
         });
-        this.captureTimer = new _components_captureTimer_captureTimer__WEBPACK_IMPORTED_MODULE_2__.CaptureTimer();
+        this.captureFlowSelector = new _components_captureTimer_captureTimer__WEBPACK_IMPORTED_MODULE_2__.CaptureTimer();
         this.captureButton = new _components_captureButton_captureButton__WEBPACK_IMPORTED_MODULE_1__.CaptureButton();
         this.ghost = new turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.TurboIconToggle({ icon: "ghost-on", toggleOnClick: true });
         this.switchCamera = new turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.TurboIconToggle({ icon: "switch-camera", toggleOnClick: true });
@@ -9844,7 +9844,7 @@ class ShootingPanelView extends _toolPanelContent_toolPanelContent_view__WEBPACK
     setupUILayout() {
         super.setupUILayout();
         this.element.addChild([this.modeSlider, this.animatedDiv]);
-        this.element.camera.addChild(this.captureTimer);
+        this.element.camera.addChild(this.captureFlowSelector);
         this.shootingDiv.addClass("camera-buttons");
         this.shootingDiv.addChild([
             (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.div)({
@@ -9889,7 +9889,7 @@ class ShootingPanelView extends _toolPanelContent_toolPanelContent_view__WEBPACK
     setupChangedCallbacks() {
         super.setupChangedCallbacks();
         this.emitter.add("stopShooting", () => {
-            this.captureTimer.stop();
+            this.captureFlowSelector.stopTimer();
             this.element.camera.stopRecording();
         });
         this.emitter.add("modeChanged", () => this.refresh());
@@ -9900,7 +9900,7 @@ class ShootingPanelView extends _toolPanelContent_toolPanelContent_view__WEBPACK
         // this.camera.fillCanvas(this.backgroundSelector.selectedValue);
         else if (mode == _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.videoShooting) {
             this.element.camera.visibilityMode = _components_clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_7__.ClipRendererVisibility.hidden;
-            this.captureTimer.start();
+            this.captureFlowSelector.startTimer();
             this.element.camera.startRecording();
         }
         else

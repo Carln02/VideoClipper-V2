@@ -1,0 +1,27 @@
+vc-capture-flow-selector {
+    position: absolute;
+    top: 1em;
+    left: 50%;
+    transform: translateX(-50%);
+
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+
+    padding: 0.6em 0.8em;
+    border-radius: 5em;
+    color: white;
+
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+vc-capture-flow-selector > div {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+}
+
+vc-capture-flow-selector.timer-active {
+    background-color: red;
+}

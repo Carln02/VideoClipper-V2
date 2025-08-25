@@ -17,6 +17,7 @@ import {MetadataDrawer} from "../metadataDrawer/metadataDrawer";
 import {Timeline} from "../timeline/timeline";
 import {ClipTimeline} from "../timeline/clipTimeline/clipTimeline";
 import {Playback} from "../playback/playback";
+import {CardMarkingMenu} from "../cardMarkingMenu/cardMarkingMenu";
 
 export class CardView extends BranchingNodeView<Card, CardModel> {
     private titleElement: TurboInput;
@@ -25,6 +26,8 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
     private playback: Playback;
     private _metadataDrawer: MetadataDrawer;
     private _timeline: Timeline;
+
+    private static markingMenu: CardMarkingMenu;
 
     public get renderer(): ClipRenderer {
         return this.playback.renderer;
@@ -83,6 +86,11 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
         });
 
         this._timeline.hasControls = false;
+
+       if (!CardView.markingMenu) {
+           CardView.markingMenu = new CardMarkingMenu();
+           this.element.director.addChild(CardView.markingMenu);
+       }
     }
 
     protected setupUILayout(): void {
@@ -99,6 +107,7 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
 
     protected setupUIListeners(): void {
         this.titleElement.addEventListener(DefaultEventName.blur, () => this.model.title = this.titleElement.value);
+        CardView.markingMenu.attachCard(this.element);
     }
 
     protected setupChangedCallbacks() {

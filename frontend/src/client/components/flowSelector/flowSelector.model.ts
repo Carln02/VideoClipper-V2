@@ -19,7 +19,6 @@ export class FlowSelectorModel extends YComponentModel {
 
         this.pathsModel = new YManagerModel();
         this.pathsModel.onAdded = (pathData: SyncedFlowPath & YMap, id: string) => {
-            console.log("ADDEDDDDDDD");
             const path = new FlowPath({value: pathData.get("name"), data: pathData, flow: this.flow});
             this.onPathAdded?.(path, id);
             return path;
@@ -30,15 +29,6 @@ export class FlowSelectorModel extends YComponentModel {
         super.initialize(blockKey);
         if (blockKey === this.defaultBlockKey) this.pathsModel.data = this.pathsData;
     }
-
-    // public get data(): any {
-    //     return super.data;
-    // }
-    //
-    // public set data(value: any) {
-    //     super.data = value;
-    //     // YUtilities.deepObserveAny(this.data, () => this.fireCallback("pathsChanged"), "paths");
-    // }
 
     public get nodeId(): string {
         return this.getData("nodeId");
@@ -71,7 +61,6 @@ export class FlowSelectorModel extends YComponentModel {
     }
 
     public removePath(id: string) {
-        console.log("REMOVE PATH");
         if (!id || typeof id !== "string") return;
         this.pathsData.delete(id);
     }

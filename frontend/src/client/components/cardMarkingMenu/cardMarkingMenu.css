@@ -1,0 +1,16 @@
+.qr-code-popup {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    position: absolute;
+    margin-top: 1rem;
+    translate: -50% 0;
+    width: calc(200px + 2em);
+}
+
+.qr-code-popup * {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}

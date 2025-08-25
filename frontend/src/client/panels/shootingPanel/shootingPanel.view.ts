@@ -2,7 +2,7 @@ import {ToolPanelContentView} from "../toolPanelContent/toolPanelContent.view";
 import {ShootingPanel} from "./shootingPanel";
 import {ShootingPanelModel} from "./shootingPanel.model";
 import {CaptureButton} from "../../components/captureButton/captureButton";
-import {CaptureTimer} from "../../components/captureTimer/captureTimer";
+import {CaptureFlowSelector} from "../../components/captureFlowSelector/captureFlowSelector";
 import {
     ClickMode,
     DefaultEventName,
@@ -19,12 +19,12 @@ import {
 } from "../../components/animationComponents/animatedContentSwitchingDiv/animatedContentSwitchingDiv";
 import {ClipRendererVisibility} from "../../components/clipRenderer/clipRenderer.types";
 import {CaptureModeSlider} from "../../components/captureModeSlider/captureModeSlider";
-import {ProjectScreens, ToolType} from "../../directors/project/project.types";
+import {ToolType} from "../../directors/project/project.types";
 
 export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, ShootingPanelModel> {
     private captureButton: CaptureButton;
     private modeSlider: TurboSelectWheel;
-    public captureTimer: CaptureTimer;
+    public captureFlowSelector: CaptureFlowSelector;
 
     private ghost: TurboIconToggle;
     private switchCamera: TurboIconToggle;
@@ -53,7 +53,7 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
             values: [CaptureMode.photo, CaptureMode.video, CaptureMode.create, CaptureMode.edit],
         });
 
-        this.captureTimer = new CaptureTimer();
+        this.captureFlowSelector = new CaptureFlowSelector({director: this.element.director});
         this.captureButton = new CaptureButton();
 
         this.ghost = new TurboIconToggle({icon: "ghost-on", toggleOnClick: true});
@@ -73,7 +73,7 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
         super.setupUILayout();
 
         this.element.addChild([this.modeSlider, this.animatedDiv]);
-        this.element.camera.addChild(this.captureTimer);
+        this.element.camera.addChild(this.captureFlowSelector);
 
         this.shootingDiv.addClass("camera-buttons");
         this.shootingDiv.addChild([
@@ -123,7 +123,7 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
         super.setupChangedCallbacks();
 
         this.emitter.add("stopShooting", () => {
-            this.captureTimer.stop();
+            this.captureFlowSelector.stopTimer();
             this.element.camera.stopRecording();
         });
 
@@ -137,7 +137,7 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
         // this.camera.fillCanvas(this.backgroundSelector.selectedValue);
         else if (mode == CaptureMode.videoShooting) {
             this.element.camera.visibilityMode = ClipRendererVisibility.hidden;
-            this.captureTimer.start();
+            this.captureFlowSelector.startTimer();
             this.element.camera.startRecording();
         }
         else this.element.camera.visible = false;

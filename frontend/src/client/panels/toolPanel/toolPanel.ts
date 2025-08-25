@@ -68,6 +68,8 @@ export class ToolPanel<ToolType = string> extends VcComponent<any, any, any, Pro
 
     public changePanel(toolName: ToolType = this.toolManager.getTool(ClickMode.left).name as ToolType,
                        context: ProjectScreens = this.director.currentType) {
+        if (this.getPanel(toolName, context) === this.currentPanel) return;
+
         this.currentPanel?.detach();
         this.removeChild(this.currentPanel);
 

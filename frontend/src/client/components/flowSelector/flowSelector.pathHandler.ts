@@ -10,7 +10,6 @@ export class FlowSelectorPathHandler extends TurboHandler<FlowSelectorModel> {
         this.recurFindPaths(this.model.nodeId, [], newUnnamedPaths);
         this.setPathNames(oldPaths, newUnnamedPaths);
 
-        console.log(oldPaths);
         for (const id of Object.keys(oldPaths)) this.model.removePath(id);
     }
 
@@ -54,8 +53,6 @@ export class FlowSelectorPathHandler extends TurboHandler<FlowSelectorModel> {
     private namePath(match: string, path: SyncedFlowPath, newPaths: Record<string, SyncedFlowPath>,
                      oldPaths: Record<string, SyncedFlowPath>, setData: boolean = true) {
         if (!match) return;
-        console.log("MATCH!", path, oldPaths[match]);
-        console.log(setData);
         newPaths[match] = path;
         path.name = oldPaths[match].name;
         delete oldPaths[match];

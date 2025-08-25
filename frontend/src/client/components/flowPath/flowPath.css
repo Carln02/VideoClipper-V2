@@ -1,0 +1,9 @@
+flow-path {
+    padding: 6px;
+    white-space: nowrap;
+}
+
+flow-path input {
+    background-color: transparent;
+    border: none;
+}

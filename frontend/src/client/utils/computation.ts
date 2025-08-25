@@ -6,17 +6,13 @@ export function getAxisFromSide(side: Side): "x" | "y" {
 }
 
 export function getClosestPointOnEdge(pointer: Coordinate, rect: DOMRect): Point {
-    console.log(rect);
-    console.log(pointer)
     const closestPoint = {
         x:  trim(pointer.x, rect.right, rect.left),
         y: trim(pointer.y, rect.bottom, rect.top)
     };
 
-    console.log(closestPoint);
     let closestSide = Side.top;
     Object.values(Side).forEach(side => {
-        console.log(side+ ": " +Math.abs(closestPoint[getAxisFromSide(side)] - rect[side]));
         if (Math.abs(closestPoint[getAxisFromSide(side)] - rect[side])
             < Math.abs(closestPoint[getAxisFromSide(closestSide)] - rect[closestSide])) closestSide = side;
     });
