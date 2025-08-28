@@ -12,6 +12,7 @@ import {Project} from "../../directors/project/project";
 import {ProjectScreens, ToolType} from "../../directors/project/project.types";
 import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
 import {ShootingPanel} from "../../panels/shootingPanel/shootingPanel";
+import {replaceUrlParams} from "../../utils/url";
 
 @define("vc-camera")
 export class Camera extends VcComponent<CameraView, object, CameraModel, Project> {
@@ -38,6 +39,7 @@ export class Camera extends VcComponent<CameraView, object, CameraModel, Project
     public set card(value: Card) {
         this.view.timeline.card = value;
         this.view.metadataDrawer.card = value;
+        replaceUrlParams({name: "card", value: value.dataId});
         (this.director.toolPanel.getPanel(ToolType.shoot, ProjectScreens.camera) as ShootingPanel).refresh();
     }
 
@@ -110,6 +112,11 @@ export class Camera extends VcComponent<CameraView, object, CameraModel, Project
 
     public snapPicture() {
         if (!this.model.stream) return;
-        //TODO this.view.cameraRenderer.drawVideoFrame().then(picture => this.saveMedia("image", picture));
+        this.view.cameraRenderer.drawVideoFrame().then(picture => this.recordingController.saveMedia(picture));
+    }
+
+    public async uploadMedia(media: Blob) {
+        if (!media) return;
+        await this.recordingController.saveMedia(media);
     }
 }

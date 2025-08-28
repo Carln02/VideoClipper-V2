@@ -1,5 +1,5 @@
 import {YAbstractType, YArray, YMap, YEvent, YMapEvent, YArrayEvent} from "./yManagement.types";
-import {hashString, randomId} from "../client/utils/crypto";
+import {hashBySize, hashString, randomId} from "../client/utils/crypto";
 
 /**
  * @class YUtilities
@@ -45,7 +45,7 @@ export class YUtilities {
      */
     public static async addInYMap(data: object, parentYMap: YMap, id?: string): Promise<string> {
         const generateId = async () =>
-            await hashString(parentYMap?.doc?.clientID?.toString(32) + randomId());
+            await hashBySize(parentYMap?.doc?.clientID?.toString(32) + randomId());
 
         if (!id) {
             id = await generateId();

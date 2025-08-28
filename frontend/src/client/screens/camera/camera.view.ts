@@ -1,4 +1,4 @@
-import {Open, Side, TurboView} from "turbodombuilder";
+import {DefaultEventName, div, icon, Open, Side, TurboIcon, TurboView} from "turbodombuilder";
 import {Camera} from "./camera";
 import {CameraModel} from "./camera.model";
 import {ClipRenderer} from "../../components/clipRenderer/clipRenderer";
@@ -15,6 +15,7 @@ export class CameraView extends TurboView<Camera, CameraModel> {
     public toolbar: Toolbar;
     public timeline: ShootingTimeline;
     public metadataDrawer: MetadataDrawer;
+    protected backButton: TurboIcon;
 
     initialize() {
         super.initialize();
@@ -24,11 +25,11 @@ export class CameraView extends TurboView<Camera, CameraModel> {
     protected setupUIElements() {
         super.setupUIElements();
 
+        this.backButton = icon({icon: "arrow-right"});
+
         this.cameraRenderer = new Renderer({director: this.element.director,
             videoProperties: {autoplay: true, muted: true, playsInline: true}});
         this.clipRenderer = new ClipRenderer({director: this.element.director, videoProperties: {playsInline: true}});
-
-        //TODO this.sidePanel = new SidePanel(this.element, this.captureManager);
 
         this.toolbar = new Toolbar({classes: "right-toolbar", director: this.element.director});
         // this.toolbar.populateWith(ToolType.selection, ToolType.shoot, ToolType.text, ToolType.delete);
@@ -58,6 +59,7 @@ export class CameraView extends TurboView<Camera, CameraModel> {
     protected setupUILayout() {
         super.setupUILayout();
 
+        this.element.addChild(div({classes: "back-button-div", children: [this.backButton]}));
         this.element.addChild([this.cameraRenderer, this.clipRenderer, this.toolbar,
             this.timeline, this.metadataDrawer]);
     }
@@ -74,6 +76,7 @@ export class CameraView extends TurboView<Camera, CameraModel> {
     protected setupUIListeners() {
         super.setupUIListeners();
         window.addEventListener("resize", () => this.resize());
+        this.backButton.addListener(DefaultEventName.click, () => history.back());
     }
 
     public resize() {

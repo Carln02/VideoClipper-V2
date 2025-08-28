@@ -19,9 +19,20 @@ vc-capture-flow-selector {
 vc-capture-flow-selector > div {
     display: flex;
     flex-direction: row;
+    align-items: center;
     gap: 0.5em;
+    text-wrap: nowrap;
 }
 
 vc-capture-flow-selector.timer-active {
     background-color: red;
+}
+
+vc-capture-flow-selector .icon {
+    width: 1.8em;
+    height: 1.8em;
+}
+
+.icon-disabled {
+    opacity: 0.3;
 }

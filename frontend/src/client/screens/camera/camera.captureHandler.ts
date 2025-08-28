@@ -11,14 +11,15 @@ export class CameraCaptureHandler extends TurboHandler<CameraModel> {
     }
 
     public stopStream() {
-        if (this.model.stream) this.model.stream.getTracks().forEach(track => track.stop());
+        if (!this.model.stream) return;
+        this.model.stream.getTracks().forEach(track => track.stop());
+        this.model.stream = undefined;
     }
 
     public async switchCamera(initializing = false) {
         try {
             const devicesInfo = await navigator.mediaDevices.enumerateDevices();
             const videoDevices = devicesInfo.filter(device => device.kind === "videoinput");
-
             if (videoDevices.length === 0) return;
 
             if (!initializing) {
@@ -26,7 +27,7 @@ export class CameraCaptureHandler extends TurboHandler<CameraModel> {
                 do {
                     this.model.cameraDeviceIdIndex++;
                     if (this.model.cameraDeviceIdIndex >= videoDevices.length) this.model.cameraDeviceIdIndex = 0;
-                    newDeviceLabel = videoDevices[this.model.cameraDeviceIdIndex].label.toLowerCase();
+                    newDeviceLabel = videoDevices[this.model.cameraDeviceIdIndex].label.toLowerCase() || "";
                 } while (this.model.cameraIsLikelyFront != null && (this.model.cameraIsLikelyFront == newDeviceLabel.includes("front")));
 
                 if (this.model.cameraIsLikelyFront != null) this.model.cameraIsLikelyFront = newDeviceLabel.includes("front");
@@ -43,11 +44,10 @@ export class CameraCaptureHandler extends TurboHandler<CameraModel> {
 
     private async startStream() {
         this.stopStream();
-
         try {
             this.model.stream = await navigator.mediaDevices.getUserMedia({
                 video: {
-                    deviceId: this.model.cameraDeviceId ? {exact: this.model.cameraDeviceId} : "",
+                    deviceId: this.model.cameraDeviceId ? {exact: this.model.cameraDeviceId} : undefined,
                     aspectRatio: this.model.aspectRatio,
                     frameRate: { ideal: 30 }
                 },
@@ -72,11 +72,11 @@ export class CameraCaptureHandler extends TurboHandler<CameraModel> {
             const videoTrack = this.model.stream.getVideoTracks()[0];
             if (!videoTrack) return;
 
+            const settings = videoTrack.getSettings();
             const currentDeviceLabel = (await navigator.mediaDevices.enumerateDevices())
-                .find(device => device.deviceId == videoTrack.getSettings().deviceId)
-                ?.label.toLowerCase();
-            if (!currentDeviceLabel) return;
+                .find(device => device.deviceId == settings.deviceId)?.label?.toLowerCase();
 
+            if (!currentDeviceLabel) return;
             if (currentDeviceLabel.includes("front")) this.model.cameraIsLikelyFront = true;
             else if (currentDeviceLabel.includes("back")) this.model.cameraIsLikelyFront = false;
         } catch (error) {
@@ -86,6 +86,6 @@ export class CameraCaptureHandler extends TurboHandler<CameraModel> {
     }
 
     public muteAudio(b: boolean) {
-        this.model.stream?.getAudioTracks().forEach(track => track.enabled = b);
+        this.model.stream?.getAudioTracks().forEach(track => track.enabled = !b);
     }
 }

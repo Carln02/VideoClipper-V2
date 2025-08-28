@@ -1,12 +1,11 @@
 import {Direction, Side, TurboDrawer} from "turbodombuilder";
-import {ShootingTimelineDrawer} from "../../shootingTimelineDrawer/shootingTimelineDrawer";
 import {ShootingTimeline} from "./shootingTimeline";
 import {TurboIcon} from "turbodombuilder";
 import {ClipScrubber} from "../../scrubber/clipScrubber/clipScrubber";
 import {TimelineView} from "../timeline.view";
 
 export class ShootingTimelineView extends TimelineView<ShootingTimeline> {
-    public drawer: ShootingTimelineDrawer;
+    public drawer: TurboDrawer;
 
     protected currentTimeText: HTMLParagraphElement;
     protected totalDurationText: HTMLParagraphElement;

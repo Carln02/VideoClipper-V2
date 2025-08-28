@@ -82,6 +82,10 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
         return this.model.selectors.flatMap(selector => selector.paths);
     }
 
+    public get selectors(): FlowSelector[] {
+        return this.model.selectors;
+    }
+
     // public getEntry(id: string): FlowEntry {
     //     return this.model.entryHandler.getEntry(id);
     // }

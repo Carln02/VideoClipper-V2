@@ -3,13 +3,14 @@ import {RendererView} from "./renderer.view";
 import {TurboController} from "turbodombuilder";
 import {RendererModel} from "./renderer.model";
 import {RendererVideoController} from "./renderer.videoController";
+import {urlToBlob} from "../../utils/conversion";
 
 export class RendererDrawingController<
     ElementType extends Renderer = Renderer,
     ViewType extends RendererView = RendererView,
     ModelType extends RendererModel = RendererModel,
 > extends TurboController<ElementType, ViewType, ModelType> {
-    public async drawVideoFrame(video: HTMLVideoElement = this.view.video, animate = true): Promise<string> {
+    public async drawVideoFrame(video: HTMLVideoElement = this.view.video, animate = true): Promise<Blob> {
         if (animate) this.view.animateSnapshotEffect();
 
         return new Promise(resolve => {
@@ -21,18 +22,12 @@ export class RendererDrawingController<
                 //Draw the frame
                 ctx.drawImage(video, 0, 0, offscreen.width, offscreen.height);
                 //Convert to blob
-                offscreen.convertToBlob({type: "image/png"}).then(blob => {
-                    //Read as data URL
-                    const reader = new FileReader();
-                    reader.readAsDataURL(blob);
-                    //Return data
-                    reader.onloadend = () => resolve(reader.result as string);
-                });
+                resolve(offscreen.convertToBlob({type: "image/png"}));
             }
             //Fallback to actual canvas --> will cause a small lag
             else {
                 //Draw frame
-                resolve(this.drawFromImageSource(video));
+                this.drawFromImageSource(video).then(url => resolve(urlToBlob(url)));
             }
         });
     }

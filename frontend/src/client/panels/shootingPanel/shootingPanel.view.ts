@@ -1,4 +1,3 @@
-import {ToolPanelContentView} from "../toolPanelContent/toolPanelContent.view";
 import {ShootingPanel} from "./shootingPanel";
 import {ShootingPanelModel} from "./shootingPanel.model";
 import {CaptureButton} from "../../components/captureButton/captureButton";
@@ -6,11 +5,12 @@ import {CaptureFlowSelector} from "../../components/captureFlowSelector/captureF
 import {
     ClickMode,
     DefaultEventName,
-    div,
+    div, icon, input,
     spacer,
+    TurboIcon,
     TurboIconToggle,
     TurboSelectEntry,
-    TurboSelectWheel
+    TurboSelectWheel, TurboView
 } from "turbodombuilder";
 import {BackgroundSelector} from "../../components/backgroundSelector/backgroundSelector";
 import {CaptureMode} from "./shootingPanel.types";
@@ -21,7 +21,7 @@ import {ClipRendererVisibility} from "../../components/clipRenderer/clipRenderer
 import {CaptureModeSlider} from "../../components/captureModeSlider/captureModeSlider";
 import {ToolType} from "../../directors/project/project.types";
 
-export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, ShootingPanelModel> {
+export class ShootingPanelView extends TurboView<ShootingPanel, ShootingPanelModel> {
     private captureButton: CaptureButton;
     private modeSlider: TurboSelectWheel;
     public captureFlowSelector: CaptureFlowSelector;
@@ -29,6 +29,9 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
     private ghost: TurboIconToggle;
     private switchCamera: TurboIconToggle;
     private microphone: TurboIconToggle;
+
+    private addGallery: TurboIcon;
+    private addGalleryInput: HTMLInputElement;
 
     private backgroundSelector: BackgroundSelector;
 
@@ -60,6 +63,9 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
         this.switchCamera = new TurboIconToggle({icon: "switch-camera", toggleOnClick: true});
         this.microphone = new TurboIconToggle({icon: "microphone-on", toggleOnClick: true});
 
+        this.addGallery = icon({icon: "gallery"});
+        this.addGalleryInput = input({type: "file", hidden: true, accept: "image/*,video/mp4,.mp4"});
+
         this.backgroundSelector = new BackgroundSelector();
 
         this.shootingDiv = new TurboSelectEntry({value: "shooting", reflectValueOn: div()});
@@ -70,8 +76,6 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
     }
 
     protected setupUILayout() {
-        super.setupUILayout();
-
         this.element.addChild([this.modeSlider, this.animatedDiv]);
         this.element.camera.addChild(this.captureFlowSelector);
 
@@ -84,7 +88,7 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
             this.captureButton,
             div({
                 classes: "camera-buttons-child",
-                children: [this.switchCamera, this.microphone, spacer()]
+                children: [this.switchCamera, this.microphone, spacer(), this.addGalleryInput, this.addGallery]
             })
         ]);
 
@@ -112,6 +116,12 @@ export class ShootingPanelView extends ToolPanelContentView<ShootingPanel, Shoot
         };
 
         this.switchCamera.onToggle = () => this.element.camera.switchCamera();
+
+        this.addGallery.addListener(DefaultEventName.click, () => this.addGalleryInput.click());
+        this.addGalleryInput.addListener(DefaultEventName.change, () => {
+            Array.from(this.addGalleryInput.files || []).forEach(file => this.element.camera.uploadMedia(file));
+        });
+
         this.backgroundSelector.onSelect = () => this.element.camera.fillCanvas(this.backgroundSelector.selectedValue);
 
         this.modeSlider.onSelect = ((b, entry) => {

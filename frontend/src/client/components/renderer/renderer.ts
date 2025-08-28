@@ -52,7 +52,7 @@ export class Renderer<
         return this.mvc.getController("drawing") as RendererDrawingController;
     }
 
-    public async drawVideoFrame(video: HTMLVideoElement = this.view.video, animate = true): Promise<string> {
+    public async drawVideoFrame(video: HTMLVideoElement = this.view.video, animate = true): Promise<Blob> {
         return await this.drawingController.drawVideoFrame(video, animate);
     }
 

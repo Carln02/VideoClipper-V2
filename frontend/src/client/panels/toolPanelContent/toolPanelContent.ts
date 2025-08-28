@@ -1,15 +1,13 @@
-import {ToolManager, TurboModel} from "turbodombuilder";
+import {ToolManager, TurboModel, TurboView} from "turbodombuilder";
 import {ToolPanelContentProperties} from "./toolPanelContent.types";
 import {ToolPanel} from "../toolPanel/toolPanel";
-import {ToolPanelContentView} from "./toolPanelContent.view";
 import {ContextManager} from "../../managers/contextManager/contextManager";
 import {VcComponent} from "../../components/component/component";
-import "./toolPanelContent.css";
 import {Project} from "../../directors/project/project";
 
 export class ToolPanelContent<
     ToolType = string,
-    ViewType extends ToolPanelContentView = ToolPanelContentView<any, any>,
+    ViewType extends TurboView = TurboView<any, any>,
     DataType extends object = object,
     ModelType extends TurboModel = TurboModel
 > extends VcComponent<ViewType, DataType, ModelType, Project> {

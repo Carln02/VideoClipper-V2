@@ -15,12 +15,10 @@ export class ClipRendererVideoController extends RendererVideoController<ClipRen
             if (!video) return;
             this.view.showVideo();
 
-            if (clip?.uri) {
-                console.log(clip.uri);
+            if (clip?.uri && clip.metadataType === "video") {
                 if (clip.uri !== video.src) video.src = clip.uri;
                 await RendererVideoController.waitForVideoLoad(video, offset);
             } else {
-                console.log("CLEARING VIDEO")
                 video.removeAttribute("src");
                 video.load();
             }

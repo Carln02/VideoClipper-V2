@@ -37,10 +37,6 @@ export class ShootingTimeline extends Timeline<ShootingTimelineView> {
     public reloadTime() {
         super.reloadTime();
         this.view.drawer.refresh();
-        console.log(this.model.totalDuration)
-        console.log(this.model.pixelsPerSecondUnit)
-        console.log(this.height);
-        console.log(this.view.scrubberContainer.offsetHeight)
     }
 
     public addIndicatorAt(indicator: Element, index: number) {

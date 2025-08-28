@@ -73,13 +73,8 @@ export class RendererView<
     }
 
     public animateSnapshotEffect() {
-        this.snapshotEffectDiv.setStyle("display", "block");
         this.snapshotEffectTransition.apply(Shown.visible);
-        setTimeout(() => {
-            this.snapshotEffectTransition.apply(Shown.hidden);
-            setTimeout(() => this.snapshotEffectDiv.setStyle("display", "none"),
-                this.snapshotEffectTransition.transitionDuration[Shown.hidden] * 1000);
-        }, this.snapshotEffectTransition.transitionDuration[Shown.visible] * 1000);
+        setTimeout(() => this.snapshotEffectTransition.apply(Shown.hidden), 50);
     }
 
     public resize(aspectRatio: number = 1.33, width: number = this.element.offsetWidth,
