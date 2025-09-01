@@ -8,6 +8,7 @@
 
 .vc-renderer > * {
     position: absolute;
+    overflow: hidden;
 }
 
 .vc-renderer > video {

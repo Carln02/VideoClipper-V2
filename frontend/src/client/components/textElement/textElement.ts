@@ -68,6 +68,10 @@ export class TextElement extends VcComponent<TextElementView, SyncedText, TextEl
         return boxWidth;
     }
 
+    public set boxWidth(value: number) {
+        this.model.boxWidth = value;
+    }
+
     public get boxHeight() {
         let boxHeight = this.model.boxHeight;
         if (!boxHeight) {
@@ -77,11 +81,20 @@ export class TextElement extends VcComponent<TextElementView, SyncedText, TextEl
         return boxHeight;
     }
 
+    public set boxHeight(value: number) {
+        this.model.boxHeight = value;
+    }
+
     public translateBy(deltaPosition: Point) {
-        this.model.origin = deltaPosition
-            .div(this.director.camera.frameWidth, this.director.camera.frameHeight)
+        const value= deltaPosition
+            .div(this.renderer.offsetWidth, this.renderer.offsetHeight)
             .add(this.model.origin)
             .object;
+        if (value.x < 0) value.x = 0;
+        if (value.y < 0) value.y = 0;
+        if (value.x > 1) value.x = 1;
+        if (value.y > 1) value.y = 1;
+        this.model.origin = value;
     }
 
     public select(b: boolean) {

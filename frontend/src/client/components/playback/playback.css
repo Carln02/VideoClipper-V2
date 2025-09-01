@@ -25,8 +25,10 @@ vc-playback vc-clip-renderer {
     right: 20px;
 
     width: 300px;
-    padding: 20px;
+    padding: 12px;
     border-radius: 16px;
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(6px);
 }
 
 .card-playback {
@@ -34,4 +36,41 @@ vc-playback vc-clip-renderer {
     width: calc(100% - 2em);
     padding: 1em;
     border-radius: 0.4em;
+}
+
+.over-screen-playback.maximized-playback {
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    width: 100vw;
+    height: 100vh;
+    padding: 12px;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(6px);
+}
+
+vc-playback .buttons-div {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+
+    position: absolute;
+    top: 7%;
+    right: 5%;
+    padding: 0.5em;
+    border-radius: 300px;
+
+    background-color: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6px);
+}
+
+vc-playback .buttons-div .icon {
+    width: 2em;
+    height: 2em;
+}
+
+vc-playback .buttons-div .icon svg {
+    fill: rgba(0, 0, 0, 0.3);
 }

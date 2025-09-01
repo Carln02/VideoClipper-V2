@@ -63,39 +63,11 @@ export class CameraRecordingController extends TurboController<Camera, CameraVie
             this.model.mediaRecorder = new MediaRecorder(this.model.stream);
         }
 
-        this.model.mediaRecorder.ondataavailable = (event) => {
-            if (event.data?.size > 0) this.model.recordedChunks.push(event.data);
-        };
+        this.model.mediaRecorder.ondataavailable = (e) => e.data?.size > 0 && this.model.recordedChunks.push(e.data);
 
         this.model.mediaRecorder.onstop = () => this.saveMedia().catch(e => console.error(e));
         this.model.mediaRecorder.onerror = (e) => console.error("MediaRecorder error:", e);
     }
-
-    // public async saveMedia(file?: Blob) {
-    //     if (!file && this.model.recordedChunks.length === 0) return;
-    //
-    //     const mediaType: "video" | "image" = file?.type.startsWith("image/") ? "image" : "video";
-    //     const duration: number = mediaType === "image" ? 5
-    //         : file ? await getVideoDuration(file)
-    //             : (Date.now() - this.model.lastRecorderTimestamp) / 1000;
-    //
-    //     const media: SyncedMedia = {
-    //         id: `image-${Math.floor(Math.random() * 10000000)}-${Date.now()}`,
-    //         type: mediaType,
-    //         timestamp: Date.now(),
-    //         duration: duration
-    //     };
-    //
-    //     this.model.setRecordedMedia(media, file);
-    //
-    //     if (!file) {
-    //         file = new Blob(this.model.recordedChunks, {type: "video/webm"});
-    //         this.model.recordedChunks = [];
-    //
-    //         if (!(await this.mediaHandler.convertMedia({id: media.id, blob: file}))) return;
-    //         this.mediaHandler.getMediaMetadata(media.id).converting = false;
-    //     }
-    // }
 
     public async saveMedia(file?: Blob) {
         if (!file) {
@@ -151,13 +123,7 @@ export class CameraRecordingController extends TurboController<Camera, CameraVie
             this.mediaHandler.getMediaMetadata(media.id).converting = false;
         }
 
-        //TODO make clip listen for change in converting value --> reload video
-        // const mp4Blob = await response.blob();
-        // const videoURL = URL.createObjectURL(mp4Blob);
-        //
-        // const data = await this.model.ffmpeg.readFile("output.mp4");
-        // media.blob = new Blob([data], {type: "video/mp4"});
-        // this.model.updatedMedia = media;
+        //TODO make clip listen for change in converting value --> reload video (Maybe its still stored in cache???)
     }
 
     private async sniffContainerType(blob: Blob): Promise<"video/mp4" | "video/webm" | null> {

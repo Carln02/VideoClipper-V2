@@ -4,7 +4,7 @@ import {Clip} from "./clip";
 import {TurboController} from "turbodombuilder";
 import {ClipView} from "./clip.view";
 
-export class ClipThumbnailController extends TurboController<Clip, ClipView, ClipModel>{
+export class ClipThumbnailController extends TurboController<Clip, ClipView, ClipModel> {
     private static renderer: ClipRenderer;
     private static rendererInitialized = false;
 
@@ -48,8 +48,11 @@ export class ClipThumbnailController extends TurboController<Clip, ClipView, Cli
      */
     public async reloadThumbnail(offset: number = 0): Promise<string> {
         this.initializeSnapshotRenderer();
-        const image = await ClipThumbnailController.renderer.drawFrame(this.element, offset);
-        this.model.thumbnail = image;
-        return image;
+        return await new Promise(resolve =>
+            ClipThumbnailController.renderer.drawFrame(this.element, offset).then(image => {
+                this.model.thumbnail = image;
+                resolve(image);
+            })
+        );
     }
 }

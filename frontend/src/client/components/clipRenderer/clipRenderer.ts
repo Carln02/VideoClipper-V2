@@ -68,6 +68,10 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
         return this.model.getClip();
     }
 
+    public get canvas(): HTMLCanvasElement {
+        return this.view.canvas;
+    }
+
     public async setFrame(clip: Clip = this.model.getClip(), offsetTime: number = 0) {
         await this.frameController.setFrame(clip, offsetTime);
     }
@@ -75,6 +79,10 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
     public async drawFrame(clip: Clip = this.model.getClip(), offset: number = 0): Promise<string> {
         await this.frameController.setFrame(clip, offset, true, true);
         await new Promise((resolve) => setTimeout(() => resolve(null), 500));
+        // TODO domToImage.toCanvas(this).then(function (canvas) {
+        //     document.body.addChild()
+        // });
+
         return await domToImage.toJpeg(this, {quality: 0.6});
     }
 
@@ -92,5 +100,13 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
 
     public async playNext() {
         await this.videoController.playNext();
+    }
+
+    public get renderOnCanvas(): boolean {
+        return this.model.renderOnCanvas;
+    }
+
+    public set renderOnCanvas(value: boolean) {
+        this.model.renderOnCanvas = value;
     }
 }

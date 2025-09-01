@@ -6,6 +6,7 @@ import {Toolbar} from "../../components/toolbar/toolbar";
 import {MetadataDrawer} from "../../components/metadataDrawer/metadataDrawer";
 import {Renderer} from "../../components/renderer/renderer";
 import {ShootingTimeline} from "../../components/timeline/shootingTimeline/shootingTimeline";
+import {ClipRendererVisibility} from "../../components/clipRenderer/clipRenderer.types";
 
 
 export class CameraView extends TurboView<Camera, CameraModel> {
@@ -77,6 +78,12 @@ export class CameraView extends TurboView<Camera, CameraModel> {
         super.setupUIListeners();
         window.addEventListener("resize", () => this.resize());
         this.backButton.addListener(DefaultEventName.click, () => history.back());
+
+        this.timeline.onPlay = (b: boolean) => {
+            this.cameraRenderer.show(!b);
+            this.clipRenderer.visibilityMode = b ? ClipRendererVisibility.shown : this.element.ghosting
+                ? ClipRendererVisibility.ghosting : ClipRendererVisibility.hidden;
+        }
     }
 
     public resize() {

@@ -236,6 +236,7 @@ let RootDirector = class RootDirector extends _director_director__WEBPACK_IMPORT
     set preventDefaultEvents(value) {
         this.eventManager.defaultState.preventDefaultTouch = value;
         this.eventManager.defaultState.preventDefaultMouse = value;
+        this.eventManager.defaultState.preventDefaultWheel = value;
     }
 };
 __decorate([
@@ -420,10 +421,40 @@ class GroupsHandler extends _requestHandler_requestHandler__WEBPACK_IMPORTED_MOD
     }
     getProjectsForGroup(groupId) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!groupId) {
+                const arr = [];
+                for (const group of this.groups)
+                    arr.push(...(yield this.getProjectsForGroup(group._id)));
+                return arr;
+            }
             const res = yield fetch(`${this.serverUrl}api/projects?groupId=${groupId}`, { credentials: "include", });
             if (!res.ok)
                 throw new Error("Failed to load projects for group");
             return yield res.json();
+        });
+    }
+    createGroup(groupName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield fetch(`${this.serverUrl}api/groups`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ name: groupName }),
+            });
+            if (!res.ok)
+                throw new Error("Failed to create group");
+            return yield res.json();
+        });
+    }
+    addGroupMember(email, groupId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield fetch(`${this.serverUrl}api/groups/add-member`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ email: email, groupId: groupId }),
+            });
+            return res.ok;
         });
     }
     createProject(projectName, groupId) {
@@ -434,6 +465,7 @@ class GroupsHandler extends _requestHandler_requestHandler__WEBPACK_IMPORTED_MOD
                 credentials: "include",
                 body: JSON.stringify({ name: projectName, groupId }),
             });
+            console.log(res);
             if (!res.ok)
                 throw new Error("Failed to create project");
             return yield res.json();
@@ -450,9 +482,24 @@ class GroupsHandler extends _requestHandler_requestHandler__WEBPACK_IMPORTED_MOD
                 throw new Error("Unknown error");
             }
             const project = yield res.json();
-            console.log("ROOM", `PROJECT:${project._id}`);
             const doc = this.getOrCreateYDoc(project._id);
             return { doc: doc, websocket: new _managers_websocketManager_websocketManager__WEBPACK_IMPORTED_MODULE_3__.WebsocketManager(`PROJECT:${project._id}`, doc) };
+        });
+    }
+    deleteProject(projectId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield fetch(`${this.serverUrl}api/projects/${projectId}`, {
+                method: "DELETE",
+                credentials: "include",
+            });
+            if (!res.ok) {
+                if (res.status === 403)
+                    throw new Error("Access denied");
+                if (res.status === 404)
+                    throw new Error("Project not found");
+                throw new Error("Unknown error");
+            }
+            this.docs.delete(projectId.toString());
         });
     }
 }
@@ -10274,7 +10321,9 @@ function addListenerManipulationToElementPrototype() {
      */
     Node.prototype.addListener = function _addListener(type, listener, boundTo = this, options) {
         const wrappedListener = ((e) => {
-            if (typeof options === "object" && !options?.propagate)
+            if (!(this instanceof Document && this === document) &&
+                !(this instanceof HTMLElement && this === document.body) &&
+                !(typeof options === "object" && options.propagate))
                 e.stopPropagation();
             if (typeof listener === "object" && listener.handleEvent)
                 listener.handleEvent(e);
@@ -12372,16 +12421,16 @@ let TurboEventManager = class TurboEventManager extends TurboElement {
                 this.applyEventNames(TurboMoveName);
             }
             if (!this.disabledEventTypes.disableMouseEvents) {
-                document.body.addListener("mousedown", this.pointerDown, this, { propagate: true });
-                document.body.addListener("mousemove", this.pointerMove, this, { propagate: true });
-                document.body.addListener("mouseup", this.pointerUp, this, { propagate: true });
-                document.body.addListener("mouseleave", this.pointerLeave, this, { propagate: true });
+                document.addListener("mousedown", this.pointerDown, this, { propagate: true });
+                document.addListener("mousemove", this.pointerMove, this, { propagate: true });
+                document.addListener("mouseup", this.pointerUp, this, { propagate: true });
+                document.addListener("mouseleave", this.pointerLeave, this, { propagate: true });
             }
             if (!this.disabledEventTypes.disableTouchEvents) {
-                document.body.addListener("touchstart", this.pointerDown, this, { passive: false, propagate: true });
-                document.body.addListener("touchmove", this.pointerMove, this, { passive: false, propagate: true });
-                document.body.addListener("touchend", this.pointerUp, this, { passive: false, propagate: true });
-                document.body.addListener("touchcancel", this.pointerUp, this, { passive: false, propagate: true });
+                document.addListener("touchstart", this.pointerDown, this, { passive: false, propagate: true });
+                document.addListener("touchmove", this.pointerMove, this, { passive: false, propagate: true });
+                document.addListener("touchend", this.pointerUp, this, { passive: false, propagate: true });
+                document.addListener("touchcancel", this.pointerUp, this, { passive: false, propagate: true });
             }
             if (!this.disabledEventTypes.disableMouseEvents || !this.disabledEventTypes.disableTouchEvents) {
                 if (!this.disabledEventTypes.disableClickEvents)
@@ -12872,13 +12921,13 @@ class ToolManager {
         document.addEventListener(TurboEventName.keyReleased, () => this.setTool(null, ClickMode.key, { select: false }));
         //Listen for all custom events on the document and accordingly execute the corresponding function on the
         //current tool. The tool will manage its actions and what object to interact with
-        document.addEventListener(TurboEventName.clickStart, (e) => this.interactWithObject(e));
-        document.addEventListener(TurboEventName.click, (e) => this.interactWithObject(e));
-        document.addEventListener(TurboEventName.clickEnd, (e) => this.interactWithObject(e));
-        document.addEventListener(TurboEventName.move, (e) => this.interactWithObject(e));
-        document.addEventListener(TurboEventName.dragStart, (e) => this.interactWithObject(e));
-        document.addEventListener(TurboEventName.drag, (e) => this.interactWithObject(e));
-        document.addEventListener(TurboEventName.dragEnd, (e) => this.interactWithObject(e));
+        document.addListener(TurboEventName.clickStart, (e) => this.interactWithObject(e), document, { propagate: true });
+        document.addListener(TurboEventName.click, (e) => this.interactWithObject(e), document, { propagate: true });
+        document.addListener(TurboEventName.clickEnd, (e) => this.interactWithObject(e), document, { propagate: true });
+        document.addListener(TurboEventName.move, (e) => this.interactWithObject(e), document, { propagate: true });
+        document.addListener(TurboEventName.dragStart, (e) => this.interactWithObject(e), document, { propagate: true });
+        document.addListener(TurboEventName.drag, (e) => this.interactWithObject(e), document, { propagate: true });
+        document.addListener(TurboEventName.dragEnd, (e) => this.interactWithObject(e), document, { propagate: true });
     }
     /**
      * @description Returns all created tools as an array

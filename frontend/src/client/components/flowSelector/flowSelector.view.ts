@@ -4,11 +4,15 @@ import {FlowSelectorModel} from "./flowSelector.model";
 import {Playback} from "../playback/playback";
 import {FlowPath} from "../flowPath/flowPath";
 import {YUtilities} from "../../../yManagement/yUtilities";
+import {FlowSelectorMarkingMenu} from "../flowSelectorMarkingMenu/flowSelectorMarkingMenu";
+import {Card} from "../card/card";
 
 export class FlowSelectorView extends TurboView<FlowSelector, FlowSelectorModel> {
     // @ts-ignore
     private wheel: TurboSelectWheel<string, string, FlowPath>;
     private playButton: TurboIcon;
+
+    private static markingMenu: FlowSelectorMarkingMenu;
 
     public addPathEntry(path: FlowPath) {
         this.wheel.addEntry(path);
@@ -25,6 +29,11 @@ export class FlowSelectorView extends TurboView<FlowSelector, FlowSelectorModel>
             forceSelection: true,
         }).setStyle("margin", 0);
         this.playButton = new TurboIcon({icon: "play", classes: "icon"});
+
+        if (!FlowSelectorView.markingMenu) {
+            FlowSelectorView.markingMenu = new FlowSelectorMarkingMenu();
+            this.element.director.addChild(FlowSelectorView.markingMenu);
+        }
     }
 
     protected setupUILayout() {
@@ -37,6 +46,8 @@ export class FlowSelectorView extends TurboView<FlowSelector, FlowSelectorModel>
         super.setupUIListeners();
         this.playButton.addListener(DefaultEventName.click, () => this.playPath(this.wheel.selectedEntry));
         this.wheel.onSelect = () => this.updateHighlightedEntries();
+
+        FlowSelectorView.markingMenu.attachSelector(this.element, this.wheel, this.element.director.getNode(this.model.nodeId) as Card);
     }
 
     protected setupChangedCallbacks() {
@@ -58,6 +69,12 @@ export class FlowSelectorView extends TurboView<FlowSelector, FlowSelectorModel>
     }
 
     private playPath(path: FlowPath) {
-        new Playback({director: this.element.director, path: path, parent: document.body, classes: "over-screen-playback"});
+        const playback = new Playback({
+            director: this.element.director,
+            path: path,
+            parent: document.body,
+            classes: "over-screen-playback"
+        });
+        playback.showControlButtons(true);
     }
 }

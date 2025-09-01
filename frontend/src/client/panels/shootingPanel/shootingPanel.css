@@ -47,7 +47,7 @@ shooting-panel turbo-icon-toggle:hover, shooting-panel turbo-icon:hover {
     cursor: pointer;
 }
 
-turbo-icon-toggle > svg, turbo-icon > svg {
+shooting-panel turbo-icon-toggle > svg, shooting-panel turbo-icon > svg {
     width: 100%;
     height: 100%;
     fill: white;

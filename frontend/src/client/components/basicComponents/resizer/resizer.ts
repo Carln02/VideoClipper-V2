@@ -1,4 +1,4 @@
-import {define, div, TurboDragEvent, TurboElement, TurboProperties} from "turbodombuilder";
+import {DefaultEventName, define, div, TurboDragEvent, TurboElement, TurboProperties} from "turbodombuilder";
 import "./resizer.css";
 
 //TODO FIX AND MAKE MORE GENERIC
@@ -21,20 +21,20 @@ export class Resizer extends TurboElement {
 
     private initUI() {
         for (const direction of ["nw", "ne", "sw", "se"]) {
-            div({
+            const anchor = div({
                 parent:  this,
                 classes: "resizer-handle resizer-handle-" + direction,
-                listeners: {
-                    "vc-drag": (e: TurboDragEvent) => {
-                        e.stopImmediatePropagation();
-                        this.incrementWidthByPx(e.deltaPosition.x
-                            * ((direction == "nw" || direction == "sw") ? -2 : 2));
-                        this.incrementHeightByPx(e.deltaPosition.y
-                            * ((direction == "nw" || direction == "ne") ? -2 : 2));
-                    }
-                }
+            });
+            anchor.addListener(DefaultEventName.drag, (e: TurboDragEvent) => {
+                e.stopImmediatePropagation();
+                this.incrementWidthByPx(e.deltaPosition.x
+                    * ((direction == "nw" || direction == "sw") ? -2 : 2));
+                this.incrementHeightByPx(e.deltaPosition.y
+                    * ((direction == "nw" || direction == "ne") ? -2 : 2));
             });
         }
+
+
     }
 
     public incrementWidthByPx(delta: number) {

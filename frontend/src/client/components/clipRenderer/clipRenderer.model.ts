@@ -27,6 +27,9 @@ export class ClipRendererModel extends RendererModel {
         this.textModel.onAdded = (data, id, blockKey) => this.onTextAdded(data, id, blockKey);
     }
 
+    @auto()
+    public set renderOnCanvas(value: boolean) {}
+
     public get cardData(): YMap {
         return this.getBlockData("cardData");
     }

@@ -12,6 +12,7 @@ import {Timeline} from "../timeline/timeline";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {ProjectScreens} from "../../directors/project/project.types";
 import {PlaybackAddTextInteractor} from "./playback.addTextInteractor";
+import {PlaybackExportController} from "./playback.exportController";
 
 @define("vc-playback")
 export class Playback extends VcComponent<PlaybackView, object, PlaybackModel, Project> {
@@ -21,10 +22,12 @@ export class Playback extends VcComponent<PlaybackView, object, PlaybackModel, P
         this.mvc.generate({
             viewConstructor: PlaybackView,
             modelConstructor: PlaybackModel,
-            interactorConstructors: [PlaybackAddTextInteractor]
+            interactorConstructors: [PlaybackAddTextInteractor],
+            controllerConstructors: [PlaybackExportController]
         });
         if (properties.path) this.path = properties.path;
         if (properties.card) this.card = properties.card;
+        this.showControlButtons(false);
     }
 
     @auto()
@@ -65,5 +68,9 @@ export class Playback extends VcComponent<PlaybackView, object, PlaybackModel, P
     public snapToClip(clip: Clip) {
         if (clip) this.view.timeline.snapToClosest(clip.dataIndex + 1);
         else this.view.timeline.snapAtEnd();
+    }
+
+    public showControlButtons(b: boolean) {
+        this.view.showControlButtons(b);
     }
 }

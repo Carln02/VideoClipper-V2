@@ -53,3 +53,9 @@ vc-camera .back-button-div {
 vc-camera .back-button-div svg {
     fill: rgba(255, 255, 255, 0.7);
 }
+
+vc-camera turbo-icon-toggle > svg, vc-camera turbo-icon > svg {
+    width: 100%;
+    height: 100%;
+    fill: white;
+}

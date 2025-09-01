@@ -373,11 +373,7 @@ class AppBarView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView 
     setupUIListeners() {
         super.setupUIListeners();
         this.fullscreenToggle.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, () => this.toggleFullscreen());
-        this.backButton.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, () => {
-            //TODO
-            // leave_room();
-            // show_projects();
-        });
+        this.backButton.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, () => window.location.href = window.location.origin);
     }
     toggleFullscreen() {
         //Enter fullscreen mode
@@ -769,18 +765,16 @@ let Resizer = class Resizer extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__
     }
     initUI() {
         for (const direction of ["nw", "ne", "sw", "se"]) {
-            (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({
+            const anchor = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({
                 parent: this,
                 classes: "resizer-handle resizer-handle-" + direction,
-                listeners: {
-                    "vc-drag": (e) => {
-                        e.stopImmediatePropagation();
-                        this.incrementWidthByPx(e.deltaPosition.x
-                            * ((direction == "nw" || direction == "sw") ? -2 : 2));
-                        this.incrementHeightByPx(e.deltaPosition.y
-                            * ((direction == "nw" || direction == "ne") ? -2 : 2));
-                    }
-                }
+            });
+            anchor.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.drag, (e) => {
+                e.stopImmediatePropagation();
+                this.incrementWidthByPx(e.deltaPosition.x
+                    * ((direction == "nw" || direction == "sw") ? -2 : 2));
+                this.incrementHeightByPx(e.deltaPosition.y
+                    * ((direction == "nw" || direction == "ne") ? -2 : 2));
             });
         }
     }
@@ -831,13 +825,14 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 class BranchingNodeConnectionInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboInteractor {
-    constructor() {
-        super(...arguments);
+    constructor(properties) {
+        super(properties);
         this.tool = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.connection;
         this.propagateUp = {
             [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.move]: true,
             [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.dragEnd]: true,
         };
+        requestAnimationFrame(() => this.target = this.element.querySelector("vc-playback"));
     }
     initializeFlow(e, tool) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -865,6 +860,7 @@ class BranchingNodeConnectionInteractor extends turbodombuilder__WEBPACK_IMPORTE
         tool.currentFlow.addPoint(e.scaledPosition);
     }
     dragStart(e, tool) {
+        tool.clear();
         //Return if already creating/editing a flow
         if (tool.currentFlowId)
             return;
@@ -875,10 +871,14 @@ class BranchingNodeConnectionInteractor extends turbodombuilder__WEBPACK_IMPORTE
         //Return if no current flow
         if (!tool.currentFlow)
             return;
+        //TODO: PROBLEM FOR LATER FIX THIS STUPID THING
+        const cardRect = this.target.getBoundingClientRect();
+        if (!(0,_utils_computation__WEBPACK_IMPORTED_MODULE_2__.pointInsideRect)(e.position, cardRect, 0))
+            return;
         if (tool.currentEntry) {
             if (tool.currentEntry.startNodeId === this.model.dataId)
                 return;
-            const lastPoint = (0,_utils_computation__WEBPACK_IMPORTED_MODULE_2__.getClosestPointOnEdge)(e.position, this.element.querySelector("vc-playback").getBoundingClientRect());
+            const lastPoint = (0,_utils_computation__WEBPACK_IMPORTED_MODULE_2__.getClosestPointOnEdge)(e.position, cardRect);
             //TODO USE CONSTRAINTS INSTEAD
             tool.currentEntry.addPoint(this.element.director.canvas.navigationManager.computePositionRelativeToCanvas(lastPoint));
             tool.currentEntry.endEntry(this.model.dataId);
@@ -1291,6 +1291,362 @@ CaptureButton = __decorate([
 
 /***/ }),
 
+/***/ "./frontend/src/client/components/captureFlowSelector/captureFlowSelector.css":
+/*!************************************************************************************!*\
+  !*** ./frontend/src/client/components/captureFlowSelector/captureFlowSelector.css ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "./node_modules/style-loader/dist/runtime/styleDomAPI.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "./node_modules/style-loader/dist/runtime/insertBySelector.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "./node_modules/style-loader/dist/runtime/insertStyleElement.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_captureFlowSelector_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../../../node_modules/css-loader/dist/cjs.js!./captureFlowSelector.css */ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/captureFlowSelector/captureFlowSelector.css");
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_captureFlowSelector_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_captureFlowSelector_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_captureFlowSelector_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_captureFlowSelector_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/components/captureFlowSelector/captureFlowSelector.model.ts":
+/*!*****************************************************************************************!*\
+  !*** ./frontend/src/client/components/captureFlowSelector/captureFlowSelector.model.ts ***!
+  \*****************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   CaptureFlowSelectorModel: () => (/* binding */ CaptureFlowSelectorModel)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+class CaptureFlowSelectorModel extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboModel {
+    constructor() {
+        super(...arguments);
+        this._hours = 0;
+        this._minutes = 0;
+        this._seconds = 0;
+    }
+    set isTimerShown(value) {
+        this.fireCallback("showTimer", value);
+    }
+    get hours() {
+        return this._hours;
+    }
+    get minutes() {
+        return this._minutes;
+    }
+    get seconds() {
+        return this._seconds;
+    }
+    get totalTimeInSeconds() {
+        return this.hours * 3600 + this.minutes * 60 + this.seconds;
+    }
+    incrementTime() {
+        this._seconds++;
+        if (this.seconds >= 60) {
+            this._seconds = 0;
+            this._minutes++;
+            if (this.minutes >= 60) {
+                this._minutes = 0;
+                this._hours++;
+            }
+        }
+        this.fireCallback("timeChanged");
+    }
+    resetTime() {
+        if (this.timer)
+            clearInterval(this.timer);
+        this._hours = 0;
+        this._minutes = 0;
+        this._seconds = 0;
+        this.fireCallback("timeChanged");
+    }
+    startTimer(resetTime = true) {
+        if (resetTime)
+            this.resetTime();
+        else if (this.timer)
+            clearInterval(this.timer);
+        this.timer = setInterval(() => this.incrementTime(), 1000);
+    }
+}
+__decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
+], CaptureFlowSelectorModel.prototype, "isTimerShown", null);
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/components/captureFlowSelector/captureFlowSelector.ts":
+/*!***********************************************************************************!*\
+  !*** ./frontend/src/client/components/captureFlowSelector/captureFlowSelector.ts ***!
+  \***********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   CaptureFlowSelector: () => (/* binding */ CaptureFlowSelector)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _captureFlowSelector_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./captureFlowSelector.css */ "./frontend/src/client/components/captureFlowSelector/captureFlowSelector.css");
+/* harmony import */ var _captureFlowSelector_view__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./captureFlowSelector.view */ "./frontend/src/client/components/captureFlowSelector/captureFlowSelector.view.ts");
+/* harmony import */ var _captureFlowSelector_model__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./captureFlowSelector.model */ "./frontend/src/client/components/captureFlowSelector/captureFlowSelector.model.ts");
+/* harmony import */ var _component_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../component/component */ "./frontend/src/client/components/component/component.ts");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+
+
+
+
+let CaptureFlowSelector = class CaptureFlowSelector extends _component_component__WEBPACK_IMPORTED_MODULE_4__.VcComponent {
+    constructor(properties = {}) {
+        super(properties);
+        this.mvc.generate({
+            viewConstructor: _captureFlowSelector_view__WEBPACK_IMPORTED_MODULE_2__.CaptureFlowSelectorView,
+            modelConstructor: _captureFlowSelector_model__WEBPACK_IMPORTED_MODULE_3__.CaptureFlowSelectorModel,
+            initialize: true
+        });
+        this.model.isTimerShown = false;
+    }
+    get camera() {
+        return this.director.getScreen(_directors_project_project_types__WEBPACK_IMPORTED_MODULE_5__.ProjectScreens.camera);
+    }
+    get card() {
+        return this.camera.card;
+    }
+    startTimer() {
+        this.model.isTimerShown = true;
+        this.model.startTimer();
+    }
+    clearTimer() {
+        this.model.resetTime();
+    }
+    stopTimer() {
+        this.model.isTimerShown = false;
+        return this.model.totalTimeInSeconds;
+    }
+    refresh() {
+        this.view.refresh();
+    }
+};
+CaptureFlowSelector = __decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-capture-flow-selector")
+], CaptureFlowSelector);
+
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/components/captureFlowSelector/captureFlowSelector.view.ts":
+/*!****************************************************************************************!*\
+  !*** ./frontend/src/client/components/captureFlowSelector/captureFlowSelector.view.ts ***!
+  \****************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   CaptureFlowSelectorView: () => (/* binding */ CaptureFlowSelectorView)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _utils_url__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/url */ "./frontend/src/client/utils/url.ts");
+
+
+class CaptureFlowSelectorView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
+    get currentFlow() {
+        var _a;
+        const selectedFlowId = (_a = this.flowSelector.selectedEntry) === null || _a === void 0 ? void 0 : _a.secondaryValue;
+        if (!selectedFlowId)
+            return undefined;
+        return this.element.director.getFlow(selectedFlowId);
+    }
+    get currentPath() {
+        var _a;
+        const selectedPathId = (_a = this.pathSelector.selectedEntry) === null || _a === void 0 ? void 0 : _a.secondaryValue;
+        if (!selectedPathId)
+            return undefined;
+        return this.currentFlow.paths.find(path => path.dataId === selectedPathId);
+    }
+    get currentPathNodeIds() {
+        var _a;
+        return ((_a = this.currentPath) === null || _a === void 0 ? void 0 : _a.nodeIdsArray) || [];
+    }
+    get currentNodeIndexInPath() {
+        return this.currentPathNodeIds.indexOf(this.element.card.dataId);
+    }
+    get nextCard() {
+        const curIndex = this.currentNodeIndexInPath;
+        const nodeIds = this.currentPathNodeIds;
+        if (curIndex < 0 || curIndex >= nodeIds.length - 1)
+            return undefined;
+        return this.element.director.getNode(nodeIds[curIndex + 1]);
+    }
+    get previousCard() {
+        const curIndex = this.currentNodeIndexInPath;
+        const nodeIds = this.currentPathNodeIds;
+        if (curIndex < 1)
+            return undefined;
+        return this.element.director.getNode(nodeIds[curIndex - 1]);
+    }
+    setupUIElements() {
+        this.timerText = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.p)();
+        this.selectorDiv = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)();
+        this.flowSelector = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelectWheel({ direction: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.vertical });
+        this.pathSelector = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelectWheel({ direction: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.vertical });
+        this.previousCardIcon = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({ icon: "chevron-left" });
+        this.nextCardIcon = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({ icon: "chevron-right" });
+        const showTransition = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.StatefulReifect({
+            states: [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Shown.visible, turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Shown.hidden],
+            styles: {
+                [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Shown.visible]: { "display": "" },
+                [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Shown.hidden]: { "display": "none" },
+            }
+        });
+        this.timerText.showTransition = showTransition;
+        this.selectorDiv.showTransition = showTransition;
+    }
+    setupUILayout() {
+        this.selectorDiv.addChild([this.previousCardIcon, this.flowSelector, (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.p)({ text: "/" }), this.pathSelector, this.nextCardIcon]);
+        this.element.addChild([this.timerText, this.selectorDiv]);
+    }
+    setupChangedCallbacks() {
+        this.emitter.add("timeChanged", () => this.timerText.textContent =
+            `${this.padNumber(this.model.hours)}:${this.padNumber(this.model.minutes)}:${this.padNumber(this.model.seconds)}`);
+        this.emitter.add("showTimer", (b) => {
+            this.timerText.show(b);
+            this.selectorDiv.show(!b);
+            this.element.toggleClass("timer-active", b);
+        });
+    }
+    setupUIListeners() {
+        this.previousCardIcon.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, () => {
+            const prevCard = this.previousCard;
+            if (prevCard)
+                this.element.camera.card = prevCard;
+        });
+        this.nextCardIcon.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, () => {
+            const nextCard = this.nextCard;
+            if (nextCard)
+                this.element.camera.card = nextCard;
+        });
+    }
+    padNumber(num, length = 2) {
+        return num.toString().padStart(length, "0");
+    }
+    refresh() {
+        this.flowSelector.values = this.element.director.flows
+            .filter(flow => flow.hasNode(this.element.card.dataId))
+            .map(flow => new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelectEntry({
+            value: flow.color,
+            secondaryValue: flow.dataId,
+            onSelected: (b) => {
+                if (!b)
+                    return;
+                (0,_utils_url__WEBPACK_IMPORTED_MODULE_1__.replaceUrlParams)({ name: "flow", value: flow.dataId });
+                this.pathSelector.values = [];
+                flow.selectors.forEach(selector => selector.paths
+                    .filter(path => path.hasNode(this.element.card.dataId))
+                    .forEach(path => this.pathSelector.addEntry(new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelectEntry({
+                    value: path.name,
+                    secondaryValue: path.dataId,
+                    onSelected: (b) => {
+                        if (!b)
+                            return;
+                        (0,_utils_url__WEBPACK_IMPORTED_MODULE_1__.replaceUrlParams)({ name: "selector", value: selector.dataId }, {
+                            name: "path",
+                            value: path.dataId
+                        });
+                        this.previousCardIcon.toggleClass("icon-disabled", !this.previousCard);
+                        this.nextCardIcon.toggleClass("icon-disabled", !this.nextCard);
+                    }
+                }))));
+                if (this.pathSelector.values.length > 0) {
+                    const pathParam = (0,_utils_url__WEBPACK_IMPORTED_MODULE_1__.getUrlParam)("path");
+                    try {
+                        const pathEntry = this.pathSelector.entries.find(entry => entry.secondaryValue === pathParam);
+                        if (!pathEntry || !pathParam)
+                            throw new Error();
+                        this.pathSelector.select(pathEntry);
+                    }
+                    catch (e) {
+                        this.pathSelector.selectByIndex(0);
+                    }
+                }
+            }
+        }));
+        if (this.flowSelector.values.length > 0) {
+            const flowParam = (0,_utils_url__WEBPACK_IMPORTED_MODULE_1__.getUrlParam)("flow");
+            try {
+                const flowEntry = this.flowSelector.entries.find(entry => entry.secondaryValue === flowParam);
+                if (!flowEntry || !flowParam)
+                    throw new Error();
+                this.flowSelector.select(flowEntry);
+            }
+            catch (e) {
+                this.flowSelector.selectByIndex(0);
+            }
+        }
+        else {
+            this.previousCardIcon.toggleClass("icon-disabled", true);
+            this.nextCardIcon.toggleClass("icon-disabled", true);
+        }
+    }
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/components/captureModeSlider/captureModeSlider.css":
 /*!********************************************************************************!*\
   !*** ./frontend/src/client/components/captureModeSlider/captureModeSlider.css ***!
@@ -1377,133 +1733,6 @@ let CaptureModeSlider = class CaptureModeSlider extends turbodombuilder__WEBPACK
 CaptureModeSlider = __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)()
 ], CaptureModeSlider);
-
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/components/captureTimer/captureTimer.css":
-/*!**********************************************************************!*\
-  !*** ./frontend/src/client/components/captureTimer/captureTimer.css ***!
-  \**********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "./node_modules/style-loader/dist/runtime/styleDomAPI.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "./node_modules/style-loader/dist/runtime/insertBySelector.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "./node_modules/style-loader/dist/runtime/insertStyleElement.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_captureTimer_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../../../node_modules/css-loader/dist/cjs.js!./captureTimer.css */ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/captureTimer/captureTimer.css");
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var options = {};
-
-options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
-options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
-options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
-options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
-options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_captureTimer_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
-
-
-
-
-       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_captureTimer_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_captureTimer_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_captureTimer_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/components/captureTimer/captureTimer.ts":
-/*!*********************************************************************!*\
-  !*** ./frontend/src/client/components/captureTimer/captureTimer.ts ***!
-  \*********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   CaptureTimer: () => (/* binding */ CaptureTimer)
-/* harmony export */ });
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _captureTimer_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./captureTimer.css */ "./frontend/src/client/components/captureTimer/captureTimer.css");
-var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-
-
-let CaptureTimer = class CaptureTimer extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboElement {
-    constructor(properties = {}) {
-        super(properties);
-        this.hours = 0;
-        this.minutes = 0;
-        this.seconds = 0;
-        this.child = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ parent: this });
-        this.show(false);
-    }
-    start() {
-        this.clear();
-        this.show(true);
-        this.timer = setInterval(() => this.incrementTime(), 1000);
-    }
-    stop() {
-        this.show(false);
-        const timeSpent = this.hours * 3600 + this.minutes * 60 + this.seconds;
-        this.clear();
-        return timeSpent;
-    }
-    clear() {
-        if (this.timer)
-            clearInterval(this.timer);
-        this.hours = 0;
-        this.minutes = 0;
-        this.seconds = 0;
-        this.setTimeText();
-    }
-    incrementTime() {
-        this.seconds++;
-        if (this.seconds >= 60) {
-            this.seconds = 0;
-            this.minutes++;
-            if (this.minutes >= 60) {
-                this.minutes = 0;
-                this.hours++;
-            }
-        }
-        this.setTimeText();
-    }
-    setTimeText() {
-        const pad = (num) => num.toString().padStart(2, "0");
-        this.child.innerText = `${pad(this.hours)}:${pad(this.minutes)}:${pad(this.seconds)}`;
-    }
-};
-CaptureTimer = __decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-capture-timer")
-], CaptureTimer);
 
 
 
@@ -1647,8 +1876,11 @@ class CardShootingInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
     click() {
         this.element.director.currentType = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ProjectScreens.camera;
         this.element.director.camera.card = this.element;
-        this.element.director.toolPanel.changePanel(_directors_project_project_types__WEBPACK_IMPORTED_MODULE_1__.ToolType.shoot);
+        // this.element.director.toolPanel.changePanel(ToolType.shoot);
         this.element.director.camera.startStream();
+        const url = new URL(window.location.href);
+        url.searchParams.set("card", this.element.dataId);
+        history.pushState(null, "", url.toString());
     }
 }
 
@@ -1813,6 +2045,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _metadataDrawer_metadataDrawer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../metadataDrawer/metadataDrawer */ "./frontend/src/client/components/metadataDrawer/metadataDrawer.ts");
 /* harmony import */ var _timeline_clipTimeline_clipTimeline__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../timeline/clipTimeline/clipTimeline */ "./frontend/src/client/components/timeline/clipTimeline/clipTimeline.ts");
 /* harmony import */ var _playback_playback__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../playback/playback */ "./frontend/src/client/components/playback/playback.ts");
+/* harmony import */ var _cardMarkingMenu_cardMarkingMenu__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../cardMarkingMenu/cardMarkingMenu */ "./frontend/src/client/components/cardMarkingMenu/cardMarkingMenu.ts");
+
 
 
 
@@ -1866,6 +2100,10 @@ class CardView extends _branchingNode_branchingNode_view__WEBPACK_IMPORTED_MODUL
             model: this.playback.timeline.model
         });
         this._timeline.hasControls = false;
+        if (!CardView.markingMenu) {
+            CardView.markingMenu = new _cardMarkingMenu_cardMarkingMenu__WEBPACK_IMPORTED_MODULE_6__.CardMarkingMenu();
+            this.element.director.addChild(CardView.markingMenu);
+        }
     }
     setupUILayout() {
         this.element.addChild([
@@ -1880,12 +2118,178 @@ class CardView extends _branchingNode_branchingNode_view__WEBPACK_IMPORTED_MODUL
     }
     setupUIListeners() {
         this.titleElement.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.DefaultEventName.blur, () => this.model.title = this.titleElement.value);
+        CardView.markingMenu.attachCard(this.element);
     }
     setupChangedCallbacks() {
         super.setupChangedCallbacks();
         this.emitter.add("title", (value) => this.titleElement.value = value);
     }
 }
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/components/cardMarkingMenu/cardMarkingMenu.css":
+/*!****************************************************************************!*\
+  !*** ./frontend/src/client/components/cardMarkingMenu/cardMarkingMenu.css ***!
+  \****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "./node_modules/style-loader/dist/runtime/styleDomAPI.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "./node_modules/style-loader/dist/runtime/insertBySelector.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "./node_modules/style-loader/dist/runtime/insertStyleElement.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_cardMarkingMenu_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../../../node_modules/css-loader/dist/cjs.js!./cardMarkingMenu.css */ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/cardMarkingMenu/cardMarkingMenu.css");
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_cardMarkingMenu_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_cardMarkingMenu_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_cardMarkingMenu_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_cardMarkingMenu_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/components/cardMarkingMenu/cardMarkingMenu.ts":
+/*!***************************************************************************!*\
+  !*** ./frontend/src/client/components/cardMarkingMenu/cardMarkingMenu.ts ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   CardMarkingMenu: () => (/* binding */ CardMarkingMenu)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _cardMarkingMenu_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./cardMarkingMenu.types */ "./frontend/src/client/components/cardMarkingMenu/cardMarkingMenu.types.ts");
+/* harmony import */ var qrcode__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! qrcode */ "./node_modules/qrcode/lib/browser.js");
+/* harmony import */ var _cardMarkingMenu_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./cardMarkingMenu.css */ "./frontend/src/client/components/cardMarkingMenu/cardMarkingMenu.css");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+
+
+let CardMarkingMenu = class CardMarkingMenu extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboMarkingMenu {
+    constructor(properties = {}) {
+        super(properties);
+        this.addClass("turbo-marking-menu");
+        this.url = new URL(location.href);
+        if (!properties.semiMinor)
+            this.hasClass("marking-menu-v") ? properties.semiMinor = 40 : properties.semiMinor = 60;
+        if (!properties.semiMajor)
+            properties.semiMajor = 40;
+        this.onSelect = () => this.show(false);
+        this.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.clickEnd, (e) => e.stopImmediatePropagation());
+        this.initializeUI();
+        this.initializeEntries();
+    }
+    setupUIElements() {
+        super.setupUIElements();
+        this.qrCode = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.canvas)({ width: 200, height: 200 });
+        this.qrCodePopup = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ classes: "popup-card qr-code-popup" });
+        this.urlText = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.p)();
+    }
+    setupUILayout() {
+        super.setupUILayout();
+        this.qrCodePopup.addChild([(0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.h3)({ text: "Scan this QR code to shoot on your device." }), this.qrCode, this.urlText]);
+    }
+    setupUIListeners() {
+        super.setupUIListeners();
+        this.qrCodePopup.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, (e) => e.stopImmediatePropagation());
+    }
+    initializeEntries() {
+        const shareEntry = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelectEntry({
+            value: _cardMarkingMenu_types__WEBPACK_IMPORTED_MODULE_1__.CardMenu.share, text: "Share",
+            action: () => {
+                this.url.searchParams.set("card", this.card.dataId);
+                qrcode__WEBPACK_IMPORTED_MODULE_2__.toCanvas(this.qrCode, this.url.toString(), (error) => console.error(error));
+                this.urlText.textContent = this.url.toString();
+            }
+        });
+        shareEntry.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, (e) => {
+            this.qrCodePopup.style.top = e.position.y + "px";
+            this.qrCodePopup.style.left = e.position.x + "px";
+            document.body.addChild(this.qrCodePopup);
+            this.card.director.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, () => this.qrCodePopup.remove());
+            this.show(false);
+        });
+        this.addEntry(shareEntry);
+        this.addEntry(new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelectEntry({
+            value: _cardMarkingMenu_types__WEBPACK_IMPORTED_MODULE_1__.CardMenu.delete, text: "Delete",
+            action: () => this.card.delete()
+        }));
+    }
+    attachCard(card) {
+        card.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.clickEnd, (e) => e.stopImmediatePropagation());
+        card.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.longPress, (e) => {
+            e.stopImmediatePropagation();
+            this.card = card;
+            this.show(true, e.position);
+        });
+    }
+};
+CardMarkingMenu = __decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)()
+], CardMarkingMenu);
+
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/components/cardMarkingMenu/cardMarkingMenu.types.ts":
+/*!*********************************************************************************!*\
+  !*** ./frontend/src/client/components/cardMarkingMenu/cardMarkingMenu.types.ts ***!
+  \*********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   CardMenu: () => (/* binding */ CardMenu)
+/* harmony export */ });
+var CardMenu;
+(function (CardMenu) {
+    CardMenu["delete"] = "Delete";
+    CardMenu["share"] = "Share";
+})(CardMenu || (CardMenu = {}));
 
 
 /***/ }),
@@ -1984,6 +2388,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
 /* harmony import */ var _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../yManagement/yModel/types/yComponentModel */ "./frontend/src/yManagement/yModel/types/yComponentModel.ts");
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
 
 
 class ClipModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_1__.YComponentModel {
@@ -2091,7 +2503,13 @@ class ClipModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
     get textHandler() {
         return this.getHandler("text");
     }
+    set orientation(value) {
+        this.fireCallback("orientationChanged", value);
+    }
 }
+__decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.auto)()
+], ClipModel.prototype, "orientation", null);
 
 
 /***/ }),
@@ -2125,9 +2543,6 @@ class ClipSelectionInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
         return this.element.director.contextManager;
     }
     clickStart() {
-        this.contextManager.setContext(this.element, 2);
-    }
-    click() {
         this.contextManager.setContext(this.element, 2, true);
     }
     dragStart(e, tool) {
@@ -2305,6 +2720,13 @@ var Clip_1;
 
 
 let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MODULE_7__.VcComponent {
+    get orientation() {
+        return this.model.orientation;
+    }
+    set orientation(value) {
+        this.model.orientation = value;
+        this.toggleClass("vertical-clip", value === turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Direction.vertical);
+    }
     constructor(properties) {
         super(Object.assign(Object.assign({}, properties), { generate: false }));
         this.onMediaDataChanged = () => { };
@@ -2320,10 +2742,6 @@ let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MO
         this.mvc.emitter.add("mediaId", (value) => __awaiter(this, void 0, void 0, function* () {
             this.model.setMetadata(this.director.mediaHandler.getMediaMetadata(value), value);
             this.model.blob = yield this.director.mediaHandler.getMedia(value);
-            //TODO maybe remove this? idk
-            // if (media.metadata?.thumbnail) {
-            //     img({src: media.metadata?.thumbnail, parent: this.clipContent, classes: "thumbnail"});
-            // }
             this.onMediaDataChanged(this);
         }));
         this.mvc.emitter.addWithBlock("convert", "metadata", (value) => __awaiter(this, void 0, void 0, function* () {
@@ -2331,6 +2749,10 @@ let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MO
                 return;
             this.model.blob = yield this.director.mediaHandler.getMedia(value);
         }));
+        requestAnimationFrame(() => {
+            if (!this.model.thumbnail)
+                this.mvc.emitter.fire("reload_thumbnail");
+        });
     }
     static createData(data) {
         var _a;
@@ -2440,6 +2862,7 @@ let Clip = Clip_1 = class Clip extends _component_component__WEBPACK_IMPORTED_MO
             return;
         const newData = Clip_1.createData(this.data.toJSON());
         newData.set("startTime", localSplitTime);
+        newData.set("color", (0,_utils_random__WEBPACK_IMPORTED_MODULE_8__.randomColor)());
         this.endTime = localSplitTime;
         return newData;
     }
@@ -2479,7 +2902,7 @@ class ClipView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
      */
     reloadSize() {
         var _a;
-        this.element.setStyle("width", ((_a = this.element.timeline) === null || _a === void 0 ? void 0 : _a.pixelsPerSecondUnit) * this.element.duration + "px");
+        this.element.setStyle(this.model.orientation == turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.horizontal ? "width" : "height", ((_a = this.element.timeline) === null || _a === void 0 ? void 0 : _a.pixelsPerSecondUnit) * this.element.duration + "px");
         this.element.timeline.reloadTime();
     }
     setupChangedCallbacks() {
@@ -2492,6 +2915,11 @@ class ClipView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
             this.thumbnailImage.show(true);
             this.thumbnailImage.src = value;
         });
+        this.emitter.add("orientation", (value) => {
+            this.element.toggleClass("vc-clip-h", value === turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.horizontal);
+            this.element.toggleClass("vc-clip-v", value === turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.vertical);
+            this.reloadSize();
+        });
     }
     setupUIElements() {
         this.clipContent = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ classes: "vc-clip-content" });
@@ -2503,10 +2931,18 @@ class ClipView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
         this.clipContent.addChild(this.thumbnailImage);
     }
     generateHandles() {
-        this.leftHandle = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ classes: "clip-handle-left", children: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({ icon: "chevron-left" }) });
-        this.rightHandle = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ classes: "clip-handle-right", children: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({ icon: "chevron-right" }) });
-        this.generateHandleEvents(this.leftHandle, "left");
-        this.generateHandleEvents(this.rightHandle, "right");
+        if (this.element.orientation === turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.horizontal) {
+            this.leftHandle = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ classes: "clip-handle clip-handle-left", children: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({ icon: "chevron-left" }) });
+            this.rightHandle = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ classes: "clip-handle clip-handle-right", children: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({ icon: "chevron-right" }) });
+            this.generateHandleEvents(this.leftHandle, turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.left);
+            this.generateHandleEvents(this.rightHandle, turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.right);
+        }
+        else {
+            this.leftHandle = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ classes: "clip-handle clip-handle-top", children: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({ icon: "chevron-up" }) });
+            this.rightHandle = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ classes: "clip-handle clip-handle-bottom", children: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({ icon: "chevron-down" }) });
+            this.generateHandleEvents(this.leftHandle, turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.top);
+            this.generateHandleEvents(this.rightHandle, turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.bottom);
+        }
     }
     generateHandleEvents(handle, side) {
         handle.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.clickStart, (e) => e.stopImmediatePropagation());
@@ -2604,9 +3040,10 @@ class ClipThumbnailController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_1
     reloadThumbnail() {
         return __awaiter(this, arguments, void 0, function* (offset = 0) {
             this.initializeSnapshotRenderer();
-            const image = yield ClipThumbnailController.renderer.drawFrame(this.element, offset);
-            this.model.thumbnail = image;
-            return image;
+            return yield new Promise(resolve => ClipThumbnailController.renderer.drawFrame(this.element, offset).then(image => {
+                this.model.thumbnail = image;
+                resolve(image);
+            }));
         });
     }
 }
@@ -2700,6 +3137,7 @@ class ClipRendererModel extends _renderer_renderer_model__WEBPACK_IMPORTED_MODUL
         this.textModel = new _clipRenderer_textModel__WEBPACK_IMPORTED_MODULE_1__.ClipRendererTextModel();
         this.textModel.onAdded = (data, id, blockKey) => this.onTextAdded(data, id, blockKey);
     }
+    set renderOnCanvas(value) { }
     get cardData() {
         return this.getBlockData("cardData");
     }
@@ -2738,6 +3176,8 @@ class ClipRendererModel extends _renderer_renderer_model__WEBPACK_IMPORTED_MODUL
         this.fireCallback("reloadVisibility", value);
     }
     setClipWithOffset(clip, offset = 0, index = this.currentIndex) {
+        if (clip)
+            offset += clip.startTime;
         const prevClip = this.videoClips[index];
         if (clip != prevClip)
             this.videoClips[index] = clip;
@@ -2749,6 +3189,9 @@ class ClipRendererModel extends _renderer_renderer_model__WEBPACK_IMPORTED_MODUL
         this.fireCallback("clipChanged", index);
     }
 }
+__decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.auto)()
+], ClipRendererModel.prototype, "renderOnCanvas", null);
 __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.auto)({ cancelIfUnchanged: true })
 ], ClipRendererModel.prototype, "visibilityMode", null);
@@ -2867,6 +3310,9 @@ let ClipRenderer = class ClipRenderer extends _renderer_renderer__WEBPACK_IMPORT
     get clip() {
         return this.model.getClip();
     }
+    get canvas() {
+        return this.view.canvas;
+    }
     setFrame() {
         return __awaiter(this, arguments, void 0, function* (clip = this.model.getClip(), offsetTime = 0) {
             yield this.frameController.setFrame(clip, offsetTime);
@@ -2876,6 +3322,9 @@ let ClipRenderer = class ClipRenderer extends _renderer_renderer__WEBPACK_IMPORT
         return __awaiter(this, arguments, void 0, function* (clip = this.model.getClip(), offset = 0) {
             yield this.frameController.setFrame(clip, offset, true, true);
             yield new Promise((resolve) => setTimeout(() => resolve(null), 500));
+            // TODO domToImage.toCanvas(this).then(function (canvas) {
+            //     document.body.addChild()
+            // });
             return yield dom_to_image_more__WEBPACK_IMPORTED_MODULE_10___default().toJpeg(this, { quality: 0.6 });
         });
     }
@@ -2894,6 +3343,12 @@ let ClipRenderer = class ClipRenderer extends _renderer_renderer__WEBPACK_IMPORT
         return __awaiter(this, void 0, void 0, function* () {
             yield this.videoController.playNext();
         });
+    }
+    get renderOnCanvas() {
+        return this.model.renderOnCanvas;
+    }
+    set renderOnCanvas(value) {
+        this.model.renderOnCanvas = value;
     }
 };
 __decorate([
@@ -2960,7 +3415,7 @@ class ClipRendererVideoController extends _renderer_renderer_videoController__WE
             if (!video)
                 return;
             this.view.showVideo();
-            if (clip === null || clip === void 0 ? void 0 : clip.uri) {
+            if ((clip === null || clip === void 0 ? void 0 : clip.uri) && clip.metadataType === "video") {
                 if (clip.uri !== video.src)
                     video.src = clip.uri;
                 yield _renderer_renderer_videoController__WEBPACK_IMPORTED_MODULE_0__.RendererVideoController.waitForVideoLoad(video, offset);
@@ -3000,7 +3455,15 @@ class ClipRendererVideoController extends _renderer_renderer_videoController__WE
             var _a;
             if (((_a = this.model.getClip()) === null || _a === void 0 ? void 0 : _a.metadataType) == "video")
                 yield _super.play.call(this);
+            if (this.model.renderOnCanvas)
+                this.drawVideoToCanvas();
         });
+    }
+    drawVideoToCanvas() {
+        if (this.video.paused || this.video.ended)
+            return;
+        this.view.canvasContext.drawImage(this.video, 0, 0, this.element.offsetWidth, this.element.offsetHeight);
+        setTimeout(() => this.drawVideoToCanvas(), 0);
     }
 }
 
@@ -3227,11 +3690,17 @@ __webpack_require__.r(__webpack_exports__);
 class FlowEntryHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
     constructor(model) {
         super(model);
+        this.onUpdated = () => { };
         this.entryModel = new _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_1__.YManagerModel();
         this.entryModel.onAdded = array => {
             const manager = new _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_1__.YManagerModel(array);
             manager.onAdded = data => { var _a; return (_a = this.onFlowEntryAdded) === null || _a === void 0 ? void 0 : _a.call(this, data); };
             return manager;
+        };
+        const oldUpdated = this.entryModel.onUpdated;
+        this.entryModel.onUpdated = (data, instance, id, blockKey) => {
+            oldUpdated(data, instance, id, blockKey);
+            this.onUpdated();
         };
     }
     getData() {
@@ -3257,6 +3726,13 @@ class FlowEntryHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Turb
     getEntries(id) {
         var _a;
         return ((_a = this.entryModel.getInstance(id)) === null || _a === void 0 ? void 0 : _a.getAllComponents()) || [];
+    }
+    getEntriesFromNodesList(nodes) {
+        const entries = [];
+        for (let i = 0; i < nodes.length - 1; i++) {
+            entries.push(this.getEntries(nodes[i]).find(entry => entry.endNodeId === nodes[i + 1]));
+        }
+        return entries;
     }
     createEntry(data) {
         if (!data || !data.startNodeId)
@@ -3381,12 +3857,10 @@ class FlowModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
         super.data = value;
         this.entryHandler.setData(this.getData("entries"));
         this.entryHandler.onFlowEntryAdded = (data) => this.onFlowEntryAdded(data);
+        this.entryHandler.onUpdated = () => this.selectorModel.getAllComponents().forEach(selector => selector.updatePaths());
         this.selectorModel.data = this.selectorsData;
         this.selectorModel.onAdded = (data) => this.onFlowSelectorAdded(data);
-        _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_2__.YUtilities.deepObserveAll(this.data, () => {
-            this.fireCallback("__redraw");
-            this.selectorModel.getAllComponents().forEach(selector => selector.updatePaths());
-        }, "entries");
+        _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_2__.YUtilities.deepObserveAll(this.data, () => this.fireCallback("__redraw"), "entries");
     }
     get currentEntry() {
         const entries = this.entryHandler.getEntries(this.currentEntryId);
@@ -3408,10 +3882,7 @@ class FlowModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_IMPOR
         return this.entryHandler.getAllEntriesData();
     }
     get selectorsData() {
-        return this.getData("tags");
-    }
-    get selectorsDataArray() {
-        return this.selectorsData.toArray();
+        return this.getData("selectors");
     }
     get defaultName() {
         return this.getData("defaultName");
@@ -3494,13 +3965,14 @@ let Flow = class Flow extends _component_component__WEBPACK_IMPORTED_MODULE_4__.
             data = {};
         if (!data.entries)
             data.entries = {};
-        if (!data.tags)
-            data.tags = [undefined];
+        if (!data.selectors)
+            data.selectors = {};
         if (!data.defaultName)
             data.defaultName = "Flow";
         Object.entries(data.entries).forEach(([key, branch]) => data.entries[key] = _flowEntry_flowEntry__WEBPACK_IMPORTED_MODULE_8__.FlowEntry.createData(branch));
+        Object.entries(data.selectors).forEach(([key, selector]) => data.selectors[key] = _flowSelector_flowSelector__WEBPACK_IMPORTED_MODULE_7__.FlowSelector.createData(selector));
         data.entries = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__.YUtilities.createYMap(data.entries);
-        data.tags = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__.YUtilities.createYArray(data.tags.map(tag => _flowSelector_flowSelector__WEBPACK_IMPORTED_MODULE_7__.FlowSelector.createData(tag)));
+        data.selectors = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__.YUtilities.createYMap(data.selectors);
         return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__.YUtilities.createYMap(data);
     }
     get svg() {
@@ -3524,6 +3996,12 @@ let Flow = class Flow extends _component_component__WEBPACK_IMPORTED_MODULE_4__.
     getEntries(id) {
         return this.model.entryHandler.getEntries(id);
     }
+    get paths() {
+        return this.model.selectors.flatMap(selector => selector.paths);
+    }
+    get selectors() {
+        return this.model.selectors;
+    }
     // public getEntry(id: string): FlowEntry {
     //     return this.model.entryHandler.getEntry(id);
     // }
@@ -3533,6 +4011,9 @@ let Flow = class Flow extends _component_component__WEBPACK_IMPORTED_MODULE_4__.
     }
     removeEntry(entry) {
         return this.model.entryHandler.removeEntry(entry);
+    }
+    getEntriesFromNodesList(nodes) {
+        return this.model.entryHandler.getEntriesFromNodesList(nodes);
     }
     hasNode(id) {
         var _a;
@@ -3545,31 +4026,8 @@ let Flow = class Flow extends _component_component__WEBPACK_IMPORTED_MODULE_4__.
         return false;
     }
     createSelector(nodeId) {
-        return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__.YUtilities.addInYArray(_flowSelector_flowSelector__WEBPACK_IMPORTED_MODULE_7__.FlowSelector.createData({ nodeId: nodeId, paths: [] }), this.model.selectorsData);
+        return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__.YUtilities.addInYMap(_flowSelector_flowSelector__WEBPACK_IMPORTED_MODULE_7__.FlowSelector.createData({ nodeId: nodeId }), this.model.selectorsData);
     }
-    // /**
-    //  * @description Finds the last flow entry inside the given node's ID
-    //  * @param nodeId
-    //  */
-    // public findNodeEntry(nodeId: string): FlowPoint {
-    //     return this.model.searchHandler.findNodeEntry(nodeId);
-    // }
-    //
-    // /**
-    //  * @description Finds the last flow entry inside the given node's ID
-    //  * @param nodeId
-    //  */
-    // public findNodeEntries(nodeId: string): FlowPoint[] {
-    //     return this.model.searchHandler.findNodeEntries(nodeId);
-    // }
-    //
-    // /**
-    //  * @description Finds the closest point in the flow to the given point
-    //  * @param point
-    //  */
-    // public findClosestPoint(point: Point): FlowPoint {
-    //     return this.model.searchHandler.findClosestPoint(point);
-    // }
     /**
      * @description Adds the provided point to the flow with the given ID. The node ID indicates the ID of the node
      * the point is in (or null), and isTemporary indicates whether the point is temporarily added to the flow as
@@ -3582,15 +4040,14 @@ let Flow = class Flow extends _component_component__WEBPACK_IMPORTED_MODULE_4__.
         (_a = this.model.currentEntry) === null || _a === void 0 ? void 0 : _a.addPoint(p, isTemporary);
         this.mvc.emitter.fire("__redraw");
     }
-    // public async branchAtPoint(p: FlowPoint, branchPosition?: Point, nodeId?: string,
-    //                      createThirdBranch: boolean = true, isOverwritingSibling: boolean = false) {
-    //     return await this.model.branchHandler.branchAtPoint(p, branchPosition, nodeId, createThirdBranch, isOverwritingSibling);
-    // }
     updateAfterMovingNode(nodeId, deltaPosition) {
         return this.model.updateHandler.updateAfterMovingNode(nodeId, deltaPosition);
     }
     updateOnDetachingNode(nodeId) {
         this.model.updateHandler.updateOnDetachingNode(nodeId);
+    }
+    clearCurrentEntry() {
+        this.model.currentEntryId = null;
     }
 };
 Flow = __decorate([
@@ -3637,7 +4094,6 @@ class FlowUpdateHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Tur
         const flowEntries = this.model.entries;
         for (let i = flowEntries.length - 1; i >= 0; i--) {
             const entry = flowEntries[i];
-            console.log("REF: ", nodeId, "\nSTART: ", entry.startNodeId, "\nEND: ", entry.endNodeId, "\nMATCHING: ", entry.startNodeId === nodeId || entry.endNodeId === nodeId);
             // If the entry is not connected to the card on any end --> skip it
             if (entry.startNodeId != nodeId && entry.endNodeId != nodeId)
                 continue;
@@ -3824,9 +4280,9 @@ class FlowEntryModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_
         super(...arguments);
         this.defaultStrokeWidth = 1;
         this.highlightedStrokeWidth = 3;
-        this.redrawInterval = 100;
-        this.chevronInterval = 300;
-        this.chevronTimeout = 200;
+        this.redrawInterval = 50;
+        this.chevronInterval = 500;
+        this.chevronTimeout = 300;
         this.chevronShape = "M 0 -6 L 12 0 L 0 6";
     }
     get data() {
@@ -4061,6 +4517,12 @@ class FlowEntry extends turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.TurboProxie
     get points() {
         return this.model.points;
     }
+    get highlighted() {
+        return this.model.highlighted;
+    }
+    set highlighted(value) {
+        this.model.highlighted = value;
+    }
     addPoint(point, isTemporary = false) {
         return this.model.pointHandler.addPoint(point, isTemporary);
     }
@@ -4107,6 +4569,7 @@ class FlowEntry extends turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.TurboProxie
         return { beforeSplit: beforeSplit, splitEntry: splitEntry, afterSplit: afterSplit };
     }
     delete() {
+        console.log("ENTRY DELETED");
         this.view.clearDrawing();
         this.model.flow.removeEntry(this);
     }
@@ -4257,6 +4720,59 @@ class FlowEntryView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboVi
 
 /***/ }),
 
+/***/ "./frontend/src/client/components/flowPath/flowPath.css":
+/*!**************************************************************!*\
+  !*** ./frontend/src/client/components/flowPath/flowPath.css ***!
+  \**************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "./node_modules/style-loader/dist/runtime/styleDomAPI.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "./node_modules/style-loader/dist/runtime/insertBySelector.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "./node_modules/style-loader/dist/runtime/insertStyleElement.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_flowPath_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../../../node_modules/css-loader/dist/cjs.js!./flowPath.css */ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/flowPath/flowPath.css");
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_flowPath_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_flowPath_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_flowPath_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_flowPath_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/components/flowPath/flowPath.model.ts":
 /*!*******************************************************************!*\
   !*** ./frontend/src/client/components/flowPath/flowPath.model.ts ***!
@@ -4296,7 +4812,8 @@ class FlowPathModel extends _yManagement_yModel_types_yComponentModel__WEBPACK_I
         return this.getData("nodeIds");
     }
     get nodeIdsArray() {
-        return this.nodeIds.toJSON();
+        var _a;
+        return ((_a = this.nodeIds) === null || _a === void 0 ? void 0 : _a.toJSON()) || [];
     }
 }
 
@@ -4317,12 +4834,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
 /* harmony import */ var _flowPath_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./flowPath.model */ "./frontend/src/client/components/flowPath/flowPath.model.ts");
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _flowPath_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./flowPath.css */ "./frontend/src/client/components/flowPath/flowPath.css");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
 
 
 
@@ -4337,6 +4856,7 @@ let FlowPath = class FlowPath extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2
         return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_0__.YUtilities.createYMap(data);
     }
     constructor(properties) {
+        properties.element = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.input)({ type: "text" });
         super(properties);
         this.mvc.generate({
             modelConstructor: _flowPath_model__WEBPACK_IMPORTED_MODULE_1__.FlowPathModel,
@@ -4344,24 +4864,22 @@ let FlowPath = class FlowPath extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2
             initialize: false
         });
         this.model.flow = properties.flow;
-        this.mvc.emitter.add("name", () => this.value = this.model.name);
+        this.mvc.emitter.add("name", () => {
+            this.element.size = Math.max(this.name.length - 4, 0);
+            this.value = this.model.name;
+            this.element.value = this.model.name;
+        });
         this.mvc.initialize();
         this.initializeUI();
     }
-    initializeUI() {
-        super.initializeUI();
-        this.setStyle("padding", "6px").setStyle("whiteSpace", "nowrap");
-    }
     setupUIListeners() {
-        super.setupUIListeners();
-        this.onSelected = (b) => {
-            // this.model.flow.branches?.forEach(branch => {
-            //     branch.highlighted = this.branchIdsArray?.includes(branch.dataId)
-            // });
-            // if (!b) return;
-            // this.model.flow.branches?.forEach(branch =>
-            //     branch.highlighted = this.branchIdsArray?.includes(branch.dataId));
-        };
+        this.element.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.DefaultEventName.input, () => this.name = this.element.value || "");
+        this.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.DefaultEventName.click, (e) => {
+            if (!this.selected)
+                return;
+            this.element.focus();
+        });
+        document.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.DefaultEventName.clickStart, () => this.element.blur());
     }
     get name() {
         return this.model.name;
@@ -4380,6 +4898,12 @@ let FlowPath = class FlowPath extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2
     }
     get nodeIdsArray() {
         return this.model.nodeIdsArray;
+    }
+    highlightEntries(b) {
+        this.model.flow.getEntriesFromNodesList(this.nodeIdsArray).forEach(entry => entry.highlighted = b);
+    }
+    hasNode(id) {
+        return this.nodeIdsArray.includes(id);
     }
 };
 FlowPath = __decorate([
@@ -4458,6 +4982,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _yManagement_yModel_types_yComponentModel__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../yManagement/yModel/types/yComponentModel */ "./frontend/src/yManagement/yModel/types/yComponentModel.ts");
 /* harmony import */ var _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../flowPath/flowPath */ "./frontend/src/client/components/flowPath/flowPath.ts");
 /* harmony import */ var _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../yManagement/yModel/types/yManagerModel */ "./frontend/src/yManagement/yModel/types/yManagerModel.ts");
+/* harmony import */ var _utils_random__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/random */ "./frontend/src/client/utils/random.ts");
+
 
 
 
@@ -4467,10 +4993,10 @@ class FlowSelectorModel extends _yManagement_yModel_types_yComponentModel__WEBPA
         super(data);
         this.onPathAdded = () => { };
         this.pathsModel = new _yManagement_yModel_types_yManagerModel__WEBPACK_IMPORTED_MODULE_3__.YManagerModel();
-        this.pathsModel.onAdded = (pathData, index) => {
+        this.pathsModel.onAdded = (pathData, id) => {
             var _a;
             const path = new _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_2__.FlowPath({ value: pathData.get("name"), data: pathData, flow: this.flow });
-            (_a = this.onPathAdded) === null || _a === void 0 ? void 0 : _a.call(this, path, index);
+            (_a = this.onPathAdded) === null || _a === void 0 ? void 0 : _a.call(this, path, id);
             return path;
         };
     }
@@ -4478,13 +5004,6 @@ class FlowSelectorModel extends _yManagement_yModel_types_yComponentModel__WEBPA
         super.initialize(blockKey);
         if (blockKey === this.defaultBlockKey)
             this.pathsModel.data = this.pathsData;
-    }
-    get data() {
-        return super.data;
-    }
-    set data(value) {
-        super.data = value;
-        // YUtilities.deepObserveAny(this.data, () => this.fireCallback("pathsChanged"), "paths");
     }
     get nodeId() {
         return this.getData("nodeId");
@@ -4498,20 +5017,24 @@ class FlowSelectorModel extends _yManagement_yModel_types_yComponentModel__WEBPA
     set pathsData(value) {
         this.setData("paths", value);
     }
-    get pathsDataArray() {
-        return this.pathsData.toArray();
-    }
     get paths() {
         return this.pathsModel.getAllComponents();
     }
-    insertPath(pathData, index) {
+    setPath(pathData, id) {
+        if (!id || typeof id !== "string") {
+            const paths = this.pathsData.toJSON();
+            do
+                id = (0,_utils_random__WEBPACK_IMPORTED_MODULE_4__.randomString)();
+            while (paths[id]);
+        }
         if (!(pathData instanceof _yManagement_yManagement_types__WEBPACK_IMPORTED_MODULE_0__.YMap))
             pathData = _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_2__.FlowPath.createData(pathData);
-        if (index == undefined || index >= this.pathsDataArray.length)
-            return this.pathsData.push([pathData]);
-        if (index < 0)
-            index = 0;
-        this.pathsData.insert(index, [pathData]);
+        this.pathsData.set(id, pathData);
+    }
+    removePath(id) {
+        if (!id || typeof id !== "string")
+            return;
+        this.pathsData.delete(id);
     }
     get pathHandler() {
         return this.getHandler("path");
@@ -4533,18 +5056,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   FlowSelectorPathHandler: () => (/* binding */ FlowSelectorPathHandler)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
-/* harmony import */ var _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../flowPath/flowPath */ "./frontend/src/client/components/flowPath/flowPath.ts");
-
-
 
 class FlowSelectorPathHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboHandler {
     updatePaths() {
         const oldPaths = this.model.pathsData.toJSON();
-        const newPaths = [];
-        this.recurFindPaths(this.model.nodeId, [], newPaths);
-        this.setPathNames(oldPaths, newPaths);
-        this.model.pathsData = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_1__.YUtilities.createYArray(newPaths.map(path => _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_2__.FlowPath.createData(path)));
+        const newUnnamedPaths = [];
+        this.recurFindPaths(this.model.nodeId, [], newUnnamedPaths);
+        this.setPathNames(oldPaths, newUnnamedPaths);
+        for (const id of Object.keys(oldPaths))
+            this.model.removePath(id);
     }
     recurFindPaths(currentNodeId, currentPath, paths) {
         currentPath.push(currentNodeId);
@@ -4561,56 +5081,83 @@ class FlowSelectorPathHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0
             }
         }
     }
-    setPathNames(oldPaths, newPaths) {
+    setPathNames(oldPaths, newUnnamedPaths) {
         var _a;
-        for (const path of newPaths) {
-            const oldMatch = this.matchExactPathName(path, oldPaths);
-            if (!oldMatch)
-                continue;
-            path.name = oldMatch.name;
-            this.deleteEntry(oldMatch, oldPaths);
-        }
-        for (const path of newPaths.filter(path => !path.name)) {
-            const oldMatch = this.matchSimilarPathName(path, oldPaths);
-            if (!oldMatch)
-                continue;
-            path.name = oldMatch.name;
-            this.deleteEntry(oldMatch, oldPaths);
-        }
-        const usedNames = new Set(newPaths.map(p => p.name).filter(Boolean));
-        for (const path of newPaths.filter(p => !p.name)) {
-            const baseName = (_a = this.model.flow.defaultName) !== null && _a !== void 0 ? _a : "Path";
-            let counter = 1;
-            while (usedNames.has(`${baseName} ${counter}`))
+        const newPaths = {};
+        for (const path of newUnnamedPaths)
+            this.namePath(this.matchExactPath(path, oldPaths), path, newPaths, oldPaths, false);
+        for (const path of newUnnamedPaths.filter(path => !path.name))
+            this.namePath(this.matchOffByOnePath(path, oldPaths), path, newPaths, oldPaths);
+        for (const path of newUnnamedPaths.filter(path => !path.name))
+            this.namePath(this.matchOffBySectionPath(path, oldPaths), path, newPaths, oldPaths);
+        const usedNames = new Set(Object.values(newPaths).map(p => p.name));
+        const baseName = (_a = this.model.flow.defaultName) !== null && _a !== void 0 ? _a : "Path";
+        let counter = 0;
+        for (const path of newUnnamedPaths.filter(p => !p.name)) {
+            do
                 counter++;
+            while (usedNames.has(`${baseName} ${counter}`));
             path.name = `${baseName} ${counter}`;
-            usedNames.add(path.name);
+            this.model.setPath(path);
         }
     }
-    matchExactPathName(path, oldPaths) {
-        return oldPaths.find(oldPath => { var _a, _b; return ((_a = oldPath.nodeIds) === null || _a === void 0 ? void 0 : _a.join(",")) === ((_b = path.nodeIds) === null || _b === void 0 ? void 0 : _b.join(",")); });
+    namePath(match, path, newPaths, oldPaths, setData = true) {
+        if (!match)
+            return;
+        newPaths[match] = path;
+        path.name = oldPaths[match].name;
+        delete oldPaths[match];
+        if (setData)
+            this.model.setPath(path, match);
     }
-    matchSimilarPathName(path, oldPaths) {
-        return oldPaths.find(oldPath => {
-            var _a, _b;
-            const oldNodeIds = (_a = oldPath.nodeIds) !== null && _a !== void 0 ? _a : [];
-            const newNodeIds = (_b = path.nodeIds) !== null && _b !== void 0 ? _b : [];
+    matchExactPath(path, oldPaths) {
+        var _a, _b;
+        for (const [id, oldPath] of Object.entries(oldPaths)) {
+            if (!oldPath)
+                continue;
+            if (((_a = oldPath.nodeIds) === null || _a === void 0 ? void 0 : _a.join(",")) === ((_b = path.nodeIds) === null || _b === void 0 ? void 0 : _b.join(",")))
+                return id;
+        }
+        return undefined;
+    }
+    matchOffByOnePath(path, oldPaths) {
+        var _a, _b;
+        const newNodeIds = (_a = path.nodeIds) !== null && _a !== void 0 ? _a : [];
+        for (const [id, oldPath] of Object.entries(oldPaths)) {
+            if (!oldPath)
+                continue;
+            const oldNodeIds = (_b = oldPath.nodeIds) !== null && _b !== void 0 ? _b : [];
             if (Math.abs(oldNodeIds.length - newNodeIds.length) > 1)
-                return false;
+                continue;
             let diffCount = 0;
             for (let i = 0; i < Math.min(oldNodeIds.length, newNodeIds.length); i++) {
                 if (oldNodeIds[i] !== newNodeIds[i])
                     diffCount++;
             }
-            return diffCount <= 1;
-        });
+            if (diffCount <= 1)
+                return id;
+        }
+        return undefined;
     }
-    deleteEntry(entry, oldArray) {
-        const index = oldArray.indexOf(entry);
-        if (index < 0)
-            return false;
-        oldArray.splice(index, 1);
-        return true;
+    matchOffBySectionPath(path, oldPaths) {
+        var _a, _b;
+        const newNodeIds = (_a = path.nodeIds) !== null && _a !== void 0 ? _a : [];
+        for (const [id, oldPath] of Object.entries(oldPaths)) {
+            if (!oldPath)
+                continue;
+            const oldNodeIds = (_b = oldPath.nodeIds) !== null && _b !== void 0 ? _b : [];
+            let diffSectionCount = 0;
+            let prevWasDiff = false;
+            for (let i = 0; i < Math.min(oldNodeIds.length, newNodeIds.length); i++) {
+                const isDiff = oldNodeIds[i] !== newNodeIds[i];
+                if (isDiff && !prevWasDiff)
+                    diffSectionCount++;
+                prevWasDiff = isDiff;
+            }
+            if (diffSectionCount === 0 || diffSectionCount === 1 && prevWasDiff)
+                return id;
+        }
+        return undefined;
     }
 }
 
@@ -4661,33 +5208,33 @@ let FlowSelector = class FlowSelector extends _component_component__WEBPACK_IMPO
             initialize: false
         });
         this.model.flow = properties.flow;
-        this.model.onPathAdded = (path, index) => this.view.addPathEntry(path, index);
+        this.model.onPathAdded = (path) => this.view.addPathEntry(path);
         this.mvc.initialize();
+        this.updatePaths();
     }
     static createData(data) {
         if (!data)
             data = {};
         if (!data.nodeId)
             data.nodeId = "";
-        if (!data.paths || data.paths.length === 0)
-            data.paths = [undefined];
-        data.paths = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__.YUtilities.createYArray(data.paths.map(path => _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_5__.FlowPath.createData(path)));
+        if (!data.paths)
+            data.paths = {};
+        for (const key in data.paths)
+            data.paths[key] = _flowPath_flowPath__WEBPACK_IMPORTED_MODULE_5__.FlowPath.createData(data.paths[key]);
+        data.paths = _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__.YUtilities.createYMap(data.paths);
         return _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_6__.YUtilities.createYMap(data);
     }
     get attachedNode() {
         return this.director.getNode(this.model.nodeId);
     }
     get paths() {
-        return this.model.pathsData;
+        return this.model.paths;
     }
-    get pathsArray() {
-        return this.model.pathsDataArray;
-    }
-    insertPath(pathData, index) {
-        return this.model.insertPath(pathData, index);
+    setPath(pathData, id) {
+        return this.model.setPath(pathData, id);
     }
     updatePaths() {
-        this.model.pathHandler.updatePaths();
+        this.mvc.emitter.fire("update_paths");
     }
 };
 FlowSelector = __decorate([
@@ -4711,22 +5258,31 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 /* harmony import */ var _playback_playback__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../playback/playback */ "./frontend/src/client/components/playback/playback.ts");
+/* harmony import */ var _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../yManagement/yUtilities */ "./frontend/src/yManagement/yUtilities.ts");
+/* harmony import */ var _flowSelectorMarkingMenu_flowSelectorMarkingMenu__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../flowSelectorMarkingMenu/flowSelectorMarkingMenu */ "./frontend/src/client/components/flowSelectorMarkingMenu/flowSelectorMarkingMenu.ts");
+
+
 
 
 class FlowSelectorView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
-    addPathEntry(path, index) {
-        this.wheel.addEntry(path, index);
+    addPathEntry(path) {
+        this.wheel.addEntry(path);
         if (!this.wheel.selectedEntry)
             this.wheel.select(path);
     }
     setupUIElements() {
         super.setupUIElements();
+        // @ts-ignore
         this.wheel = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelectWheel({
             direction: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.vertical,
             values: [],
             forceSelection: true,
         }).setStyle("margin", 0);
         this.playButton = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboIcon({ icon: "play", classes: "icon" });
+        if (!FlowSelectorView.markingMenu) {
+            FlowSelectorView.markingMenu = new _flowSelectorMarkingMenu_flowSelectorMarkingMenu__WEBPACK_IMPORTED_MODULE_3__.FlowSelectorMarkingMenu();
+            this.element.director.addChild(FlowSelectorView.markingMenu);
+        }
     }
     setupUILayout() {
         super.setupUILayout();
@@ -4735,15 +5291,149 @@ class FlowSelectorView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Turb
     setupUIListeners() {
         super.setupUIListeners();
         this.playButton.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, () => this.playPath(this.wheel.selectedEntry));
+        this.wheel.onSelect = () => this.updateHighlightedEntries();
+        FlowSelectorView.markingMenu.attachSelector(this.element, this.wheel, this.element.director.getNode(this.model.nodeId));
     }
     setupChangedCallbacks() {
         super.setupChangedCallbacks();
         this.emitter.add("nodeId", () => { var _a; return (_a = this.element.attachedNode) === null || _a === void 0 ? void 0 : _a.addChild(this.element); });
+        this.emitter.add("update_paths", () => {
+            this.model.pathHandler.updatePaths();
+            requestAnimationFrame(() => this.updateHighlightedEntries());
+        });
+        _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_2__.YUtilities.deepObserveAny(this.model.data, () => this.wheel.select(this.wheel.selectedEntry), "name");
+    }
+    updateHighlightedEntries() {
+        var _a;
+        this.wheel.entries.forEach(entry => {
+            if (entry === this.wheel.selectedEntry)
+                return;
+            entry.highlightEntries(false);
+        });
+        (_a = this.wheel.selectedEntry) === null || _a === void 0 ? void 0 : _a.highlightEntries(true);
     }
     playPath(path) {
-        new _playback_playback__WEBPACK_IMPORTED_MODULE_1__.Playback({ director: this.element.director, path: path, parent: document.body, classes: "over-screen-playback" });
+        const playback = new _playback_playback__WEBPACK_IMPORTED_MODULE_1__.Playback({
+            director: this.element.director,
+            path: path,
+            parent: document.body,
+            classes: "over-screen-playback"
+        });
+        playback.showControlButtons(true);
     }
 }
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/components/flowSelectorMarkingMenu/flowSelectorMarkingMenu.ts":
+/*!*******************************************************************************************!*\
+  !*** ./frontend/src/client/components/flowSelectorMarkingMenu/flowSelectorMarkingMenu.ts ***!
+  \*******************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FlowSelectorMarkingMenu: () => (/* binding */ FlowSelectorMarkingMenu)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var qrcode__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! qrcode */ "./node_modules/qrcode/lib/browser.js");
+/* harmony import */ var _flowSelectorMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./flowSelectorMarkingMenu.types */ "./frontend/src/client/components/flowSelectorMarkingMenu/flowSelectorMarkingMenu.types.ts");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+
+let FlowSelectorMarkingMenu = class FlowSelectorMarkingMenu extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboMarkingMenu {
+    constructor(properties = {}) {
+        super(properties);
+        this.addClass("turbo-marking-menu");
+        this.url = new URL(location.href);
+        if (!properties.semiMinor)
+            this.hasClass("marking-menu-v") ? properties.semiMinor = 40 : properties.semiMinor = 60;
+        if (!properties.semiMajor)
+            properties.semiMajor = 40;
+        this.onSelect = () => this.show(false);
+        this.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.clickEnd, (e) => e.stopImmediatePropagation());
+        this.initializeUI();
+        this.initializeEntries();
+    }
+    setupUIElements() {
+        super.setupUIElements();
+        this.qrCode = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.canvas)({ width: 200, height: 200 });
+        this.qrCodePopup = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ classes: "popup-card qr-code-popup" });
+        this.urlText = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.p)();
+    }
+    setupUILayout() {
+        super.setupUILayout();
+        this.qrCodePopup.addChild([(0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.h3)({ text: "Scan this QR code to shoot on your device." }), this.qrCode, this.urlText]);
+    }
+    setupUIListeners() {
+        super.setupUIListeners();
+        this.qrCodePopup.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, (e) => e.stopImmediatePropagation());
+    }
+    initializeEntries() {
+        const shareEntry = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboSelectEntry({
+            value: _flowSelectorMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.FlowSelectorMenu.share, text: "Share",
+            action: () => {
+                this.url.searchParams.set("card", this.card.dataId);
+                if (this.selector)
+                    this.url.searchParams.set("selector", this.selector.dataId);
+                if (this.wheel && this.wheel.selectedEntry)
+                    this.url.searchParams.set("path", this.wheel.selectedEntry.dataId);
+                qrcode__WEBPACK_IMPORTED_MODULE_1__.toCanvas(this.qrCode, this.url.toString(), (error) => console.error(error));
+                this.urlText.textContent = this.url.toString();
+            }
+        });
+        shareEntry.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, (e) => {
+            this.qrCodePopup.style.top = e.position.y + "px";
+            this.qrCodePopup.style.left = e.position.x + "px";
+            document.body.addChild(this.qrCodePopup);
+            this.card.director.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, () => this.qrCodePopup.remove());
+            this.show(false);
+        });
+        this.addEntry(shareEntry);
+    }
+    //@ts-ignore
+    attachSelector(selector, selectorWheel, card) {
+        selector.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.clickEnd, (e) => e.stopImmediatePropagation());
+        selector.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.longPress, (e) => {
+            e.stopImmediatePropagation();
+            this.card = card;
+            this.selector = selector;
+            this.wheel = selectorWheel;
+            this.show(true, e.position);
+        });
+    }
+};
+FlowSelectorMarkingMenu = __decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)()
+], FlowSelectorMarkingMenu);
+
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/components/flowSelectorMarkingMenu/flowSelectorMarkingMenu.types.ts":
+/*!*************************************************************************************************!*\
+  !*** ./frontend/src/client/components/flowSelectorMarkingMenu/flowSelectorMarkingMenu.types.ts ***!
+  \*************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FlowSelectorMenu: () => (/* binding */ FlowSelectorMenu)
+/* harmony export */ });
+var FlowSelectorMenu;
+(function (FlowSelectorMenu) {
+    FlowSelectorMenu["share"] = "Share";
+})(FlowSelectorMenu || (FlowSelectorMenu = {}));
 
 
 /***/ }),
@@ -4955,7 +5645,7 @@ class MetadataDrawerView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Tu
     }
     initialize() {
         super.initialize();
-        this.tabbedMenu.select("Metadata");
+        requestAnimationFrame(() => this.tabbedMenu.select("Metadata"));
     }
 }
 
@@ -5046,6 +5736,94 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
+/***/ "./frontend/src/client/components/playback/playback.exportController.ts":
+/*!******************************************************************************!*\
+  !*** ./frontend/src/client/components/playback/playback.exportController.ts ***!
+  \******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   PlaybackExportController: () => (/* binding */ PlaybackExportController)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+class PlaybackExportController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboController {
+    setupChangedCallbacks() {
+        super.setupChangedCallbacks();
+        this.emitter.add("export", () => this.exportSequenceToVideo());
+    }
+    pickMimeType() {
+        var _a, _b;
+        for (const type of [
+            "video/mp4;codecs=h264,aac",
+            "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
+            "video/webm;codecs=vp9,opus",
+            "video/webm;codecs=vp8,opus",
+            "video/webm"
+        ]) {
+            if ((_b = (_a = window.MediaRecorder) === null || _a === void 0 ? void 0 : _a.isTypeSupported) === null || _b === void 0 ? void 0 : _b.call(_a, type))
+                return type;
+        }
+        return "";
+    }
+    exportSequenceToVideo() {
+        return __awaiter(this, arguments, void 0, function* (fps = 30, filename = "sequence", paddingMs = 250) {
+            var _a;
+            this.element.renderer.renderOnCanvas = true;
+            const stream = this.element.renderer.canvas.captureStream(fps);
+            const mimeType = this.pickMimeType();
+            const chunks = [];
+            let rec;
+            try {
+                rec = new MediaRecorder(stream, mimeType ?
+                    { mimeType, videoBitsPerSecond: 2500000 } : { videoBitsPerSecond: 2500000 });
+            }
+            catch (e) {
+                rec = new MediaRecorder(stream);
+            }
+            rec.ondataavailable = (e) => {
+                if (!e.data || !e.data.size)
+                    return;
+                if (chunks.length === 0)
+                    console.log("first chunk type:", e.data.type || "(empty)");
+                chunks.push(e.data);
+            };
+            rec.onerror = (e) => console.error("MediaRecorder error:", e);
+            const stopped = new Promise((resolve) => rec.onstop = () => resolve());
+            rec.start(100);
+            yield this.element.timeline.play(0);
+            yield new Promise((resolve) => setTimeout(resolve, paddingMs));
+            if (rec.state !== "inactive")
+                rec.stop();
+            yield stopped;
+            this.element.renderer.renderOnCanvas = false;
+            const type = ((_a = chunks[0]) === null || _a === void 0 ? void 0 : _a.type) || rec.mimeType || mimeType || "video/webm";
+            const blob = new Blob(chunks, { type });
+            const url = URL.createObjectURL(blob);
+            const ext = type.startsWith("video/mp4") ? "mp4" : "webm";
+            // 7) download
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${filename}.${ext}`;
+            this.element.addChild(a);
+        });
+    }
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/components/playback/playback.model.ts":
 /*!*******************************************************************!*\
   !*** ./frontend/src/client/components/playback/playback.model.ts ***!
@@ -5087,6 +5865,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _component_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../component/component */ "./frontend/src/client/components/component/component.ts");
 /* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
 /* harmony import */ var _playback_addTextInteractor__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./playback.addTextInteractor */ "./frontend/src/client/components/playback/playback.addTextInteractor.ts");
+/* harmony import */ var _playback_exportController__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./playback.exportController */ "./frontend/src/client/components/playback/playback.exportController.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -5100,18 +5879,21 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
+
 let Playback = class Playback extends _component_component__WEBPACK_IMPORTED_MODULE_4__.VcComponent {
     constructor(properties) {
         super(properties);
         this.mvc.generate({
             viewConstructor: _playback_view__WEBPACK_IMPORTED_MODULE_2__.PlaybackView,
             modelConstructor: _playback_model__WEBPACK_IMPORTED_MODULE_3__.PlaybackModel,
-            interactorConstructors: [_playback_addTextInteractor__WEBPACK_IMPORTED_MODULE_6__.PlaybackAddTextInteractor]
+            interactorConstructors: [_playback_addTextInteractor__WEBPACK_IMPORTED_MODULE_6__.PlaybackAddTextInteractor],
+            controllerConstructors: [_playback_exportController__WEBPACK_IMPORTED_MODULE_7__.PlaybackExportController]
         });
         if (properties.path)
             this.path = properties.path;
         if (properties.card)
             this.card = properties.card;
+        this.showControlButtons(false);
     }
     set path(value) {
         this.view.timeline.cardIds = value.nodeIds;
@@ -5143,6 +5925,9 @@ let Playback = class Playback extends _component_component__WEBPACK_IMPORTED_MOD
             this.view.timeline.snapToClosest(clip.dataIndex + 1);
         else
             this.view.timeline.snapAtEnd();
+    }
+    showControlButtons(b) {
+        this.view.showControlButtons(b);
     }
 };
 __decorate([
@@ -5177,6 +5962,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class PlaybackView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
+    constructor() {
+        super(...arguments);
+        this.isMaximized = false;
+    }
     initialize() {
         super.initialize();
         this.resize();
@@ -5186,19 +5975,34 @@ class PlaybackView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboVie
         this.scaleContainer = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)();
         this.renderer = new _clipRenderer_clipRenderer__WEBPACK_IMPORTED_MODULE_2__.ClipRenderer({ director: this.element.director, videoProperties: { playsInline: true } });
         this.timeline = new _timeline_timeline__WEBPACK_IMPORTED_MODULE_1__.Timeline({ director: this.element.director, renderer: this.renderer, initialize: true });
+        this.buttonsDiv = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ classes: "buttons-div" });
+        this.closeButton = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboIcon({ icon: "x" });
+        this.maximizeButton = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboIcon({ icon: "maximize" });
     }
     setupUILayout() {
         super.setupUILayout();
         this.element.addChild(this.scaleContainer);
+        this.buttonsDiv.addChild([this.closeButton]);
+        this.element.addChild(this.buttonsDiv);
         this.scaleContainer.addChild([this.renderer, this.timeline]);
         this.element.childHandler = this.scaleContainer;
     }
     setupUIListeners() {
         super.setupUIListeners();
         window.addEventListener("resize", () => this.resize());
+        this.closeButton.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, () => this.element.remove());
+        this.maximizeButton.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, () => {
+            this.isMaximized = !this.isMaximized;
+            this.element.toggleClass("maximized-playback", this.isMaximized);
+            this.maximizeButton.icon = this.isMaximized ? "minimize" : "maximize";
+            requestAnimationFrame(() => requestAnimationFrame(() => this.resize()));
+        });
     }
     resize() {
-        this.renderer.resize(this.model.aspectRatio);
+        this.renderer.resize(this.model.aspectRatio, this.timeline.offsetWidth);
+    }
+    showControlButtons(b) {
+        this.buttonsDiv.style.display = b ? "" : "none";
     }
 }
 
@@ -5342,6 +6146,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 /* harmony import */ var _renderer_videoController__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./renderer.videoController */ "./frontend/src/client/components/renderer/renderer.videoController.ts");
+/* harmony import */ var _utils_conversion__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/conversion */ "./frontend/src/client/utils/conversion.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -5351,6 +6156,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 class RendererDrawingController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboController {
@@ -5367,18 +6173,12 @@ class RendererDrawingController extends turbodombuilder__WEBPACK_IMPORTED_MODULE
                     //Draw the frame
                     ctx.drawImage(video, 0, 0, offscreen.width, offscreen.height);
                     //Convert to blob
-                    offscreen.convertToBlob({ type: "image/png" }).then(blob => {
-                        //Read as data URL
-                        const reader = new FileReader();
-                        reader.readAsDataURL(blob);
-                        //Return data
-                        reader.onloadend = () => resolve(reader.result);
-                    });
+                    resolve(offscreen.convertToBlob({ type: "image/png" }));
                 }
                 //Fallback to actual canvas --> will cause a small lag
                 else {
                     //Draw frame
-                    resolve(this.drawFromImageSource(video));
+                    this.drawFromImageSource(video).then(url => resolve((0,_utils_conversion__WEBPACK_IMPORTED_MODULE_2__.urlToBlob)(url)));
                 }
             });
         });
@@ -5685,12 +6485,8 @@ class RendererView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboVie
         this._canvas = canvas;
     }
     animateSnapshotEffect() {
-        this.snapshotEffectDiv.setStyle("display", "block");
         this.snapshotEffectTransition.apply(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Shown.visible);
-        setTimeout(() => {
-            this.snapshotEffectTransition.apply(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Shown.hidden);
-            setTimeout(() => this.snapshotEffectDiv.setStyle("display", "none"), this.snapshotEffectTransition.transitionDuration[turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Shown.hidden] * 1000);
-        }, this.snapshotEffectTransition.transitionDuration[turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Shown.visible] * 1000);
+        setTimeout(() => this.snapshotEffectTransition.apply(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Shown.hidden), 50);
     }
     resize(aspectRatio = 1.33, width = this.element.offsetWidth, height = this.element.offsetHeight) {
         if (width / height <= aspectRatio)
@@ -5788,12 +6584,16 @@ var ClipScrubber_1;
 
 
 let ClipScrubber = ClipScrubber_1 = class ClipScrubber extends _scrubber__WEBPACK_IMPORTED_MODULE_3__.Scrubber {
-    constructor(properties = {}) {
+    constructor(properties = {}, orientation = turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.vertical) {
         super(Object.assign(Object.assign({}, properties), { initialize: false }));
         this.addClass("vc-clip-scrubber");
+        this.orientation = orientation;
+        //this.orientation == Direction.vertical ? this.addClass("vc-scrubber-v") : this.addClass("vc-scrubber-h");
+        this.toggleClass("vc-scrubber-v", orientation === turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.vertical);
+        this.toggleClass("vc-scrubber-h", orientation === turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.horizontal);
         if (!ClipScrubber_1.markingMenu) {
-            ClipScrubber_1.markingMenu = new _scrubberMarkingMenu_scrubberMarkingMenu__WEBPACK_IMPORTED_MODULE_2__.ScrubberMarkingMenu({});
-            this.director.canvas.content.addChild(ClipScrubber_1.markingMenu);
+            ClipScrubber_1.markingMenu = new _scrubberMarkingMenu_scrubberMarkingMenu__WEBPACK_IMPORTED_MODULE_2__.ScrubberMarkingMenu({ scrubber: this });
+            this.director.addChild(ClipScrubber_1.markingMenu);
         }
         if (properties.initialize)
             this.initializeUI();
@@ -5813,11 +6613,11 @@ let ClipScrubber = ClipScrubber_1 = class ClipScrubber extends _scrubber__WEBPAC
         ClipScrubber_1.markingMenu.attachTo(this.markingMenuHandle, (e) => {
             e.stopImmediatePropagation();
             ClipScrubber_1.markingMenu.scrubber = this;
-            ClipScrubber_1.markingMenu.show(true, this.scaled ? e.scaledPosition : e.position);
+            ClipScrubber_1.markingMenu.show(true, e.position);
         }, (e) => {
             e.stopImmediatePropagation();
             ClipScrubber_1.markingMenu.scrubber = this;
-            ClipScrubber_1.markingMenu.show(undefined, this.scaled ? e.scaledOrigins.first : e.origins.first);
+            ClipScrubber_1.markingMenu.show(undefined, e.origins.first);
         });
     }
 };
@@ -5928,7 +6728,7 @@ let Scrubber = class Scrubber extends _component_component__WEBPACK_IMPORTED_MOD
                 this.onScrubbingStart(e);
         });
         //On drag and if scrubbing --> stop propagation and move scrubber by delta position
-        this.director.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.drag, (e) => {
+        document.body.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.drag, (e) => {
             if (!this.scrubbing)
                 return;
             e.stopImmediatePropagation();
@@ -5936,7 +6736,7 @@ let Scrubber = class Scrubber extends _component_component__WEBPACK_IMPORTED_MOD
                 this.onScrubbing(e);
         });
         //Drag end and if scrubbing --> end scrubbing and stop propagation
-        this.director.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.dragEnd, (e) => {
+        document.body.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboEventName.dragEnd, (e) => {
             if (!this.scrubbing)
                 return;
             this.scrubbing = false;
@@ -5949,12 +6749,22 @@ let Scrubber = class Scrubber extends _component_component__WEBPACK_IMPORTED_MOD
      */
     set translation(value) {
         const basis = this.scaled ? this.director.canvas.scale : 1;
-        this.style.transform = `translate(calc(${value / basis}px - 50%), 0)`;
+        if (this.orientation == turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.horizontal)
+            this.style.transform = `translate(0, calc(${value / basis}px - 50%))`;
+        else
+            this.style.transform = `translate(calc(${value / basis}px - 50%), 0)`;
+    }
+    set orientation(value) {
+        this.toggleClass("vc-scrubber-v", value === turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.vertical);
+        this.toggleClass("vc-scrubber-h", value === turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.horizontal);
     }
 };
 __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
 ], Scrubber.prototype, "translation", null);
+__decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
+], Scrubber.prototype, "orientation", null);
 Scrubber = __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-scrubber")
 ], Scrubber);
@@ -6040,14 +6850,19 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 let ScrubberMarkingMenu = class ScrubberMarkingMenu extends turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboMarkingMenu {
+    //public scrubber: Scrubber;
+    set scrubber(value) {
+        this.toggleClass("marking-menu-v", value.orientation === turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Direction.vertical);
+        this.toggleClass("marking-menu-h", value.orientation === turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.Direction.horizontal);
+    }
     constructor(properties) {
-        if (!properties.semiMinor)
-            properties.semiMinor = 40;
-        if (!properties.semiMajor)
-            properties.semiMajor = 40;
         super(properties);
         this.addClass("turbo-marking-menu");
         this.scrubber = properties.scrubber;
+        if (!properties.semiMinor)
+            this.hasClass("marking-menu-v") ? properties.semiMinor = 40 : properties.semiMinor = 60;
+        if (!properties.semiMajor)
+            properties.semiMajor = 40;
         this.onSelect = () => this.show(false);
         this.initializeEntries();
     }
@@ -6070,28 +6885,12 @@ let ScrubberMarkingMenu = class ScrubberMarkingMenu extends turbodombuilder__WEB
             action: () => this.clip.muted = !this.clip.muted
         }));
         this.addEntry(new turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboSelectEntry({
-            value: _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.insertCard, text: "Insert Card",
+            value: _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.insertCard, text: "Split in card",
             action: () => { }
-        }));
-        this.addEntry(new turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboSelectEntry({
-            value: _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.trimRight, text: "Trim Right",
-            action: () => this.clip.endTime -= this.clip.duration - this.clipInfo.offset
-        }));
-        this.addEntry(new turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboSelectEntry({
-            value: _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.deleteRight, text: "Delete Right",
-            action: () => this.timeline.removeClipAt(this.clipInfo.clipIndex + 1)
         }));
         this.addEntry(new turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboSelectEntry({
             value: _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.delete, text: "Delete",
             action: () => this.timeline.removeClipAt(this.clipInfo.clipIndex)
-        }));
-        this.addEntry(new turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboSelectEntry({
-            value: _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.trimLeft, text: "Trim Left",
-            action: () => this.clip.startTime += this.clipInfo.offset
-        }));
-        this.addEntry(new turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboSelectEntry({
-            value: _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.deleteLeft, text: "Delete Left",
-            action: () => this.timeline.removeClipAt(this.clipInfo.clipIndex - 1)
         }));
         this.addEntry(new turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboSelectEntry({
             value: _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.reshoot, text: "Reshoot",
@@ -6105,9 +6904,10 @@ let ScrubberMarkingMenu = class ScrubberMarkingMenu extends turbodombuilder__WEB
     show(b, position) {
         const isBetweenClips = this.clipInfo.distanceFromClosestIntersection < 0.2;
         const clipIndex = this.clipInfo.clipIndex;
-        this.enable(isBetweenClips && clipIndex !== 0, _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.deleteRight);
-        this.enable(isBetweenClips && clipIndex !== this.timeline.clips.length - 1, _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.deleteLeft);
-        this.enable(!isBetweenClips, _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.trimLeft, _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.trimRight, _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.delete, _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.split, _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.mute, _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.hide, _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.reshoot);
+        //this.enable(isBetweenClips && clipIndex !== 0, ScrubberMenu.deleteRight);
+        //this.enable(isBetweenClips && clipIndex !== this.timeline.clips.length - 1, ScrubberMenu.deleteLeft);
+        //this.enable(!isBetweenClips, ScrubberMenu.trimLeft, ScrubberMenu.trimRight, ScrubberMenu.delete,
+        this.enable(!isBetweenClips, _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.delete, _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.split, _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.mute, _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.hide, _scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.reshoot);
         if (!isBetweenClips) {
             this.find(_scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.mute).text = this.clip.muted ? "Unmute" : "Mute";
             this.find(_scrubberMarkingMenu_types__WEBPACK_IMPORTED_MODULE_2__.ScrubberMenu.hide).text = this.clip.hidden ? "Show" : "Hide";
@@ -6118,6 +6918,9 @@ let ScrubberMarkingMenu = class ScrubberMarkingMenu extends turbodombuilder__WEB
         return super.show(b, position);
     }
 };
+__decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.auto)()
+], ScrubberMarkingMenu.prototype, "scrubber", null);
 ScrubberMarkingMenu = __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.define)()
 ], ScrubberMarkingMenu);
@@ -6323,7 +7126,8 @@ class TextElementSelectionInteractor extends turbodombuilder__WEBPACK_IMPORTED_M
         this.element.director.contextManager.setContext(this.element, 3, true);
     }
     drag(e) {
-        this.element.translateBy(e.scaledDeltaPosition);
+        e.stopImmediatePropagation();
+        // this.element.translateBy(e.scaledDeltaPosition);
         this.element.director.contextManager.getAllOfType(_textElement__WEBPACK_IMPORTED_MODULE_2__.TextElement).forEach(entry => {
             if (!(entry instanceof _textElement__WEBPACK_IMPORTED_MODULE_2__.TextElement))
                 return;
@@ -6421,6 +7225,9 @@ let TextElement = class TextElement extends _component_component__WEBPACK_IMPORT
         }
         return boxWidth;
     }
+    set boxWidth(value) {
+        this.model.boxWidth = value;
+    }
     get boxHeight() {
         var _a;
         let boxHeight = this.model.boxHeight;
@@ -6430,11 +7237,23 @@ let TextElement = class TextElement extends _component_component__WEBPACK_IMPORT
         }
         return boxHeight;
     }
+    set boxHeight(value) {
+        this.model.boxHeight = value;
+    }
     translateBy(deltaPosition) {
-        this.model.origin = deltaPosition
-            .div(this.director.camera.frameWidth, this.director.camera.frameHeight)
+        const value = deltaPosition
+            .div(this.renderer.offsetWidth, this.renderer.offsetHeight)
             .add(this.model.origin)
             .object;
+        if (value.x < 0)
+            value.x = 0;
+        if (value.y < 0)
+            value.y = 0;
+        if (value.x > 1)
+            value.x = 1;
+        if (value.y > 1)
+            value.y = 1;
+        this.model.origin = value;
     }
     select(b) {
         this.view.resizer.show(b);
@@ -6657,10 +7476,6 @@ let ClipTimeline = class ClipTimeline extends _timeline__WEBPACK_IMPORTED_MODULE
         this.view.scrubberContainer.addChild(clip, this.model.clipHandler.convertBlockScopeToIndex(id + 1, blockKey));
         return clip;
     }
-    set scaled(value) {
-        if (this.view && this.view.scrubber)
-            this.view.scrubber.scaled = value;
-    }
     get width() {
         return this.model.totalDuration * this.pixelsPerSecondUnit * ((this.scaled ? this.director.canvas.scale : 1) || 1);
     }
@@ -6676,9 +7491,6 @@ let ClipTimeline = class ClipTimeline extends _timeline__WEBPACK_IMPORTED_MODULE
         return this.view.scrubberContainer;
     }
 };
-__decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
-], ClipTimeline.prototype, "scaled", null);
 ClipTimeline = __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-clip-timeline")
 ], ClipTimeline);
@@ -6802,22 +7614,23 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 let ShootingTimeline = class ShootingTimeline extends _timeline__WEBPACK_IMPORTED_MODULE_2__.Timeline {
     constructor(properties) {
-        super(Object.assign(Object.assign({}, properties), { viewConstructor: _shootingTimeline_view__WEBPACK_IMPORTED_MODULE_4__.ShootingTimelineView }));
+        super(Object.assign(Object.assign({}, properties), { viewConstructor: _shootingTimeline_view__WEBPACK_IMPORTED_MODULE_4__.ShootingTimelineView, orientation: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.vertical }));
         this.addClass("vc-shooting-timeline");
-        this.scaled = true;
+        this.scaled = false;
         if (properties.drawerProperties)
             this.view.drawer.setProperties(properties.drawerProperties);
+        //TODO FIX THIS IN TURBO DRAWER
+        requestAnimationFrame(() => {
+            this.view.drawer.icon.switchReifect.apply(this.view.drawer.getOppositeSide());
+            requestAnimationFrame(() => this.view.drawer.icon.switchReifect.apply(this.view.drawer.side));
+        });
     }
     onClipAdded(syncedClip, id, blockKey) {
         const clip = super.onClipAdded(syncedClip, id, blockKey, { viewConstructor: _clip_clip_view__WEBPACK_IMPORTED_MODULE_3__.ClipView });
         this.view.scrubberContainer.addChild(clip, this.model.clipHandler.convertBlockScopeToIndex(id + 1, blockKey));
         return clip;
     }
-    set scaled(value) {
-        if (this.view && this.view.scrubber)
-            this.view.scrubber.scaled = value;
-    }
-    get width() {
+    get height() {
         return this.model.totalDuration * this.pixelsPerSecondUnit * ((this.scaled ? this.director.canvas.scale : 1) || 1);
     }
     reloadTime() {
@@ -6829,9 +7642,6 @@ let ShootingTimeline = class ShootingTimeline extends _timeline__WEBPACK_IMPORTE
         this.view.scrubberContainer.addChild(indicator, index);
     }
 };
-__decorate([
-    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
-], ShootingTimeline.prototype, "scaled", null);
 ShootingTimeline = __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)("vc-shooting-timeline")
 ], ShootingTimeline);
@@ -6852,21 +7662,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   ShootingTimelineView: () => (/* binding */ ShootingTimelineView)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _timeline_view__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../timeline.view */ "./frontend/src/client/components/timeline/timeline.view.ts");
-/* harmony import */ var _scrubber_clipScrubber_clipScrubber__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../scrubber/clipScrubber/clipScrubber */ "./frontend/src/client/components/scrubber/clipScrubber/clipScrubber.ts");
+/* harmony import */ var _scrubber_clipScrubber_clipScrubber__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../scrubber/clipScrubber/clipScrubber */ "./frontend/src/client/components/scrubber/clipScrubber/clipScrubber.ts");
+/* harmony import */ var _timeline_view__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../timeline.view */ "./frontend/src/client/components/timeline/timeline.view.ts");
 
 
 
-class ShootingTimelineView extends _timeline_view__WEBPACK_IMPORTED_MODULE_1__.TimelineView {
+class ShootingTimelineView extends _timeline_view__WEBPACK_IMPORTED_MODULE_2__.TimelineView {
     setupUIElements() {
         super.setupUIElements();
         this.drawer = new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboDrawer({ icon: "chevron", side: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.right });
-        this.scrubber = new _scrubber_clipScrubber_clipScrubber__WEBPACK_IMPORTED_MODULE_2__.ClipScrubber({ timeline: this.element, director: this.element.director, initialize: true });
+        this.scrubber = new _scrubber_clipScrubber_clipScrubber__WEBPACK_IMPORTED_MODULE_1__.ClipScrubber({ timeline: this.element, director: this.element.director, initialize: true }, turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.horizontal);
     }
     setupUILayout() {
         this.element.addChild(this.drawer);
         this.element.childHandler = this.drawer.childHandler;
         super.setupUILayout();
+        this.totalDurationText.remove();
+        this.drawer.addChild(this.currentTimeText, 0);
     }
 }
 
@@ -6909,9 +7721,11 @@ class TimelineClipController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2_
     reloadCurrentClip() {
         var _a;
         this.model.indexInfo = this.clipHandler.getClipIndexAtTimestamp();
-        this.element.director.contextManager.setContext(this.model.currentClip, 2, this.model.currentClip.selected);
-        this.element.renderer.setFrame(this.element.renderer.visibilityMode == _clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_1__.ClipRendererVisibility.ghosting
-            ? this.model.currentGhostingClip : this.model.currentClip, (_a = this.model.indexInfo) === null || _a === void 0 ? void 0 : _a.offset);
+        if (this.model.currentClip.selected)
+            this.element.director.contextManager.setContext(this.model.currentClip, 2, true);
+        if (!this.element.isPlaying)
+            this.element.renderer.setFrame(this.element.renderer.visibilityMode == _clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_1__.ClipRendererVisibility.ghosting
+                ? this.model.currentGhostingClip : this.model.currentClip, (_a = this.model.indexInfo) === null || _a === void 0 ? void 0 : _a.offset);
         this.emitter.fire("clipReloaded");
     }
     snapToClosest(entry = this.model.indexInfo) {
@@ -7130,9 +7944,7 @@ class TimelineModel extends _yManagement_yModel_types_yManagerModel__WEBPACK_IMP
             return card;
         };
         this.cardsModel.onDeleted = () => { };
-        this.onAdded = (syncedClip, id, blockKey) => {
-            return this.onClipAdded(syncedClip, id, blockKey);
-        };
+        this.onAdded = (syncedClip, id, blockKey) => this.onClipAdded(syncedClip, id, blockKey);
         const oldUpdated = this.onUpdated;
         this.onUpdated = (syncedClip, clip, id, blockKey) => {
             oldUpdated(syncedClip, clip, id, blockKey);
@@ -7224,10 +8036,17 @@ class TimelineModel extends _yManagement_yModel_types_yManagerModel__WEBPACK_IMP
     get timeHandler() {
         return this.getHandler("time");
     }
+    set orientation(value) {
+        this.fireCallback("orientationChanged", value);
+        this.getAllComponents().forEach(component => component.orientation = value);
+    }
 }
 __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
 ], TimelineModel.prototype, "indexInfo", null);
+__decorate([
+    (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.auto)()
+], TimelineModel.prototype, "orientation", null);
 
 
 /***/ }),
@@ -7305,6 +8124,8 @@ class TimelinePlayController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
     }
     play() {
         return __awaiter(this, arguments, void 0, function* (play = !this.renderer.isPlaying, updateIcon = true) {
+            var _a, _b;
+            (_b = (_a = this.element).onPlay) === null || _b === void 0 ? void 0 : _b.call(_a, play);
             if (updateIcon)
                 this.view.updatePlayButtonIcon(play);
             if (this.model.nextTimer)
@@ -7313,12 +8134,23 @@ class TimelinePlayController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
                 clearInterval(this.model.playTimer);
             if (!play) {
                 this.renderer.pause();
-                return;
+                this.emitter.fire("currentTimeChanged");
+                this.resolveEnd();
+                return this.endPromise;
             }
+            this.resolveEnd();
+            this.endPromise = new Promise(resolve => this.endResolver = resolve);
             this.model.timeHandler.resetTimeIfOutsideBounds();
             yield this.renderer.loadNext(this.model.currentClip, this.model.indexInfo.offset);
-            yield this.playRecur(this.model.indexInfo.clipIndex, this.model.indexInfo.offset);
+            void this.playRecur(this.model.indexInfo.clipIndex, this.model.indexInfo.offset);
+            return this.endPromise;
         });
+    }
+    resolveEnd() {
+        if (this.endResolver)
+            this.endResolver();
+        this.endResolver = undefined;
+        this.endPromise = undefined;
     }
 }
 
@@ -7353,12 +8185,22 @@ class TimelineTimeController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0_
         this.model.currentTime = (this.view.scrubber.translation / this.element.width * this.model.totalDuration) || 0;
     }
     getTimeFromPosition(e) {
-        let offsetPosition = e.position.x - this.view.scrubberContainer.getBoundingClientRect().left;
-        if (offsetPosition < 0)
-            offsetPosition = 0;
-        if (offsetPosition > this.element.width)
-            offsetPosition = this.element.width;
-        return offsetPosition / this.element.width * this.model.totalDuration;
+        if (this.model.orientation === "horizontal") {
+            let offsetPosition = e.position.x - this.view.scrubberContainer.getBoundingClientRect().left;
+            if (offsetPosition < 0)
+                offsetPosition = 0;
+            if (offsetPosition > this.element.width)
+                offsetPosition = this.element.width;
+            return offsetPosition / this.element.width * this.model.totalDuration;
+        }
+        else {
+            let offsetPosition = e.position.y - this.view.scrubberContainer.getBoundingClientRect().top;
+            if (offsetPosition < 0)
+                offsetPosition = 0;
+            if (offsetPosition > this.element.height)
+                offsetPosition = this.element.height;
+            return offsetPosition / this.element.height * this.model.totalDuration;
+        }
     }
 }
 
@@ -7444,36 +8286,35 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 let Timeline = class Timeline extends _component_component__WEBPACK_IMPORTED_MODULE_10__.VcComponent {
     constructor(properties) {
-        var _a, _b;
+        var _a, _b, _c;
         super(properties);
+        this.onPlay = () => { };
         this.addClass("vc-timeline");
         this.director = properties.director;
         this.renderer = properties.renderer;
         this.mvc.generate(Object.assign(Object.assign({}, properties), { viewConstructor: (_a = properties.viewConstructor) !== null && _a !== void 0 ? _a : _timeline_view__WEBPACK_IMPORTED_MODULE_3__.TimelineView, modelConstructor: _timeline_model__WEBPACK_IMPORTED_MODULE_4__.TimelineModel, controllerConstructors: [_timeline_playController__WEBPACK_IMPORTED_MODULE_5__.TimelinePlayController, _timeline_clipController__WEBPACK_IMPORTED_MODULE_6__.TimelineClipController, _timeline_timeController__WEBPACK_IMPORTED_MODULE_7__.TimelineTimeController], handlerConstructors: [_timeline_clipHandler__WEBPACK_IMPORTED_MODULE_8__.TimelineClipHandler, _timeline_timeHandler__WEBPACK_IMPORTED_MODULE_9__.TimelineTimeHandler], data: properties.data, initialize: false }));
+        this.model.orientation = (_b = properties.orientation) !== null && _b !== void 0 ? _b : turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.horizontal;
         this.model.onCardAdded = (cardId) => this.director.getNode(cardId);
         this.model.onClipAdded = (syncedClip, id, blockKey) => this.onClipAdded(syncedClip, id, blockKey);
         this.model.onClipChanged = () => this.reloadTime();
         this.mvc.initialize();
-        this.scaled = (_b = properties.scaled) !== null && _b !== void 0 ? _b : false;
+        this.scaled = (_c = properties.scaled) !== null && _c !== void 0 ? _c : false;
         this.card = properties.card;
     }
     onClipAdded(syncedClip, id, blockKey, clipProperties = {}) {
-        var _a;
+        var _a, _b;
         const clip = new _clip_clip__WEBPACK_IMPORTED_MODULE_1__.Clip(Object.assign(Object.assign({}, clipProperties), { timeline: this, director: this.director }));
-        const snapToNext = id === ((_a = this.model.indexInfo) === null || _a === void 0 ? void 0 : _a.closestIntersection);
+        clip.orientation = this.model.orientation;
+        const snapToNext = id === ((_a = this.model.indexInfo) === null || _a === void 0 ? void 0 : _a.closestIntersection) && ((_b = this.model.indexInfo) === null || _b === void 0 ? void 0 : _b.closestIntersection) > 0;
         clip.onMediaDataChanged = (clip) => {
-            var _a;
             if (clip != this.model.currentClip)
                 return;
-            this.renderer.setFrame(clip, (_a = this.model.indexInfo) === null || _a === void 0 ? void 0 : _a.offset);
+            this.clipController.reloadCurrentClip();
         };
         requestAnimationFrame(() => {
-            var _a;
             clip.data = syncedClip;
             if (snapToNext)
                 this.snapToClosest(id + 1);
-            if (clip != this.model.currentClip)
-                this.renderer.setFrame(clip, (_a = this.model.indexInfo) === null || _a === void 0 ? void 0 : _a.offset);
         });
         return clip;
     }
@@ -7482,6 +8323,9 @@ let Timeline = class Timeline extends _component_component__WEBPACK_IMPORTED_MOD
     }
     get clipController() {
         return this.mvc.getController("clip");
+    }
+    get playController() {
+        return this.mvc.getController("play");
     }
     set hasControls(value) {
         this.view.hasControls = value;
@@ -7512,8 +8356,7 @@ let Timeline = class Timeline extends _component_component__WEBPACK_IMPORTED_MOD
         if (selectedClip && selectedClip[0] instanceof _clip_clip__WEBPACK_IMPORTED_MODULE_1__.Clip)
             this.clipController.snapToClosest();
         else
-            this.clipController.snapAtEnd();
-        // this.clipController.reloadCurrentClip();
+            requestAnimationFrame(() => this.clipController.snapAtEnd());
     }
     get clips() {
         return this.model.getAllComponents();
@@ -7533,6 +8376,10 @@ let Timeline = class Timeline extends _component_component__WEBPACK_IMPORTED_MOD
     get width() {
         const basis = this.scaled ? this.director.canvas.scale : 1;
         return this.offsetWidth * basis;
+    }
+    get height() {
+        const basis = this.scaled ? this.director.canvas.scale : 1;
+        return this.offsetHeight * basis;
     }
     addClip(clip, index) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -7567,6 +8414,12 @@ let Timeline = class Timeline extends _component_component__WEBPACK_IMPORTED_MOD
     addIndicatorAt(indicator, index) {
         indicator.remove();
         this.view.scrubberContainer.addChild(indicator, index);
+    }
+    play() {
+        return __awaiter(this, arguments, void 0, function* (startTime = this.model.currentTime) {
+            this.model.currentTime = startTime;
+            yield this.playController.play(true);
+        });
     }
 };
 __decorate([
@@ -7609,6 +8462,7 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 class TimelineView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
     initialize() {
         super.initialize();
+        this.scrubber.orientation = this.model.orientation === turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.horizontal ? turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.vertical : turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.horizontal;
         this.emitter.fire("totalDurationChanged");
     }
     set hasControls(value) {
@@ -7641,7 +8495,7 @@ class TimelineView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboVie
     setupUIListeners() {
         super.setupUIListeners();
         this.scrubber.onScrubbing = (e) => this.emitter.fire("containerClicked", e);
-        this.scrubberContainer.addEventListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, (e) => this.emitter.fire("containerClicked", e));
+        this.scrubberContainer.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, (e) => this.emitter.fire("containerClicked", e), this.scrubberContainer, { propagate: true });
         this.playButton.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, (e) => {
             e.stopImmediatePropagation();
             this.emitter.fire("playButtonClicked", e);
@@ -7651,10 +8505,15 @@ class TimelineView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboVie
         super.setupChangedCallbacks();
         this.emitter.add("currentTimeChanged", () => {
             this.currentTimeText.textContent = (0,_utils_time__WEBPACK_IMPORTED_MODULE_1__.formatMMSS)(this.model.currentTime);
-            this.scrubber.translation = this.model.currentTime / this.model.totalDuration * this.element.width;
+            this.scrubber.orientation == "vertical" ?
+                this.scrubber.translation = this.model.currentTime / this.model.totalDuration * this.element.width
+                : this.scrubber.translation = this.model.currentTime / this.model.totalDuration * this.element.height;
         });
         this.emitter.add("totalDurationChanged", () => {
             this.totalDurationText.textContent = (0,_utils_time__WEBPACK_IMPORTED_MODULE_1__.formatMMSS)(this.model.totalDuration);
+        });
+        this.emitter.add("orientationChanged", (value) => {
+            this.scrubber.orientation = value === turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.horizontal ? turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.vertical : turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Direction.horizontal;
         });
     }
     updatePlayButtonIcon(isPlaying) {
@@ -7973,9 +8832,9 @@ class ProjectConnectionInteractor extends turbodombuilder__WEBPACK_IMPORTED_MODU
         this.endAndClear(tool);
     }
     endAndClear(tool) {
-        tool.currentEntry.endEntry();
-        tool.currentFlowId = null;
-        tool.lastNodeId = null;
+        var _a;
+        (_a = tool.currentEntry) === null || _a === void 0 ? void 0 : _a.endEntry();
+        tool.clear();
     }
 }
 
@@ -8345,10 +9204,12 @@ let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED
         });
         this.mvc.initialize();
         this.currentType = _project_types__WEBPACK_IMPORTED_MODULE_6__.ProjectScreens.canvas;
-        this.toolPanel.addPanel(new _panels_shootingPanel_shootingPanel__WEBPACK_IMPORTED_MODULE_4__.ShootingPanel({
+        const shootingPanel = new _panels_shootingPanel_shootingPanel__WEBPACK_IMPORTED_MODULE_4__.ShootingPanel({
             toolPanel: this.toolPanel,
             director: this
-        }), _project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.shoot, _project_types__WEBPACK_IMPORTED_MODULE_6__.ProjectScreens.camera);
+        });
+        this.toolPanel.addPanel(shootingPanel, _project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.shoot, _project_types__WEBPACK_IMPORTED_MODULE_6__.ProjectScreens.camera);
+        this.toolPanel.addPanel(shootingPanel, _project_types__WEBPACK_IMPORTED_MODULE_6__.ToolType.selection, _project_types__WEBPACK_IMPORTED_MODULE_6__.ProjectScreens.camera);
         this.toolPanel.addPanel(new _panels_textPanel_textPanel__WEBPACK_IMPORTED_MODULE_5__.TextPanel({
             toolPanel: this.toolPanel,
             director: this
@@ -8420,13 +9281,9 @@ let Project = class Project extends _rootDirector_rootDirector__WEBPACK_IMPORTED
             const defaultName = "Flow " + this.model.flowsCount;
             return yield _yManagement_yUtilities__WEBPACK_IMPORTED_MODULE_10__.YUtilities.addInYMap(_components_flow_flow__WEBPACK_IMPORTED_MODULE_3__.Flow.createData({
                 entries: {},
-                tags: [{
-                        nodeId: nodeId,
-                        paths: [{
-                                name: defaultName + " - 1",
-                                nodeIds: [nodeId]
-                            }]
-                    }],
+                selectors: {
+                    0: { nodeId: nodeId }
+                },
                 defaultName: defaultName,
                 color: color
             }), this.model.flowsData);
@@ -8656,6 +9513,7 @@ let RootDirector = class RootDirector extends _director_director__WEBPACK_IMPORT
     set preventDefaultEvents(value) {
         this.eventManager.defaultState.preventDefaultTouch = value;
         this.eventManager.defaultState.preventDefaultMouse = value;
+        this.eventManager.defaultState.preventDefaultWheel = value;
     }
 };
 __decorate([
@@ -8883,10 +9741,40 @@ class GroupsHandler extends _requestHandler_requestHandler__WEBPACK_IMPORTED_MOD
     }
     getProjectsForGroup(groupId) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!groupId) {
+                const arr = [];
+                for (const group of this.groups)
+                    arr.push(...(yield this.getProjectsForGroup(group._id)));
+                return arr;
+            }
             const res = yield fetch(`${this.serverUrl}api/projects?groupId=${groupId}`, { credentials: "include", });
             if (!res.ok)
                 throw new Error("Failed to load projects for group");
             return yield res.json();
+        });
+    }
+    createGroup(groupName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield fetch(`${this.serverUrl}api/groups`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ name: groupName }),
+            });
+            if (!res.ok)
+                throw new Error("Failed to create group");
+            return yield res.json();
+        });
+    }
+    addGroupMember(email, groupId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield fetch(`${this.serverUrl}api/groups/add-member`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ email: email, groupId: groupId }),
+            });
+            return res.ok;
         });
     }
     createProject(projectName, groupId) {
@@ -8897,6 +9785,7 @@ class GroupsHandler extends _requestHandler_requestHandler__WEBPACK_IMPORTED_MOD
                 credentials: "include",
                 body: JSON.stringify({ name: projectName, groupId }),
             });
+            console.log(res);
             if (!res.ok)
                 throw new Error("Failed to create project");
             return yield res.json();
@@ -8913,9 +9802,24 @@ class GroupsHandler extends _requestHandler_requestHandler__WEBPACK_IMPORTED_MOD
                 throw new Error("Unknown error");
             }
             const project = yield res.json();
-            console.log("ROOM", `PROJECT:${project._id}`);
             const doc = this.getOrCreateYDoc(project._id);
             return { doc: doc, websocket: new _managers_websocketManager_websocketManager__WEBPACK_IMPORTED_MODULE_3__.WebsocketManager(`PROJECT:${project._id}`, doc) };
+        });
+    }
+    deleteProject(projectId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield fetch(`${this.serverUrl}api/projects/${projectId}`, {
+                method: "DELETE",
+                credentials: "include",
+            });
+            if (!res.ok) {
+                if (res.status === 403)
+                    throw new Error("Access denied");
+                if (res.status === 404)
+                    throw new Error("Project not found");
+                throw new Error("Unknown error");
+            }
+            this.docs.delete(projectId.toString());
         });
     }
 }
@@ -9755,6 +10659,12 @@ let ShootingPanel = class ShootingPanel extends _toolPanelContent_toolPanelConte
     get camera() {
         return this.director.camera;
     }
+    get card() {
+        return this.camera.card;
+    }
+    refresh() {
+        this.view.refresh();
+    }
 };
 ShootingPanel = __decorate([
     (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.define)()
@@ -9780,7 +10690,9 @@ var CaptureMode;
     CaptureMode["photo"] = "PHOTO";
     CaptureMode["video"] = "VIDEO";
     CaptureMode["create"] = "CREATE";
+    CaptureMode["text"] = "TEXT";
     CaptureMode["videoShooting"] = "VIDEO SHOOTING";
+    CaptureMode["edit"] = "EDIT";
 })(CaptureMode || (CaptureMode = {}));
 
 
@@ -9797,16 +10709,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   ShootingPanelView: () => (/* binding */ ShootingPanelView)
 /* harmony export */ });
-/* harmony import */ var _toolPanelContent_toolPanelContent_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../toolPanelContent/toolPanelContent.view */ "./frontend/src/client/panels/toolPanelContent/toolPanelContent.view.ts");
-/* harmony import */ var _components_captureButton_captureButton__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../components/captureButton/captureButton */ "./frontend/src/client/components/captureButton/captureButton.ts");
-/* harmony import */ var _components_captureTimer_captureTimer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../components/captureTimer/captureTimer */ "./frontend/src/client/components/captureTimer/captureTimer.ts");
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _components_backgroundSelector_backgroundSelector__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../components/backgroundSelector/backgroundSelector */ "./frontend/src/client/components/backgroundSelector/backgroundSelector.ts");
-/* harmony import */ var _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./shootingPanel.types */ "./frontend/src/client/panels/shootingPanel/shootingPanel.types.ts");
-/* harmony import */ var _components_animationComponents_animatedContentSwitchingDiv_animatedContentSwitchingDiv__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../components/animationComponents/animatedContentSwitchingDiv/animatedContentSwitchingDiv */ "./frontend/src/client/components/animationComponents/animatedContentSwitchingDiv/animatedContentSwitchingDiv.ts");
-/* harmony import */ var _components_clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../components/clipRenderer/clipRenderer.types */ "./frontend/src/client/components/clipRenderer/clipRenderer.types.ts");
-/* harmony import */ var _components_captureModeSlider_captureModeSlider__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../components/captureModeSlider/captureModeSlider */ "./frontend/src/client/components/captureModeSlider/captureModeSlider.ts");
-/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+/* harmony import */ var _components_captureButton_captureButton__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../components/captureButton/captureButton */ "./frontend/src/client/components/captureButton/captureButton.ts");
+/* harmony import */ var _components_captureFlowSelector_captureFlowSelector__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../components/captureFlowSelector/captureFlowSelector */ "./frontend/src/client/components/captureFlowSelector/captureFlowSelector.ts");
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _components_backgroundSelector_backgroundSelector__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/backgroundSelector/backgroundSelector */ "./frontend/src/client/components/backgroundSelector/backgroundSelector.ts");
+/* harmony import */ var _shootingPanel_types__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./shootingPanel.types */ "./frontend/src/client/panels/shootingPanel/shootingPanel.types.ts");
+/* harmony import */ var _components_animationComponents_animatedContentSwitchingDiv_animatedContentSwitchingDiv__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../components/animationComponents/animatedContentSwitchingDiv/animatedContentSwitchingDiv */ "./frontend/src/client/components/animationComponents/animatedContentSwitchingDiv/animatedContentSwitchingDiv.ts");
+/* harmony import */ var _components_clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../components/clipRenderer/clipRenderer.types */ "./frontend/src/client/components/clipRenderer/clipRenderer.types.ts");
+/* harmony import */ var _components_captureModeSlider_captureModeSlider__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../components/captureModeSlider/captureModeSlider */ "./frontend/src/client/components/captureModeSlider/captureModeSlider.ts");
+/* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
 
 
 
@@ -9816,8 +10727,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-class ShootingPanelView extends _toolPanelContent_toolPanelContent_view__WEBPACK_IMPORTED_MODULE_0__.ToolPanelContentView {
+class ShootingPanelView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.TurboView {
     initialize() {
         super.initialize();
         this.ghost.toggled = true;
@@ -9826,65 +10736,69 @@ class ShootingPanelView extends _toolPanelContent_toolPanelContent_view__WEBPACK
     }
     setupUIElements() {
         super.setupUIElements();
-        this.modeSlider = new _components_captureModeSlider_captureModeSlider__WEBPACK_IMPORTED_MODULE_8__.CaptureModeSlider({
+        this.modeSlider = new _components_captureModeSlider_captureModeSlider__WEBPACK_IMPORTED_MODULE_7__.CaptureModeSlider({
             classes: "capture-mode-slider",
-            values: [_shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.photo, _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.video, _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.create],
+            values: [_shootingPanel_types__WEBPACK_IMPORTED_MODULE_4__.CaptureMode.photo, _shootingPanel_types__WEBPACK_IMPORTED_MODULE_4__.CaptureMode.video, _shootingPanel_types__WEBPACK_IMPORTED_MODULE_4__.CaptureMode.create, _shootingPanel_types__WEBPACK_IMPORTED_MODULE_4__.CaptureMode.edit],
         });
-        this.captureFlowSelector = new _components_captureTimer_captureTimer__WEBPACK_IMPORTED_MODULE_2__.CaptureTimer();
-        this.captureButton = new _components_captureButton_captureButton__WEBPACK_IMPORTED_MODULE_1__.CaptureButton();
-        this.ghost = new turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.TurboIconToggle({ icon: "ghost-on", toggleOnClick: true });
-        this.switchCamera = new turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.TurboIconToggle({ icon: "switch-camera", toggleOnClick: true });
-        this.microphone = new turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.TurboIconToggle({ icon: "microphone-on", toggleOnClick: true });
-        this.backgroundSelector = new _components_backgroundSelector_backgroundSelector__WEBPACK_IMPORTED_MODULE_4__.BackgroundSelector();
-        this.shootingDiv = new turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.TurboSelectEntry({ value: "shooting", reflectValueOn: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.div)() });
-        this.backgroundColorDiv = new turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.TurboSelectEntry({ value: "backgroundColor", reflectValueOn: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.div)() });
-        this.toolsDiv = new turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.TurboSelectEntry({ value: "tools", reflectValueOn: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.div)() });
-        this.animatedDiv = new _components_animationComponents_animatedContentSwitchingDiv_animatedContentSwitchingDiv__WEBPACK_IMPORTED_MODULE_6__.AnimatedContentSwitchingDiv({ values: [this.shootingDiv, this.backgroundColorDiv] });
+        this.captureFlowSelector = new _components_captureFlowSelector_captureFlowSelector__WEBPACK_IMPORTED_MODULE_1__.CaptureFlowSelector({ director: this.element.director });
+        this.captureButton = new _components_captureButton_captureButton__WEBPACK_IMPORTED_MODULE_0__.CaptureButton();
+        this.ghost = new turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.TurboIconToggle({ icon: "ghost-on", toggleOnClick: true });
+        this.switchCamera = new turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.TurboIconToggle({ icon: "switch-camera", toggleOnClick: true });
+        this.microphone = new turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.TurboIconToggle({ icon: "microphone-on", toggleOnClick: true });
+        this.addGallery = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.icon)({ icon: "gallery" });
+        this.addGalleryInput = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.input)({ type: "file", hidden: true, accept: "image/*,video/mp4,.mp4" });
+        this.backgroundSelector = new _components_backgroundSelector_backgroundSelector__WEBPACK_IMPORTED_MODULE_3__.BackgroundSelector();
+        this.shootingDiv = new turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.TurboSelectEntry({ value: "shooting", reflectValueOn: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.div)() });
+        this.backgroundColorDiv = new turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.TurboSelectEntry({ value: "backgroundColor", reflectValueOn: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.div)() });
+        this.editTextDiv = new turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.TurboSelectEntry({ value: "editText", reflectValueOn: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.div)() });
+        this.animatedDiv = new _components_animationComponents_animatedContentSwitchingDiv_animatedContentSwitchingDiv__WEBPACK_IMPORTED_MODULE_5__.AnimatedContentSwitchingDiv({ values: [this.shootingDiv, this.backgroundColorDiv] });
     }
     setupUILayout() {
-        super.setupUILayout();
         this.element.addChild([this.modeSlider, this.animatedDiv]);
         this.element.camera.addChild(this.captureFlowSelector);
         this.shootingDiv.addClass("camera-buttons");
         this.shootingDiv.addChild([
-            (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.div)({
+            (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.div)({
                 classes: "camera-buttons-child",
                 children: this.ghost
             }),
             this.captureButton,
-            (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.div)({
+            (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.div)({
                 classes: "camera-buttons-child",
-                children: [this.switchCamera, this.microphone, (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.spacer)()]
+                children: [this.switchCamera, this.microphone, (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.spacer)(), this.addGalleryInput, this.addGallery]
             })
         ]);
         this.backgroundColorDiv.addChild(this.backgroundSelector);
     }
     setupUIListeners() {
         super.setupUIListeners();
-        this.captureButton.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.DefaultEventName.click, (e) => {
+        this.captureButton.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.DefaultEventName.click, (e) => {
             e.stopImmediatePropagation();
-            if (this.model.mode == _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.photo)
+            if (this.model.mode == _shootingPanel_types__WEBPACK_IMPORTED_MODULE_4__.CaptureMode.photo)
                 this.element.camera.snapPicture();
-            else if (this.model.mode == _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.video)
-                this.model.mode = _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.videoShooting;
-            else if (this.model.mode == _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.videoShooting)
-                this.model.mode = _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.video;
+            else if (this.model.mode == _shootingPanel_types__WEBPACK_IMPORTED_MODULE_4__.CaptureMode.video)
+                this.model.mode = _shootingPanel_types__WEBPACK_IMPORTED_MODULE_4__.CaptureMode.videoShooting;
+            else if (this.model.mode == _shootingPanel_types__WEBPACK_IMPORTED_MODULE_4__.CaptureMode.videoShooting)
+                this.model.mode = _shootingPanel_types__WEBPACK_IMPORTED_MODULE_4__.CaptureMode.video;
         });
         this.ghost.onToggle = (value, el) => {
             el.icon = "ghost-" + (value ? "on" : "off");
-            this.element.camera.visibilityMode = value ? _components_clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_7__.ClipRendererVisibility.ghosting : _components_clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_7__.ClipRendererVisibility.hidden;
+            this.element.camera.visibilityMode = value ? _components_clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_6__.ClipRendererVisibility.ghosting : _components_clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_6__.ClipRendererVisibility.hidden;
         };
         this.microphone.onToggle = (value, el) => {
             el.icon = "microphone-" + (value ? "on" : "off");
             this.element.camera.muteAudio(!value);
         };
         this.switchCamera.onToggle = () => this.element.camera.switchCamera();
+        this.addGallery.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.DefaultEventName.click, () => this.addGalleryInput.click());
+        this.addGalleryInput.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.DefaultEventName.change, () => {
+            Array.from(this.addGalleryInput.files || []).forEach(file => this.element.camera.uploadMedia(file));
+        });
         this.backgroundSelector.onSelect = () => this.element.camera.fillCanvas(this.backgroundSelector.selectedValue);
         this.modeSlider.onSelect = ((b, entry) => {
             if (b)
                 this.model.mode = entry.value;
         });
-        this.backButton.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_3__.DefaultEventName.click, () => this.element.director.currentType = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.canvas);
     }
     setupChangedCallbacks() {
         super.setupChangedCallbacks();
@@ -9895,23 +10809,28 @@ class ShootingPanelView extends _toolPanelContent_toolPanelContent_view__WEBPACK
         this.emitter.add("modeChanged", () => this.refresh());
     }
     refresh(mode = this.model.mode) {
-        if (mode == _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.create)
+        this.captureFlowSelector.refresh();
+        const isCreateOrEdit = mode === _shootingPanel_types__WEBPACK_IMPORTED_MODULE_4__.CaptureMode.create || mode === _shootingPanel_types__WEBPACK_IMPORTED_MODULE_4__.CaptureMode.text;
+        if (isCreateOrEdit)
             this.element.camera.visible = true;
         // this.camera.fillCanvas(this.backgroundSelector.selectedValue);
-        else if (mode == _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.videoShooting) {
-            this.element.camera.visibilityMode = _components_clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_7__.ClipRendererVisibility.hidden;
+        else if (mode == _shootingPanel_types__WEBPACK_IMPORTED_MODULE_4__.CaptureMode.videoShooting) {
+            this.element.camera.visibilityMode = _components_clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_6__.ClipRendererVisibility.hidden;
             this.captureFlowSelector.startTimer();
             this.element.camera.startRecording();
         }
         else
             this.element.camera.visible = false;
-        this.modeSlider.show(mode != _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.videoShooting);
+        this.element.director.toolManager.setTool(mode === _shootingPanel_types__WEBPACK_IMPORTED_MODULE_4__.CaptureMode.edit
+            ? this.element.director.toolManager.getToolByName(_directors_project_project_types__WEBPACK_IMPORTED_MODULE_8__.ToolType.selection)
+            : this.element.director.toolManager.getToolByName(_directors_project_project_types__WEBPACK_IMPORTED_MODULE_8__.ToolType.shoot), turbodombuilder__WEBPACK_IMPORTED_MODULE_2__.ClickMode.left);
+        this.modeSlider.show(mode != _shootingPanel_types__WEBPACK_IMPORTED_MODULE_4__.CaptureMode.videoShooting);
         this.captureButton.updateState(mode);
         // this.backgroundSelector.show(this.mode == CaptureMode.create);
-        this.ghost.show(mode != _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.create);
-        this.switchCamera.show(mode != _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.create);
-        this.microphone.show(mode == _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.video || mode == _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.videoShooting);
-        this.animatedDiv.select(mode == _shootingPanel_types__WEBPACK_IMPORTED_MODULE_5__.CaptureMode.create ? this.backgroundColorDiv : this.shootingDiv);
+        this.ghost.show(!isCreateOrEdit);
+        this.switchCamera.show(!isCreateOrEdit);
+        this.microphone.show(mode == _shootingPanel_types__WEBPACK_IMPORTED_MODULE_4__.CaptureMode.video || mode == _shootingPanel_types__WEBPACK_IMPORTED_MODULE_4__.CaptureMode.videoShooting);
+        this.animatedDiv.select(isCreateOrEdit ? this.backgroundColorDiv : this.shootingDiv);
     }
 }
 
@@ -10092,10 +11011,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   TextPanelView: () => (/* binding */ TextPanelView)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-/* harmony import */ var _toolPanelContent_toolPanelContent_view__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../toolPanelContent/toolPanelContent.view */ "./frontend/src/client/panels/toolPanelContent/toolPanelContent.view.ts");
 
-
-class TextPanelView extends _toolPanelContent_toolPanelContent_view__WEBPACK_IMPORTED_MODULE_1__.ToolPanelContentView {
+class TextPanelView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
     setupChangedCallbacks() {
         super.setupChangedCallbacks();
         this.emitter.add("fontSize", (value) => this.fontSizeInput.value = value);
@@ -10291,6 +11208,8 @@ let ToolPanel = class ToolPanel extends _components_component_component__WEBPACK
     }
     changePanel(toolName = this.toolManager.getTool(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.ClickMode.left).name, context = this.director.currentType) {
         var _a;
+        if (this.getPanel(toolName, context) === this.currentPanel)
+            return;
         (_a = this.currentPanel) === null || _a === void 0 ? void 0 : _a.detach();
         this.removeChild(this.currentPanel);
         this.currentPanel = this.getPanel(toolName, context);
@@ -10308,59 +11227,6 @@ ToolPanel = __decorate([
 
 /***/ }),
 
-/***/ "./frontend/src/client/panels/toolPanelContent/toolPanelContent.css":
-/*!**************************************************************************!*\
-  !*** ./frontend/src/client/panels/toolPanelContent/toolPanelContent.css ***!
-  \**************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/styleDomAPI.js */ "./node_modules/style-loader/dist/runtime/styleDomAPI.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/insertBySelector.js */ "./node_modules/style-loader/dist/runtime/insertBySelector.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js */ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/insertStyleElement.js */ "./node_modules/style-loader/dist/runtime/insertStyleElement.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/styleTagTransform.js */ "./node_modules/style-loader/dist/runtime/styleTagTransform.js");
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_toolPanelContent_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! !!../../../../../node_modules/css-loader/dist/cjs.js!./toolPanelContent.css */ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/panels/toolPanelContent/toolPanelContent.css");
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var options = {};
-
-options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
-options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
-options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
-options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
-options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_toolPanelContent_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
-
-
-
-
-       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_toolPanelContent_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_toolPanelContent_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_toolPanelContent_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
-
-
-/***/ }),
-
 /***/ "./frontend/src/client/panels/toolPanelContent/toolPanelContent.ts":
 /*!*************************************************************************!*\
   !*** ./frontend/src/client/panels/toolPanelContent/toolPanelContent.ts ***!
@@ -10373,8 +11239,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   ToolPanelContent: () => (/* binding */ ToolPanelContent)
 /* harmony export */ });
 /* harmony import */ var _components_component_component__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../components/component/component */ "./frontend/src/client/components/component/component.ts");
-/* harmony import */ var _toolPanelContent_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./toolPanelContent.css */ "./frontend/src/client/panels/toolPanelContent/toolPanelContent.css");
-
 
 class ToolPanelContent extends _components_component_component__WEBPACK_IMPORTED_MODULE_0__.VcComponent {
     constructor(properties) {
@@ -10390,41 +11254,6 @@ class ToolPanelContent extends _components_component_component__WEBPACK_IMPORTED
     }
     attach() { }
     detach() { }
-}
-
-
-/***/ }),
-
-/***/ "./frontend/src/client/panels/toolPanelContent/toolPanelContent.view.ts":
-/*!******************************************************************************!*\
-  !*** ./frontend/src/client/panels/toolPanelContent/toolPanelContent.view.ts ***!
-  \******************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ToolPanelContentView: () => (/* binding */ ToolPanelContentView)
-/* harmony export */ });
-/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
-
-class ToolPanelContentView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
-    //     requestAnimationFrame(() => {
-    //     this._panelMarginTop = buttons.offsetHeight + 32;
-    // });
-    setupUIElements() {
-        super.setupUIElements();
-        this.backButton = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({ icon: "arrow-right" });
-        this.saveButton = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({ icon: "save" });
-        this.cancelButton = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({ icon: "cancel" });
-    }
-    setupUILayout() {
-        super.setupUILayout();
-        this.element.addChild((0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({
-            classes: "main-buttons-div",
-            children: [this.cancelButton, this.saveButton, this.backButton]
-        }));
-    }
 }
 
 
@@ -10463,8 +11292,10 @@ class CameraCaptureHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.
         });
     }
     stopStream() {
-        if (this.model.stream)
-            this.model.stream.getTracks().forEach(track => track.stop());
+        if (!this.model.stream)
+            return;
+        this.model.stream.getTracks().forEach(track => track.stop());
+        this.model.stream = undefined;
     }
     switchCamera() {
         return __awaiter(this, arguments, void 0, function* (initializing = false) {
@@ -10479,7 +11310,7 @@ class CameraCaptureHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.
                         this.model.cameraDeviceIdIndex++;
                         if (this.model.cameraDeviceIdIndex >= videoDevices.length)
                             this.model.cameraDeviceIdIndex = 0;
-                        newDeviceLabel = videoDevices[this.model.cameraDeviceIdIndex].label.toLowerCase();
+                        newDeviceLabel = videoDevices[this.model.cameraDeviceIdIndex].label.toLowerCase() || "";
                     } while (this.model.cameraIsLikelyFront != null && (this.model.cameraIsLikelyFront == newDeviceLabel.includes("front")));
                     if (this.model.cameraIsLikelyFront != null)
                         this.model.cameraIsLikelyFront = newDeviceLabel.includes("front");
@@ -10501,7 +11332,7 @@ class CameraCaptureHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.
             try {
                 this.model.stream = yield navigator.mediaDevices.getUserMedia({
                     video: {
-                        deviceId: this.model.cameraDeviceId ? { exact: this.model.cameraDeviceId } : "",
+                        deviceId: this.model.cameraDeviceId ? { exact: this.model.cameraDeviceId } : undefined,
                         aspectRatio: this.model.aspectRatio,
                         frameRate: { ideal: 30 }
                     },
@@ -10524,15 +11355,16 @@ class CameraCaptureHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.
     }
     checkIfCurrentStreamIsLikelyFront() {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
+            var _a, _b;
             if (!this.model.stream)
                 return;
             try {
                 const videoTrack = this.model.stream.getVideoTracks()[0];
                 if (!videoTrack)
                     return;
-                const currentDeviceLabel = (_a = (yield navigator.mediaDevices.enumerateDevices())
-                    .find(device => device.deviceId == videoTrack.getSettings().deviceId)) === null || _a === void 0 ? void 0 : _a.label.toLowerCase();
+                const settings = videoTrack.getSettings();
+                const currentDeviceLabel = (_b = (_a = (yield navigator.mediaDevices.enumerateDevices())
+                    .find(device => device.deviceId == settings.deviceId)) === null || _a === void 0 ? void 0 : _a.label) === null || _b === void 0 ? void 0 : _b.toLowerCase();
                 if (!currentDeviceLabel)
                     return;
                 if (currentDeviceLabel.includes("front"))
@@ -10548,7 +11380,7 @@ class CameraCaptureHandler extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.
     }
     muteAudio(b) {
         var _a;
-        (_a = this.model.stream) === null || _a === void 0 ? void 0 : _a.getAudioTracks().forEach(track => track.enabled = b);
+        (_a = this.model.stream) === null || _a === void 0 ? void 0 : _a.getAudioTracks().forEach(track => track.enabled = !b);
     }
 }
 
@@ -10678,6 +11510,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   CameraRecordingController: () => (/* binding */ CameraRecordingController)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+/* harmony import */ var _utils_video__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/video */ "./frontend/src/client/utils/video.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -10688,7 +11521,12 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
     });
 };
 
+
 class CameraRecordingController extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboController {
+    constructor() {
+        super(...arguments);
+        this.negotiatedType = "";
+    }
     setupChangedCallbacks() {
         super.setupChangedCallbacks();
         this.emitter.add("stream", () => this.setupMediaRecorder());
@@ -10701,6 +11539,7 @@ class CameraRecordingController extends turbodombuilder__WEBPACK_IMPORTED_MODULE
             console.log("Unable to start recording");
             return;
         }
+        this.model.recordedChunks = [];
         this.model.mediaRecorder.start(100);
         this.model.lastRecorderTimestamp = Date.now();
     }
@@ -10711,42 +11550,98 @@ class CameraRecordingController extends turbodombuilder__WEBPACK_IMPORTED_MODULE
         }
         this.model.mediaRecorder.stop();
     }
-    setupMediaRecorder() {
-        if (!this.model.stream) {
-            alert("No stream available to record.");
-            return;
+    pickMimeType() {
+        var _a, _b;
+        for (const type of [
+            "video/mp4;codecs=h264,aac",
+            "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
+            "video/webm;codecs=vp9,opus",
+            "video/webm;codecs=vp8,opus",
+            "video/webm"
+        ]) {
+            if ((_b = (_a = window.MediaRecorder) === null || _a === void 0 ? void 0 : _a.isTypeSupported) === null || _b === void 0 ? void 0 : _b.call(_a, type))
+                return type;
         }
-        this.model.mediaRecorder = new MediaRecorder(this.model.stream, { videoBitsPerSecond: 2500000 });
-        this.model.mediaRecorder.onstop = () => this.saveRecording();
-        this.model.mediaRecorder.ondataavailable = (event) => {
-            if (event.data.size > 0)
-                this.model.recordedChunks.push(event.data);
-        };
+        return "";
     }
-    saveRecording() {
+    setupMediaRecorder() {
+        if (!this.model.stream)
+            return;
+        const mimeType = this.pickMimeType();
+        this.negotiatedType = mimeType;
+        try {
+            this.model.mediaRecorder = new MediaRecorder(this.model.stream, mimeType ?
+                { mimeType, videoBitsPerSecond: 2500000 } : { videoBitsPerSecond: 2500000 });
+        }
+        catch (e) {
+            this.model.mediaRecorder = new MediaRecorder(this.model.stream);
+        }
+        this.model.mediaRecorder.ondataavailable = (e) => { var _a; return ((_a = e.data) === null || _a === void 0 ? void 0 : _a.size) > 0 && this.model.recordedChunks.push(e.data); };
+        this.model.mediaRecorder.onstop = () => this.saveMedia().catch(e => console.error(e));
+        this.model.mediaRecorder.onerror = (e) => console.error("MediaRecorder error:", e);
+    }
+    saveMedia(file) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.model.recordedChunks.length == 0)
-                return;
+            var _a, _b, _c;
+            if (!file) {
+                if (!this.model.recordedChunks || this.model.recordedChunks.length === 0)
+                    return;
+                let type = ((_a = this.model.recordedChunks[0]) === null || _a === void 0 ? void 0 : _a.type)
+                    || ((_b = this.model.mediaRecorder) === null || _b === void 0 ? void 0 : _b.mimeType)
+                    || this.negotiatedType
+                    || "video/webm";
+                if (!type || type === "application/octet-stream") {
+                    const buf = new Uint8Array(yield new Blob(this.model.recordedChunks).slice(0, 16).arrayBuffer());
+                    if (buf[0] === 0x1A && buf[1] === 0x45 && buf[2] === 0xDF && buf[3] === 0xA3)
+                        type = "video/webm";
+                    if (buf[4] === 0x66 && buf[5] === 0x74 && buf[6] === 0x79 && buf[7] === 0x70)
+                        type = "video/mp4";
+                }
+                file = new Blob(this.model.recordedChunks, { type });
+                this.model.recordedChunks = [];
+            }
+            const mediaType = file.type.startsWith("image/") ? "image" : "video";
+            const id = `${mediaType}-${Math.floor(Math.random() * 10000000)}-${Date.now()}`;
+            const cleanType = (file.type || "").split(";")[0].toLowerCase();
+            const ext = cleanType === "video/mp4" ? "mp4"
+                : cleanType.startsWith("image/") ? cleanType.split("/")[1] : "bin";
+            file = new File([file], `${id}.${ext}`, { type: cleanType });
+            let duration = 5;
+            if (mediaType === "video") {
+                try {
+                    duration = yield (0,_utils_video__WEBPACK_IMPORTED_MODULE_1__.getVideoDuration)(file);
+                }
+                catch (_d) {
+                    duration = Math.max(1, (Date.now() - this.model.lastRecorderTimestamp) / 1000);
+                }
+            }
             const media = {
-                id: `video-${Math.floor(Math.random() * 10000000)}-${Date.now()}`,
-                type: "video",
+                id: `${mediaType}-${Math.floor(Math.random() * 10000000)}-${Date.now()}`,
+                type: mediaType,
                 timestamp: Date.now(),
-                duration: (Date.now() - this.model.lastRecorderTimestamp) / 1000,
-                converting: true
+                duration
             };
-            this.model.setRecordedMedia(media, undefined);
-            const blob = new Blob(this.model.recordedChunks, { type: "video/webm" });
-            this.model.recordedChunks = [];
-            if (!(yield this.mediaHandler.convertMedia({ id: media.id, blob: blob })))
-                return;
-            this.mediaHandler.getMediaMetadata(media.id).converting = false;
-            //TODO make clip listen for change in converting value --> reload video
-            // const mp4Blob = await response.blob();
-            // const videoURL = URL.createObjectURL(mp4Blob);
-            //
-            // const data = await this.model.ffmpeg.readFile("output.mp4");
-            // media.blob = new Blob([data], {type: "video/mp4"});
-            // this.model.updatedMedia = media;
+            const shouldSkipConversion = mediaType === "image"
+                || ((_c = file.type) === null || _c === void 0 ? void 0 : _c.startsWith("video/mp4"))
+                || ((!file.type || file.type === "application/octet-stream")
+                    && (yield this.sniffContainerType(file)) === "video/mp4");
+            this.model.setRecordedMedia(media, shouldSkipConversion ? file : undefined);
+            if (!shouldSkipConversion) {
+                if (!(yield this.mediaHandler.convertMedia({ id: media.id, blob: file })))
+                    return;
+                this.mediaHandler.getMediaMetadata(media.id).converting = false;
+            }
+            //TODO make clip listen for change in converting value --> reload video (Maybe its still stored in cache???)
+        });
+    }
+    sniffContainerType(blob) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const buf = new Uint8Array(yield blob.slice(0, 16).arrayBuffer());
+            if (buf[0] === 0x1A && buf[1] === 0x45 && buf[2] === 0xDF && buf[3] === 0xA3)
+                return "video/webm";
+            if (buf[4] === 0x66 && buf[5] === 0x74 && buf[6] === 0x79 && buf[7] === 0x70)
+                return "video/mp4";
+            return null;
         });
     }
 }
@@ -10775,6 +11670,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_component_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../components/component/component */ "./frontend/src/client/components/component/component.ts");
 /* harmony import */ var _components_clip_clip__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../components/clip/clip */ "./frontend/src/client/components/clip/clip.ts");
 /* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+/* harmony import */ var _utils_url__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../utils/url */ "./frontend/src/client/utils/url.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -10800,6 +11696,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 let Camera = class Camera extends _components_component_component__WEBPACK_IMPORTED_MODULE_7__.VcComponent {
     constructor(document) {
         super({ director: document });
@@ -10813,13 +11710,14 @@ let Camera = class Camera extends _components_component_component__WEBPACK_IMPOR
         this.mvc.emitter.add("recordedMedia", (media, blob) => __awaiter(this, void 0, void 0, function* () {
             var _a;
             yield this.director.mediaHandler.saveMedia(media, blob);
-            const clipData = _components_clip_clip__WEBPACK_IMPORTED_MODULE_8__.Clip.createData({ endTime: ((_a = media === null || media === void 0 ? void 0 : media.duration) !== null && _a !== void 0 ? _a : 5), mediaId: media.id });
-            yield this.card.addClip(clipData, this.view.timeline.currentClipInfo.closestIntersection);
+            yield this.card.addClip(_components_clip_clip__WEBPACK_IMPORTED_MODULE_8__.Clip.createData({ endTime: ((_a = media === null || media === void 0 ? void 0 : media.duration) !== null && _a !== void 0 ? _a : 5), mediaId: media.id }), this.view.timeline.currentClipInfo.closestIntersection);
         }));
     }
     set card(value) {
         this.view.timeline.card = value;
         this.view.metadataDrawer.card = value;
+        (0,_utils_url__WEBPACK_IMPORTED_MODULE_10__.replaceUrlParams)({ name: "card", value: value.dataId });
+        this.director.toolPanel.getPanel(_directors_project_project_types__WEBPACK_IMPORTED_MODULE_9__.ToolType.shoot, _directors_project_project_types__WEBPACK_IMPORTED_MODULE_9__.ProjectScreens.camera).refresh();
     }
     get frameWidth() {
         return this.view.clipRenderer.offsetWidth;
@@ -10882,7 +11780,14 @@ let Camera = class Camera extends _components_component_component__WEBPACK_IMPOR
     snapPicture() {
         if (!this.model.stream)
             return;
-        //TODO this.view.cameraRenderer.drawVideoFrame().then(picture => this.saveMedia("image", picture));
+        this.view.cameraRenderer.drawVideoFrame().then(picture => this.recordingController.saveMedia(picture));
+    }
+    uploadMedia(media) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!media)
+                return;
+            yield this.recordingController.saveMedia(media);
+        });
     }
 };
 __decorate([
@@ -10913,6 +11818,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_metadataDrawer_metadataDrawer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/metadataDrawer/metadataDrawer */ "./frontend/src/client/components/metadataDrawer/metadataDrawer.ts");
 /* harmony import */ var _components_renderer_renderer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../components/renderer/renderer */ "./frontend/src/client/components/renderer/renderer.ts");
 /* harmony import */ var _components_timeline_shootingTimeline_shootingTimeline__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../components/timeline/shootingTimeline/shootingTimeline */ "./frontend/src/client/components/timeline/shootingTimeline/shootingTimeline.ts");
+/* harmony import */ var _components_clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../components/clipRenderer/clipRenderer.types */ "./frontend/src/client/components/clipRenderer/clipRenderer.types.ts");
+
 
 
 
@@ -10926,15 +11833,15 @@ class CameraView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView 
     }
     setupUIElements() {
         super.setupUIElements();
+        this.backButton = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.icon)({ icon: "arrow-right" });
         this.cameraRenderer = new _components_renderer_renderer__WEBPACK_IMPORTED_MODULE_4__.Renderer({ director: this.element.director,
             videoProperties: { autoplay: true, muted: true, playsInline: true } });
         this.clipRenderer = new _components_clipRenderer_clipRenderer__WEBPACK_IMPORTED_MODULE_1__.ClipRenderer({ director: this.element.director, videoProperties: { playsInline: true } });
-        //TODO this.sidePanel = new SidePanel(this.element, this.captureManager);
         this.toolbar = new _components_toolbar_toolbar__WEBPACK_IMPORTED_MODULE_2__.Toolbar({ classes: "right-toolbar", director: this.element.director });
         // this.toolbar.populateWith(ToolType.selection, ToolType.shoot, ToolType.text, ToolType.delete);
         this.timeline = new _components_timeline_shootingTimeline_shootingTimeline__WEBPACK_IMPORTED_MODULE_5__.ShootingTimeline({
             drawerProperties: {
-                side: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.top,
+                side: turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.right,
                 icon: "chevron",
                 offset: { [turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Open.open]: -4 },
                 initiallyOpen: true
@@ -10954,6 +11861,7 @@ class CameraView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView 
     }
     setupUILayout() {
         super.setupUILayout();
+        this.element.addChild((0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.div)({ classes: "back-button-div", children: [this.backButton] }));
         this.element.addChild([this.cameraRenderer, this.clipRenderer, this.toolbar,
             this.timeline, this.metadataDrawer]);
     }
@@ -10968,6 +11876,12 @@ class CameraView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView 
     setupUIListeners() {
         super.setupUIListeners();
         window.addEventListener("resize", () => this.resize());
+        this.backButton.addListener(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.DefaultEventName.click, () => history.back());
+        this.timeline.onPlay = (b) => {
+            this.cameraRenderer.show(!b);
+            this.clipRenderer.visibilityMode = b ? _components_clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_6__.ClipRendererVisibility.shown : this.element.ghosting
+                ? _components_clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_6__.ClipRendererVisibility.ghosting : _components_clipRenderer_clipRenderer_types__WEBPACK_IMPORTED_MODULE_6__.ClipRendererVisibility.hidden;
+        };
     }
     resize() {
         this.cameraRenderer.resize(this.model.aspectRatio, window.innerWidth, window.innerHeight);
@@ -11214,9 +12128,12 @@ let ConnectionTool = class ConnectionTool extends _tool_tool__WEBPACK_IMPORTED_M
         this.color = "#439482";
         //Interval indicating the frequency at which points are permanently added to the flow
         //A higher value will increase the smoothing effect of the flow
-        this.drawingInterval = 150;
+        this.drawingInterval = 300;
         //The last time a point was added permanently (used for when drawing flows)
         this.lastDrawnTime = 0;
+    }
+    activate() {
+        this.clear();
     }
     get currentFlowId() {
         return this._currentFlowId;
@@ -11233,6 +12150,12 @@ let ConnectionTool = class ConnectionTool extends _tool_tool__WEBPACK_IMPORTED_M
     get currentEntry() {
         var _a;
         return (_a = this.currentFlow) === null || _a === void 0 ? void 0 : _a.currentEntry;
+    }
+    clear() {
+        var _a;
+        (_a = this.currentFlow) === null || _a === void 0 ? void 0 : _a.clearCurrentEntry();
+        this.currentFlowId = null;
+        this.lastNodeId = null;
     }
 };
 ConnectionTool = __decorate([
@@ -11512,7 +12435,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   getAxisFromSide: () => (/* binding */ getAxisFromSide),
 /* harmony export */   getClippedBoundingRect: () => (/* binding */ getClippedBoundingRect),
-/* harmony export */   getClosestPointOnEdge: () => (/* binding */ getClosestPointOnEdge)
+/* harmony export */   getClosestPointOnEdge: () => (/* binding */ getClosestPointOnEdge),
+/* harmony export */   pointInsideRect: () => (/* binding */ pointInsideRect)
 /* harmony export */ });
 /* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
 
@@ -11523,22 +12447,22 @@ function getAxisFromSide(side) {
         return "x";
 }
 function getClosestPointOnEdge(pointer, rect) {
-    console.log(rect);
-    console.log(pointer);
     const closestPoint = {
         x: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.trim)(pointer.x, rect.right, rect.left),
         y: (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.trim)(pointer.y, rect.bottom, rect.top)
     };
-    console.log(closestPoint);
     let closestSide = turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side.top;
     Object.values(turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Side).forEach(side => {
-        console.log(side + ": " + Math.abs(closestPoint[getAxisFromSide(side)] - rect[side]));
         if (Math.abs(closestPoint[getAxisFromSide(side)] - rect[side])
             < Math.abs(closestPoint[getAxisFromSide(closestSide)] - rect[closestSide]))
             closestSide = side;
     });
     closestPoint[getAxisFromSide(closestSide)] = rect[closestSide];
     return new turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.Point(closestPoint);
+}
+function pointInsideRect(point, rect, margin = 5) {
+    return (point.x < rect.right + margin && point.x > rect.left - margin)
+        && (point.y < rect.bottom + margin && point.y > rect.top - margin);
 }
 function getClippedBoundingRect(el) {
     const rect = el.getBoundingClientRect();
@@ -11567,6 +12491,34 @@ function getClippedBoundingRect(el) {
 
 /***/ }),
 
+/***/ "./frontend/src/client/utils/conversion.ts":
+/*!*************************************************!*\
+  !*** ./frontend/src/client/utils/conversion.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   blobToUrl: () => (/* binding */ blobToUrl),
+/* harmony export */   urlToBlob: () => (/* binding */ urlToBlob)
+/* harmony export */ });
+function blobToUrl(blob) {
+    return new Promise((resolve) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.readAsDataURL(blob);
+    });
+}
+function urlToBlob(url) {
+    return new Promise((resolve) => {
+        fetch(url).then(res => resolve(res.blob()));
+    });
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/client/utils/crypto.ts":
 /*!*********************************************!*\
   !*** ./frontend/src/client/utils/crypto.ts ***!
@@ -11576,6 +12528,7 @@ function getClippedBoundingRect(el) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   hashBySize: () => (/* binding */ hashBySize),
 /* harmony export */   hashString: () => (/* binding */ hashString),
 /* harmony export */   randomId: () => (/* binding */ randomId)
 /* harmony export */ });
@@ -11605,6 +12558,21 @@ function randomId(length = 8) {
         .map(b => b.toString(36).padStart(2, "0"))
         .join("")
         .slice(0, length);
+}
+function hashBySize(input_1) {
+    return __awaiter(this, arguments, void 0, function* (input, chars = 12) {
+        const bytes = Math.ceil((chars * 6) / 8);
+        const enc = new TextEncoder();
+        const digest = yield crypto.subtle.digest("SHA-256", enc.encode(input));
+        const slice = new Uint8Array(digest).slice(0, bytes);
+        return (typeof btoa === "function"
+            ? btoa(String.fromCharCode(...slice))
+            : Buffer.from(slice).toString("base64"))
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=+$/g, "")
+            .slice(0, chars);
+    });
 }
 
 
@@ -11722,6 +12690,111 @@ function formatMmSs(seconds, separator = "") {
 
 /***/ }),
 
+/***/ "./frontend/src/client/utils/url.ts":
+/*!******************************************!*\
+  !*** ./frontend/src/client/utils/url.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   clearUrlParams: () => (/* binding */ clearUrlParams),
+/* harmony export */   getUrlParam: () => (/* binding */ getUrlParam),
+/* harmony export */   pushUrlParams: () => (/* binding */ pushUrlParams),
+/* harmony export */   replaceUrlParams: () => (/* binding */ replaceUrlParams)
+/* harmony export */ });
+function replaceUrlParams(...params) {
+    const url = new URL(window.location.href);
+    params.forEach(({ name, value }) => url.searchParams.set(name, value));
+    history.replaceState(null, "", url);
+}
+function getUrlParam(name) {
+    const url = new URL(window.location.href);
+    return url.searchParams.get(name);
+}
+function pushUrlParams(...params) {
+    const url = new URL(window.location.href);
+    params.forEach(({ name, value }) => url.searchParams.set(name, value));
+    history.pushState(null, "", url);
+}
+function clearUrlParams() {
+    const url = new URL(window.location.href);
+    url.searchParams.forEach((_, name) => url.searchParams.delete(name));
+    history.replaceState(null, "", url);
+}
+
+
+/***/ }),
+
+/***/ "./frontend/src/client/utils/video.ts":
+/*!********************************************!*\
+  !*** ./frontend/src/client/utils/video.ts ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getVideoDuration: () => (/* binding */ getVideoDuration)
+/* harmony export */ });
+/* harmony import */ var turbodombuilder__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! turbodombuilder */ "./node_modules/turbodombuilder/build/turbodombuilder.esm.js");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+function getVideoDuration(input) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const el = (0,turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.video)({ preload: "metadata" });
+        return new Promise((resolve, reject) => {
+            let objectUrl = null;
+            const cleanup = () => {
+                el.removeAttribute("src");
+                el.load();
+                if (objectUrl)
+                    URL.revokeObjectURL(objectUrl);
+            };
+            el.onerror = () => {
+                cleanup();
+                reject(new Error("Failed to load video metadata"));
+            };
+            el.onloadedmetadata = () => {
+                if (el.duration === Infinity) {
+                    el.currentTime = 1e101;
+                    el.ontimeupdate = () => {
+                        el.ontimeupdate = null;
+                        const d = el.duration;
+                        cleanup();
+                        resolve(d);
+                    };
+                }
+                else {
+                    const d = el.duration;
+                    cleanup();
+                    resolve(d);
+                }
+            };
+            if (typeof input === "string") {
+                el.crossOrigin = "anonymous";
+                el.src = input;
+            }
+            else {
+                objectUrl = URL.createObjectURL(input);
+                el.src = objectUrl;
+            }
+        });
+    });
+}
+
+
+/***/ }),
+
 /***/ "./frontend/src/yManagement/yManagement.types.ts":
 /*!*******************************************************!*\
   !*** ./frontend/src/yManagement/yManagement.types.ts ***!
@@ -11767,7 +12840,7 @@ __webpack_require__.r(__webpack_exports__);
  * callbacks at the keys that changed through the emitter.
  */
 class YComponentModel extends _yModel__WEBPACK_IMPORTED_MODULE_0__.YModel {
-    observeChanges(event, blockKey) {
+    observeChanges(event, transaction, blockKey) {
         event.keysChanged.forEach(key => {
             const change = event.changes.keys.get(key);
             if (!change) {
@@ -11910,11 +12983,14 @@ class YManagerModel extends _yModel__WEBPACK_IMPORTED_MODULE_1__.YModel {
         (_b = this.onUpdated) === null || _b === void 0 ? void 0 : _b.call(this, data, instance, key, blockKey);
     }
     removeInstance(instance) {
-        if (typeof instance === "object" && "remove" in instance && typeof instance.remove == "function")
+        if (instance && typeof instance === "object" && "remove" in instance && typeof instance.remove == "function")
             instance === null || instance === void 0 ? void 0 : instance.remove();
     }
-    observeChanges(event, blockKey = this.defaultBlockKey) {
+    observeChanges(event, transaction, blockKey = this.defaultBlockKey) {
         var _a;
+        //TODO
+        const isLocal = !!(transaction === null || transaction === void 0 ? void 0 : transaction.local);
+        const origin = transaction === null || transaction === void 0 ? void 0 : transaction.origin;
         if (event instanceof _yManagement_types__WEBPACK_IMPORTED_MODULE_0__.YMapEvent) {
             event.keysChanged.forEach(key => {
                 var _a, _b;
@@ -12108,7 +13184,7 @@ class YModel extends turbodombuilder__WEBPACK_IMPORTED_MODULE_1__.TurboModel {
      * @return {BlockType} - The created block.
      */
     createBlock(value, id, blockKey = this.defaultBlockKey) {
-        return Object.assign(Object.assign({}, super.createBlock(value, id)), { observer: (event) => this.observeChanges(event, blockKey) });
+        return Object.assign(Object.assign({}, super.createBlock(value, id)), { observer: (event, transaction) => this.observeChanges(event, transaction, blockKey) });
     }
     /**
      * @function setBlock
@@ -12241,7 +13317,7 @@ class YUtilities {
      */
     static addInYMap(data, parentYMap, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const generateId = () => __awaiter(this, void 0, void 0, function* () { var _a, _b; return yield (0,_client_utils_crypto__WEBPACK_IMPORTED_MODULE_1__.hashString)(((_b = (_a = parentYMap === null || parentYMap === void 0 ? void 0 : parentYMap.doc) === null || _a === void 0 ? void 0 : _a.clientID) === null || _b === void 0 ? void 0 : _b.toString(32)) + (0,_client_utils_crypto__WEBPACK_IMPORTED_MODULE_1__.randomId)()); });
+            const generateId = () => __awaiter(this, void 0, void 0, function* () { var _a, _b; return yield (0,_client_utils_crypto__WEBPACK_IMPORTED_MODULE_1__.hashBySize)(((_b = (_a = parentYMap === null || parentYMap === void 0 ? void 0 : parentYMap.doc) === null || _a === void 0 ? void 0 : _a.clientID) === null || _b === void 0 ? void 0 : _b.toString(32)) + (0,_client_utils_crypto__WEBPACK_IMPORTED_MODULE_1__.randomId)()); });
             if (!id) {
                 id = yield generateId();
                 while ((parentYMap === null || parentYMap === void 0 ? void 0 : parentYMap.get(id)) !== undefined)
@@ -12428,7 +13504,11 @@ ___CSS_LOADER_EXPORT___.push([module.id, `vc-app-bar {
 vc-app-bar turbo-icon {
     width: 2em;
     height: 2em;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/appBar/appBar.css"],"names":[],"mappings":"AAAA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;;IAEnB,kBAAkB;IAClB,uBAAuB;IACvB,wCAAwC;AAC5C;;AAEA;IACI,UAAU;IACV,WAAW;AACf","sourcesContent":["vc-app-bar {\r\n    display: flex;\r\n    flex-direction: row;\r\n    align-items: center;\r\n\r\n    padding: 0.8em 1em;\r\n    background-color: white;\r\n    border-bottom: 0.2em solid var(--grey-2);\r\n}\r\n\r\nvc-app-bar turbo-icon {\r\n    width: 2em;\r\n    height: 2em;\r\n}"],"sourceRoot":""}]);
+}
+
+vc-app-bar turbo-icon:hover {
+    cursor: pointer;
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/appBar/appBar.css"],"names":[],"mappings":"AAAA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;;IAEnB,kBAAkB;IAClB,uBAAuB;IACvB,wCAAwC;AAC5C;;AAEA;IACI,UAAU;IACV,WAAW;AACf;;AAEA;IACI,eAAe;AACnB","sourcesContent":["vc-app-bar {\r\n    display: flex;\r\n    flex-direction: row;\r\n    align-items: center;\r\n\r\n    padding: 0.8em 1em;\r\n    background-color: white;\r\n    border-bottom: 0.2em solid var(--grey-2);\r\n}\r\n\r\nvc-app-bar turbo-icon {\r\n    width: 2em;\r\n    height: 2em;\r\n}\r\n\r\nvc-app-bar turbo-icon:hover {\r\n    cursor: pointer;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -12668,6 +13748,10 @@ ___CSS_LOADER_EXPORT___.push([module.id, `capture-button {
     transition: all 0.1s ease-out;
 }
 
+capture-button:hover {
+    cursor: pointer;
+}
+
 capture-button > div {
     position: absolute;
     width: 100%;
@@ -12720,7 +13804,71 @@ capture-button.video-capturing .inner-icon {
     background-color: white;
     border-radius: 20%;
 
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/captureButton/captureButton.css"],"names":[],"mappings":"AAAA;IACI,cAAc;IACd,kBAAkB;IAClB,UAAU;IACV,WAAW;;IAEX,mBAAmB;IACnB,gBAAgB;;IAEhB,6BAA6B;AACjC;;AAEA;IACI,kBAAkB;IAClB,WAAW;IACX,YAAY;IACZ,mBAAmB;IACnB,gCAAgC;AACpC;;AAEA;IACI,yBAAyB;IACzB,8BAA8B;IAC9B,+BAA+B;IAC/B,6BAA6B;AACjC;;AAEA;IACI,uBAAuB;IACvB,aAAa;IACb,mBAAmB;IACnB,uBAAuB;AAC3B;;AAEA;IACI,aAAa;IACb,UAAU;IACV,WAAW;;IAEX,qBAAqB;IACrB,mBAAmB;AACvB;;AAEA;IACI,YAAY;AAChB;;AAEA;IACI,cAAc;AAClB;;AAEA;IACI,YAAY;AAChB;;AAEA;IACI,0CAA0C;AAC9C;;AAEA;IACI,cAAc;IACd,uBAAuB;IACvB,kBAAkB;;AAEtB","sourcesContent":["capture-button {\r\n    display: block;\r\n    position: relative;\r\n    width: 4em;\r\n    height: 4em;\r\n\r\n    border-radius: 100%;\r\n    overflow: hidden;\r\n\r\n    transition: all 0.1s ease-out;\r\n}\r\n\r\ncapture-button > div {\r\n    position: absolute;\r\n    width: 100%;\r\n    height: 100%;\r\n    border-radius: 100%;\r\n    transition: all 0.1s ease-in-out;\r\n}\r\n\r\ncapture-button > div:first-child {\r\n    border: 0.3em solid white;\r\n    width: calc(100% - 0.25em * 2);\r\n    height: calc(100% - 0.25em * 2);\r\n    background-color: transparent;\r\n}\r\n\r\ncapture-button > div:last-child {\r\n    background-color: white;\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n}\r\n\r\ncapture-button .inner-icon {\r\n    display: none;\r\n    width: 40%;\r\n    height: 40%;\r\n\r\n    background-color: red;\r\n    border-radius: 100%;\r\n}\r\n\r\ncapture-button.video > div:first-child {\r\n    border: none;\r\n}\r\n\r\ncapture-button.video .inner-icon {\r\n    display: block;\r\n}\r\n\r\ncapture-button.video-capturing > div:first-child {\r\n    border: none;\r\n}\r\n\r\ncapture-button.video-capturing > div:last-child {\r\n    background-color: rgba(255, 255, 255, 0.6);\r\n}\r\n\r\ncapture-button.video-capturing .inner-icon {\r\n    display: block;\r\n    background-color: white;\r\n    border-radius: 20%;\r\n\r\n}"],"sourceRoot":""}]);
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/captureButton/captureButton.css"],"names":[],"mappings":"AAAA;IACI,cAAc;IACd,kBAAkB;IAClB,UAAU;IACV,WAAW;;IAEX,mBAAmB;IACnB,gBAAgB;;IAEhB,6BAA6B;AACjC;;AAEA;IACI,eAAe;AACnB;;AAEA;IACI,kBAAkB;IAClB,WAAW;IACX,YAAY;IACZ,mBAAmB;IACnB,gCAAgC;AACpC;;AAEA;IACI,yBAAyB;IACzB,8BAA8B;IAC9B,+BAA+B;IAC/B,6BAA6B;AACjC;;AAEA;IACI,uBAAuB;IACvB,aAAa;IACb,mBAAmB;IACnB,uBAAuB;AAC3B;;AAEA;IACI,aAAa;IACb,UAAU;IACV,WAAW;;IAEX,qBAAqB;IACrB,mBAAmB;AACvB;;AAEA;IACI,YAAY;AAChB;;AAEA;IACI,cAAc;AAClB;;AAEA;IACI,YAAY;AAChB;;AAEA;IACI,0CAA0C;AAC9C;;AAEA;IACI,cAAc;IACd,uBAAuB;IACvB,kBAAkB;;AAEtB","sourcesContent":["capture-button {\r\n    display: block;\r\n    position: relative;\r\n    width: 4em;\r\n    height: 4em;\r\n\r\n    border-radius: 100%;\r\n    overflow: hidden;\r\n\r\n    transition: all 0.1s ease-out;\r\n}\r\n\r\ncapture-button:hover {\r\n    cursor: pointer;\r\n}\r\n\r\ncapture-button > div {\r\n    position: absolute;\r\n    width: 100%;\r\n    height: 100%;\r\n    border-radius: 100%;\r\n    transition: all 0.1s ease-in-out;\r\n}\r\n\r\ncapture-button > div:first-child {\r\n    border: 0.3em solid white;\r\n    width: calc(100% - 0.25em * 2);\r\n    height: calc(100% - 0.25em * 2);\r\n    background-color: transparent;\r\n}\r\n\r\ncapture-button > div:last-child {\r\n    background-color: white;\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n}\r\n\r\ncapture-button .inner-icon {\r\n    display: none;\r\n    width: 40%;\r\n    height: 40%;\r\n\r\n    background-color: red;\r\n    border-radius: 100%;\r\n}\r\n\r\ncapture-button.video > div:first-child {\r\n    border: none;\r\n}\r\n\r\ncapture-button.video .inner-icon {\r\n    display: block;\r\n}\r\n\r\ncapture-button.video-capturing > div:first-child {\r\n    border: none;\r\n}\r\n\r\ncapture-button.video-capturing > div:last-child {\r\n    background-color: rgba(255, 255, 255, 0.6);\r\n}\r\n\r\ncapture-button.video-capturing .inner-icon {\r\n    display: block;\r\n    background-color: white;\r\n    border-radius: 20%;\r\n\r\n}"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/captureFlowSelector/captureFlowSelector.css":
+/*!**************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/captureFlowSelector/captureFlowSelector.css ***!
+  \**************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `vc-capture-flow-selector {
+    position: absolute;
+    top: 1em;
+    left: 50%;
+    transform: translateX(-50%);
+
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+
+    padding: 0.6em 0.8em;
+    border-radius: 5em;
+    color: white;
+
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+vc-capture-flow-selector > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5em;
+    text-wrap: nowrap;
+}
+
+vc-capture-flow-selector.timer-active {
+    background-color: red;
+}
+
+vc-capture-flow-selector .icon {
+    width: 1.8em;
+    height: 1.8em;
+}
+
+.icon-disabled {
+    opacity: 0.3;
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/captureFlowSelector/captureFlowSelector.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,QAAQ;IACR,SAAS;IACT,2BAA2B;;IAE3B,aAAa;IACb,uBAAuB;IACvB,mBAAmB;;IAEnB,oBAAoB;IACpB,kBAAkB;IAClB,YAAY;;IAEZ,oCAAoC;IACpC,2BAA2B;AAC/B;;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,mBAAmB;IACnB,UAAU;IACV,iBAAiB;AACrB;;AAEA;IACI,qBAAqB;AACzB;;AAEA;IACI,YAAY;IACZ,aAAa;AACjB;;AAEA;IACI,YAAY;AAChB","sourcesContent":["vc-capture-flow-selector {\r\n    position: absolute;\r\n    top: 1em;\r\n    left: 50%;\r\n    transform: translateX(-50%);\r\n\r\n    display: flex;\r\n    justify-content: center;\r\n    flex-direction: row;\r\n\r\n    padding: 0.6em 0.8em;\r\n    border-radius: 5em;\r\n    color: white;\r\n\r\n    background-color: rgba(0, 0, 0, 0.3);\r\n    backdrop-filter: blur(10px);\r\n}\r\n\r\nvc-capture-flow-selector > div {\r\n    display: flex;\r\n    flex-direction: row;\r\n    align-items: center;\r\n    gap: 0.5em;\r\n    text-wrap: nowrap;\r\n}\r\n\r\nvc-capture-flow-selector.timer-active {\r\n    background-color: red;\r\n}\r\n\r\nvc-capture-flow-selector .icon {\r\n    width: 1.8em;\r\n    height: 1.8em;\r\n}\r\n\r\n.icon-disabled {\r\n    opacity: 0.3;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -12767,48 +13915,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.capture-mode-slider {
 .capture-mode-slider > .active {
     font-weight: bold;
 }`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/captureModeSlider/captureModeSlider.css"],"names":[],"mappings":"AAAA;IACI,oBAAoB;IACpB,UAAU;IACV,YAAY;IACZ,uBAAuB;;IAEvB,yBAAyB;IACzB,yBAAyB;AAC7B;;AAEA;IACI,cAAc;IACd,YAAY;IACZ,eAAe;IACf,iBAAiB;AACrB;;AAEA;IACI,iBAAiB;AACrB","sourcesContent":[".capture-mode-slider {\r\n    display: inline-flex;\r\n    width: 6em;\r\n    padding: 1em;\r\n    margin: 0 -3em 0 -1.5em;\r\n\r\n    transform: rotate(-90deg);\r\n    transform-origin: 50% 50%;\r\n}\r\n\r\n.capture-mode-slider > * {\r\n    padding: 0 1em;\r\n    color: white;\r\n    cursor: pointer;\r\n    user-select: none;\r\n}\r\n\r\n.capture-mode-slider > .active {\r\n    font-weight: bold;\r\n}"],"sourceRoot":""}]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/captureTimer/captureTimer.css":
-/*!************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/captureTimer/captureTimer.css ***!
-  \************************************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
-// Imports
-
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, `vc-capture-timer {
-    position: absolute;
-    top: 1em;
-    left: 0;
-    right: 0;
-
-    display: flex;
-    justify-content: center;
-}
-
-vc-capture-timer > div {
-    padding: 0.6em 0.8em;
-    background-color: red;
-    border-radius: 5em;
-    color: white;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/captureTimer/captureTimer.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,QAAQ;IACR,OAAO;IACP,QAAQ;;IAER,aAAa;IACb,uBAAuB;AAC3B;;AAEA;IACI,oBAAoB;IACpB,qBAAqB;IACrB,kBAAkB;IAClB,YAAY;AAChB","sourcesContent":["vc-capture-timer {\r\n    position: absolute;\r\n    top: 1em;\r\n    left: 0;\r\n    right: 0;\r\n\r\n    display: flex;\r\n    justify-content: center;\r\n}\r\n\r\nvc-capture-timer > div {\r\n    padding: 0.6em 0.8em;\r\n    background-color: red;\r\n    border-radius: 5em;\r\n    color: white;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -12878,6 +13984,48 @@ vc-card > .card-title > turbo-input > turbo-rich-element {
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/cardMarkingMenu/cardMarkingMenu.css":
+/*!******************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/cardMarkingMenu/cardMarkingMenu.css ***!
+  \******************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `.qr-code-popup {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    position: absolute;
+    margin-top: 1rem;
+    translate: -50% 0;
+    width: calc(200px + 2em);
+}
+
+.qr-code-popup * {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/cardMarkingMenu/cardMarkingMenu.css"],"names":[],"mappings":"AAAA;IACI,aAAa;IACb,sBAAsB;IACtB,SAAS;;IAET,kBAAkB;IAClB,gBAAgB;IAChB,iBAAiB;IACjB,wBAAwB;AAC5B;;AAEA;IACI,mBAAmB;IACnB,uBAAuB;IACvB,sBAAsB;AAC1B","sourcesContent":[".qr-code-popup {\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 1rem;\r\n\r\n    position: absolute;\r\n    margin-top: 1rem;\r\n    translate: -50% 0;\r\n    width: calc(200px + 2em);\r\n}\r\n\r\n.qr-code-popup * {\r\n    white-space: normal;\r\n    overflow-wrap: anywhere;\r\n    word-break: break-word;\r\n}"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/clip/clip.css":
 /*!********************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/clip/clip.css ***!
@@ -12935,32 +14083,51 @@ vc-clip.selected .vc-clip-content {
     border: 0.3em solid #fff4f4;
 }
 
-vc-clip .clip-handle-left, vc-clip .clip-handle-right {
+vc-clip .clip-handle {
     position: absolute;
-    top: 0;
-    height: 100%;
-
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
 
     background-color: #fff4f4;
     border: 0.3em solid #fff4f4;
+    z-index: 1000;
+}
+
+vc-clip .clip-handle-left, vc-clip .clip-handle-right {
+    top: 0;
+    height: 100%;
+    flex-direction: column;
+}
+
+vc-clip .clip-handle-top, vc-clip .clip-handle-bottom {
+    left: 0;
+    width: 100%;
+    flex-direction: row;
 }
 
 vc-clip.selected .clip-handle-left {
     right: calc(100% - 0.5em);
-    padding-right: -0.5em;
     border-radius: 0.75em 0 0 0.75em;
     border-left-width: 0;
 }
 
 vc-clip.selected .clip-handle-right {
     left: calc(100% - 0.5em);
-    padding-left: 0.5em;
     border-radius: 0 0.75em 0.75em 0;
     border-right-width: 0;
+}
+
+vc-clip.selected .clip-handle-top {
+    bottom: calc(100% - 0.5em);
+    border-radius: 0.75em 0.75em 0 0;
+    border-top-width: 0;
+}
+
+vc-clip.selected .clip-handle-bottom {
+    top: calc(100% - 0.5em);
+    border-radius: 0 0 0.75em 0.75em;
+    border-bottom-width: 0;
 }
 
 vc-clip turbo-icon {
@@ -12971,12 +14138,22 @@ vc-clip turbo-icon {
 vc-clip .thumbnail {
     position: relative;
     margin: 0.3em;
-    max-width: calc(100% - 0.6em);
-    height: calc(100% - 0.6em);
-    aspect-ratio: 1.33;
-
-    object-fit: cover;
     border-radius: 0.1em;
+
+    aspect-ratio: 1.33;
+    max-width: calc(100% - 0.6em);
+    max-height: calc(100% - 0.6em);
+    height: calc(100% - 0.6em);
+    object-fit: cover;
+}
+
+vc-clip.vertical-clip .thumbnail {
+    position: absolute;
+    bottom: 0;
+
+    width: calc(100% - 0.6em);
+    height: auto;
+    aspect-ratio: 0.77;
 }
 
 vc-clip-renderer#snapshot-renderer {
@@ -12986,10 +14163,10 @@ vc-clip-renderer#snapshot-renderer {
 
     pointer-events: none;
     position: absolute;
-    bottom: 99.5%;
+    top: 99.9%;
 
     border: none;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/clip/clip.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,cAAc;IACd,gBAAgB;AACpB;;AAEA;IACI,kBAAkB;IAClB,WAAW;IACX,YAAY;IACZ,qBAAqB;IACrB,gBAAgB;AACpB;;AAEA;IACI,0DAA4E;IAC5E,sBAAsB;AAC1B;;AAEA;IACI,0BAA0B;IAC1B,UAAU;AACd;;AAEA;IACI,qBAAqB;AACzB;;AAEA;IACI,2BAA2B;AAC/B;;AAEA;IACI,kBAAkB;IAClB,MAAM;IACN,YAAY;;IAEZ,aAAa;IACb,sBAAsB;IACtB,mBAAmB;IACnB,uBAAuB;;IAEvB,yBAAyB;IACzB,2BAA2B;AAC/B;;AAEA;IACI,yBAAyB;IACzB,qBAAqB;IACrB,gCAAgC;IAChC,oBAAoB;AACxB;;AAEA;IACI,wBAAwB;IACxB,mBAAmB;IACnB,gCAAgC;IAChC,qBAAqB;AACzB;;AAEA;IACI,YAAY;IACZ,aAAa;AACjB;;AAEA;IACI,kBAAkB;IAClB,aAAa;IACb,6BAA6B;IAC7B,0BAA0B;IAC1B,kBAAkB;;IAElB,iBAAiB;IACjB,oBAAoB;AACxB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,kBAAkB;;IAElB,oBAAoB;IACpB,kBAAkB;IAClB,aAAa;;IAEb,YAAY;AAChB","sourcesContent":["vc-clip {\r\n    position: relative;\r\n    display: block;\r\n    max-height: 100%;\r\n}\r\n\r\nvc-clip .vc-clip-content {\r\n    position: relative;\r\n    width: 100%;\r\n    height: 100%;\r\n    border-radius: 0.35em;\r\n    overflow: hidden;\r\n}\r\n\r\nvc-clip.hidden-clip .vc-clip-content {\r\n    background: url(\"../../../../public/assets/misc/DiagonalStripes.png\") repeat;\r\n    background-size: 200px;\r\n}\r\n\r\nvc-clip.selected {\r\n    height: calc(100% - 0.5em);\r\n    z-index: 1;\r\n}\r\n\r\nvc-clip.selected .vc-clip-content {\r\n    border-radius: 0.35em;\r\n}\r\n\r\nvc-clip.selected .vc-clip-content {\r\n    border: 0.3em solid #fff4f4;\r\n}\r\n\r\nvc-clip .clip-handle-left, vc-clip .clip-handle-right {\r\n    position: absolute;\r\n    top: 0;\r\n    height: 100%;\r\n\r\n    display: flex;\r\n    flex-direction: column;\r\n    align-items: center;\r\n    justify-content: center;\r\n\r\n    background-color: #fff4f4;\r\n    border: 0.3em solid #fff4f4;\r\n}\r\n\r\nvc-clip.selected .clip-handle-left {\r\n    right: calc(100% - 0.5em);\r\n    padding-right: -0.5em;\r\n    border-radius: 0.75em 0 0 0.75em;\r\n    border-left-width: 0;\r\n}\r\n\r\nvc-clip.selected .clip-handle-right {\r\n    left: calc(100% - 0.5em);\r\n    padding-left: 0.5em;\r\n    border-radius: 0 0.75em 0.75em 0;\r\n    border-right-width: 0;\r\n}\r\n\r\nvc-clip turbo-icon {\r\n    width: 1.5em;\r\n    height: 1.5em;\r\n}\r\n\r\nvc-clip .thumbnail {\r\n    position: relative;\r\n    margin: 0.3em;\r\n    max-width: calc(100% - 0.6em);\r\n    height: calc(100% - 0.6em);\r\n    aspect-ratio: 1.33;\r\n\r\n    object-fit: cover;\r\n    border-radius: 0.1em;\r\n}\r\n\r\nvc-clip-renderer#snapshot-renderer {\r\n    z-index: -1;\r\n    width: 100vw;\r\n    aspect-ratio: 1.33;\r\n\r\n    pointer-events: none;\r\n    position: absolute;\r\n    bottom: 99.5%;\r\n\r\n    border: none;\r\n}"],"sourceRoot":""}]);
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/clip/clip.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,cAAc;IACd,gBAAgB;AACpB;;AAEA;IACI,kBAAkB;IAClB,WAAW;IACX,YAAY;IACZ,qBAAqB;IACrB,gBAAgB;AACpB;;AAEA;IACI,0DAA4E;IAC5E,sBAAsB;AAC1B;;AAEA;IACI,0BAA0B;IAC1B,UAAU;AACd;;AAEA;IACI,qBAAqB;AACzB;;AAEA;IACI,2BAA2B;AAC/B;;AAEA;IACI,kBAAkB;IAClB,aAAa;IACb,mBAAmB;IACnB,uBAAuB;;IAEvB,yBAAyB;IACzB,2BAA2B;IAC3B,aAAa;AACjB;;AAEA;IACI,MAAM;IACN,YAAY;IACZ,sBAAsB;AAC1B;;AAEA;IACI,OAAO;IACP,WAAW;IACX,mBAAmB;AACvB;;AAEA;IACI,yBAAyB;IACzB,gCAAgC;IAChC,oBAAoB;AACxB;;AAEA;IACI,wBAAwB;IACxB,gCAAgC;IAChC,qBAAqB;AACzB;;AAEA;IACI,0BAA0B;IAC1B,gCAAgC;IAChC,mBAAmB;AACvB;;AAEA;IACI,uBAAuB;IACvB,gCAAgC;IAChC,sBAAsB;AAC1B;;AAEA;IACI,YAAY;IACZ,aAAa;AACjB;;AAEA;IACI,kBAAkB;IAClB,aAAa;IACb,oBAAoB;;IAEpB,kBAAkB;IAClB,6BAA6B;IAC7B,8BAA8B;IAC9B,0BAA0B;IAC1B,iBAAiB;AACrB;;AAEA;IACI,kBAAkB;IAClB,SAAS;;IAET,yBAAyB;IACzB,YAAY;IACZ,kBAAkB;AACtB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,kBAAkB;;IAElB,oBAAoB;IACpB,kBAAkB;IAClB,UAAU;;IAEV,YAAY;AAChB","sourcesContent":["vc-clip {\r\n    position: relative;\r\n    display: block;\r\n    max-height: 100%;\r\n}\r\n\r\nvc-clip .vc-clip-content {\r\n    position: relative;\r\n    width: 100%;\r\n    height: 100%;\r\n    border-radius: 0.35em;\r\n    overflow: hidden;\r\n}\r\n\r\nvc-clip.hidden-clip .vc-clip-content {\r\n    background: url(\"../../../../public/assets/misc/DiagonalStripes.png\") repeat;\r\n    background-size: 200px;\r\n}\r\n\r\nvc-clip.selected {\r\n    height: calc(100% - 0.5em);\r\n    z-index: 1;\r\n}\r\n\r\nvc-clip.selected .vc-clip-content {\r\n    border-radius: 0.35em;\r\n}\r\n\r\nvc-clip.selected .vc-clip-content {\r\n    border: 0.3em solid #fff4f4;\r\n}\r\n\r\nvc-clip .clip-handle {\r\n    position: absolute;\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n\r\n    background-color: #fff4f4;\r\n    border: 0.3em solid #fff4f4;\r\n    z-index: 1000;\r\n}\r\n\r\nvc-clip .clip-handle-left, vc-clip .clip-handle-right {\r\n    top: 0;\r\n    height: 100%;\r\n    flex-direction: column;\r\n}\r\n\r\nvc-clip .clip-handle-top, vc-clip .clip-handle-bottom {\r\n    left: 0;\r\n    width: 100%;\r\n    flex-direction: row;\r\n}\r\n\r\nvc-clip.selected .clip-handle-left {\r\n    right: calc(100% - 0.5em);\r\n    border-radius: 0.75em 0 0 0.75em;\r\n    border-left-width: 0;\r\n}\r\n\r\nvc-clip.selected .clip-handle-right {\r\n    left: calc(100% - 0.5em);\r\n    border-radius: 0 0.75em 0.75em 0;\r\n    border-right-width: 0;\r\n}\r\n\r\nvc-clip.selected .clip-handle-top {\r\n    bottom: calc(100% - 0.5em);\r\n    border-radius: 0.75em 0.75em 0 0;\r\n    border-top-width: 0;\r\n}\r\n\r\nvc-clip.selected .clip-handle-bottom {\r\n    top: calc(100% - 0.5em);\r\n    border-radius: 0 0 0.75em 0.75em;\r\n    border-bottom-width: 0;\r\n}\r\n\r\nvc-clip turbo-icon {\r\n    width: 1.5em;\r\n    height: 1.5em;\r\n}\r\n\r\nvc-clip .thumbnail {\r\n    position: relative;\r\n    margin: 0.3em;\r\n    border-radius: 0.1em;\r\n\r\n    aspect-ratio: 1.33;\r\n    max-width: calc(100% - 0.6em);\r\n    max-height: calc(100% - 0.6em);\r\n    height: calc(100% - 0.6em);\r\n    object-fit: cover;\r\n}\r\n\r\nvc-clip.vertical-clip .thumbnail {\r\n    position: absolute;\r\n    bottom: 0;\r\n\r\n    width: calc(100% - 0.6em);\r\n    height: auto;\r\n    aspect-ratio: 0.77;\r\n}\r\n\r\nvc-clip-renderer#snapshot-renderer {\r\n    z-index: -1;\r\n    width: 100vw;\r\n    aspect-ratio: 1.33;\r\n\r\n    pointer-events: none;\r\n    position: absolute;\r\n    top: 99.9%;\r\n\r\n    border: none;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -13030,6 +14207,41 @@ vc-flow path {
     fill: none;
     /*stroke: #727377;*/
 }`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/flow/flow.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,qCAAqC;AACzC;;AAEA;IACI,4BAA4B;IAC5B,oBAAoB;AACxB;;AAEA;IACI,UAAU;IACV,mBAAmB;AACvB","sourcesContent":["vc-flow {\r\n    position: absolute;\r\n    transform: translate3d(-50%, -50%, 0);\r\n}\r\n\r\nvc-flow svg {\r\n    image-rendering: crisp-edges;\r\n    pointer-events: none;\r\n}\r\n\r\nvc-flow path {\r\n    fill: none;\r\n    /*stroke: #727377;*/\r\n}"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/flowPath/flowPath.css":
+/*!****************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/components/flowPath/flowPath.css ***!
+  \****************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `flow-path {
+    padding: 6px;
+    white-space: nowrap;
+}
+
+flow-path input {
+    background-color: transparent;
+    border: none;
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/flowPath/flowPath.css"],"names":[],"mappings":"AAAA;IACI,YAAY;IACZ,mBAAmB;AACvB;;AAEA;IACI,6BAA6B;IAC7B,YAAY;AAChB","sourcesContent":["flow-path {\r\n    padding: 6px;\r\n    white-space: nowrap;\r\n}\r\n\r\nflow-path input {\r\n    background-color: transparent;\r\n    border: none;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -13229,8 +14441,10 @@ vc-playback vc-clip-renderer {
     right: 20px;
 
     width: 300px;
-    padding: 20px;
+    padding: 12px;
     border-radius: 16px;
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(6px);
 }
 
 .card-playback {
@@ -13238,7 +14452,44 @@ vc-playback vc-clip-renderer {
     width: calc(100% - 2em);
     padding: 1em;
     border-radius: 0.4em;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/playback/playback.css"],"names":[],"mappings":"AAAA;IACI,cAAc;IACd,uBAAuB;AAC3B;;AAEA;IACI,kBAAkB;IAClB,aAAa;IACb,sBAAsB;IACtB,QAAQ;IACR,WAAW;IACX,YAAY;AAChB;;AAEA;IACI,WAAW;IACX,mBAAmB;IACnB,uBAAuB;IACvB,yBAAyB;AAC7B;;AAEA;IACI,kBAAkB;IAClB,SAAS;IACT,WAAW;;IAEX,YAAY;IACZ,aAAa;IACb,mBAAmB;AACvB;;AAEA;IACI,kBAAkB;IAClB,uBAAuB;IACvB,YAAY;IACZ,oBAAoB;AACxB","sourcesContent":["vc-playback {\r\n    display: block;\r\n    background-color: white;\r\n}\r\n\r\nvc-playback > div:first-child {\r\n    position: relative;\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 1em;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\nvc-playback vc-clip-renderer {\r\n    width: 100%;\r\n    height: fit-content;\r\n    box-sizing: content-box;\r\n    border: 1px solid #e1dfdf;\r\n}\r\n\r\n.over-screen-playback {\r\n    position: absolute;\r\n    top: 20px;\r\n    right: 20px;\r\n\r\n    width: 300px;\r\n    padding: 20px;\r\n    border-radius: 16px;\r\n}\r\n\r\n.card-playback {\r\n    position: relative;\r\n    width: calc(100% - 2em);\r\n    padding: 1em;\r\n    border-radius: 0.4em;\r\n}"],"sourceRoot":""}]);
+}
+
+.over-screen-playback.maximized-playback {
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    width: 100vw;
+    height: 100vh;
+    padding: 12px;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(6px);
+}
+
+vc-playback .buttons-div {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+
+    position: absolute;
+    top: 7%;
+    right: 5%;
+    padding: 0.5em;
+    border-radius: 300px;
+
+    background-color: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6px);
+}
+
+vc-playback .buttons-div .icon {
+    width: 2em;
+    height: 2em;
+}
+
+vc-playback .buttons-div .icon svg {
+    fill: rgba(0, 0, 0, 0.3);
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/playback/playback.css"],"names":[],"mappings":"AAAA;IACI,cAAc;IACd,uBAAuB;AAC3B;;AAEA;IACI,kBAAkB;IAClB,aAAa;IACb,sBAAsB;IACtB,QAAQ;IACR,WAAW;IACX,YAAY;AAChB;;AAEA;IACI,WAAW;IACX,mBAAmB;IACnB,uBAAuB;IACvB,yBAAyB;AAC7B;;AAEA;IACI,kBAAkB;IAClB,SAAS;IACT,WAAW;;IAEX,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,oCAAoC;IACpC,0BAA0B;AAC9B;;AAEA;IACI,kBAAkB;IAClB,uBAAuB;IACvB,YAAY;IACZ,oBAAoB;AACxB;;AAEA;IACI,kBAAkB;IAClB,MAAM;IACN,QAAQ;;IAER,YAAY;IACZ,aAAa;IACb,aAAa;IACb,gBAAgB;IAChB,oCAAoC;IACpC,0BAA0B;AAC9B;;AAEA;IACI,aAAa;IACb,mBAAmB;IACnB,QAAQ;;IAER,kBAAkB;IAClB,OAAO;IACP,SAAS;IACT,cAAc;IACd,oBAAoB;;IAEpB,oCAAoC;IACpC,0BAA0B;AAC9B;;AAEA;IACI,UAAU;IACV,WAAW;AACf;;AAEA;IACI,wBAAwB;AAC5B","sourcesContent":["vc-playback {\r\n    display: block;\r\n    background-color: white;\r\n}\r\n\r\nvc-playback > div:first-child {\r\n    position: relative;\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 1em;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\nvc-playback vc-clip-renderer {\r\n    width: 100%;\r\n    height: fit-content;\r\n    box-sizing: content-box;\r\n    border: 1px solid #e1dfdf;\r\n}\r\n\r\n.over-screen-playback {\r\n    position: absolute;\r\n    top: 20px;\r\n    right: 20px;\r\n\r\n    width: 300px;\r\n    padding: 12px;\r\n    border-radius: 16px;\r\n    background-color: rgba(0, 0, 0, 0.3);\r\n    backdrop-filter: blur(6px);\r\n}\r\n\r\n.card-playback {\r\n    position: relative;\r\n    width: calc(100% - 2em);\r\n    padding: 1em;\r\n    border-radius: 0.4em;\r\n}\r\n\r\n.over-screen-playback.maximized-playback {\r\n    position: absolute;\r\n    top: 0;\r\n    right: 0;\r\n\r\n    width: 100vw;\r\n    height: 100vh;\r\n    padding: 12px;\r\n    border-radius: 0;\r\n    background-color: rgba(0, 0, 0, 0.3);\r\n    backdrop-filter: blur(6px);\r\n}\r\n\r\nvc-playback .buttons-div {\r\n    display: flex;\r\n    flex-direction: row;\r\n    gap: 1em;\r\n\r\n    position: absolute;\r\n    top: 7%;\r\n    right: 5%;\r\n    padding: 0.5em;\r\n    border-radius: 300px;\r\n\r\n    background-color: rgba(0, 0, 0, 0.1);\r\n    backdrop-filter: blur(6px);\r\n}\r\n\r\nvc-playback .buttons-div .icon {\r\n    width: 2em;\r\n    height: 2em;\r\n}\r\n\r\nvc-playback .buttons-div .icon svg {\r\n    fill: rgba(0, 0, 0, 0.3);\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -13275,6 +14526,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.vc-renderer {
 
 .vc-renderer > * {
     position: absolute;
+    overflow: hidden;
 }
 
 .vc-renderer > video {
@@ -13284,7 +14536,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.vc-renderer {
 .vc-renderer > .snapshot-effect-div {
     opacity: 0;
     background-color: black;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/renderer/renderer.css"],"names":[],"mappings":"AAAA;IACI,cAAc;IACd,WAAW;IACX,YAAY;IACZ,gBAAgB;IAChB,kBAAkB;AACtB;;AAEA;IACI,kBAAkB;AACtB;;AAEA;IACI,mBAAmB;AACvB;;AAEA;IACI,UAAU;IACV,uBAAuB;AAC3B","sourcesContent":[".vc-renderer {\r\n    display: block;\r\n    width: 100%;\r\n    height: 100%;\r\n    overflow: hidden;\r\n    aspect-ratio: 1.33;\r\n}\r\n\r\n.vc-renderer > * {\r\n    position: absolute;\r\n}\r\n\r\n.vc-renderer > video {\r\n    object-fit: contain;\r\n}\r\n\r\n.vc-renderer > .snapshot-effect-div {\r\n    opacity: 0;\r\n    background-color: black;\r\n}"],"sourceRoot":""}]);
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/renderer/renderer.css"],"names":[],"mappings":"AAAA;IACI,cAAc;IACd,WAAW;IACX,YAAY;IACZ,gBAAgB;IAChB,kBAAkB;AACtB;;AAEA;IACI,kBAAkB;IAClB,gBAAgB;AACpB;;AAEA;IACI,mBAAmB;AACvB;;AAEA;IACI,UAAU;IACV,uBAAuB;AAC3B","sourcesContent":[".vc-renderer {\r\n    display: block;\r\n    width: 100%;\r\n    height: 100%;\r\n    overflow: hidden;\r\n    aspect-ratio: 1.33;\r\n}\r\n\r\n.vc-renderer > * {\r\n    position: absolute;\r\n    overflow: hidden;\r\n}\r\n\r\n.vc-renderer > video {\r\n    object-fit: contain;\r\n}\r\n\r\n.vc-renderer > .snapshot-effect-div {\r\n    opacity: 0;\r\n    background-color: black;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -13311,7 +14563,9 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `.vc-scrubber.vc-clip-scrubber {
+___CSS_LOADER_EXPORT___.push([module.id, `/*********** Vertical clip scrubber ***********/
+
+.vc-scrubber.vc-clip-scrubber.vc-scrubber-v {
     position: absolute;
     bottom: 0;
 
@@ -13327,12 +14581,19 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.vc-scrubber.vc-clip-scrubber {
     z-index: 2;
 }
 
-.vc-clip-scrubber > * {
+.vc-clip-scrubber.vc-scrubber-v > * {
     position: absolute;
     transform: translateX(0.01em);
 }
 
-.vc-clip-scrubber > :first-child {
+.vc-clip-scrubber.vc-scrubber-v > :first-child > svg {
+    width: 100%;
+    height: 100%;
+    fill: red;
+}
+
+/* Arrow */
+.vc-clip-scrubber.vc-scrubber-v > :first-child {
     top: -0.8em;
 
     width: 1em;
@@ -13340,20 +14601,67 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.vc-scrubber.vc-clip-scrubber {
     padding: 0.5em;
 }
 
-.vc-clip-scrubber > :first-child > svg {
-    width: 100%;
-    height: 100%;
-    fill: red;
-}
-
-.vc-clip-scrubber > div:last-child {
+/* Marking menu */
+.vc-clip-scrubber.vc-scrubber-v > div:last-child {
     top: -1.6em;
     width: 1em;
     height: 1em;
 
     border-radius: 2em;
     background-color: pink;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/scrubber/clipScrubber/clipScrubber.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,SAAS;;IAET,aAAa;IACb,sBAAsB;IACtB,mBAAmB;;IAEnB,YAAY;IACZ,qBAAqB;IACrB,wBAAwB;IACxB,mBAAmB;;IAEnB,UAAU;AACd;;AAEA;IACI,kBAAkB;IAClB,6BAA6B;AACjC;;AAEA;IACI,WAAW;;IAEX,UAAU;IACV,WAAW;IACX,cAAc;AAClB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,SAAS;AACb;;AAEA;IACI,WAAW;IACX,UAAU;IACV,WAAW;;IAEX,kBAAkB;IAClB,sBAAsB;AAC1B","sourcesContent":[".vc-scrubber.vc-clip-scrubber {\r\n    position: absolute;\r\n    bottom: 0;\r\n\r\n    display: flex;\r\n    flex-direction: column;\r\n    align-items: center;\r\n\r\n    width: 0.2em;\r\n    background-color: red;\r\n    height: calc(100% + 1em);\r\n    border-radius: 10px;\r\n\r\n    z-index: 2;\r\n}\r\n\r\n.vc-clip-scrubber > * {\r\n    position: absolute;\r\n    transform: translateX(0.01em);\r\n}\r\n\r\n.vc-clip-scrubber > :first-child {\r\n    top: -0.8em;\r\n\r\n    width: 1em;\r\n    height: 1em;\r\n    padding: 0.5em;\r\n}\r\n\r\n.vc-clip-scrubber > :first-child > svg {\r\n    width: 100%;\r\n    height: 100%;\r\n    fill: red;\r\n}\r\n\r\n.vc-clip-scrubber > div:last-child {\r\n    top: -1.6em;\r\n    width: 1em;\r\n    height: 1em;\r\n\r\n    border-radius: 2em;\r\n    background-color: pink;\r\n}"],"sourceRoot":""}]);
+}
+
+
+
+/********** Horizontal clip scrubber **********/
+
+.vc-scrubber.vc-clip-scrubber.vc-scrubber-h {
+    position: absolute;
+    right: 0;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    height: 0.2em;
+    background-color: red;
+    width: calc(100% + 1em);
+    border-radius: 10px;
+
+    z-index: 2;
+}
+
+.vc-clip-scrubber.vc-scrubber-h > * {
+    position: absolute;
+    transform: translateY(0.01em);
+}
+
+.vc-clip-scrubber.vc-scrubber-h > :first-child > svg {
+    width: 100%;
+    height: 100%;
+    fill: red;
+    rotate: -90deg;
+}
+
+/* Arrow*/
+.vc-clip-scrubber.vc-scrubber-h > :first-child {
+    left: -0.8em;
+    top: -0.9em;
+
+    width: 1em;
+    height: 1em;
+    padding: 0.5em;
+}
+
+/* Marking menu */
+.vc-clip-scrubber.vc-scrubber-h > div:last-child {
+    right : -1.6em;
+    width: 1em;
+    height: 1em;
+
+    border-radius: 2em;
+    background-color: pink;
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/scrubber/clipScrubber/clipScrubber.css"],"names":[],"mappings":"AAAA,+CAA+C;;AAE/C;IACI,kBAAkB;IAClB,SAAS;;IAET,aAAa;IACb,sBAAsB;IACtB,mBAAmB;;IAEnB,YAAY;IACZ,qBAAqB;IACrB,wBAAwB;IACxB,mBAAmB;;IAEnB,UAAU;AACd;;AAEA;IACI,kBAAkB;IAClB,6BAA6B;AACjC;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,SAAS;AACb;;AAEA,UAAU;AACV;IACI,WAAW;;IAEX,UAAU;IACV,WAAW;IACX,cAAc;AAClB;;AAEA,iBAAiB;AACjB;IACI,WAAW;IACX,UAAU;IACV,WAAW;;IAEX,kBAAkB;IAClB,sBAAsB;AAC1B;;;;AAIA,+CAA+C;;AAE/C;IACI,kBAAkB;IAClB,QAAQ;;IAER,aAAa;IACb,mBAAmB;IACnB,mBAAmB;;IAEnB,aAAa;IACb,qBAAqB;IACrB,uBAAuB;IACvB,mBAAmB;;IAEnB,UAAU;AACd;;AAEA;IACI,kBAAkB;IAClB,6BAA6B;AACjC;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,SAAS;IACT,cAAc;AAClB;;AAEA,SAAS;AACT;IACI,YAAY;IACZ,WAAW;;IAEX,UAAU;IACV,WAAW;IACX,cAAc;AAClB;;AAEA,iBAAiB;AACjB;IACI,cAAc;IACd,UAAU;IACV,WAAW;;IAEX,kBAAkB;IAClB,sBAAsB;AAC1B","sourcesContent":["/*********** Vertical clip scrubber ***********/\r\n\r\n.vc-scrubber.vc-clip-scrubber.vc-scrubber-v {\r\n    position: absolute;\r\n    bottom: 0;\r\n\r\n    display: flex;\r\n    flex-direction: column;\r\n    align-items: center;\r\n\r\n    width: 0.2em;\r\n    background-color: red;\r\n    height: calc(100% + 1em);\r\n    border-radius: 10px;\r\n\r\n    z-index: 2;\r\n}\r\n\r\n.vc-clip-scrubber.vc-scrubber-v > * {\r\n    position: absolute;\r\n    transform: translateX(0.01em);\r\n}\r\n\r\n.vc-clip-scrubber.vc-scrubber-v > :first-child > svg {\r\n    width: 100%;\r\n    height: 100%;\r\n    fill: red;\r\n}\r\n\r\n/* Arrow */\r\n.vc-clip-scrubber.vc-scrubber-v > :first-child {\r\n    top: -0.8em;\r\n\r\n    width: 1em;\r\n    height: 1em;\r\n    padding: 0.5em;\r\n}\r\n\r\n/* Marking menu */\r\n.vc-clip-scrubber.vc-scrubber-v > div:last-child {\r\n    top: -1.6em;\r\n    width: 1em;\r\n    height: 1em;\r\n\r\n    border-radius: 2em;\r\n    background-color: pink;\r\n}\r\n\r\n\r\n\r\n/********** Horizontal clip scrubber **********/\r\n\r\n.vc-scrubber.vc-clip-scrubber.vc-scrubber-h {\r\n    position: absolute;\r\n    right: 0;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    align-items: center;\r\n\r\n    height: 0.2em;\r\n    background-color: red;\r\n    width: calc(100% + 1em);\r\n    border-radius: 10px;\r\n\r\n    z-index: 2;\r\n}\r\n\r\n.vc-clip-scrubber.vc-scrubber-h > * {\r\n    position: absolute;\r\n    transform: translateY(0.01em);\r\n}\r\n\r\n.vc-clip-scrubber.vc-scrubber-h > :first-child > svg {\r\n    width: 100%;\r\n    height: 100%;\r\n    fill: red;\r\n    rotate: -90deg;\r\n}\r\n\r\n/* Arrow*/\r\n.vc-clip-scrubber.vc-scrubber-h > :first-child {\r\n    left: -0.8em;\r\n    top: -0.9em;\r\n\r\n    width: 1em;\r\n    height: 1em;\r\n    padding: 0.5em;\r\n}\r\n\r\n/* Marking menu */\r\n.vc-clip-scrubber.vc-scrubber-h > div:last-child {\r\n    right : -1.6em;\r\n    width: 1em;\r\n    height: 1em;\r\n\r\n    border-radius: 2em;\r\n    background-color: pink;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -13498,6 +14806,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.vc-timeline.vc-clip-timeline {
 
     display: flex;
     flex-direction: row;
+    margin: 0.35em 0.7em;
 }
 
 .vc-clip-timeline .turbo-drawer {
@@ -13560,7 +14869,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.vc-timeline.vc-clip-timeline {
 
 .vc-clip-timeline vc-clip:last-child:nth-child(2) .vc-clip-content {
     border-radius:  0.35em;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/timeline/clipTimeline/clipTimeline.css"],"names":[],"mappings":"AAAA;IACI,YAAY;IACZ,aAAa;IACb,QAAQ;IACR,QAAQ;AACZ;;AAEA;IACI,kBAAkB;IAClB,qBAAqB;IACrB,aAAa;IACb,6BAA6B;;IAE7B,aAAa;IACb,mBAAmB;AACvB;;AAEA;IACI,YAAY;IACZ,mBAAmB;AACvB;;AAEA;IACI,YAAY;IACZ,aAAa;IACb,6BAA6B;AACjC;;AAEA;IACI,wBAAwB;IACxB,sBAAsB;IACtB,WAAW;AACf;;AAEA;IACI,kBAAkB;IAClB,qBAAqB;IACrB,yBAAyB;;IAEzB,aAAa;IACb,mBAAmB;;IAEnB,YAAY;;IAEZ,UAAU;AACd;;AAEA;IACI,WAAW;AACf;;AAEA;IACI,kBAAkB;IAClB,UAAU;IACV,QAAQ;IACR,2BAA2B;AAC/B;;AAEA;IACI,aAAa;IACb,cAAc;AAClB;;AAEA;IACI,gBAAgB;AACpB;;AAEA;IACI,gCAAgC;AACpC;;AAEA;IACI,iCAAiC;AACrC;;AAEA;IACI,sBAAsB;AAC1B","sourcesContent":[".vc-timeline.vc-clip-timeline {\r\n    height: 100%;\r\n    display: flex;\r\n    width: 0;\r\n    right: 0;\r\n}\r\n\r\n.vc-timeline.vc-clip-timeline .scrubber-container {\r\n    position: relative;\r\n    border-radius: 0.35em;\r\n    height: 3.8em;\r\n    background-color: transparent;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n}\r\n\r\n.vc-clip-timeline .turbo-drawer {\r\n    height: 120%;\r\n    align-items: center;\r\n}\r\n\r\n.vc-clip-timeline .turbo-drawer .turbo-drawer-panel-container {\r\n    height: 100%;\r\n    display: flex;\r\n    background-color: transparent;\r\n}\r\n\r\n.vc-clip-timeline .turbo-drawer .turbo-drawer-panel {\r\n    display: flex !important;\r\n    flex-direction: column;\r\n    gap: 0.5rem;\r\n}\r\n\r\n.vc-clip-timeline .turbo-drawer .clips-container {\r\n    position: relative;\r\n    border-radius: 0.35em;\r\n    height: calc(6em - 2.4em);\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n\r\n    flex-grow: 1;\r\n\r\n    z-index: 2;\r\n}\r\n\r\n.vc-clip-timeline .top-drawer {\r\n    bottom: 1em;\r\n}\r\n\r\n.vc-clip-timeline .right-drawer {\r\n    position: absolute;\r\n    left: 100%;\r\n    top: 50%;\r\n    transform: translateY(-50%);\r\n}\r\n\r\n.vc-clip-timeline .play-button {\r\n    height: 1.5em;\r\n    padding: 0.2em;\r\n}\r\n\r\n.vc-clip-timeline vc-clip .vc-clip-content {\r\n    border-radius: 0;\r\n}\r\n\r\n.vc-clip-timeline vc-clip:nth-child(2) .vc-clip-content {\r\n    border-radius: 0.35em 0 0 0.35em;\r\n}\r\n\r\n.vc-clip-timeline vc-clip:last-child .vc-clip-content {\r\n    border-radius:  0 0.35em 0.35em 0;\r\n}\r\n\r\n.vc-clip-timeline vc-clip:last-child:nth-child(2) .vc-clip-content {\r\n    border-radius:  0.35em;\r\n}"],"sourceRoot":""}]);
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/timeline/clipTimeline/clipTimeline.css"],"names":[],"mappings":"AAAA;IACI,YAAY;IACZ,aAAa;IACb,QAAQ;IACR,QAAQ;AACZ;;AAEA;IACI,kBAAkB;IAClB,qBAAqB;IACrB,aAAa;IACb,6BAA6B;;IAE7B,aAAa;IACb,mBAAmB;IACnB,oBAAoB;AACxB;;AAEA;IACI,YAAY;IACZ,mBAAmB;AACvB;;AAEA;IACI,YAAY;IACZ,aAAa;IACb,6BAA6B;AACjC;;AAEA;IACI,wBAAwB;IACxB,sBAAsB;IACtB,WAAW;AACf;;AAEA;IACI,kBAAkB;IAClB,qBAAqB;IACrB,yBAAyB;;IAEzB,aAAa;IACb,mBAAmB;;IAEnB,YAAY;;IAEZ,UAAU;AACd;;AAEA;IACI,WAAW;AACf;;AAEA;IACI,kBAAkB;IAClB,UAAU;IACV,QAAQ;IACR,2BAA2B;AAC/B;;AAEA;IACI,aAAa;IACb,cAAc;AAClB;;AAEA;IACI,gBAAgB;AACpB;;AAEA;IACI,gCAAgC;AACpC;;AAEA;IACI,iCAAiC;AACrC;;AAEA;IACI,sBAAsB;AAC1B","sourcesContent":[".vc-timeline.vc-clip-timeline {\r\n    height: 100%;\r\n    display: flex;\r\n    width: 0;\r\n    right: 0;\r\n}\r\n\r\n.vc-timeline.vc-clip-timeline .scrubber-container {\r\n    position: relative;\r\n    border-radius: 0.35em;\r\n    height: 3.8em;\r\n    background-color: transparent;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    margin: 0.35em 0.7em;\r\n}\r\n\r\n.vc-clip-timeline .turbo-drawer {\r\n    height: 120%;\r\n    align-items: center;\r\n}\r\n\r\n.vc-clip-timeline .turbo-drawer .turbo-drawer-panel-container {\r\n    height: 100%;\r\n    display: flex;\r\n    background-color: transparent;\r\n}\r\n\r\n.vc-clip-timeline .turbo-drawer .turbo-drawer-panel {\r\n    display: flex !important;\r\n    flex-direction: column;\r\n    gap: 0.5rem;\r\n}\r\n\r\n.vc-clip-timeline .turbo-drawer .clips-container {\r\n    position: relative;\r\n    border-radius: 0.35em;\r\n    height: calc(6em - 2.4em);\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n\r\n    flex-grow: 1;\r\n\r\n    z-index: 2;\r\n}\r\n\r\n.vc-clip-timeline .top-drawer {\r\n    bottom: 1em;\r\n}\r\n\r\n.vc-clip-timeline .right-drawer {\r\n    position: absolute;\r\n    left: 100%;\r\n    top: 50%;\r\n    transform: translateY(-50%);\r\n}\r\n\r\n.vc-clip-timeline .play-button {\r\n    height: 1.5em;\r\n    padding: 0.2em;\r\n}\r\n\r\n.vc-clip-timeline vc-clip .vc-clip-content {\r\n    border-radius: 0;\r\n}\r\n\r\n.vc-clip-timeline vc-clip:nth-child(2) .vc-clip-content {\r\n    border-radius: 0.35em 0 0 0.35em;\r\n}\r\n\r\n.vc-clip-timeline vc-clip:last-child .vc-clip-content {\r\n    border-radius:  0 0.35em 0.35em 0;\r\n}\r\n\r\n.vc-clip-timeline vc-clip:last-child:nth-child(2) .vc-clip-content {\r\n    border-radius:  0.35em;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -13587,62 +14896,73 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `.vc-timeline.vc-shooting-timeline {
-    height: 100%;
-    display: flex;
-    width: 0;
-    right: 0;
+___CSS_LOADER_EXPORT___.push([module.id, `.vc-shooting-timeline.vc-timeline {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    color: white;
 }
 
-.vc-timeline.vc-shooting-timeline .scrubber-container {
-    position: relative;
-    border-radius: 0.35em;
-    height: 3.8em;
-    background-color: transparent;
+.vc-shooting-timeline p {
+    text-align: center;
+}
 
-    display: flex;
-    flex-direction: row;
+.vc-shooting-timeline.vc-timeline .icon > svg {
+    fill: white;
 }
 
 .vc-shooting-timeline .turbo-drawer {
+    height: 100%;
+}
+
+.vc-shooting-timeline.vc-timeline .turbo-drawer-thumb {
+    background-color: black;
+}
+
+.vc-shooting-timeline.vc-timeline .turbo-drawer-panel-container {
+    height: 100%;
+}
+
+.vc-shooting-timeline.vc-timeline .turbo-drawer-panel-container .turbo-drawer-panel {
+    height: calc(100% - 4em);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    background-color: black;
+    border-radius: 0;
+    padding: 2em;
+}
+
+.vc-timeline.vc-shooting-timeline .scrubber-container {
+    flex-grow: 1;
+    border-radius: 0.35em;
+    width: 5em;
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+}
+
+.vc-shooting-timeline .shooting-timeline-drawer {
     height: 120%;
     align-items: center;
 }
 
-.vc-shooting-timeline .turbo-drawer .turbo-drawer-panel-container {
+.vc-shooting-timeline .shooting-timeline-drawer .shooting-timeline-drawer-panel-container {
     height: 100%;
     display: flex;
-    background-color: transparent;
 }
 
-.vc-shooting-timeline .turbo-drawer .turbo-drawer-panel {
+.vc-shooting-timeline .shooting-timeline-drawer .shooting-timeline-drawer-panel {
     display: flex !important;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.vc-shooting-timeline .turbo-drawer .clips-container {
-    position: relative;
-    border-radius: 0.35em;
-    height: calc(6em - 2.4em);
-
-    display: flex;
-    flex-direction: row;
-
-    flex-grow: 1;
-
-    z-index: 2;
-}
-
 .vc-shooting-timeline .top-drawer {
     bottom: 1em;
-}
-
-.vc-shooting-timeline .right-drawer {
-    position: absolute;
-    left: 100%;
-    top: 50%;
-    transform: translateY(-50%);
 }
 
 .vc-shooting-timeline .play-button {
@@ -13655,16 +14975,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.vc-timeline.vc-shooting-timeline {
 }
 
 .vc-shooting-timeline vc-clip:nth-child(2) .vc-clip-content {
-    border-radius: 0.35em 0 0 0.35em;
+    border-radius: 0.35em 0.35em 0 0;
 }
 
 .vc-shooting-timeline vc-clip:last-child .vc-clip-content {
-    border-radius:  0 0.35em 0.35em 0;
+    border-radius:  0 0 0.35em 0.35em;
 }
 
 .vc-shooting-timeline vc-clip:last-child:nth-child(2) .vc-clip-content {
     border-radius:  0.35em;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/timeline/shootingTimeline/shootingTimeline.css"],"names":[],"mappings":"AAAA;IACI,YAAY;IACZ,aAAa;IACb,QAAQ;IACR,QAAQ;AACZ;;AAEA;IACI,kBAAkB;IAClB,qBAAqB;IACrB,aAAa;IACb,6BAA6B;;IAE7B,aAAa;IACb,mBAAmB;AACvB;;AAEA;IACI,YAAY;IACZ,mBAAmB;AACvB;;AAEA;IACI,YAAY;IACZ,aAAa;IACb,6BAA6B;AACjC;;AAEA;IACI,wBAAwB;IACxB,sBAAsB;IACtB,WAAW;AACf;;AAEA;IACI,kBAAkB;IAClB,qBAAqB;IACrB,yBAAyB;;IAEzB,aAAa;IACb,mBAAmB;;IAEnB,YAAY;;IAEZ,UAAU;AACd;;AAEA;IACI,WAAW;AACf;;AAEA;IACI,kBAAkB;IAClB,UAAU;IACV,QAAQ;IACR,2BAA2B;AAC/B;;AAEA;IACI,aAAa;IACb,cAAc;AAClB;;AAEA;IACI,gBAAgB;AACpB;;AAEA;IACI,gCAAgC;AACpC;;AAEA;IACI,iCAAiC;AACrC;;AAEA;IACI,sBAAsB;AAC1B","sourcesContent":[".vc-timeline.vc-shooting-timeline {\r\n    height: 100%;\r\n    display: flex;\r\n    width: 0;\r\n    right: 0;\r\n}\r\n\r\n.vc-timeline.vc-shooting-timeline .scrubber-container {\r\n    position: relative;\r\n    border-radius: 0.35em;\r\n    height: 3.8em;\r\n    background-color: transparent;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n}\r\n\r\n.vc-shooting-timeline .turbo-drawer {\r\n    height: 120%;\r\n    align-items: center;\r\n}\r\n\r\n.vc-shooting-timeline .turbo-drawer .turbo-drawer-panel-container {\r\n    height: 100%;\r\n    display: flex;\r\n    background-color: transparent;\r\n}\r\n\r\n.vc-shooting-timeline .turbo-drawer .turbo-drawer-panel {\r\n    display: flex !important;\r\n    flex-direction: column;\r\n    gap: 0.5rem;\r\n}\r\n\r\n.vc-shooting-timeline .turbo-drawer .clips-container {\r\n    position: relative;\r\n    border-radius: 0.35em;\r\n    height: calc(6em - 2.4em);\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n\r\n    flex-grow: 1;\r\n\r\n    z-index: 2;\r\n}\r\n\r\n.vc-shooting-timeline .top-drawer {\r\n    bottom: 1em;\r\n}\r\n\r\n.vc-shooting-timeline .right-drawer {\r\n    position: absolute;\r\n    left: 100%;\r\n    top: 50%;\r\n    transform: translateY(-50%);\r\n}\r\n\r\n.vc-shooting-timeline .play-button {\r\n    height: 1.5em;\r\n    padding: 0.2em;\r\n}\r\n\r\n.vc-shooting-timeline vc-clip .vc-clip-content {\r\n    border-radius: 0;\r\n}\r\n\r\n.vc-shooting-timeline vc-clip:nth-child(2) .vc-clip-content {\r\n    border-radius: 0.35em 0 0 0.35em;\r\n}\r\n\r\n.vc-shooting-timeline vc-clip:last-child .vc-clip-content {\r\n    border-radius:  0 0.35em 0.35em 0;\r\n}\r\n\r\n.vc-shooting-timeline vc-clip:last-child:nth-child(2) .vc-clip-content {\r\n    border-radius:  0.35em;\r\n}"],"sourceRoot":""}]);
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/components/timeline/shootingTimeline/shootingTimeline.css"],"names":[],"mappings":"AAAA;IACI,eAAe;IACf,MAAM;IACN,SAAS;IACT,OAAO;IACP,WAAW;IACX,YAAY;AAChB;;AAEA;IACI,kBAAkB;AACtB;;AAEA;IACI,WAAW;AACf;;AAEA;IACI,YAAY;AAChB;;AAEA;IACI,uBAAuB;AAC3B;;AAEA;IACI,YAAY;AAChB;;AAEA;IACI,wBAAwB;IACxB,aAAa;IACb,sBAAsB;IACtB,oBAAoB;IACpB,SAAS;IACT,uBAAuB;IACvB,gBAAgB;IAChB,YAAY;AAChB;;AAEA;IACI,YAAY;IACZ,qBAAqB;IACrB,UAAU;IACV,6BAA6B;IAC7B,aAAa;IACb,sBAAsB;AAC1B;;AAEA;IACI,YAAY;IACZ,mBAAmB;AACvB;;AAEA;IACI,YAAY;IACZ,aAAa;AACjB;;AAEA;IACI,wBAAwB;IACxB,sBAAsB;IACtB,WAAW;AACf;;AAEA;IACI,WAAW;AACf;;AAEA;IACI,aAAa;IACb,cAAc;AAClB;;AAEA;IACI,gBAAgB;AACpB;;AAEA;IACI,gCAAgC;AACpC;;AAEA;IACI,iCAAiC;AACrC;;AAEA;IACI,sBAAsB;AAC1B","sourcesContent":[".vc-shooting-timeline.vc-timeline {\r\n    position: fixed;\r\n    top: 0;\r\n    bottom: 0;\r\n    left: 0;\r\n    width: auto;\r\n    color: white;\r\n}\r\n\r\n.vc-shooting-timeline p {\r\n    text-align: center;\r\n}\r\n\r\n.vc-shooting-timeline.vc-timeline .icon > svg {\r\n    fill: white;\r\n}\r\n\r\n.vc-shooting-timeline .turbo-drawer {\r\n    height: 100%;\r\n}\r\n\r\n.vc-shooting-timeline.vc-timeline .turbo-drawer-thumb {\r\n    background-color: black;\r\n}\r\n\r\n.vc-shooting-timeline.vc-timeline .turbo-drawer-panel-container {\r\n    height: 100%;\r\n}\r\n\r\n.vc-shooting-timeline.vc-timeline .turbo-drawer-panel-container .turbo-drawer-panel {\r\n    height: calc(100% - 4em);\r\n    display: flex;\r\n    flex-direction: column;\r\n    align-items: stretch;\r\n    gap: 1rem;\r\n    background-color: black;\r\n    border-radius: 0;\r\n    padding: 2em;\r\n}\r\n\r\n.vc-timeline.vc-shooting-timeline .scrubber-container {\r\n    flex-grow: 1;\r\n    border-radius: 0.35em;\r\n    width: 5em;\r\n    background-color: transparent;\r\n    display: flex;\r\n    flex-direction: column;\r\n}\r\n\r\n.vc-shooting-timeline .shooting-timeline-drawer {\r\n    height: 120%;\r\n    align-items: center;\r\n}\r\n\r\n.vc-shooting-timeline .shooting-timeline-drawer .shooting-timeline-drawer-panel-container {\r\n    height: 100%;\r\n    display: flex;\r\n}\r\n\r\n.vc-shooting-timeline .shooting-timeline-drawer .shooting-timeline-drawer-panel {\r\n    display: flex !important;\r\n    flex-direction: column;\r\n    gap: 0.5rem;\r\n}\r\n\r\n.vc-shooting-timeline .top-drawer {\r\n    bottom: 1em;\r\n}\r\n\r\n.vc-shooting-timeline .play-button {\r\n    height: 1.5em;\r\n    padding: 0.2em;\r\n}\r\n\r\n.vc-shooting-timeline vc-clip .vc-clip-content {\r\n    border-radius: 0;\r\n}\r\n\r\n.vc-shooting-timeline vc-clip:nth-child(2) .vc-clip-content {\r\n    border-radius: 0.35em 0.35em 0 0;\r\n}\r\n\r\n.vc-shooting-timeline vc-clip:last-child .vc-clip-content {\r\n    border-radius:  0 0 0.35em 0.35em;\r\n}\r\n\r\n.vc-shooting-timeline vc-clip:last-child:nth-child(2) .vc-clip-content {\r\n    border-radius:  0.35em;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -13940,7 +15260,7 @@ shooting-panel .camera-buttons > .camera-buttons-child:first-child {
     justify-content: flex-end;
 }
 
-shooting-panel turbo-icon-toggle {
+shooting-panel turbo-icon-toggle, shooting-panel turbo-icon {
     width: 2em;
     height: 2em;
 
@@ -13949,11 +15269,15 @@ shooting-panel turbo-icon-toggle {
     background-color: rgba(255, 255, 255, 0.3);
 }
 
-turbo-icon-toggle > svg {
+shooting-panel turbo-icon-toggle:hover, shooting-panel turbo-icon:hover {
+    cursor: pointer;
+}
+
+shooting-panel turbo-icon-toggle > svg, shooting-panel turbo-icon > svg {
     width: 100%;
     height: 100%;
     fill: white;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/panels/shootingPanel/shootingPanel.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,YAAY;;IAEZ,aAAa;IACb,mBAAmB;IACnB,mBAAmB;;IAEnB,sBAAsB;IACtB,oCAAoC;IACpC,+BAA+B;AACnC;;AAEA;IACI,kBAAkB;AACtB;;AAEA;IACI,aAAa;IACb,gCAAgC;IAChC,QAAQ;AACZ;;AAEA;IACI,YAAY;IACZ,aAAa;IACb,sBAAsB;IACtB,mBAAmB;IACnB,2BAA2B;IAC3B,QAAQ;AACZ;;AAEA;IACI,yBAAyB;AAC7B;;AAEA;IACI,UAAU;IACV,WAAW;;IAEX,cAAc;IACd,kBAAkB;IAClB,0CAA0C;AAC9C;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,WAAW;AACf","sourcesContent":["shooting-panel {\r\n    position: relative;\r\n    height: 100%;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    align-items: center;\r\n\r\n    padding: 2em 2em 2em 0;\r\n    background-color: rgba(0, 0, 0, 0.3);\r\n    transition: width 0.3s ease-out;\r\n}\r\n\r\nshooting-panel animated-content-switch {\r\n    margin-left: 1.5em;\r\n}\r\n\r\nshooting-panel animated-content-switch .camera-buttons {\r\n    display: grid;\r\n    grid-template-rows: 1fr auto 1fr;\r\n    gap: 2em;\r\n}\r\n\r\nshooting-panel .camera-buttons > .camera-buttons-child {\r\n    flex-grow: 1;\r\n    display: flex;\r\n    flex-direction: column;\r\n    align-items: center;\r\n    justify-content: flex-start;\r\n    gap: 1em;\r\n}\r\n\r\nshooting-panel .camera-buttons > .camera-buttons-child:first-child {\r\n    justify-content: flex-end;\r\n}\r\n\r\nshooting-panel turbo-icon-toggle {\r\n    width: 2em;\r\n    height: 2em;\r\n\r\n    padding: 0.8em;\r\n    border-radius: 5em;\r\n    background-color: rgba(255, 255, 255, 0.3);\r\n}\r\n\r\nturbo-icon-toggle > svg {\r\n    width: 100%;\r\n    height: 100%;\r\n    fill: white;\r\n}"],"sourceRoot":""}]);
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/panels/shootingPanel/shootingPanel.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,YAAY;;IAEZ,aAAa;IACb,mBAAmB;IACnB,mBAAmB;;IAEnB,sBAAsB;IACtB,oCAAoC;IACpC,+BAA+B;AACnC;;AAEA;IACI,kBAAkB;AACtB;;AAEA;IACI,aAAa;IACb,gCAAgC;IAChC,QAAQ;AACZ;;AAEA;IACI,YAAY;IACZ,aAAa;IACb,sBAAsB;IACtB,mBAAmB;IACnB,2BAA2B;IAC3B,QAAQ;AACZ;;AAEA;IACI,yBAAyB;AAC7B;;AAEA;IACI,UAAU;IACV,WAAW;;IAEX,cAAc;IACd,kBAAkB;IAClB,0CAA0C;AAC9C;;AAEA;IACI,eAAe;AACnB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,WAAW;AACf","sourcesContent":["shooting-panel {\r\n    position: relative;\r\n    height: 100%;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    align-items: center;\r\n\r\n    padding: 2em 2em 2em 0;\r\n    background-color: rgba(0, 0, 0, 0.3);\r\n    transition: width 0.3s ease-out;\r\n}\r\n\r\nshooting-panel animated-content-switch {\r\n    margin-left: 1.5em;\r\n}\r\n\r\nshooting-panel animated-content-switch .camera-buttons {\r\n    display: grid;\r\n    grid-template-rows: 1fr auto 1fr;\r\n    gap: 2em;\r\n}\r\n\r\nshooting-panel .camera-buttons > .camera-buttons-child {\r\n    flex-grow: 1;\r\n    display: flex;\r\n    flex-direction: column;\r\n    align-items: center;\r\n    justify-content: flex-start;\r\n    gap: 1em;\r\n}\r\n\r\nshooting-panel .camera-buttons > .camera-buttons-child:first-child {\r\n    justify-content: flex-end;\r\n}\r\n\r\nshooting-panel turbo-icon-toggle, shooting-panel turbo-icon {\r\n    width: 2em;\r\n    height: 2em;\r\n\r\n    padding: 0.8em;\r\n    border-radius: 5em;\r\n    background-color: rgba(255, 255, 255, 0.3);\r\n}\r\n\r\nshooting-panel turbo-icon-toggle:hover, shooting-panel turbo-icon:hover {\r\n    cursor: pointer;\r\n}\r\n\r\nshooting-panel turbo-icon-toggle > svg, shooting-panel turbo-icon > svg {\r\n    width: 100%;\r\n    height: 100%;\r\n    fill: white;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -14054,57 +15378,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `tool-panel {
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/panels/toolPanelContent/toolPanelContent.css":
-/*!****************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/panels/toolPanelContent/toolPanelContent.css ***!
-  \****************************************************************************************************************/
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/sourceMaps.js */ "./node_modules/css-loader/dist/runtime/sourceMaps.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
-// Imports
-
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, `
-
-.tool-panel-content > .main-buttons-div {
-    position: absolute;
-    top: 2em;
-    right: 2em;
-    z-index: 2;
-
-    display: flex;
-    flex-direction: row;
-    gap: 1em;
-    padding: 0.7em 1em;
-    border-radius: 10em;
-    background-color: rgba(255, 255, 255, 0.1);
-
-}
-
-.tool-panel-content > .main-buttons-div .icon {
-    width: 2em;
-    height: 2em;
-}
-
-.tool-panel-content > .main-buttons-div .icon svg {
-    fill: rgba(255, 255, 255, 0.7);
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/panels/toolPanelContent/toolPanelContent.css"],"names":[],"mappings":";;AAEA;IACI,kBAAkB;IAClB,QAAQ;IACR,UAAU;IACV,UAAU;;IAEV,aAAa;IACb,mBAAmB;IACnB,QAAQ;IACR,kBAAkB;IAClB,mBAAmB;IACnB,0CAA0C;;AAE9C;;AAEA;IACI,UAAU;IACV,WAAW;AACf;;AAEA;IACI,8BAA8B;AAClC","sourcesContent":["\r\n\r\n.tool-panel-content > .main-buttons-div {\r\n    position: absolute;\r\n    top: 2em;\r\n    right: 2em;\r\n    z-index: 2;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    gap: 1em;\r\n    padding: 0.7em 1em;\r\n    border-radius: 10em;\r\n    background-color: rgba(255, 255, 255, 0.1);\r\n\r\n}\r\n\r\n.tool-panel-content > .main-buttons-div .icon {\r\n    width: 2em;\r\n    height: 2em;\r\n}\r\n\r\n.tool-panel-content > .main-buttons-div .icon svg {\r\n    fill: rgba(255, 255, 255, 0.7);\r\n}"],"sourceRoot":""}]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
 /***/ "./node_modules/css-loader/dist/cjs.js!./frontend/src/client/screens/camera/camera.css":
 /*!*********************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js!./frontend/src/client/screens/camera/camera.css ***!
@@ -14139,11 +15412,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `vc-camera {
     background-color: black;
 }
 
-vc-camera vc-timeline {
-    position: absolute;
-    top: calc(100% - 3em);
-}
-
 vc-camera > #capture-bar {
     position: absolute;
     height: 100%;
@@ -14167,7 +15435,30 @@ vc-camera > #capture-bar > div:last-child {
 
 vc-camera .vc-renderer {
     position: absolute;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/screens/camera/camera.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,MAAM;IACN,OAAO;IACP,SAAS;IACT,QAAQ;;IAER,aAAa;IACb,uBAAuB;IACvB,mBAAmB;;IAEnB,uBAAuB;AAC3B;;AAEA;IACI,kBAAkB;IAClB,qBAAqB;AACzB;;AAEA;IACI,kBAAkB;IAClB,YAAY;IACZ,QAAQ;;IAER,aAAa;IACb,mBAAmB;IACnB,mBAAmB;;IAEnB,sBAAsB;;IAEtB,oCAAoC;AACxC;;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,QAAQ;IACR,gBAAgB;AACpB;;AAEA;IACI,kBAAkB;AACtB","sourcesContent":["vc-camera {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    bottom: 0;\r\n    right: 0;\r\n\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n\r\n    background-color: black;\r\n}\r\n\r\nvc-camera vc-timeline {\r\n    position: absolute;\r\n    top: calc(100% - 3em);\r\n}\r\n\r\nvc-camera > #capture-bar {\r\n    position: absolute;\r\n    height: 100%;\r\n    right: 0;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    align-items: center;\r\n\r\n    padding: 2em 2em 2em 0;\r\n\r\n    background-color: rgba(0, 0, 0, 0.3);\r\n}\r\n\r\nvc-camera > #capture-bar > div:last-child {\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 2em;\r\n    margin-left: 2em;\r\n}\r\n\r\nvc-camera .vc-renderer {\r\n    position: absolute;\r\n}"],"sourceRoot":""}]);
+}
+
+vc-camera .back-button-div {
+    position: absolute;
+    top: 2em;
+    right: 2em;
+    z-index: 2;
+
+    width: 2.5em;
+    height: 2.5em;
+    padding: 0.7em;
+    border-radius: 10em;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+vc-camera .back-button-div svg {
+    fill: rgba(255, 255, 255, 0.7);
+}
+
+vc-camera turbo-icon-toggle > svg, vc-camera turbo-icon > svg {
+    width: 100%;
+    height: 100%;
+    fill: white;
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/screens/camera/camera.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,MAAM;IACN,OAAO;IACP,SAAS;IACT,QAAQ;;IAER,aAAa;IACb,uBAAuB;IACvB,mBAAmB;;IAEnB,uBAAuB;AAC3B;;AAEA;IACI,kBAAkB;IAClB,YAAY;IACZ,QAAQ;;IAER,aAAa;IACb,mBAAmB;IACnB,mBAAmB;;IAEnB,sBAAsB;;IAEtB,oCAAoC;AACxC;;AAEA;IACI,aAAa;IACb,sBAAsB;IACtB,QAAQ;IACR,gBAAgB;AACpB;;AAEA;IACI,kBAAkB;AACtB;;AAEA;IACI,kBAAkB;IAClB,QAAQ;IACR,UAAU;IACV,UAAU;;IAEV,YAAY;IACZ,aAAa;IACb,cAAc;IACd,mBAAmB;IACnB,0CAA0C;AAC9C;;AAEA;IACI,8BAA8B;AAClC;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,WAAW;AACf","sourcesContent":["vc-camera {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    bottom: 0;\r\n    right: 0;\r\n\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n\r\n    background-color: black;\r\n}\r\n\r\nvc-camera > #capture-bar {\r\n    position: absolute;\r\n    height: 100%;\r\n    right: 0;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    align-items: center;\r\n\r\n    padding: 2em 2em 2em 0;\r\n\r\n    background-color: rgba(0, 0, 0, 0.3);\r\n}\r\n\r\nvc-camera > #capture-bar > div:last-child {\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 2em;\r\n    margin-left: 2em;\r\n}\r\n\r\nvc-camera .vc-renderer {\r\n    position: absolute;\r\n}\r\n\r\nvc-camera .back-button-div {\r\n    position: absolute;\r\n    top: 2em;\r\n    right: 2em;\r\n    z-index: 2;\r\n\r\n    width: 2.5em;\r\n    height: 2.5em;\r\n    padding: 0.7em;\r\n    border-radius: 10em;\r\n    background-color: rgba(255, 255, 255, 0.1);\r\n}\r\n\r\nvc-camera .back-button-div svg {\r\n    fill: rgba(255, 255, 255, 0.7);\r\n}\r\n\r\nvc-camera turbo-icon-toggle > svg, vc-camera turbo-icon > svg {\r\n    width: 100%;\r\n    height: 100%;\r\n    fill: white;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -14439,6 +15730,10 @@ body::-webkit-scrollbar {
     font-family: "Inter", sans-serif;
 }
 
+h2 {
+    font-size: 1.4rem;
+}
+
 .icon {
     display: inline-block;
     max-width: 2.5em;
@@ -14558,7 +15853,7 @@ button.clickable:hover {
 }
 
 
-`, "",{"version":3,"sources":["webpack://./frontend/src/client/styles/main.css"],"names":[],"mappings":"AAOA;IACI,YAAY;IACZ,aAAa;;IAEb,yBAAyB;IACzB,iBAAiB;IACjB,gBAAgB;;IAEhB,yBAAyB;;IAEzB,8BAA8B;IAC9B,mBAAmB;IACnB,kBAAkB;AACtB;;AAEA;IACI,aAAa;AACjB;;AAEA;IACI,SAAS;IACT,eAAe;IACf,gCAAgC;AACpC;;AAEA;IACI,qBAAqB;IACrB,gBAAgB;IAChB,iBAAiB;IACjB,eAAe;AACnB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,eAAe;AACnB;;AAEA;IACI,eAAe;IACf,UAAU;IACV,YAAY;AAChB;;;;AAIA,yBAAyB;;AAEzB;IACI,iBAAiB;AACrB;;AAEA;IACI,kBAAkB;AACtB;;AAEA;IACI,gBAAgB;AACpB;;AAEA;IACI,eAAe;AACnB;;;;AAIA,0BAA0B;;AAE1B;IACI,2BAA2B;AAC/B;;AAEA;IACI,wCAAwC;AAC5C;;AAEA;IACI,wCAAwC;IACxC,iCAAiC;AACrC;;AAEA;IACI,aAAa;AACjB;;AAEA;IACI,wBAAwB;AAC5B;;;;AAIA,2BAA2B;;AAE3B;IACI,2BAA2B;IAC3B,wCAAwC;IACxC,iCAAiC;IACjC,uBAAuB;AAC3B;;AAEA;IACI,eAAe;IACf,oCAAoC;AACxC;;;;AAIA,yBAAyB;;AAEzB;IACI,aAAa;IACb,mBAAmB;AACvB;;AAEA;IACI,aAAa;IACb,sBAAsB;AAC1B;;AAEA;IACI,YAAY;IACZ,cAAc;AAClB;;AAEA;IACI,YAAY;IACZ,aAAa;AACjB;;AAEA;IACI,wBAAwB;AAC5B;;AAEA;IACI,kCAAkC;AACtC;;AAEA;IACI,cAAc;IACd,cAAc;IACd,iBAAiB;AACrB","sourcesContent":["@import url(\"https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap\");\r\n@import \"./input.css\";\r\n@import \"./markingMenu.css\";\r\n@import \"./colors.css\";\r\n@import \"./drawer.css\";\r\n@import \"./popup.css\";\r\n\r\nbody {\r\n    width: 100vw;\r\n    height: 100vh;\r\n\r\n    touch-action: pan-x pan-y;\r\n    user-select: none;\r\n    overflow: hidden;\r\n\r\n    background-color: #f1f8f8;\r\n\r\n    --border-style: 1px solid #ccc;\r\n    --base-padding: 8px;\r\n    --card-radius: 6px;\r\n}\r\n\r\nbody::-webkit-scrollbar {\r\n    display: none;\r\n}\r\n\r\n* {\r\n    margin: 0;\r\n    font-size: 13px;\r\n    font-family: \"Inter\", sans-serif;\r\n}\r\n\r\n.icon {\r\n    display: inline-block;\r\n    max-width: 2.5em;\r\n    max-height: 2.5em;\r\n    aspect-ratio: 1;\r\n}\r\n\r\n.icon > svg {\r\n    width: 100%;\r\n    height: 100%;\r\n    aspect-ratio: 1;\r\n}\r\n\r\n.content-wrapper {\r\n    padding: 32px 0;\r\n    width: 50%;\r\n    margin: auto;\r\n}\r\n\r\n\r\n\r\n/* Generic text classes */\r\n\r\n.bold {\r\n    font-weight: bold;\r\n}\r\n\r\n.italic {\r\n    font-style: italic;\r\n}\r\n\r\n.left {\r\n    text-align: left;\r\n}\r\n\r\n.large {\r\n    font-size: 16px;\r\n}\r\n\r\n\r\n\r\n/* Generic style classes */\r\n\r\n.border {\r\n    border: var(--border-style);\r\n}\r\n\r\n.padding-small {\r\n    padding: calc(0.5 * var(--base-padding));\r\n}\r\n\r\n.padding {\r\n    padding: calc(1.5 * var(--base-padding));\r\n    border-radius: var(--card-radius);\r\n}\r\n\r\n.translucent {\r\n    opacity: 0.25;\r\n}\r\n\r\n.hidden {\r\n    display: none !important;\r\n}\r\n\r\n\r\n\r\n/* Generic button classes */\r\n\r\nbutton.clickable, .card {\r\n    border: var(--border-style);\r\n    padding: calc(1.5 * var(--base-padding));\r\n    border-radius: var(--card-radius);\r\n    background-color: white;\r\n}\r\n\r\nbutton.clickable:hover {\r\n    cursor: pointer;\r\n    background-color: rgba(0, 0, 0, 0.1);\r\n}\r\n\r\n\r\n\r\n/* Generic flex classes */\r\n\r\n.row {\r\n    display: flex;\r\n    flex-direction: row;\r\n}\r\n\r\n.column {\r\n    display: flex;\r\n    flex-direction: column;\r\n}\r\n\r\n.row > *, .column > * {\r\n    flex-grow: 0;\r\n    flex-shrink: 0;\r\n}\r\n\r\n.grow {\r\n    flex-grow: 1;\r\n    flex-basis: 0;\r\n}\r\n\r\n.gap {\r\n    gap: var(--base-padding);\r\n}\r\n\r\n.gap-large {\r\n    gap: calc(2 * var(--base-padding));\r\n}\r\n\r\n.scroller {\r\n    overflow: auto;\r\n    flex-shrink: 1;\r\n    padding-top: 32px;\r\n}\r\n\r\n\r\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./frontend/src/client/styles/main.css"],"names":[],"mappings":"AAOA;IACI,YAAY;IACZ,aAAa;;IAEb,yBAAyB;IACzB,iBAAiB;IACjB,gBAAgB;;IAEhB,yBAAyB;;IAEzB,8BAA8B;IAC9B,mBAAmB;IACnB,kBAAkB;AACtB;;AAEA;IACI,aAAa;AACjB;;AAEA;IACI,SAAS;IACT,eAAe;IACf,gCAAgC;AACpC;;AAEA;IACI,iBAAiB;AACrB;;AAEA;IACI,qBAAqB;IACrB,gBAAgB;IAChB,iBAAiB;IACjB,eAAe;AACnB;;AAEA;IACI,WAAW;IACX,YAAY;IACZ,eAAe;AACnB;;AAEA;IACI,eAAe;IACf,UAAU;IACV,YAAY;AAChB;;;;AAIA,yBAAyB;;AAEzB;IACI,iBAAiB;AACrB;;AAEA;IACI,kBAAkB;AACtB;;AAEA;IACI,gBAAgB;AACpB;;AAEA;IACI,eAAe;AACnB;;;;AAIA,0BAA0B;;AAE1B;IACI,2BAA2B;AAC/B;;AAEA;IACI,wCAAwC;AAC5C;;AAEA;IACI,wCAAwC;IACxC,iCAAiC;AACrC;;AAEA;IACI,aAAa;AACjB;;AAEA;IACI,wBAAwB;AAC5B;;;;AAIA,2BAA2B;;AAE3B;IACI,2BAA2B;IAC3B,wCAAwC;IACxC,iCAAiC;IACjC,uBAAuB;AAC3B;;AAEA;IACI,eAAe;IACf,oCAAoC;AACxC;;;;AAIA,yBAAyB;;AAEzB;IACI,aAAa;IACb,mBAAmB;AACvB;;AAEA;IACI,aAAa;IACb,sBAAsB;AAC1B;;AAEA;IACI,YAAY;IACZ,cAAc;AAClB;;AAEA;IACI,YAAY;IACZ,aAAa;AACjB;;AAEA;IACI,wBAAwB;AAC5B;;AAEA;IACI,kCAAkC;AACtC;;AAEA;IACI,cAAc;IACd,cAAc;IACd,iBAAiB;AACrB","sourcesContent":["@import url(\"https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap\");\r\n@import \"./input.css\";\r\n@import \"./markingMenu.css\";\r\n@import \"./colors.css\";\r\n@import \"./drawer.css\";\r\n@import \"./popup.css\";\r\n\r\nbody {\r\n    width: 100vw;\r\n    height: 100vh;\r\n\r\n    touch-action: pan-x pan-y;\r\n    user-select: none;\r\n    overflow: hidden;\r\n\r\n    background-color: #f1f8f8;\r\n\r\n    --border-style: 1px solid #ccc;\r\n    --base-padding: 8px;\r\n    --card-radius: 6px;\r\n}\r\n\r\nbody::-webkit-scrollbar {\r\n    display: none;\r\n}\r\n\r\n* {\r\n    margin: 0;\r\n    font-size: 13px;\r\n    font-family: \"Inter\", sans-serif;\r\n}\r\n\r\nh2 {\r\n    font-size: 1.4rem;\r\n}\r\n\r\n.icon {\r\n    display: inline-block;\r\n    max-width: 2.5em;\r\n    max-height: 2.5em;\r\n    aspect-ratio: 1;\r\n}\r\n\r\n.icon > svg {\r\n    width: 100%;\r\n    height: 100%;\r\n    aspect-ratio: 1;\r\n}\r\n\r\n.content-wrapper {\r\n    padding: 32px 0;\r\n    width: 50%;\r\n    margin: auto;\r\n}\r\n\r\n\r\n\r\n/* Generic text classes */\r\n\r\n.bold {\r\n    font-weight: bold;\r\n}\r\n\r\n.italic {\r\n    font-style: italic;\r\n}\r\n\r\n.left {\r\n    text-align: left;\r\n}\r\n\r\n.large {\r\n    font-size: 16px;\r\n}\r\n\r\n\r\n\r\n/* Generic style classes */\r\n\r\n.border {\r\n    border: var(--border-style);\r\n}\r\n\r\n.padding-small {\r\n    padding: calc(0.5 * var(--base-padding));\r\n}\r\n\r\n.padding {\r\n    padding: calc(1.5 * var(--base-padding));\r\n    border-radius: var(--card-radius);\r\n}\r\n\r\n.translucent {\r\n    opacity: 0.25;\r\n}\r\n\r\n.hidden {\r\n    display: none !important;\r\n}\r\n\r\n\r\n\r\n/* Generic button classes */\r\n\r\nbutton.clickable, .card {\r\n    border: var(--border-style);\r\n    padding: calc(1.5 * var(--base-padding));\r\n    border-radius: var(--card-radius);\r\n    background-color: white;\r\n}\r\n\r\nbutton.clickable:hover {\r\n    cursor: pointer;\r\n    background-color: rgba(0, 0, 0, 0.1);\r\n}\r\n\r\n\r\n\r\n/* Generic flex classes */\r\n\r\n.row {\r\n    display: flex;\r\n    flex-direction: row;\r\n}\r\n\r\n.column {\r\n    display: flex;\r\n    flex-direction: column;\r\n}\r\n\r\n.row > *, .column > * {\r\n    flex-grow: 0;\r\n    flex-shrink: 0;\r\n}\r\n\r\n.grow {\r\n    flex-grow: 1;\r\n    flex-basis: 0;\r\n}\r\n\r\n.gap {\r\n    gap: var(--base-padding);\r\n}\r\n\r\n.gap-large {\r\n    gap: calc(2 * var(--base-padding));\r\n}\r\n\r\n.scroller {\r\n    overflow: auto;\r\n    flex-shrink: 1;\r\n    padding-top: 32px;\r\n}\r\n\r\n\r\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -14585,7 +15880,11 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `.turbo-marking-menu > turbo-select-entry {
+___CSS_LOADER_EXPORT___.push([module.id, `.turbo-marking-menu {
+    z-index: 10;
+}
+
+.turbo-marking-menu > turbo-select-entry {
     position: absolute;
     height: 1.5rem;
     opacity: 0;
@@ -14620,7 +15919,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.turbo-marking-menu > turbo-select-ent
     display: inline-block;
     flex-grow: 1;
     white-space: nowrap;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/styles/markingMenu.css"],"names":[],"mappings":"AAAA;IACI,kBAAkB;IAClB,cAAc;IACd,UAAU;;IAEV,aAAa;IACb,mBAAmB;IACnB,mBAAmB;;IAEnB,sBAAsB;IACtB,qBAAqB;;IAErB,sBAAsB;IACtB,2CAA2C;;IAE3C,gCAAgC;;IAEhC,+BAA+B;IAC/B,qCAAqC;AACzC;;AAEA;IACI,UAAU;AACd;;AAEA;IACI,WAAW;IACX,eAAe;AACnB;;AAEA;IACI,iBAAiB;IACjB,qBAAqB;IACrB,YAAY;IACZ,mBAAmB;AACvB","sourcesContent":[".turbo-marking-menu > turbo-select-entry {\r\n    position: absolute;\r\n    height: 1.5rem;\r\n    opacity: 0;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    align-items: center;\r\n\r\n    padding: 0.4rem 0.6rem;\r\n    border-radius: 0.4rem;\r\n\r\n    background-color: pink;\r\n    /*border: var(--overlay-stroke) 1px solid;*/\r\n\r\n    transform: translate(-50%, -50%);\r\n\r\n    transition: scale 0.1s ease-out;\r\n    /*box-shadow: var(--default-shadow);*/\r\n}\r\n\r\n.turbo-marking-menu > turbo-select-entry:hover {\r\n    scale: 1.1;\r\n}\r\n\r\n.turbo-marking-menu > turbo-select-entry img {\r\n    height: 80%;\r\n    aspect-ratio: 1;\r\n}\r\n\r\n.turbo-marking-menu > turbo-select-entry p {\r\n    margin: 0 0 0 6px;\r\n    display: inline-block;\r\n    flex-grow: 1;\r\n    white-space: nowrap;\r\n}"],"sourceRoot":""}]);
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/styles/markingMenu.css"],"names":[],"mappings":"AAAA;IACI,WAAW;AACf;;AAEA;IACI,kBAAkB;IAClB,cAAc;IACd,UAAU;;IAEV,aAAa;IACb,mBAAmB;IACnB,mBAAmB;;IAEnB,sBAAsB;IACtB,qBAAqB;;IAErB,sBAAsB;IACtB,2CAA2C;;IAE3C,gCAAgC;;IAEhC,+BAA+B;IAC/B,qCAAqC;AACzC;;AAEA;IACI,UAAU;AACd;;AAEA;IACI,WAAW;IACX,eAAe;AACnB;;AAEA;IACI,iBAAiB;IACjB,qBAAqB;IACrB,YAAY;IACZ,mBAAmB;AACvB","sourcesContent":[".turbo-marking-menu {\r\n    z-index: 10;\r\n}\r\n\r\n.turbo-marking-menu > turbo-select-entry {\r\n    position: absolute;\r\n    height: 1.5rem;\r\n    opacity: 0;\r\n\r\n    display: flex;\r\n    flex-direction: row;\r\n    align-items: center;\r\n\r\n    padding: 0.4rem 0.6rem;\r\n    border-radius: 0.4rem;\r\n\r\n    background-color: pink;\r\n    /*border: var(--overlay-stroke) 1px solid;*/\r\n\r\n    transform: translate(-50%, -50%);\r\n\r\n    transition: scale 0.1s ease-out;\r\n    /*box-shadow: var(--default-shadow);*/\r\n}\r\n\r\n.turbo-marking-menu > turbo-select-entry:hover {\r\n    scale: 1.1;\r\n}\r\n\r\n.turbo-marking-menu > turbo-select-entry img {\r\n    height: 80%;\r\n    aspect-ratio: 1;\r\n}\r\n\r\n.turbo-marking-menu > turbo-select-entry p {\r\n    margin: 0 0 0 6px;\r\n    display: inline-block;\r\n    flex-grow: 1;\r\n    white-space: nowrap;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -14655,7 +15954,11 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.popup-card {
     display: flex;
     flex-direction: column;
     gap: 1em;
-}`, "",{"version":3,"sources":["webpack://./frontend/src/client/styles/popup.css"],"names":[],"mappings":"AAAA;IACI,uBAAuB;IACvB,YAAY;IACZ,oBAAoB;;IAEpB,aAAa;IACb,sBAAsB;IACtB,QAAQ;AACZ","sourcesContent":[".popup-card {\r\n    background-color: white;\r\n    padding: 1em;\r\n    border-radius: 0.6em;\r\n\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 1em;\r\n}"],"sourceRoot":""}]);
+}
+
+turbo-popup {
+    z-index: 2;
+}`, "",{"version":3,"sources":["webpack://./frontend/src/client/styles/popup.css"],"names":[],"mappings":"AAAA;IACI,uBAAuB;IACvB,YAAY;IACZ,oBAAoB;;IAEpB,aAAa;IACb,sBAAsB;IACtB,QAAQ;AACZ;;AAEA;IACI,UAAU;AACd","sourcesContent":[".popup-card {\r\n    background-color: white;\r\n    padding: 1em;\r\n    border-radius: 0.6em;\r\n\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 1em;\r\n}\r\n\r\nturbo-popup {\r\n    z-index: 2;\r\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -46654,6 +47957,182 @@ function defaultGetY(p) {
 
 /***/ }),
 
+/***/ "./node_modules/dijkstrajs/dijkstra.js":
+/*!*********************************************!*\
+  !*** ./node_modules/dijkstrajs/dijkstra.js ***!
+  \*********************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/******************************************************************************
+ * Created 2008-08-19.
+ *
+ * Dijkstra path-finding functions. Adapted from the Dijkstar Python project.
+ *
+ * Copyright (C) 2008
+ *   Wyatt Baldwin <self@wyattbaldwin.com>
+ *   All rights reserved
+ *
+ * Licensed under the MIT license.
+ *
+ *   http://www.opensource.org/licenses/mit-license.php
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *****************************************************************************/
+var dijkstra = {
+  single_source_shortest_paths: function(graph, s, d) {
+    // Predecessor map for each node that has been encountered.
+    // node ID => predecessor node ID
+    var predecessors = {};
+
+    // Costs of shortest paths from s to all nodes encountered.
+    // node ID => cost
+    var costs = {};
+    costs[s] = 0;
+
+    // Costs of shortest paths from s to all nodes encountered; differs from
+    // `costs` in that it provides easy access to the node that currently has
+    // the known shortest path from s.
+    // XXX: Do we actually need both `costs` and `open`?
+    var open = dijkstra.PriorityQueue.make();
+    open.push(s, 0);
+
+    var closest,
+        u, v,
+        cost_of_s_to_u,
+        adjacent_nodes,
+        cost_of_e,
+        cost_of_s_to_u_plus_cost_of_e,
+        cost_of_s_to_v,
+        first_visit;
+    while (!open.empty()) {
+      // In the nodes remaining in graph that have a known cost from s,
+      // find the node, u, that currently has the shortest path from s.
+      closest = open.pop();
+      u = closest.value;
+      cost_of_s_to_u = closest.cost;
+
+      // Get nodes adjacent to u...
+      adjacent_nodes = graph[u] || {};
+
+      // ...and explore the edges that connect u to those nodes, updating
+      // the cost of the shortest paths to any or all of those nodes as
+      // necessary. v is the node across the current edge from u.
+      for (v in adjacent_nodes) {
+        if (adjacent_nodes.hasOwnProperty(v)) {
+          // Get the cost of the edge running from u to v.
+          cost_of_e = adjacent_nodes[v];
+
+          // Cost of s to u plus the cost of u to v across e--this is *a*
+          // cost from s to v that may or may not be less than the current
+          // known cost to v.
+          cost_of_s_to_u_plus_cost_of_e = cost_of_s_to_u + cost_of_e;
+
+          // If we haven't visited v yet OR if the current known cost from s to
+          // v is greater than the new cost we just found (cost of s to u plus
+          // cost of u to v across e), update v's cost in the cost list and
+          // update v's predecessor in the predecessor list (it's now u).
+          cost_of_s_to_v = costs[v];
+          first_visit = (typeof costs[v] === 'undefined');
+          if (first_visit || cost_of_s_to_v > cost_of_s_to_u_plus_cost_of_e) {
+            costs[v] = cost_of_s_to_u_plus_cost_of_e;
+            open.push(v, cost_of_s_to_u_plus_cost_of_e);
+            predecessors[v] = u;
+          }
+        }
+      }
+    }
+
+    if (typeof d !== 'undefined' && typeof costs[d] === 'undefined') {
+      var msg = ['Could not find a path from ', s, ' to ', d, '.'].join('');
+      throw new Error(msg);
+    }
+
+    return predecessors;
+  },
+
+  extract_shortest_path_from_predecessor_list: function(predecessors, d) {
+    var nodes = [];
+    var u = d;
+    var predecessor;
+    while (u) {
+      nodes.push(u);
+      predecessor = predecessors[u];
+      u = predecessors[u];
+    }
+    nodes.reverse();
+    return nodes;
+  },
+
+  find_path: function(graph, s, d) {
+    var predecessors = dijkstra.single_source_shortest_paths(graph, s, d);
+    return dijkstra.extract_shortest_path_from_predecessor_list(
+      predecessors, d);
+  },
+
+  /**
+   * A very naive priority queue implementation.
+   */
+  PriorityQueue: {
+    make: function (opts) {
+      var T = dijkstra.PriorityQueue,
+          t = {},
+          key;
+      opts = opts || {};
+      for (key in T) {
+        if (T.hasOwnProperty(key)) {
+          t[key] = T[key];
+        }
+      }
+      t.queue = [];
+      t.sorter = opts.sorter || T.default_sorter;
+      return t;
+    },
+
+    default_sorter: function (a, b) {
+      return a.cost - b.cost;
+    },
+
+    /**
+     * Add a new item to the queue and ensure the highest priority element
+     * is at the front of the queue.
+     */
+    push: function (value, cost) {
+      var item = {value: value, cost: cost};
+      this.queue.push(item);
+      this.queue.sort(this.sorter);
+    },
+
+    /**
+     * Return the highest priority element in the queue.
+     */
+    pop: function () {
+      return this.queue.shift();
+    },
+
+    empty: function () {
+      return this.queue.length === 0;
+    }
+  }
+};
+
+
+// node.js module exports
+if (true) {
+  module.exports = dijkstra;
+}
+
+
+/***/ }),
+
 /***/ "./node_modules/dom-to-image-more/dist/dom-to-image-more.min.js":
 /*!**********************************************************************!*\
   !*** ./node_modules/dom-to-image-more/dist/dom-to-image-more.min.js ***!
@@ -52720,6 +54199,2888 @@ __webpack_require__.r(__webpack_exports__);
 
 const subtle = crypto.subtle
 const getRandomValues = crypto.getRandomValues.bind(crypto)
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/browser.js":
+/*!********************************************!*\
+  !*** ./node_modules/qrcode/lib/browser.js ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+const canPromise = __webpack_require__(/*! ./can-promise */ "./node_modules/qrcode/lib/can-promise.js")
+
+const QRCode = __webpack_require__(/*! ./core/qrcode */ "./node_modules/qrcode/lib/core/qrcode.js")
+const CanvasRenderer = __webpack_require__(/*! ./renderer/canvas */ "./node_modules/qrcode/lib/renderer/canvas.js")
+const SvgRenderer = __webpack_require__(/*! ./renderer/svg-tag.js */ "./node_modules/qrcode/lib/renderer/svg-tag.js")
+
+function renderCanvas (renderFunc, canvas, text, opts, cb) {
+  const args = [].slice.call(arguments, 1)
+  const argsNum = args.length
+  const isLastArgCb = typeof args[argsNum - 1] === 'function'
+
+  if (!isLastArgCb && !canPromise()) {
+    throw new Error('Callback required as last argument')
+  }
+
+  if (isLastArgCb) {
+    if (argsNum < 2) {
+      throw new Error('Too few arguments provided')
+    }
+
+    if (argsNum === 2) {
+      cb = text
+      text = canvas
+      canvas = opts = undefined
+    } else if (argsNum === 3) {
+      if (canvas.getContext && typeof cb === 'undefined') {
+        cb = opts
+        opts = undefined
+      } else {
+        cb = opts
+        opts = text
+        text = canvas
+        canvas = undefined
+      }
+    }
+  } else {
+    if (argsNum < 1) {
+      throw new Error('Too few arguments provided')
+    }
+
+    if (argsNum === 1) {
+      text = canvas
+      canvas = opts = undefined
+    } else if (argsNum === 2 && !canvas.getContext) {
+      opts = text
+      text = canvas
+      canvas = undefined
+    }
+
+    return new Promise(function (resolve, reject) {
+      try {
+        const data = QRCode.create(text, opts)
+        resolve(renderFunc(data, canvas, opts))
+      } catch (e) {
+        reject(e)
+      }
+    })
+  }
+
+  try {
+    const data = QRCode.create(text, opts)
+    cb(null, renderFunc(data, canvas, opts))
+  } catch (e) {
+    cb(e)
+  }
+}
+
+exports.create = QRCode.create
+exports.toCanvas = renderCanvas.bind(null, CanvasRenderer.render)
+exports.toDataURL = renderCanvas.bind(null, CanvasRenderer.renderToDataURL)
+
+// only svg for now.
+exports.toString = renderCanvas.bind(null, function (data, _, opts) {
+  return SvgRenderer.render(data, opts)
+})
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/can-promise.js":
+/*!************************************************!*\
+  !*** ./node_modules/qrcode/lib/can-promise.js ***!
+  \************************************************/
+/***/ ((module) => {
+
+// can-promise has a crash in some versions of react native that dont have
+// standard global objects
+// https://github.com/soldair/node-qrcode/issues/157
+
+module.exports = function () {
+  return typeof Promise === 'function' && Promise.prototype && Promise.prototype.then
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/alignment-pattern.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/alignment-pattern.js ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+/**
+ * Alignment pattern are fixed reference pattern in defined positions
+ * in a matrix symbology, which enables the decode software to re-synchronise
+ * the coordinate mapping of the image modules in the event of moderate amounts
+ * of distortion of the image.
+ *
+ * Alignment patterns are present only in QR Code symbols of version 2 or larger
+ * and their number depends on the symbol version.
+ */
+
+const getSymbolSize = (__webpack_require__(/*! ./utils */ "./node_modules/qrcode/lib/core/utils.js").getSymbolSize)
+
+/**
+ * Calculate the row/column coordinates of the center module of each alignment pattern
+ * for the specified QR Code version.
+ *
+ * The alignment patterns are positioned symmetrically on either side of the diagonal
+ * running from the top left corner of the symbol to the bottom right corner.
+ *
+ * Since positions are simmetrical only half of the coordinates are returned.
+ * Each item of the array will represent in turn the x and y coordinate.
+ * @see {@link getPositions}
+ *
+ * @param  {Number} version QR Code version
+ * @return {Array}          Array of coordinate
+ */
+exports.getRowColCoords = function getRowColCoords (version) {
+  if (version === 1) return []
+
+  const posCount = Math.floor(version / 7) + 2
+  const size = getSymbolSize(version)
+  const intervals = size === 145 ? 26 : Math.ceil((size - 13) / (2 * posCount - 2)) * 2
+  const positions = [size - 7] // Last coord is always (size - 7)
+
+  for (let i = 1; i < posCount - 1; i++) {
+    positions[i] = positions[i - 1] - intervals
+  }
+
+  positions.push(6) // First coord is always 6
+
+  return positions.reverse()
+}
+
+/**
+ * Returns an array containing the positions of each alignment pattern.
+ * Each array's element represent the center point of the pattern as (x, y) coordinates
+ *
+ * Coordinates are calculated expanding the row/column coordinates returned by {@link getRowColCoords}
+ * and filtering out the items that overlaps with finder pattern
+ *
+ * @example
+ * For a Version 7 symbol {@link getRowColCoords} returns values 6, 22 and 38.
+ * The alignment patterns, therefore, are to be centered on (row, column)
+ * positions (6,22), (22,6), (22,22), (22,38), (38,22), (38,38).
+ * Note that the coordinates (6,6), (6,38), (38,6) are occupied by finder patterns
+ * and are not therefore used for alignment patterns.
+ *
+ * let pos = getPositions(7)
+ * // [[6,22], [22,6], [22,22], [22,38], [38,22], [38,38]]
+ *
+ * @param  {Number} version QR Code version
+ * @return {Array}          Array of coordinates
+ */
+exports.getPositions = function getPositions (version) {
+  const coords = []
+  const pos = exports.getRowColCoords(version)
+  const posLength = pos.length
+
+  for (let i = 0; i < posLength; i++) {
+    for (let j = 0; j < posLength; j++) {
+      // Skip if position is occupied by finder patterns
+      if ((i === 0 && j === 0) || // top-left
+          (i === 0 && j === posLength - 1) || // bottom-left
+          (i === posLength - 1 && j === 0)) { // top-right
+        continue
+      }
+
+      coords.push([pos[i], pos[j]])
+    }
+  }
+
+  return coords
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/alphanumeric-data.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/alphanumeric-data.js ***!
+  \***********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const Mode = __webpack_require__(/*! ./mode */ "./node_modules/qrcode/lib/core/mode.js")
+
+/**
+ * Array of characters available in alphanumeric mode
+ *
+ * As per QR Code specification, to each character
+ * is assigned a value from 0 to 44 which in this case coincides
+ * with the array index
+ *
+ * @type {Array}
+ */
+const ALPHA_NUM_CHARS = [
+  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+  'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+  ' ', '$', '%', '*', '+', '-', '.', '/', ':'
+]
+
+function AlphanumericData (data) {
+  this.mode = Mode.ALPHANUMERIC
+  this.data = data
+}
+
+AlphanumericData.getBitsLength = function getBitsLength (length) {
+  return 11 * Math.floor(length / 2) + 6 * (length % 2)
+}
+
+AlphanumericData.prototype.getLength = function getLength () {
+  return this.data.length
+}
+
+AlphanumericData.prototype.getBitsLength = function getBitsLength () {
+  return AlphanumericData.getBitsLength(this.data.length)
+}
+
+AlphanumericData.prototype.write = function write (bitBuffer) {
+  let i
+
+  // Input data characters are divided into groups of two characters
+  // and encoded as 11-bit binary codes.
+  for (i = 0; i + 2 <= this.data.length; i += 2) {
+    // The character value of the first character is multiplied by 45
+    let value = ALPHA_NUM_CHARS.indexOf(this.data[i]) * 45
+
+    // The character value of the second digit is added to the product
+    value += ALPHA_NUM_CHARS.indexOf(this.data[i + 1])
+
+    // The sum is then stored as 11-bit binary number
+    bitBuffer.put(value, 11)
+  }
+
+  // If the number of input data characters is not a multiple of two,
+  // the character value of the final character is encoded as a 6-bit binary number.
+  if (this.data.length % 2) {
+    bitBuffer.put(ALPHA_NUM_CHARS.indexOf(this.data[i]), 6)
+  }
+}
+
+module.exports = AlphanumericData
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/bit-buffer.js":
+/*!****************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/bit-buffer.js ***!
+  \****************************************************/
+/***/ ((module) => {
+
+function BitBuffer () {
+  this.buffer = []
+  this.length = 0
+}
+
+BitBuffer.prototype = {
+
+  get: function (index) {
+    const bufIndex = Math.floor(index / 8)
+    return ((this.buffer[bufIndex] >>> (7 - index % 8)) & 1) === 1
+  },
+
+  put: function (num, length) {
+    for (let i = 0; i < length; i++) {
+      this.putBit(((num >>> (length - i - 1)) & 1) === 1)
+    }
+  },
+
+  getLengthInBits: function () {
+    return this.length
+  },
+
+  putBit: function (bit) {
+    const bufIndex = Math.floor(this.length / 8)
+    if (this.buffer.length <= bufIndex) {
+      this.buffer.push(0)
+    }
+
+    if (bit) {
+      this.buffer[bufIndex] |= (0x80 >>> (this.length % 8))
+    }
+
+    this.length++
+  }
+}
+
+module.exports = BitBuffer
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/bit-matrix.js":
+/*!****************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/bit-matrix.js ***!
+  \****************************************************/
+/***/ ((module) => {
+
+/**
+ * Helper class to handle QR Code symbol modules
+ *
+ * @param {Number} size Symbol size
+ */
+function BitMatrix (size) {
+  if (!size || size < 1) {
+    throw new Error('BitMatrix size must be defined and greater than 0')
+  }
+
+  this.size = size
+  this.data = new Uint8Array(size * size)
+  this.reservedBit = new Uint8Array(size * size)
+}
+
+/**
+ * Set bit value at specified location
+ * If reserved flag is set, this bit will be ignored during masking process
+ *
+ * @param {Number}  row
+ * @param {Number}  col
+ * @param {Boolean} value
+ * @param {Boolean} reserved
+ */
+BitMatrix.prototype.set = function (row, col, value, reserved) {
+  const index = row * this.size + col
+  this.data[index] = value
+  if (reserved) this.reservedBit[index] = true
+}
+
+/**
+ * Returns bit value at specified location
+ *
+ * @param  {Number}  row
+ * @param  {Number}  col
+ * @return {Boolean}
+ */
+BitMatrix.prototype.get = function (row, col) {
+  return this.data[row * this.size + col]
+}
+
+/**
+ * Applies xor operator at specified location
+ * (used during masking process)
+ *
+ * @param {Number}  row
+ * @param {Number}  col
+ * @param {Boolean} value
+ */
+BitMatrix.prototype.xor = function (row, col, value) {
+  this.data[row * this.size + col] ^= value
+}
+
+/**
+ * Check if bit at specified location is reserved
+ *
+ * @param {Number}   row
+ * @param {Number}   col
+ * @return {Boolean}
+ */
+BitMatrix.prototype.isReserved = function (row, col) {
+  return this.reservedBit[row * this.size + col]
+}
+
+module.exports = BitMatrix
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/byte-data.js":
+/*!***************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/byte-data.js ***!
+  \***************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const Mode = __webpack_require__(/*! ./mode */ "./node_modules/qrcode/lib/core/mode.js")
+
+function ByteData (data) {
+  this.mode = Mode.BYTE
+  if (typeof (data) === 'string') {
+    this.data = new TextEncoder().encode(data)
+  } else {
+    this.data = new Uint8Array(data)
+  }
+}
+
+ByteData.getBitsLength = function getBitsLength (length) {
+  return length * 8
+}
+
+ByteData.prototype.getLength = function getLength () {
+  return this.data.length
+}
+
+ByteData.prototype.getBitsLength = function getBitsLength () {
+  return ByteData.getBitsLength(this.data.length)
+}
+
+ByteData.prototype.write = function (bitBuffer) {
+  for (let i = 0, l = this.data.length; i < l; i++) {
+    bitBuffer.put(this.data[i], 8)
+  }
+}
+
+module.exports = ByteData
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/error-correction-code.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/error-correction-code.js ***!
+  \***************************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+const ECLevel = __webpack_require__(/*! ./error-correction-level */ "./node_modules/qrcode/lib/core/error-correction-level.js")
+
+const EC_BLOCKS_TABLE = [
+// L  M  Q  H
+  1, 1, 1, 1,
+  1, 1, 1, 1,
+  1, 1, 2, 2,
+  1, 2, 2, 4,
+  1, 2, 4, 4,
+  2, 4, 4, 4,
+  2, 4, 6, 5,
+  2, 4, 6, 6,
+  2, 5, 8, 8,
+  4, 5, 8, 8,
+  4, 5, 8, 11,
+  4, 8, 10, 11,
+  4, 9, 12, 16,
+  4, 9, 16, 16,
+  6, 10, 12, 18,
+  6, 10, 17, 16,
+  6, 11, 16, 19,
+  6, 13, 18, 21,
+  7, 14, 21, 25,
+  8, 16, 20, 25,
+  8, 17, 23, 25,
+  9, 17, 23, 34,
+  9, 18, 25, 30,
+  10, 20, 27, 32,
+  12, 21, 29, 35,
+  12, 23, 34, 37,
+  12, 25, 34, 40,
+  13, 26, 35, 42,
+  14, 28, 38, 45,
+  15, 29, 40, 48,
+  16, 31, 43, 51,
+  17, 33, 45, 54,
+  18, 35, 48, 57,
+  19, 37, 51, 60,
+  19, 38, 53, 63,
+  20, 40, 56, 66,
+  21, 43, 59, 70,
+  22, 45, 62, 74,
+  24, 47, 65, 77,
+  25, 49, 68, 81
+]
+
+const EC_CODEWORDS_TABLE = [
+// L  M  Q  H
+  7, 10, 13, 17,
+  10, 16, 22, 28,
+  15, 26, 36, 44,
+  20, 36, 52, 64,
+  26, 48, 72, 88,
+  36, 64, 96, 112,
+  40, 72, 108, 130,
+  48, 88, 132, 156,
+  60, 110, 160, 192,
+  72, 130, 192, 224,
+  80, 150, 224, 264,
+  96, 176, 260, 308,
+  104, 198, 288, 352,
+  120, 216, 320, 384,
+  132, 240, 360, 432,
+  144, 280, 408, 480,
+  168, 308, 448, 532,
+  180, 338, 504, 588,
+  196, 364, 546, 650,
+  224, 416, 600, 700,
+  224, 442, 644, 750,
+  252, 476, 690, 816,
+  270, 504, 750, 900,
+  300, 560, 810, 960,
+  312, 588, 870, 1050,
+  336, 644, 952, 1110,
+  360, 700, 1020, 1200,
+  390, 728, 1050, 1260,
+  420, 784, 1140, 1350,
+  450, 812, 1200, 1440,
+  480, 868, 1290, 1530,
+  510, 924, 1350, 1620,
+  540, 980, 1440, 1710,
+  570, 1036, 1530, 1800,
+  570, 1064, 1590, 1890,
+  600, 1120, 1680, 1980,
+  630, 1204, 1770, 2100,
+  660, 1260, 1860, 2220,
+  720, 1316, 1950, 2310,
+  750, 1372, 2040, 2430
+]
+
+/**
+ * Returns the number of error correction block that the QR Code should contain
+ * for the specified version and error correction level.
+ *
+ * @param  {Number} version              QR Code version
+ * @param  {Number} errorCorrectionLevel Error correction level
+ * @return {Number}                      Number of error correction blocks
+ */
+exports.getBlocksCount = function getBlocksCount (version, errorCorrectionLevel) {
+  switch (errorCorrectionLevel) {
+    case ECLevel.L:
+      return EC_BLOCKS_TABLE[(version - 1) * 4 + 0]
+    case ECLevel.M:
+      return EC_BLOCKS_TABLE[(version - 1) * 4 + 1]
+    case ECLevel.Q:
+      return EC_BLOCKS_TABLE[(version - 1) * 4 + 2]
+    case ECLevel.H:
+      return EC_BLOCKS_TABLE[(version - 1) * 4 + 3]
+    default:
+      return undefined
+  }
+}
+
+/**
+ * Returns the number of error correction codewords to use for the specified
+ * version and error correction level.
+ *
+ * @param  {Number} version              QR Code version
+ * @param  {Number} errorCorrectionLevel Error correction level
+ * @return {Number}                      Number of error correction codewords
+ */
+exports.getTotalCodewordsCount = function getTotalCodewordsCount (version, errorCorrectionLevel) {
+  switch (errorCorrectionLevel) {
+    case ECLevel.L:
+      return EC_CODEWORDS_TABLE[(version - 1) * 4 + 0]
+    case ECLevel.M:
+      return EC_CODEWORDS_TABLE[(version - 1) * 4 + 1]
+    case ECLevel.Q:
+      return EC_CODEWORDS_TABLE[(version - 1) * 4 + 2]
+    case ECLevel.H:
+      return EC_CODEWORDS_TABLE[(version - 1) * 4 + 3]
+    default:
+      return undefined
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/error-correction-level.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/error-correction-level.js ***!
+  \****************************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+exports.L = { bit: 1 }
+exports.M = { bit: 0 }
+exports.Q = { bit: 3 }
+exports.H = { bit: 2 }
+
+function fromString (string) {
+  if (typeof string !== 'string') {
+    throw new Error('Param is not a string')
+  }
+
+  const lcStr = string.toLowerCase()
+
+  switch (lcStr) {
+    case 'l':
+    case 'low':
+      return exports.L
+
+    case 'm':
+    case 'medium':
+      return exports.M
+
+    case 'q':
+    case 'quartile':
+      return exports.Q
+
+    case 'h':
+    case 'high':
+      return exports.H
+
+    default:
+      throw new Error('Unknown EC Level: ' + string)
+  }
+}
+
+exports.isValid = function isValid (level) {
+  return level && typeof level.bit !== 'undefined' &&
+    level.bit >= 0 && level.bit < 4
+}
+
+exports.from = function from (value, defaultValue) {
+  if (exports.isValid(value)) {
+    return value
+  }
+
+  try {
+    return fromString(value)
+  } catch (e) {
+    return defaultValue
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/finder-pattern.js":
+/*!********************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/finder-pattern.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+const getSymbolSize = (__webpack_require__(/*! ./utils */ "./node_modules/qrcode/lib/core/utils.js").getSymbolSize)
+const FINDER_PATTERN_SIZE = 7
+
+/**
+ * Returns an array containing the positions of each finder pattern.
+ * Each array's element represent the top-left point of the pattern as (x, y) coordinates
+ *
+ * @param  {Number} version QR Code version
+ * @return {Array}          Array of coordinates
+ */
+exports.getPositions = function getPositions (version) {
+  const size = getSymbolSize(version)
+
+  return [
+    // top-left
+    [0, 0],
+    // top-right
+    [size - FINDER_PATTERN_SIZE, 0],
+    // bottom-left
+    [0, size - FINDER_PATTERN_SIZE]
+  ]
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/format-info.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/format-info.js ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+const Utils = __webpack_require__(/*! ./utils */ "./node_modules/qrcode/lib/core/utils.js")
+
+const G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0)
+const G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1)
+const G15_BCH = Utils.getBCHDigit(G15)
+
+/**
+ * Returns format information with relative error correction bits
+ *
+ * The format information is a 15-bit sequence containing 5 data bits,
+ * with 10 error correction bits calculated using the (15, 5) BCH code.
+ *
+ * @param  {Number} errorCorrectionLevel Error correction level
+ * @param  {Number} mask                 Mask pattern
+ * @return {Number}                      Encoded format information bits
+ */
+exports.getEncodedBits = function getEncodedBits (errorCorrectionLevel, mask) {
+  const data = ((errorCorrectionLevel.bit << 3) | mask)
+  let d = data << 10
+
+  while (Utils.getBCHDigit(d) - G15_BCH >= 0) {
+    d ^= (G15 << (Utils.getBCHDigit(d) - G15_BCH))
+  }
+
+  // xor final data with mask pattern in order to ensure that
+  // no combination of Error Correction Level and data mask pattern
+  // will result in an all-zero data string
+  return ((data << 10) | d) ^ G15_MASK
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/galois-field.js":
+/*!******************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/galois-field.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+const EXP_TABLE = new Uint8Array(512)
+const LOG_TABLE = new Uint8Array(256)
+/**
+ * Precompute the log and anti-log tables for faster computation later
+ *
+ * For each possible value in the galois field 2^8, we will pre-compute
+ * the logarithm and anti-logarithm (exponential) of this value
+ *
+ * ref {@link https://en.wikiversity.org/wiki/Reed%E2%80%93Solomon_codes_for_coders#Introduction_to_mathematical_fields}
+ */
+;(function initTables () {
+  let x = 1
+  for (let i = 0; i < 255; i++) {
+    EXP_TABLE[i] = x
+    LOG_TABLE[x] = i
+
+    x <<= 1 // multiply by 2
+
+    // The QR code specification says to use byte-wise modulo 100011101 arithmetic.
+    // This means that when a number is 256 or larger, it should be XORed with 0x11D.
+    if (x & 0x100) { // similar to x >= 256, but a lot faster (because 0x100 == 256)
+      x ^= 0x11D
+    }
+  }
+
+  // Optimization: double the size of the anti-log table so that we don't need to mod 255 to
+  // stay inside the bounds (because we will mainly use this table for the multiplication of
+  // two GF numbers, no more).
+  // @see {@link mul}
+  for (let i = 255; i < 512; i++) {
+    EXP_TABLE[i] = EXP_TABLE[i - 255]
+  }
+}())
+
+/**
+ * Returns log value of n inside Galois Field
+ *
+ * @param  {Number} n
+ * @return {Number}
+ */
+exports.log = function log (n) {
+  if (n < 1) throw new Error('log(' + n + ')')
+  return LOG_TABLE[n]
+}
+
+/**
+ * Returns anti-log value of n inside Galois Field
+ *
+ * @param  {Number} n
+ * @return {Number}
+ */
+exports.exp = function exp (n) {
+  return EXP_TABLE[n]
+}
+
+/**
+ * Multiplies two number inside Galois Field
+ *
+ * @param  {Number} x
+ * @param  {Number} y
+ * @return {Number}
+ */
+exports.mul = function mul (x, y) {
+  if (x === 0 || y === 0) return 0
+
+  // should be EXP_TABLE[(LOG_TABLE[x] + LOG_TABLE[y]) % 255] if EXP_TABLE wasn't oversized
+  // @see {@link initTables}
+  return EXP_TABLE[LOG_TABLE[x] + LOG_TABLE[y]]
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/kanji-data.js":
+/*!****************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/kanji-data.js ***!
+  \****************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const Mode = __webpack_require__(/*! ./mode */ "./node_modules/qrcode/lib/core/mode.js")
+const Utils = __webpack_require__(/*! ./utils */ "./node_modules/qrcode/lib/core/utils.js")
+
+function KanjiData (data) {
+  this.mode = Mode.KANJI
+  this.data = data
+}
+
+KanjiData.getBitsLength = function getBitsLength (length) {
+  return length * 13
+}
+
+KanjiData.prototype.getLength = function getLength () {
+  return this.data.length
+}
+
+KanjiData.prototype.getBitsLength = function getBitsLength () {
+  return KanjiData.getBitsLength(this.data.length)
+}
+
+KanjiData.prototype.write = function (bitBuffer) {
+  let i
+
+  // In the Shift JIS system, Kanji characters are represented by a two byte combination.
+  // These byte values are shifted from the JIS X 0208 values.
+  // JIS X 0208 gives details of the shift coded representation.
+  for (i = 0; i < this.data.length; i++) {
+    let value = Utils.toSJIS(this.data[i])
+
+    // For characters with Shift JIS values from 0x8140 to 0x9FFC:
+    if (value >= 0x8140 && value <= 0x9FFC) {
+      // Subtract 0x8140 from Shift JIS value
+      value -= 0x8140
+
+    // For characters with Shift JIS values from 0xE040 to 0xEBBF
+    } else if (value >= 0xE040 && value <= 0xEBBF) {
+      // Subtract 0xC140 from Shift JIS value
+      value -= 0xC140
+    } else {
+      throw new Error(
+        'Invalid SJIS character: ' + this.data[i] + '\n' +
+        'Make sure your charset is UTF-8')
+    }
+
+    // Multiply most significant byte of result by 0xC0
+    // and add least significant byte to product
+    value = (((value >>> 8) & 0xff) * 0xC0) + (value & 0xff)
+
+    // Convert result to a 13-bit binary string
+    bitBuffer.put(value, 13)
+  }
+}
+
+module.exports = KanjiData
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/mask-pattern.js":
+/*!******************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/mask-pattern.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+/**
+ * Data mask pattern reference
+ * @type {Object}
+ */
+exports.Patterns = {
+  PATTERN000: 0,
+  PATTERN001: 1,
+  PATTERN010: 2,
+  PATTERN011: 3,
+  PATTERN100: 4,
+  PATTERN101: 5,
+  PATTERN110: 6,
+  PATTERN111: 7
+}
+
+/**
+ * Weighted penalty scores for the undesirable features
+ * @type {Object}
+ */
+const PenaltyScores = {
+  N1: 3,
+  N2: 3,
+  N3: 40,
+  N4: 10
+}
+
+/**
+ * Check if mask pattern value is valid
+ *
+ * @param  {Number}  mask    Mask pattern
+ * @return {Boolean}         true if valid, false otherwise
+ */
+exports.isValid = function isValid (mask) {
+  return mask != null && mask !== '' && !isNaN(mask) && mask >= 0 && mask <= 7
+}
+
+/**
+ * Returns mask pattern from a value.
+ * If value is not valid, returns undefined
+ *
+ * @param  {Number|String} value        Mask pattern value
+ * @return {Number}                     Valid mask pattern or undefined
+ */
+exports.from = function from (value) {
+  return exports.isValid(value) ? parseInt(value, 10) : undefined
+}
+
+/**
+* Find adjacent modules in row/column with the same color
+* and assign a penalty value.
+*
+* Points: N1 + i
+* i is the amount by which the number of adjacent modules of the same color exceeds 5
+*/
+exports.getPenaltyN1 = function getPenaltyN1 (data) {
+  const size = data.size
+  let points = 0
+  let sameCountCol = 0
+  let sameCountRow = 0
+  let lastCol = null
+  let lastRow = null
+
+  for (let row = 0; row < size; row++) {
+    sameCountCol = sameCountRow = 0
+    lastCol = lastRow = null
+
+    for (let col = 0; col < size; col++) {
+      let module = data.get(row, col)
+      if (module === lastCol) {
+        sameCountCol++
+      } else {
+        if (sameCountCol >= 5) points += PenaltyScores.N1 + (sameCountCol - 5)
+        lastCol = module
+        sameCountCol = 1
+      }
+
+      module = data.get(col, row)
+      if (module === lastRow) {
+        sameCountRow++
+      } else {
+        if (sameCountRow >= 5) points += PenaltyScores.N1 + (sameCountRow - 5)
+        lastRow = module
+        sameCountRow = 1
+      }
+    }
+
+    if (sameCountCol >= 5) points += PenaltyScores.N1 + (sameCountCol - 5)
+    if (sameCountRow >= 5) points += PenaltyScores.N1 + (sameCountRow - 5)
+  }
+
+  return points
+}
+
+/**
+ * Find 2x2 blocks with the same color and assign a penalty value
+ *
+ * Points: N2 * (m - 1) * (n - 1)
+ */
+exports.getPenaltyN2 = function getPenaltyN2 (data) {
+  const size = data.size
+  let points = 0
+
+  for (let row = 0; row < size - 1; row++) {
+    for (let col = 0; col < size - 1; col++) {
+      const last = data.get(row, col) +
+        data.get(row, col + 1) +
+        data.get(row + 1, col) +
+        data.get(row + 1, col + 1)
+
+      if (last === 4 || last === 0) points++
+    }
+  }
+
+  return points * PenaltyScores.N2
+}
+
+/**
+ * Find 1:1:3:1:1 ratio (dark:light:dark:light:dark) pattern in row/column,
+ * preceded or followed by light area 4 modules wide
+ *
+ * Points: N3 * number of pattern found
+ */
+exports.getPenaltyN3 = function getPenaltyN3 (data) {
+  const size = data.size
+  let points = 0
+  let bitsCol = 0
+  let bitsRow = 0
+
+  for (let row = 0; row < size; row++) {
+    bitsCol = bitsRow = 0
+    for (let col = 0; col < size; col++) {
+      bitsCol = ((bitsCol << 1) & 0x7FF) | data.get(row, col)
+      if (col >= 10 && (bitsCol === 0x5D0 || bitsCol === 0x05D)) points++
+
+      bitsRow = ((bitsRow << 1) & 0x7FF) | data.get(col, row)
+      if (col >= 10 && (bitsRow === 0x5D0 || bitsRow === 0x05D)) points++
+    }
+  }
+
+  return points * PenaltyScores.N3
+}
+
+/**
+ * Calculate proportion of dark modules in entire symbol
+ *
+ * Points: N4 * k
+ *
+ * k is the rating of the deviation of the proportion of dark modules
+ * in the symbol from 50% in steps of 5%
+ */
+exports.getPenaltyN4 = function getPenaltyN4 (data) {
+  let darkCount = 0
+  const modulesCount = data.data.length
+
+  for (let i = 0; i < modulesCount; i++) darkCount += data.data[i]
+
+  const k = Math.abs(Math.ceil((darkCount * 100 / modulesCount) / 5) - 10)
+
+  return k * PenaltyScores.N4
+}
+
+/**
+ * Return mask value at given position
+ *
+ * @param  {Number} maskPattern Pattern reference value
+ * @param  {Number} i           Row
+ * @param  {Number} j           Column
+ * @return {Boolean}            Mask value
+ */
+function getMaskAt (maskPattern, i, j) {
+  switch (maskPattern) {
+    case exports.Patterns.PATTERN000: return (i + j) % 2 === 0
+    case exports.Patterns.PATTERN001: return i % 2 === 0
+    case exports.Patterns.PATTERN010: return j % 3 === 0
+    case exports.Patterns.PATTERN011: return (i + j) % 3 === 0
+    case exports.Patterns.PATTERN100: return (Math.floor(i / 2) + Math.floor(j / 3)) % 2 === 0
+    case exports.Patterns.PATTERN101: return (i * j) % 2 + (i * j) % 3 === 0
+    case exports.Patterns.PATTERN110: return ((i * j) % 2 + (i * j) % 3) % 2 === 0
+    case exports.Patterns.PATTERN111: return ((i * j) % 3 + (i + j) % 2) % 2 === 0
+
+    default: throw new Error('bad maskPattern:' + maskPattern)
+  }
+}
+
+/**
+ * Apply a mask pattern to a BitMatrix
+ *
+ * @param  {Number}    pattern Pattern reference number
+ * @param  {BitMatrix} data    BitMatrix data
+ */
+exports.applyMask = function applyMask (pattern, data) {
+  const size = data.size
+
+  for (let col = 0; col < size; col++) {
+    for (let row = 0; row < size; row++) {
+      if (data.isReserved(row, col)) continue
+      data.xor(row, col, getMaskAt(pattern, row, col))
+    }
+  }
+}
+
+/**
+ * Returns the best mask pattern for data
+ *
+ * @param  {BitMatrix} data
+ * @return {Number} Mask pattern reference number
+ */
+exports.getBestMask = function getBestMask (data, setupFormatFunc) {
+  const numPatterns = Object.keys(exports.Patterns).length
+  let bestPattern = 0
+  let lowerPenalty = Infinity
+
+  for (let p = 0; p < numPatterns; p++) {
+    setupFormatFunc(p)
+    exports.applyMask(p, data)
+
+    // Calculate penalty
+    const penalty =
+      exports.getPenaltyN1(data) +
+      exports.getPenaltyN2(data) +
+      exports.getPenaltyN3(data) +
+      exports.getPenaltyN4(data)
+
+    // Undo previously applied mask
+    exports.applyMask(p, data)
+
+    if (penalty < lowerPenalty) {
+      lowerPenalty = penalty
+      bestPattern = p
+    }
+  }
+
+  return bestPattern
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/mode.js":
+/*!**********************************************!*\
+  !*** ./node_modules/qrcode/lib/core/mode.js ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+const VersionCheck = __webpack_require__(/*! ./version-check */ "./node_modules/qrcode/lib/core/version-check.js")
+const Regex = __webpack_require__(/*! ./regex */ "./node_modules/qrcode/lib/core/regex.js")
+
+/**
+ * Numeric mode encodes data from the decimal digit set (0 - 9)
+ * (byte values 30HEX to 39HEX).
+ * Normally, 3 data characters are represented by 10 bits.
+ *
+ * @type {Object}
+ */
+exports.NUMERIC = {
+  id: 'Numeric',
+  bit: 1 << 0,
+  ccBits: [10, 12, 14]
+}
+
+/**
+ * Alphanumeric mode encodes data from a set of 45 characters,
+ * i.e. 10 numeric digits (0 - 9),
+ *      26 alphabetic characters (A - Z),
+ *   and 9 symbols (SP, $, %, *, +, -, ., /, :).
+ * Normally, two input characters are represented by 11 bits.
+ *
+ * @type {Object}
+ */
+exports.ALPHANUMERIC = {
+  id: 'Alphanumeric',
+  bit: 1 << 1,
+  ccBits: [9, 11, 13]
+}
+
+/**
+ * In byte mode, data is encoded at 8 bits per character.
+ *
+ * @type {Object}
+ */
+exports.BYTE = {
+  id: 'Byte',
+  bit: 1 << 2,
+  ccBits: [8, 16, 16]
+}
+
+/**
+ * The Kanji mode efficiently encodes Kanji characters in accordance with
+ * the Shift JIS system based on JIS X 0208.
+ * The Shift JIS values are shifted from the JIS X 0208 values.
+ * JIS X 0208 gives details of the shift coded representation.
+ * Each two-byte character value is compacted to a 13-bit binary codeword.
+ *
+ * @type {Object}
+ */
+exports.KANJI = {
+  id: 'Kanji',
+  bit: 1 << 3,
+  ccBits: [8, 10, 12]
+}
+
+/**
+ * Mixed mode will contain a sequences of data in a combination of any of
+ * the modes described above
+ *
+ * @type {Object}
+ */
+exports.MIXED = {
+  bit: -1
+}
+
+/**
+ * Returns the number of bits needed to store the data length
+ * according to QR Code specifications.
+ *
+ * @param  {Mode}   mode    Data mode
+ * @param  {Number} version QR Code version
+ * @return {Number}         Number of bits
+ */
+exports.getCharCountIndicator = function getCharCountIndicator (mode, version) {
+  if (!mode.ccBits) throw new Error('Invalid mode: ' + mode)
+
+  if (!VersionCheck.isValid(version)) {
+    throw new Error('Invalid version: ' + version)
+  }
+
+  if (version >= 1 && version < 10) return mode.ccBits[0]
+  else if (version < 27) return mode.ccBits[1]
+  return mode.ccBits[2]
+}
+
+/**
+ * Returns the most efficient mode to store the specified data
+ *
+ * @param  {String} dataStr Input data string
+ * @return {Mode}           Best mode
+ */
+exports.getBestModeForData = function getBestModeForData (dataStr) {
+  if (Regex.testNumeric(dataStr)) return exports.NUMERIC
+  else if (Regex.testAlphanumeric(dataStr)) return exports.ALPHANUMERIC
+  else if (Regex.testKanji(dataStr)) return exports.KANJI
+  else return exports.BYTE
+}
+
+/**
+ * Return mode name as string
+ *
+ * @param {Mode} mode Mode object
+ * @returns {String}  Mode name
+ */
+exports.toString = function toString (mode) {
+  if (mode && mode.id) return mode.id
+  throw new Error('Invalid mode')
+}
+
+/**
+ * Check if input param is a valid mode object
+ *
+ * @param   {Mode}    mode Mode object
+ * @returns {Boolean} True if valid mode, false otherwise
+ */
+exports.isValid = function isValid (mode) {
+  return mode && mode.bit && mode.ccBits
+}
+
+/**
+ * Get mode object from its name
+ *
+ * @param   {String} string Mode name
+ * @returns {Mode}          Mode object
+ */
+function fromString (string) {
+  if (typeof string !== 'string') {
+    throw new Error('Param is not a string')
+  }
+
+  const lcStr = string.toLowerCase()
+
+  switch (lcStr) {
+    case 'numeric':
+      return exports.NUMERIC
+    case 'alphanumeric':
+      return exports.ALPHANUMERIC
+    case 'kanji':
+      return exports.KANJI
+    case 'byte':
+      return exports.BYTE
+    default:
+      throw new Error('Unknown mode: ' + string)
+  }
+}
+
+/**
+ * Returns mode from a value.
+ * If value is not a valid mode, returns defaultValue
+ *
+ * @param  {Mode|String} value        Encoding mode
+ * @param  {Mode}        defaultValue Fallback value
+ * @return {Mode}                     Encoding mode
+ */
+exports.from = function from (value, defaultValue) {
+  if (exports.isValid(value)) {
+    return value
+  }
+
+  try {
+    return fromString(value)
+  } catch (e) {
+    return defaultValue
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/numeric-data.js":
+/*!******************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/numeric-data.js ***!
+  \******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const Mode = __webpack_require__(/*! ./mode */ "./node_modules/qrcode/lib/core/mode.js")
+
+function NumericData (data) {
+  this.mode = Mode.NUMERIC
+  this.data = data.toString()
+}
+
+NumericData.getBitsLength = function getBitsLength (length) {
+  return 10 * Math.floor(length / 3) + ((length % 3) ? ((length % 3) * 3 + 1) : 0)
+}
+
+NumericData.prototype.getLength = function getLength () {
+  return this.data.length
+}
+
+NumericData.prototype.getBitsLength = function getBitsLength () {
+  return NumericData.getBitsLength(this.data.length)
+}
+
+NumericData.prototype.write = function write (bitBuffer) {
+  let i, group, value
+
+  // The input data string is divided into groups of three digits,
+  // and each group is converted to its 10-bit binary equivalent.
+  for (i = 0; i + 3 <= this.data.length; i += 3) {
+    group = this.data.substr(i, 3)
+    value = parseInt(group, 10)
+
+    bitBuffer.put(value, 10)
+  }
+
+  // If the number of input digits is not an exact multiple of three,
+  // the final one or two digits are converted to 4 or 7 bits respectively.
+  const remainingNum = this.data.length - i
+  if (remainingNum > 0) {
+    group = this.data.substr(i)
+    value = parseInt(group, 10)
+
+    bitBuffer.put(value, remainingNum * 3 + 1)
+  }
+}
+
+module.exports = NumericData
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/polynomial.js":
+/*!****************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/polynomial.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+const GF = __webpack_require__(/*! ./galois-field */ "./node_modules/qrcode/lib/core/galois-field.js")
+
+/**
+ * Multiplies two polynomials inside Galois Field
+ *
+ * @param  {Uint8Array} p1 Polynomial
+ * @param  {Uint8Array} p2 Polynomial
+ * @return {Uint8Array}    Product of p1 and p2
+ */
+exports.mul = function mul (p1, p2) {
+  const coeff = new Uint8Array(p1.length + p2.length - 1)
+
+  for (let i = 0; i < p1.length; i++) {
+    for (let j = 0; j < p2.length; j++) {
+      coeff[i + j] ^= GF.mul(p1[i], p2[j])
+    }
+  }
+
+  return coeff
+}
+
+/**
+ * Calculate the remainder of polynomials division
+ *
+ * @param  {Uint8Array} divident Polynomial
+ * @param  {Uint8Array} divisor  Polynomial
+ * @return {Uint8Array}          Remainder
+ */
+exports.mod = function mod (divident, divisor) {
+  let result = new Uint8Array(divident)
+
+  while ((result.length - divisor.length) >= 0) {
+    const coeff = result[0]
+
+    for (let i = 0; i < divisor.length; i++) {
+      result[i] ^= GF.mul(divisor[i], coeff)
+    }
+
+    // remove all zeros from buffer head
+    let offset = 0
+    while (offset < result.length && result[offset] === 0) offset++
+    result = result.slice(offset)
+  }
+
+  return result
+}
+
+/**
+ * Generate an irreducible generator polynomial of specified degree
+ * (used by Reed-Solomon encoder)
+ *
+ * @param  {Number} degree Degree of the generator polynomial
+ * @return {Uint8Array}    Buffer containing polynomial coefficients
+ */
+exports.generateECPolynomial = function generateECPolynomial (degree) {
+  let poly = new Uint8Array([1])
+  for (let i = 0; i < degree; i++) {
+    poly = exports.mul(poly, new Uint8Array([1, GF.exp(i)]))
+  }
+
+  return poly
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/qrcode.js":
+/*!************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/qrcode.js ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+const Utils = __webpack_require__(/*! ./utils */ "./node_modules/qrcode/lib/core/utils.js")
+const ECLevel = __webpack_require__(/*! ./error-correction-level */ "./node_modules/qrcode/lib/core/error-correction-level.js")
+const BitBuffer = __webpack_require__(/*! ./bit-buffer */ "./node_modules/qrcode/lib/core/bit-buffer.js")
+const BitMatrix = __webpack_require__(/*! ./bit-matrix */ "./node_modules/qrcode/lib/core/bit-matrix.js")
+const AlignmentPattern = __webpack_require__(/*! ./alignment-pattern */ "./node_modules/qrcode/lib/core/alignment-pattern.js")
+const FinderPattern = __webpack_require__(/*! ./finder-pattern */ "./node_modules/qrcode/lib/core/finder-pattern.js")
+const MaskPattern = __webpack_require__(/*! ./mask-pattern */ "./node_modules/qrcode/lib/core/mask-pattern.js")
+const ECCode = __webpack_require__(/*! ./error-correction-code */ "./node_modules/qrcode/lib/core/error-correction-code.js")
+const ReedSolomonEncoder = __webpack_require__(/*! ./reed-solomon-encoder */ "./node_modules/qrcode/lib/core/reed-solomon-encoder.js")
+const Version = __webpack_require__(/*! ./version */ "./node_modules/qrcode/lib/core/version.js")
+const FormatInfo = __webpack_require__(/*! ./format-info */ "./node_modules/qrcode/lib/core/format-info.js")
+const Mode = __webpack_require__(/*! ./mode */ "./node_modules/qrcode/lib/core/mode.js")
+const Segments = __webpack_require__(/*! ./segments */ "./node_modules/qrcode/lib/core/segments.js")
+
+/**
+ * QRCode for JavaScript
+ *
+ * modified by Ryan Day for nodejs support
+ * Copyright (c) 2011 Ryan Day
+ *
+ * Licensed under the MIT license:
+ *   http://www.opensource.org/licenses/mit-license.php
+ *
+//---------------------------------------------------------------------
+// QRCode for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//   http://www.opensource.org/licenses/mit-license.php
+//
+// The word "QR Code" is registered trademark of
+// DENSO WAVE INCORPORATED
+//   http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+*/
+
+/**
+ * Add finder patterns bits to matrix
+ *
+ * @param  {BitMatrix} matrix  Modules matrix
+ * @param  {Number}    version QR Code version
+ */
+function setupFinderPattern (matrix, version) {
+  const size = matrix.size
+  const pos = FinderPattern.getPositions(version)
+
+  for (let i = 0; i < pos.length; i++) {
+    const row = pos[i][0]
+    const col = pos[i][1]
+
+    for (let r = -1; r <= 7; r++) {
+      if (row + r <= -1 || size <= row + r) continue
+
+      for (let c = -1; c <= 7; c++) {
+        if (col + c <= -1 || size <= col + c) continue
+
+        if ((r >= 0 && r <= 6 && (c === 0 || c === 6)) ||
+          (c >= 0 && c <= 6 && (r === 0 || r === 6)) ||
+          (r >= 2 && r <= 4 && c >= 2 && c <= 4)) {
+          matrix.set(row + r, col + c, true, true)
+        } else {
+          matrix.set(row + r, col + c, false, true)
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Add timing pattern bits to matrix
+ *
+ * Note: this function must be called before {@link setupAlignmentPattern}
+ *
+ * @param  {BitMatrix} matrix Modules matrix
+ */
+function setupTimingPattern (matrix) {
+  const size = matrix.size
+
+  for (let r = 8; r < size - 8; r++) {
+    const value = r % 2 === 0
+    matrix.set(r, 6, value, true)
+    matrix.set(6, r, value, true)
+  }
+}
+
+/**
+ * Add alignment patterns bits to matrix
+ *
+ * Note: this function must be called after {@link setupTimingPattern}
+ *
+ * @param  {BitMatrix} matrix  Modules matrix
+ * @param  {Number}    version QR Code version
+ */
+function setupAlignmentPattern (matrix, version) {
+  const pos = AlignmentPattern.getPositions(version)
+
+  for (let i = 0; i < pos.length; i++) {
+    const row = pos[i][0]
+    const col = pos[i][1]
+
+    for (let r = -2; r <= 2; r++) {
+      for (let c = -2; c <= 2; c++) {
+        if (r === -2 || r === 2 || c === -2 || c === 2 ||
+          (r === 0 && c === 0)) {
+          matrix.set(row + r, col + c, true, true)
+        } else {
+          matrix.set(row + r, col + c, false, true)
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Add version info bits to matrix
+ *
+ * @param  {BitMatrix} matrix  Modules matrix
+ * @param  {Number}    version QR Code version
+ */
+function setupVersionInfo (matrix, version) {
+  const size = matrix.size
+  const bits = Version.getEncodedBits(version)
+  let row, col, mod
+
+  for (let i = 0; i < 18; i++) {
+    row = Math.floor(i / 3)
+    col = i % 3 + size - 8 - 3
+    mod = ((bits >> i) & 1) === 1
+
+    matrix.set(row, col, mod, true)
+    matrix.set(col, row, mod, true)
+  }
+}
+
+/**
+ * Add format info bits to matrix
+ *
+ * @param  {BitMatrix} matrix               Modules matrix
+ * @param  {ErrorCorrectionLevel}    errorCorrectionLevel Error correction level
+ * @param  {Number}    maskPattern          Mask pattern reference value
+ */
+function setupFormatInfo (matrix, errorCorrectionLevel, maskPattern) {
+  const size = matrix.size
+  const bits = FormatInfo.getEncodedBits(errorCorrectionLevel, maskPattern)
+  let i, mod
+
+  for (i = 0; i < 15; i++) {
+    mod = ((bits >> i) & 1) === 1
+
+    // vertical
+    if (i < 6) {
+      matrix.set(i, 8, mod, true)
+    } else if (i < 8) {
+      matrix.set(i + 1, 8, mod, true)
+    } else {
+      matrix.set(size - 15 + i, 8, mod, true)
+    }
+
+    // horizontal
+    if (i < 8) {
+      matrix.set(8, size - i - 1, mod, true)
+    } else if (i < 9) {
+      matrix.set(8, 15 - i - 1 + 1, mod, true)
+    } else {
+      matrix.set(8, 15 - i - 1, mod, true)
+    }
+  }
+
+  // fixed module
+  matrix.set(size - 8, 8, 1, true)
+}
+
+/**
+ * Add encoded data bits to matrix
+ *
+ * @param  {BitMatrix}  matrix Modules matrix
+ * @param  {Uint8Array} data   Data codewords
+ */
+function setupData (matrix, data) {
+  const size = matrix.size
+  let inc = -1
+  let row = size - 1
+  let bitIndex = 7
+  let byteIndex = 0
+
+  for (let col = size - 1; col > 0; col -= 2) {
+    if (col === 6) col--
+
+    while (true) {
+      for (let c = 0; c < 2; c++) {
+        if (!matrix.isReserved(row, col - c)) {
+          let dark = false
+
+          if (byteIndex < data.length) {
+            dark = (((data[byteIndex] >>> bitIndex) & 1) === 1)
+          }
+
+          matrix.set(row, col - c, dark)
+          bitIndex--
+
+          if (bitIndex === -1) {
+            byteIndex++
+            bitIndex = 7
+          }
+        }
+      }
+
+      row += inc
+
+      if (row < 0 || size <= row) {
+        row -= inc
+        inc = -inc
+        break
+      }
+    }
+  }
+}
+
+/**
+ * Create encoded codewords from data input
+ *
+ * @param  {Number}   version              QR Code version
+ * @param  {ErrorCorrectionLevel}   errorCorrectionLevel Error correction level
+ * @param  {ByteData} data                 Data input
+ * @return {Uint8Array}                    Buffer containing encoded codewords
+ */
+function createData (version, errorCorrectionLevel, segments) {
+  // Prepare data buffer
+  const buffer = new BitBuffer()
+
+  segments.forEach(function (data) {
+    // prefix data with mode indicator (4 bits)
+    buffer.put(data.mode.bit, 4)
+
+    // Prefix data with character count indicator.
+    // The character count indicator is a string of bits that represents the
+    // number of characters that are being encoded.
+    // The character count indicator must be placed after the mode indicator
+    // and must be a certain number of bits long, depending on the QR version
+    // and data mode
+    // @see {@link Mode.getCharCountIndicator}.
+    buffer.put(data.getLength(), Mode.getCharCountIndicator(data.mode, version))
+
+    // add binary data sequence to buffer
+    data.write(buffer)
+  })
+
+  // Calculate required number of bits
+  const totalCodewords = Utils.getSymbolTotalCodewords(version)
+  const ecTotalCodewords = ECCode.getTotalCodewordsCount(version, errorCorrectionLevel)
+  const dataTotalCodewordsBits = (totalCodewords - ecTotalCodewords) * 8
+
+  // Add a terminator.
+  // If the bit string is shorter than the total number of required bits,
+  // a terminator of up to four 0s must be added to the right side of the string.
+  // If the bit string is more than four bits shorter than the required number of bits,
+  // add four 0s to the end.
+  if (buffer.getLengthInBits() + 4 <= dataTotalCodewordsBits) {
+    buffer.put(0, 4)
+  }
+
+  // If the bit string is fewer than four bits shorter, add only the number of 0s that
+  // are needed to reach the required number of bits.
+
+  // After adding the terminator, if the number of bits in the string is not a multiple of 8,
+  // pad the string on the right with 0s to make the string's length a multiple of 8.
+  while (buffer.getLengthInBits() % 8 !== 0) {
+    buffer.putBit(0)
+  }
+
+  // Add pad bytes if the string is still shorter than the total number of required bits.
+  // Extend the buffer to fill the data capacity of the symbol corresponding to
+  // the Version and Error Correction Level by adding the Pad Codewords 11101100 (0xEC)
+  // and 00010001 (0x11) alternately.
+  const remainingByte = (dataTotalCodewordsBits - buffer.getLengthInBits()) / 8
+  for (let i = 0; i < remainingByte; i++) {
+    buffer.put(i % 2 ? 0x11 : 0xEC, 8)
+  }
+
+  return createCodewords(buffer, version, errorCorrectionLevel)
+}
+
+/**
+ * Encode input data with Reed-Solomon and return codewords with
+ * relative error correction bits
+ *
+ * @param  {BitBuffer} bitBuffer            Data to encode
+ * @param  {Number}    version              QR Code version
+ * @param  {ErrorCorrectionLevel} errorCorrectionLevel Error correction level
+ * @return {Uint8Array}                     Buffer containing encoded codewords
+ */
+function createCodewords (bitBuffer, version, errorCorrectionLevel) {
+  // Total codewords for this QR code version (Data + Error correction)
+  const totalCodewords = Utils.getSymbolTotalCodewords(version)
+
+  // Total number of error correction codewords
+  const ecTotalCodewords = ECCode.getTotalCodewordsCount(version, errorCorrectionLevel)
+
+  // Total number of data codewords
+  const dataTotalCodewords = totalCodewords - ecTotalCodewords
+
+  // Total number of blocks
+  const ecTotalBlocks = ECCode.getBlocksCount(version, errorCorrectionLevel)
+
+  // Calculate how many blocks each group should contain
+  const blocksInGroup2 = totalCodewords % ecTotalBlocks
+  const blocksInGroup1 = ecTotalBlocks - blocksInGroup2
+
+  const totalCodewordsInGroup1 = Math.floor(totalCodewords / ecTotalBlocks)
+
+  const dataCodewordsInGroup1 = Math.floor(dataTotalCodewords / ecTotalBlocks)
+  const dataCodewordsInGroup2 = dataCodewordsInGroup1 + 1
+
+  // Number of EC codewords is the same for both groups
+  const ecCount = totalCodewordsInGroup1 - dataCodewordsInGroup1
+
+  // Initialize a Reed-Solomon encoder with a generator polynomial of degree ecCount
+  const rs = new ReedSolomonEncoder(ecCount)
+
+  let offset = 0
+  const dcData = new Array(ecTotalBlocks)
+  const ecData = new Array(ecTotalBlocks)
+  let maxDataSize = 0
+  const buffer = new Uint8Array(bitBuffer.buffer)
+
+  // Divide the buffer into the required number of blocks
+  for (let b = 0; b < ecTotalBlocks; b++) {
+    const dataSize = b < blocksInGroup1 ? dataCodewordsInGroup1 : dataCodewordsInGroup2
+
+    // extract a block of data from buffer
+    dcData[b] = buffer.slice(offset, offset + dataSize)
+
+    // Calculate EC codewords for this data block
+    ecData[b] = rs.encode(dcData[b])
+
+    offset += dataSize
+    maxDataSize = Math.max(maxDataSize, dataSize)
+  }
+
+  // Create final data
+  // Interleave the data and error correction codewords from each block
+  const data = new Uint8Array(totalCodewords)
+  let index = 0
+  let i, r
+
+  // Add data codewords
+  for (i = 0; i < maxDataSize; i++) {
+    for (r = 0; r < ecTotalBlocks; r++) {
+      if (i < dcData[r].length) {
+        data[index++] = dcData[r][i]
+      }
+    }
+  }
+
+  // Apped EC codewords
+  for (i = 0; i < ecCount; i++) {
+    for (r = 0; r < ecTotalBlocks; r++) {
+      data[index++] = ecData[r][i]
+    }
+  }
+
+  return data
+}
+
+/**
+ * Build QR Code symbol
+ *
+ * @param  {String} data                 Input string
+ * @param  {Number} version              QR Code version
+ * @param  {ErrorCorretionLevel} errorCorrectionLevel Error level
+ * @param  {MaskPattern} maskPattern     Mask pattern
+ * @return {Object}                      Object containing symbol data
+ */
+function createSymbol (data, version, errorCorrectionLevel, maskPattern) {
+  let segments
+
+  if (Array.isArray(data)) {
+    segments = Segments.fromArray(data)
+  } else if (typeof data === 'string') {
+    let estimatedVersion = version
+
+    if (!estimatedVersion) {
+      const rawSegments = Segments.rawSplit(data)
+
+      // Estimate best version that can contain raw splitted segments
+      estimatedVersion = Version.getBestVersionForData(rawSegments, errorCorrectionLevel)
+    }
+
+    // Build optimized segments
+    // If estimated version is undefined, try with the highest version
+    segments = Segments.fromString(data, estimatedVersion || 40)
+  } else {
+    throw new Error('Invalid data')
+  }
+
+  // Get the min version that can contain data
+  const bestVersion = Version.getBestVersionForData(segments, errorCorrectionLevel)
+
+  // If no version is found, data cannot be stored
+  if (!bestVersion) {
+    throw new Error('The amount of data is too big to be stored in a QR Code')
+  }
+
+  // If not specified, use min version as default
+  if (!version) {
+    version = bestVersion
+
+  // Check if the specified version can contain the data
+  } else if (version < bestVersion) {
+    throw new Error('\n' +
+      'The chosen QR Code version cannot contain this amount of data.\n' +
+      'Minimum version required to store current data is: ' + bestVersion + '.\n'
+    )
+  }
+
+  const dataBits = createData(version, errorCorrectionLevel, segments)
+
+  // Allocate matrix buffer
+  const moduleCount = Utils.getSymbolSize(version)
+  const modules = new BitMatrix(moduleCount)
+
+  // Add function modules
+  setupFinderPattern(modules, version)
+  setupTimingPattern(modules)
+  setupAlignmentPattern(modules, version)
+
+  // Add temporary dummy bits for format info just to set them as reserved.
+  // This is needed to prevent these bits from being masked by {@link MaskPattern.applyMask}
+  // since the masking operation must be performed only on the encoding region.
+  // These blocks will be replaced with correct values later in code.
+  setupFormatInfo(modules, errorCorrectionLevel, 0)
+
+  if (version >= 7) {
+    setupVersionInfo(modules, version)
+  }
+
+  // Add data codewords
+  setupData(modules, dataBits)
+
+  if (isNaN(maskPattern)) {
+    // Find best mask pattern
+    maskPattern = MaskPattern.getBestMask(modules,
+      setupFormatInfo.bind(null, modules, errorCorrectionLevel))
+  }
+
+  // Apply mask pattern
+  MaskPattern.applyMask(maskPattern, modules)
+
+  // Replace format info bits with correct values
+  setupFormatInfo(modules, errorCorrectionLevel, maskPattern)
+
+  return {
+    modules: modules,
+    version: version,
+    errorCorrectionLevel: errorCorrectionLevel,
+    maskPattern: maskPattern,
+    segments: segments
+  }
+}
+
+/**
+ * QR Code
+ *
+ * @param {String | Array} data                 Input data
+ * @param {Object} options                      Optional configurations
+ * @param {Number} options.version              QR Code version
+ * @param {String} options.errorCorrectionLevel Error correction level
+ * @param {Function} options.toSJISFunc         Helper func to convert utf8 to sjis
+ */
+exports.create = function create (data, options) {
+  if (typeof data === 'undefined' || data === '') {
+    throw new Error('No input text')
+  }
+
+  let errorCorrectionLevel = ECLevel.M
+  let version
+  let mask
+
+  if (typeof options !== 'undefined') {
+    // Use higher error correction level as default
+    errorCorrectionLevel = ECLevel.from(options.errorCorrectionLevel, ECLevel.M)
+    version = Version.from(options.version)
+    mask = MaskPattern.from(options.maskPattern)
+
+    if (options.toSJISFunc) {
+      Utils.setToSJISFunction(options.toSJISFunc)
+    }
+  }
+
+  return createSymbol(data, version, errorCorrectionLevel, mask)
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/reed-solomon-encoder.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/reed-solomon-encoder.js ***!
+  \**************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const Polynomial = __webpack_require__(/*! ./polynomial */ "./node_modules/qrcode/lib/core/polynomial.js")
+
+function ReedSolomonEncoder (degree) {
+  this.genPoly = undefined
+  this.degree = degree
+
+  if (this.degree) this.initialize(this.degree)
+}
+
+/**
+ * Initialize the encoder.
+ * The input param should correspond to the number of error correction codewords.
+ *
+ * @param  {Number} degree
+ */
+ReedSolomonEncoder.prototype.initialize = function initialize (degree) {
+  // create an irreducible generator polynomial
+  this.degree = degree
+  this.genPoly = Polynomial.generateECPolynomial(this.degree)
+}
+
+/**
+ * Encodes a chunk of data
+ *
+ * @param  {Uint8Array} data Buffer containing input data
+ * @return {Uint8Array}      Buffer containing encoded data
+ */
+ReedSolomonEncoder.prototype.encode = function encode (data) {
+  if (!this.genPoly) {
+    throw new Error('Encoder not initialized')
+  }
+
+  // Calculate EC for this data block
+  // extends data size to data+genPoly size
+  const paddedData = new Uint8Array(data.length + this.degree)
+  paddedData.set(data)
+
+  // The error correction codewords are the remainder after dividing the data codewords
+  // by a generator polynomial
+  const remainder = Polynomial.mod(paddedData, this.genPoly)
+
+  // return EC data blocks (last n byte, where n is the degree of genPoly)
+  // If coefficients number in remainder are less than genPoly degree,
+  // pad with 0s to the left to reach the needed number of coefficients
+  const start = this.degree - remainder.length
+  if (start > 0) {
+    const buff = new Uint8Array(this.degree)
+    buff.set(remainder, start)
+
+    return buff
+  }
+
+  return remainder
+}
+
+module.exports = ReedSolomonEncoder
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/regex.js":
+/*!***********************************************!*\
+  !*** ./node_modules/qrcode/lib/core/regex.js ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+const numeric = '[0-9]+'
+const alphanumeric = '[A-Z $%*+\\-./:]+'
+let kanji = '(?:[u3000-u303F]|[u3040-u309F]|[u30A0-u30FF]|' +
+  '[uFF00-uFFEF]|[u4E00-u9FAF]|[u2605-u2606]|[u2190-u2195]|u203B|' +
+  '[u2010u2015u2018u2019u2025u2026u201Cu201Du2225u2260]|' +
+  '[u0391-u0451]|[u00A7u00A8u00B1u00B4u00D7u00F7])+'
+kanji = kanji.replace(/u/g, '\\u')
+
+const byte = '(?:(?![A-Z0-9 $%*+\\-./:]|' + kanji + ')(?:.|[\r\n]))+'
+
+exports.KANJI = new RegExp(kanji, 'g')
+exports.BYTE_KANJI = new RegExp('[^A-Z0-9 $%*+\\-./:]+', 'g')
+exports.BYTE = new RegExp(byte, 'g')
+exports.NUMERIC = new RegExp(numeric, 'g')
+exports.ALPHANUMERIC = new RegExp(alphanumeric, 'g')
+
+const TEST_KANJI = new RegExp('^' + kanji + '$')
+const TEST_NUMERIC = new RegExp('^' + numeric + '$')
+const TEST_ALPHANUMERIC = new RegExp('^[A-Z0-9 $%*+\\-./:]+$')
+
+exports.testKanji = function testKanji (str) {
+  return TEST_KANJI.test(str)
+}
+
+exports.testNumeric = function testNumeric (str) {
+  return TEST_NUMERIC.test(str)
+}
+
+exports.testAlphanumeric = function testAlphanumeric (str) {
+  return TEST_ALPHANUMERIC.test(str)
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/segments.js":
+/*!**************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/segments.js ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+const Mode = __webpack_require__(/*! ./mode */ "./node_modules/qrcode/lib/core/mode.js")
+const NumericData = __webpack_require__(/*! ./numeric-data */ "./node_modules/qrcode/lib/core/numeric-data.js")
+const AlphanumericData = __webpack_require__(/*! ./alphanumeric-data */ "./node_modules/qrcode/lib/core/alphanumeric-data.js")
+const ByteData = __webpack_require__(/*! ./byte-data */ "./node_modules/qrcode/lib/core/byte-data.js")
+const KanjiData = __webpack_require__(/*! ./kanji-data */ "./node_modules/qrcode/lib/core/kanji-data.js")
+const Regex = __webpack_require__(/*! ./regex */ "./node_modules/qrcode/lib/core/regex.js")
+const Utils = __webpack_require__(/*! ./utils */ "./node_modules/qrcode/lib/core/utils.js")
+const dijkstra = __webpack_require__(/*! dijkstrajs */ "./node_modules/dijkstrajs/dijkstra.js")
+
+/**
+ * Returns UTF8 byte length
+ *
+ * @param  {String} str Input string
+ * @return {Number}     Number of byte
+ */
+function getStringByteLength (str) {
+  return unescape(encodeURIComponent(str)).length
+}
+
+/**
+ * Get a list of segments of the specified mode
+ * from a string
+ *
+ * @param  {Mode}   mode Segment mode
+ * @param  {String} str  String to process
+ * @return {Array}       Array of object with segments data
+ */
+function getSegments (regex, mode, str) {
+  const segments = []
+  let result
+
+  while ((result = regex.exec(str)) !== null) {
+    segments.push({
+      data: result[0],
+      index: result.index,
+      mode: mode,
+      length: result[0].length
+    })
+  }
+
+  return segments
+}
+
+/**
+ * Extracts a series of segments with the appropriate
+ * modes from a string
+ *
+ * @param  {String} dataStr Input string
+ * @return {Array}          Array of object with segments data
+ */
+function getSegmentsFromString (dataStr) {
+  const numSegs = getSegments(Regex.NUMERIC, Mode.NUMERIC, dataStr)
+  const alphaNumSegs = getSegments(Regex.ALPHANUMERIC, Mode.ALPHANUMERIC, dataStr)
+  let byteSegs
+  let kanjiSegs
+
+  if (Utils.isKanjiModeEnabled()) {
+    byteSegs = getSegments(Regex.BYTE, Mode.BYTE, dataStr)
+    kanjiSegs = getSegments(Regex.KANJI, Mode.KANJI, dataStr)
+  } else {
+    byteSegs = getSegments(Regex.BYTE_KANJI, Mode.BYTE, dataStr)
+    kanjiSegs = []
+  }
+
+  const segs = numSegs.concat(alphaNumSegs, byteSegs, kanjiSegs)
+
+  return segs
+    .sort(function (s1, s2) {
+      return s1.index - s2.index
+    })
+    .map(function (obj) {
+      return {
+        data: obj.data,
+        mode: obj.mode,
+        length: obj.length
+      }
+    })
+}
+
+/**
+ * Returns how many bits are needed to encode a string of
+ * specified length with the specified mode
+ *
+ * @param  {Number} length String length
+ * @param  {Mode} mode     Segment mode
+ * @return {Number}        Bit length
+ */
+function getSegmentBitsLength (length, mode) {
+  switch (mode) {
+    case Mode.NUMERIC:
+      return NumericData.getBitsLength(length)
+    case Mode.ALPHANUMERIC:
+      return AlphanumericData.getBitsLength(length)
+    case Mode.KANJI:
+      return KanjiData.getBitsLength(length)
+    case Mode.BYTE:
+      return ByteData.getBitsLength(length)
+  }
+}
+
+/**
+ * Merges adjacent segments which have the same mode
+ *
+ * @param  {Array} segs Array of object with segments data
+ * @return {Array}      Array of object with segments data
+ */
+function mergeSegments (segs) {
+  return segs.reduce(function (acc, curr) {
+    const prevSeg = acc.length - 1 >= 0 ? acc[acc.length - 1] : null
+    if (prevSeg && prevSeg.mode === curr.mode) {
+      acc[acc.length - 1].data += curr.data
+      return acc
+    }
+
+    acc.push(curr)
+    return acc
+  }, [])
+}
+
+/**
+ * Generates a list of all possible nodes combination which
+ * will be used to build a segments graph.
+ *
+ * Nodes are divided by groups. Each group will contain a list of all the modes
+ * in which is possible to encode the given text.
+ *
+ * For example the text '12345' can be encoded as Numeric, Alphanumeric or Byte.
+ * The group for '12345' will contain then 3 objects, one for each
+ * possible encoding mode.
+ *
+ * Each node represents a possible segment.
+ *
+ * @param  {Array} segs Array of object with segments data
+ * @return {Array}      Array of object with segments data
+ */
+function buildNodes (segs) {
+  const nodes = []
+  for (let i = 0; i < segs.length; i++) {
+    const seg = segs[i]
+
+    switch (seg.mode) {
+      case Mode.NUMERIC:
+        nodes.push([seg,
+          { data: seg.data, mode: Mode.ALPHANUMERIC, length: seg.length },
+          { data: seg.data, mode: Mode.BYTE, length: seg.length }
+        ])
+        break
+      case Mode.ALPHANUMERIC:
+        nodes.push([seg,
+          { data: seg.data, mode: Mode.BYTE, length: seg.length }
+        ])
+        break
+      case Mode.KANJI:
+        nodes.push([seg,
+          { data: seg.data, mode: Mode.BYTE, length: getStringByteLength(seg.data) }
+        ])
+        break
+      case Mode.BYTE:
+        nodes.push([
+          { data: seg.data, mode: Mode.BYTE, length: getStringByteLength(seg.data) }
+        ])
+    }
+  }
+
+  return nodes
+}
+
+/**
+ * Builds a graph from a list of nodes.
+ * All segments in each node group will be connected with all the segments of
+ * the next group and so on.
+ *
+ * At each connection will be assigned a weight depending on the
+ * segment's byte length.
+ *
+ * @param  {Array} nodes    Array of object with segments data
+ * @param  {Number} version QR Code version
+ * @return {Object}         Graph of all possible segments
+ */
+function buildGraph (nodes, version) {
+  const table = {}
+  const graph = { start: {} }
+  let prevNodeIds = ['start']
+
+  for (let i = 0; i < nodes.length; i++) {
+    const nodeGroup = nodes[i]
+    const currentNodeIds = []
+
+    for (let j = 0; j < nodeGroup.length; j++) {
+      const node = nodeGroup[j]
+      const key = '' + i + j
+
+      currentNodeIds.push(key)
+      table[key] = { node: node, lastCount: 0 }
+      graph[key] = {}
+
+      for (let n = 0; n < prevNodeIds.length; n++) {
+        const prevNodeId = prevNodeIds[n]
+
+        if (table[prevNodeId] && table[prevNodeId].node.mode === node.mode) {
+          graph[prevNodeId][key] =
+            getSegmentBitsLength(table[prevNodeId].lastCount + node.length, node.mode) -
+            getSegmentBitsLength(table[prevNodeId].lastCount, node.mode)
+
+          table[prevNodeId].lastCount += node.length
+        } else {
+          if (table[prevNodeId]) table[prevNodeId].lastCount = node.length
+
+          graph[prevNodeId][key] = getSegmentBitsLength(node.length, node.mode) +
+            4 + Mode.getCharCountIndicator(node.mode, version) // switch cost
+        }
+      }
+    }
+
+    prevNodeIds = currentNodeIds
+  }
+
+  for (let n = 0; n < prevNodeIds.length; n++) {
+    graph[prevNodeIds[n]].end = 0
+  }
+
+  return { map: graph, table: table }
+}
+
+/**
+ * Builds a segment from a specified data and mode.
+ * If a mode is not specified, the more suitable will be used.
+ *
+ * @param  {String} data             Input data
+ * @param  {Mode | String} modesHint Data mode
+ * @return {Segment}                 Segment
+ */
+function buildSingleSegment (data, modesHint) {
+  let mode
+  const bestMode = Mode.getBestModeForData(data)
+
+  mode = Mode.from(modesHint, bestMode)
+
+  // Make sure data can be encoded
+  if (mode !== Mode.BYTE && mode.bit < bestMode.bit) {
+    throw new Error('"' + data + '"' +
+      ' cannot be encoded with mode ' + Mode.toString(mode) +
+      '.\n Suggested mode is: ' + Mode.toString(bestMode))
+  }
+
+  // Use Mode.BYTE if Kanji support is disabled
+  if (mode === Mode.KANJI && !Utils.isKanjiModeEnabled()) {
+    mode = Mode.BYTE
+  }
+
+  switch (mode) {
+    case Mode.NUMERIC:
+      return new NumericData(data)
+
+    case Mode.ALPHANUMERIC:
+      return new AlphanumericData(data)
+
+    case Mode.KANJI:
+      return new KanjiData(data)
+
+    case Mode.BYTE:
+      return new ByteData(data)
+  }
+}
+
+/**
+ * Builds a list of segments from an array.
+ * Array can contain Strings or Objects with segment's info.
+ *
+ * For each item which is a string, will be generated a segment with the given
+ * string and the more appropriate encoding mode.
+ *
+ * For each item which is an object, will be generated a segment with the given
+ * data and mode.
+ * Objects must contain at least the property "data".
+ * If property "mode" is not present, the more suitable mode will be used.
+ *
+ * @param  {Array} array Array of objects with segments data
+ * @return {Array}       Array of Segments
+ */
+exports.fromArray = function fromArray (array) {
+  return array.reduce(function (acc, seg) {
+    if (typeof seg === 'string') {
+      acc.push(buildSingleSegment(seg, null))
+    } else if (seg.data) {
+      acc.push(buildSingleSegment(seg.data, seg.mode))
+    }
+
+    return acc
+  }, [])
+}
+
+/**
+ * Builds an optimized sequence of segments from a string,
+ * which will produce the shortest possible bitstream.
+ *
+ * @param  {String} data    Input string
+ * @param  {Number} version QR Code version
+ * @return {Array}          Array of segments
+ */
+exports.fromString = function fromString (data, version) {
+  const segs = getSegmentsFromString(data, Utils.isKanjiModeEnabled())
+
+  const nodes = buildNodes(segs)
+  const graph = buildGraph(nodes, version)
+  const path = dijkstra.find_path(graph.map, 'start', 'end')
+
+  const optimizedSegs = []
+  for (let i = 1; i < path.length - 1; i++) {
+    optimizedSegs.push(graph.table[path[i]].node)
+  }
+
+  return exports.fromArray(mergeSegments(optimizedSegs))
+}
+
+/**
+ * Splits a string in various segments with the modes which
+ * best represent their content.
+ * The produced segments are far from being optimized.
+ * The output of this function is only used to estimate a QR Code version
+ * which may contain the data.
+ *
+ * @param  {string} data Input string
+ * @return {Array}       Array of segments
+ */
+exports.rawSplit = function rawSplit (data) {
+  return exports.fromArray(
+    getSegmentsFromString(data, Utils.isKanjiModeEnabled())
+  )
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/utils.js":
+/*!***********************************************!*\
+  !*** ./node_modules/qrcode/lib/core/utils.js ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+let toSJISFunction
+const CODEWORDS_COUNT = [
+  0, // Not used
+  26, 44, 70, 100, 134, 172, 196, 242, 292, 346,
+  404, 466, 532, 581, 655, 733, 815, 901, 991, 1085,
+  1156, 1258, 1364, 1474, 1588, 1706, 1828, 1921, 2051, 2185,
+  2323, 2465, 2611, 2761, 2876, 3034, 3196, 3362, 3532, 3706
+]
+
+/**
+ * Returns the QR Code size for the specified version
+ *
+ * @param  {Number} version QR Code version
+ * @return {Number}         size of QR code
+ */
+exports.getSymbolSize = function getSymbolSize (version) {
+  if (!version) throw new Error('"version" cannot be null or undefined')
+  if (version < 1 || version > 40) throw new Error('"version" should be in range from 1 to 40')
+  return version * 4 + 17
+}
+
+/**
+ * Returns the total number of codewords used to store data and EC information.
+ *
+ * @param  {Number} version QR Code version
+ * @return {Number}         Data length in bits
+ */
+exports.getSymbolTotalCodewords = function getSymbolTotalCodewords (version) {
+  return CODEWORDS_COUNT[version]
+}
+
+/**
+ * Encode data with Bose-Chaudhuri-Hocquenghem
+ *
+ * @param  {Number} data Value to encode
+ * @return {Number}      Encoded value
+ */
+exports.getBCHDigit = function (data) {
+  let digit = 0
+
+  while (data !== 0) {
+    digit++
+    data >>>= 1
+  }
+
+  return digit
+}
+
+exports.setToSJISFunction = function setToSJISFunction (f) {
+  if (typeof f !== 'function') {
+    throw new Error('"toSJISFunc" is not a valid function.')
+  }
+
+  toSJISFunction = f
+}
+
+exports.isKanjiModeEnabled = function () {
+  return typeof toSJISFunction !== 'undefined'
+}
+
+exports.toSJIS = function toSJIS (kanji) {
+  return toSJISFunction(kanji)
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/version-check.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/version-check.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+/**
+ * Check if QR Code version is valid
+ *
+ * @param  {Number}  version QR Code version
+ * @return {Boolean}         true if valid version, false otherwise
+ */
+exports.isValid = function isValid (version) {
+  return !isNaN(version) && version >= 1 && version <= 40
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/core/version.js":
+/*!*************************************************!*\
+  !*** ./node_modules/qrcode/lib/core/version.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+const Utils = __webpack_require__(/*! ./utils */ "./node_modules/qrcode/lib/core/utils.js")
+const ECCode = __webpack_require__(/*! ./error-correction-code */ "./node_modules/qrcode/lib/core/error-correction-code.js")
+const ECLevel = __webpack_require__(/*! ./error-correction-level */ "./node_modules/qrcode/lib/core/error-correction-level.js")
+const Mode = __webpack_require__(/*! ./mode */ "./node_modules/qrcode/lib/core/mode.js")
+const VersionCheck = __webpack_require__(/*! ./version-check */ "./node_modules/qrcode/lib/core/version-check.js")
+
+// Generator polynomial used to encode version information
+const G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0)
+const G18_BCH = Utils.getBCHDigit(G18)
+
+function getBestVersionForDataLength (mode, length, errorCorrectionLevel) {
+  for (let currentVersion = 1; currentVersion <= 40; currentVersion++) {
+    if (length <= exports.getCapacity(currentVersion, errorCorrectionLevel, mode)) {
+      return currentVersion
+    }
+  }
+
+  return undefined
+}
+
+function getReservedBitsCount (mode, version) {
+  // Character count indicator + mode indicator bits
+  return Mode.getCharCountIndicator(mode, version) + 4
+}
+
+function getTotalBitsFromDataArray (segments, version) {
+  let totalBits = 0
+
+  segments.forEach(function (data) {
+    const reservedBits = getReservedBitsCount(data.mode, version)
+    totalBits += reservedBits + data.getBitsLength()
+  })
+
+  return totalBits
+}
+
+function getBestVersionForMixedData (segments, errorCorrectionLevel) {
+  for (let currentVersion = 1; currentVersion <= 40; currentVersion++) {
+    const length = getTotalBitsFromDataArray(segments, currentVersion)
+    if (length <= exports.getCapacity(currentVersion, errorCorrectionLevel, Mode.MIXED)) {
+      return currentVersion
+    }
+  }
+
+  return undefined
+}
+
+/**
+ * Returns version number from a value.
+ * If value is not a valid version, returns defaultValue
+ *
+ * @param  {Number|String} value        QR Code version
+ * @param  {Number}        defaultValue Fallback value
+ * @return {Number}                     QR Code version number
+ */
+exports.from = function from (value, defaultValue) {
+  if (VersionCheck.isValid(value)) {
+    return parseInt(value, 10)
+  }
+
+  return defaultValue
+}
+
+/**
+ * Returns how much data can be stored with the specified QR code version
+ * and error correction level
+ *
+ * @param  {Number} version              QR Code version (1-40)
+ * @param  {Number} errorCorrectionLevel Error correction level
+ * @param  {Mode}   mode                 Data mode
+ * @return {Number}                      Quantity of storable data
+ */
+exports.getCapacity = function getCapacity (version, errorCorrectionLevel, mode) {
+  if (!VersionCheck.isValid(version)) {
+    throw new Error('Invalid QR Code version')
+  }
+
+  // Use Byte mode as default
+  if (typeof mode === 'undefined') mode = Mode.BYTE
+
+  // Total codewords for this QR code version (Data + Error correction)
+  const totalCodewords = Utils.getSymbolTotalCodewords(version)
+
+  // Total number of error correction codewords
+  const ecTotalCodewords = ECCode.getTotalCodewordsCount(version, errorCorrectionLevel)
+
+  // Total number of data codewords
+  const dataTotalCodewordsBits = (totalCodewords - ecTotalCodewords) * 8
+
+  if (mode === Mode.MIXED) return dataTotalCodewordsBits
+
+  const usableBits = dataTotalCodewordsBits - getReservedBitsCount(mode, version)
+
+  // Return max number of storable codewords
+  switch (mode) {
+    case Mode.NUMERIC:
+      return Math.floor((usableBits / 10) * 3)
+
+    case Mode.ALPHANUMERIC:
+      return Math.floor((usableBits / 11) * 2)
+
+    case Mode.KANJI:
+      return Math.floor(usableBits / 13)
+
+    case Mode.BYTE:
+    default:
+      return Math.floor(usableBits / 8)
+  }
+}
+
+/**
+ * Returns the minimum version needed to contain the amount of data
+ *
+ * @param  {Segment} data                    Segment of data
+ * @param  {Number} [errorCorrectionLevel=H] Error correction level
+ * @param  {Mode} mode                       Data mode
+ * @return {Number}                          QR Code version
+ */
+exports.getBestVersionForData = function getBestVersionForData (data, errorCorrectionLevel) {
+  let seg
+
+  const ecl = ECLevel.from(errorCorrectionLevel, ECLevel.M)
+
+  if (Array.isArray(data)) {
+    if (data.length > 1) {
+      return getBestVersionForMixedData(data, ecl)
+    }
+
+    if (data.length === 0) {
+      return 1
+    }
+
+    seg = data[0]
+  } else {
+    seg = data
+  }
+
+  return getBestVersionForDataLength(seg.mode, seg.getLength(), ecl)
+}
+
+/**
+ * Returns version information with relative error correction bits
+ *
+ * The version information is included in QR Code symbols of version 7 or larger.
+ * It consists of an 18-bit sequence containing 6 data bits,
+ * with 12 error correction bits calculated using the (18, 6) Golay code.
+ *
+ * @param  {Number} version QR Code version
+ * @return {Number}         Encoded version info bits
+ */
+exports.getEncodedBits = function getEncodedBits (version) {
+  if (!VersionCheck.isValid(version) || version < 7) {
+    throw new Error('Invalid QR Code version')
+  }
+
+  let d = version << 12
+
+  while (Utils.getBCHDigit(d) - G18_BCH >= 0) {
+    d ^= (G18 << (Utils.getBCHDigit(d) - G18_BCH))
+  }
+
+  return (version << 12) | d
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/renderer/canvas.js":
+/*!****************************************************!*\
+  !*** ./node_modules/qrcode/lib/renderer/canvas.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+const Utils = __webpack_require__(/*! ./utils */ "./node_modules/qrcode/lib/renderer/utils.js")
+
+function clearCanvas (ctx, canvas, size) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+  if (!canvas.style) canvas.style = {}
+  canvas.height = size
+  canvas.width = size
+  canvas.style.height = size + 'px'
+  canvas.style.width = size + 'px'
+}
+
+function getCanvasElement () {
+  try {
+    return document.createElement('canvas')
+  } catch (e) {
+    throw new Error('You need to specify a canvas element')
+  }
+}
+
+exports.render = function render (qrData, canvas, options) {
+  let opts = options
+  let canvasEl = canvas
+
+  if (typeof opts === 'undefined' && (!canvas || !canvas.getContext)) {
+    opts = canvas
+    canvas = undefined
+  }
+
+  if (!canvas) {
+    canvasEl = getCanvasElement()
+  }
+
+  opts = Utils.getOptions(opts)
+  const size = Utils.getImageWidth(qrData.modules.size, opts)
+
+  const ctx = canvasEl.getContext('2d')
+  const image = ctx.createImageData(size, size)
+  Utils.qrToImageData(image.data, qrData, opts)
+
+  clearCanvas(ctx, canvasEl, size)
+  ctx.putImageData(image, 0, 0)
+
+  return canvasEl
+}
+
+exports.renderToDataURL = function renderToDataURL (qrData, canvas, options) {
+  let opts = options
+
+  if (typeof opts === 'undefined' && (!canvas || !canvas.getContext)) {
+    opts = canvas
+    canvas = undefined
+  }
+
+  if (!opts) opts = {}
+
+  const canvasEl = exports.render(qrData, canvas, opts)
+
+  const type = opts.type || 'image/png'
+  const rendererOpts = opts.rendererOpts || {}
+
+  return canvasEl.toDataURL(type, rendererOpts.quality)
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/renderer/svg-tag.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/qrcode/lib/renderer/svg-tag.js ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+const Utils = __webpack_require__(/*! ./utils */ "./node_modules/qrcode/lib/renderer/utils.js")
+
+function getColorAttrib (color, attrib) {
+  const alpha = color.a / 255
+  const str = attrib + '="' + color.hex + '"'
+
+  return alpha < 1
+    ? str + ' ' + attrib + '-opacity="' + alpha.toFixed(2).slice(1) + '"'
+    : str
+}
+
+function svgCmd (cmd, x, y) {
+  let str = cmd + x
+  if (typeof y !== 'undefined') str += ' ' + y
+
+  return str
+}
+
+function qrToPath (data, size, margin) {
+  let path = ''
+  let moveBy = 0
+  let newRow = false
+  let lineLength = 0
+
+  for (let i = 0; i < data.length; i++) {
+    const col = Math.floor(i % size)
+    const row = Math.floor(i / size)
+
+    if (!col && !newRow) newRow = true
+
+    if (data[i]) {
+      lineLength++
+
+      if (!(i > 0 && col > 0 && data[i - 1])) {
+        path += newRow
+          ? svgCmd('M', col + margin, 0.5 + row + margin)
+          : svgCmd('m', moveBy, 0)
+
+        moveBy = 0
+        newRow = false
+      }
+
+      if (!(col + 1 < size && data[i + 1])) {
+        path += svgCmd('h', lineLength)
+        lineLength = 0
+      }
+    } else {
+      moveBy++
+    }
+  }
+
+  return path
+}
+
+exports.render = function render (qrData, options, cb) {
+  const opts = Utils.getOptions(options)
+  const size = qrData.modules.size
+  const data = qrData.modules.data
+  const qrcodesize = size + opts.margin * 2
+
+  const bg = !opts.color.light.a
+    ? ''
+    : '<path ' + getColorAttrib(opts.color.light, 'fill') +
+      ' d="M0 0h' + qrcodesize + 'v' + qrcodesize + 'H0z"/>'
+
+  const path =
+    '<path ' + getColorAttrib(opts.color.dark, 'stroke') +
+    ' d="' + qrToPath(data, size, opts.margin) + '"/>'
+
+  const viewBox = 'viewBox="' + '0 0 ' + qrcodesize + ' ' + qrcodesize + '"'
+
+  const width = !opts.width ? '' : 'width="' + opts.width + '" height="' + opts.width + '" '
+
+  const svgTag = '<svg xmlns="http://www.w3.org/2000/svg" ' + width + viewBox + ' shape-rendering="crispEdges">' + bg + path + '</svg>\n'
+
+  if (typeof cb === 'function') {
+    cb(null, svgTag)
+  }
+
+  return svgTag
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/qrcode/lib/renderer/utils.js":
+/*!***************************************************!*\
+  !*** ./node_modules/qrcode/lib/renderer/utils.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+function hex2rgba (hex) {
+  if (typeof hex === 'number') {
+    hex = hex.toString()
+  }
+
+  if (typeof hex !== 'string') {
+    throw new Error('Color should be defined as hex string')
+  }
+
+  let hexCode = hex.slice().replace('#', '').split('')
+  if (hexCode.length < 3 || hexCode.length === 5 || hexCode.length > 8) {
+    throw new Error('Invalid hex color: ' + hex)
+  }
+
+  // Convert from short to long form (fff -> ffffff)
+  if (hexCode.length === 3 || hexCode.length === 4) {
+    hexCode = Array.prototype.concat.apply([], hexCode.map(function (c) {
+      return [c, c]
+    }))
+  }
+
+  // Add default alpha value
+  if (hexCode.length === 6) hexCode.push('F', 'F')
+
+  const hexValue = parseInt(hexCode.join(''), 16)
+
+  return {
+    r: (hexValue >> 24) & 255,
+    g: (hexValue >> 16) & 255,
+    b: (hexValue >> 8) & 255,
+    a: hexValue & 255,
+    hex: '#' + hexCode.slice(0, 6).join('')
+  }
+}
+
+exports.getOptions = function getOptions (options) {
+  if (!options) options = {}
+  if (!options.color) options.color = {}
+
+  const margin = typeof options.margin === 'undefined' ||
+    options.margin === null ||
+    options.margin < 0
+    ? 4
+    : options.margin
+
+  const width = options.width && options.width >= 21 ? options.width : undefined
+  const scale = options.scale || 4
+
+  return {
+    width: width,
+    scale: width ? 4 : scale,
+    margin: margin,
+    color: {
+      dark: hex2rgba(options.color.dark || '#000000ff'),
+      light: hex2rgba(options.color.light || '#ffffffff')
+    },
+    type: options.type,
+    rendererOpts: options.rendererOpts || {}
+  }
+}
+
+exports.getScale = function getScale (qrSize, opts) {
+  return opts.width && opts.width >= qrSize + opts.margin * 2
+    ? opts.width / (qrSize + opts.margin * 2)
+    : opts.scale
+}
+
+exports.getImageWidth = function getImageWidth (qrSize, opts) {
+  const scale = exports.getScale(qrSize, opts)
+  return Math.floor((qrSize + opts.margin * 2) * scale)
+}
+
+exports.qrToImageData = function qrToImageData (imgData, qr, opts) {
+  const size = qr.modules.size
+  const data = qr.modules.data
+  const scale = exports.getScale(size, opts)
+  const symbolSize = Math.floor((size + opts.margin * 2) * scale)
+  const scaledMargin = opts.margin * scale
+  const palette = [opts.color.light, opts.color.dark]
+
+  for (let i = 0; i < symbolSize; i++) {
+    for (let j = 0; j < symbolSize; j++) {
+      let posDst = (i * symbolSize + j) * 4
+      let pxColor = opts.color.light
+
+      if (i >= scaledMargin && j >= scaledMargin &&
+        i < symbolSize - scaledMargin && j < symbolSize - scaledMargin) {
+        const iSrc = Math.floor((i - scaledMargin) / scale)
+        const jSrc = Math.floor((j - scaledMargin) / scale)
+        pxColor = palette[data[iSrc * size + jSrc] ? 1 : 0]
+      }
+
+      imgData[posDst++] = pxColor.r
+      imgData[posDst++] = pxColor.g
+      imgData[posDst++] = pxColor.b
+      imgData[posDst] = pxColor.a
+    }
+  }
+}
 
 
 /***/ }),
@@ -58918,7 +63279,9 @@ function addListenerManipulationToElementPrototype() {
      */
     Node.prototype.addListener = function _addListener(type, listener, boundTo = this, options) {
         const wrappedListener = ((e) => {
-            if (typeof options === "object" && !options?.propagate)
+            if (!(this instanceof Document && this === document) &&
+                !(this instanceof HTMLElement && this === document.body) &&
+                !(typeof options === "object" && options.propagate))
                 e.stopPropagation();
             if (typeof listener === "object" && listener.handleEvent)
                 listener.handleEvent(e);
@@ -61016,16 +65379,16 @@ let TurboEventManager = class TurboEventManager extends TurboElement {
                 this.applyEventNames(TurboMoveName);
             }
             if (!this.disabledEventTypes.disableMouseEvents) {
-                document.body.addListener("mousedown", this.pointerDown, this, { propagate: true });
-                document.body.addListener("mousemove", this.pointerMove, this, { propagate: true });
-                document.body.addListener("mouseup", this.pointerUp, this, { propagate: true });
-                document.body.addListener("mouseleave", this.pointerLeave, this, { propagate: true });
+                document.addListener("mousedown", this.pointerDown, this, { propagate: true });
+                document.addListener("mousemove", this.pointerMove, this, { propagate: true });
+                document.addListener("mouseup", this.pointerUp, this, { propagate: true });
+                document.addListener("mouseleave", this.pointerLeave, this, { propagate: true });
             }
             if (!this.disabledEventTypes.disableTouchEvents) {
-                document.body.addListener("touchstart", this.pointerDown, this, { passive: false, propagate: true });
-                document.body.addListener("touchmove", this.pointerMove, this, { passive: false, propagate: true });
-                document.body.addListener("touchend", this.pointerUp, this, { passive: false, propagate: true });
-                document.body.addListener("touchcancel", this.pointerUp, this, { passive: false, propagate: true });
+                document.addListener("touchstart", this.pointerDown, this, { passive: false, propagate: true });
+                document.addListener("touchmove", this.pointerMove, this, { passive: false, propagate: true });
+                document.addListener("touchend", this.pointerUp, this, { passive: false, propagate: true });
+                document.addListener("touchcancel", this.pointerUp, this, { passive: false, propagate: true });
             }
             if (!this.disabledEventTypes.disableMouseEvents || !this.disabledEventTypes.disableTouchEvents) {
                 if (!this.disabledEventTypes.disableClickEvents)
@@ -61516,13 +65879,13 @@ class ToolManager {
         document.addEventListener(TurboEventName.keyReleased, () => this.setTool(null, ClickMode.key, { select: false }));
         //Listen for all custom events on the document and accordingly execute the corresponding function on the
         //current tool. The tool will manage its actions and what object to interact with
-        document.addEventListener(TurboEventName.clickStart, (e) => this.interactWithObject(e));
-        document.addEventListener(TurboEventName.click, (e) => this.interactWithObject(e));
-        document.addEventListener(TurboEventName.clickEnd, (e) => this.interactWithObject(e));
-        document.addEventListener(TurboEventName.move, (e) => this.interactWithObject(e));
-        document.addEventListener(TurboEventName.dragStart, (e) => this.interactWithObject(e));
-        document.addEventListener(TurboEventName.drag, (e) => this.interactWithObject(e));
-        document.addEventListener(TurboEventName.dragEnd, (e) => this.interactWithObject(e));
+        document.addListener(TurboEventName.clickStart, (e) => this.interactWithObject(e), document, { propagate: true });
+        document.addListener(TurboEventName.click, (e) => this.interactWithObject(e), document, { propagate: true });
+        document.addListener(TurboEventName.clickEnd, (e) => this.interactWithObject(e), document, { propagate: true });
+        document.addListener(TurboEventName.move, (e) => this.interactWithObject(e), document, { propagate: true });
+        document.addListener(TurboEventName.dragStart, (e) => this.interactWithObject(e), document, { propagate: true });
+        document.addListener(TurboEventName.drag, (e) => this.interactWithObject(e), document, { propagate: true });
+        document.addListener(TurboEventName.dragEnd, (e) => this.interactWithObject(e), document, { propagate: true });
     }
     /**
      * @description Returns all created tools as an array
@@ -75788,6 +80151,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _directors_rootDirector_rootDirector__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./directors/rootDirector/rootDirector */ "./frontend/src/client/directors/rootDirector/rootDirector.ts");
 /* harmony import */ var _directors_project_project__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./directors/project/project */ "./frontend/src/client/directors/project/project.ts");
 /* harmony import */ var _directors_project_project_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./directors/project/project.types */ "./frontend/src/client/directors/project/project.types.ts");
+/* harmony import */ var _components_card_card__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/card/card */ "./frontend/src/client/components/card/card.ts");
+/* harmony import */ var _utils_url__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils/url */ "./frontend/src/client/utils/url.ts");
+
+
 
 
 
@@ -75802,6 +80169,21 @@ project.groupsHandler.openProject(projectId).then(({ doc, websocket }) => {
     websocket.onConnect.add(() => {
         project.document = doc;
         project.currentType = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_3__.ProjectScreens.canvas;
+        window.addEventListener("popstate", () => {
+            if (project.currentType === _directors_project_project_types__WEBPACK_IMPORTED_MODULE_3__.ProjectScreens.camera) {
+                project.currentType = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_3__.ProjectScreens.canvas;
+                (0,_utils_url__WEBPACK_IMPORTED_MODULE_5__.clearUrlParams)();
+            }
+        });
+        const cardId = (0,_utils_url__WEBPACK_IMPORTED_MODULE_5__.getUrlParam)("card");
+        const card = project.getNode(cardId);
+        if (card && card instanceof _components_card_card__WEBPACK_IMPORTED_MODULE_4__.Card) {
+            project.currentType = _directors_project_project_types__WEBPACK_IMPORTED_MODULE_3__.ProjectScreens.camera;
+            project.camera.card = card;
+            project.toolPanel.changePanel(_directors_project_project_types__WEBPACK_IMPORTED_MODULE_3__.ToolType.shoot);
+            project.camera.startStream();
+            (0,_utils_url__WEBPACK_IMPORTED_MODULE_5__.pushUrlParams)();
+        }
     });
 });
 

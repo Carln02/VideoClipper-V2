@@ -6,6 +6,9 @@ import {TimelineClipHandler} from "./timeline.clipHandler";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 
 export class TimelinePlayController extends TurboController<Timeline, TimelineView, TimelineModel> {
+    private endResolver: () => void;
+    private endPromise: Promise<void>;
+
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
 
@@ -61,17 +64,31 @@ export class TimelinePlayController extends TurboController<Timeline, TimelineVi
     }
 
     public async play(play: boolean = !this.renderer.isPlaying, updateIcon: boolean = true) {
+        this.element.onPlay?.(play);
         if (updateIcon) this.view.updatePlayButtonIcon(play);
         if (this.model.nextTimer) clearTimeout(this.model.nextTimer);
         if (this.model.playTimer) clearInterval(this.model.playTimer);
 
         if (!play) {
             this.renderer.pause();
-            return;
+            this.emitter.fire("currentTimeChanged");
+            this.resolveEnd();
+            return this.endPromise;
         }
+
+        this.resolveEnd();
+        this.endPromise = new Promise<void>(resolve => this.endResolver = resolve);
 
         this.model.timeHandler.resetTimeIfOutsideBounds();
         await this.renderer.loadNext(this.model.currentClip, this.model.indexInfo.offset);
-        await this.playRecur(this.model.indexInfo.clipIndex, this.model.indexInfo.offset);
+        void this.playRecur(this.model.indexInfo.clipIndex, this.model.indexInfo.offset);
+
+        return this.endPromise;
+    }
+
+    private resolveEnd() {
+        if (this.endResolver) this.endResolver();
+        this.endResolver = undefined;
+        this.endPromise = undefined;
     }
 }

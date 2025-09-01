@@ -110,7 +110,7 @@ vc-clip-renderer#snapshot-renderer {
 
     pointer-events: none;
     position: absolute;
-    bottom: 99.5%;
+    top: 99.9%;
 
     border: none;
 }

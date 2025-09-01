@@ -22,6 +22,8 @@ export class Timeline<
 > extends VcComponent<View, YArray<SyncedClip>, TimelineModel, Project> {
     public readonly renderer: ClipRenderer;
 
+    public onPlay: (play: boolean) => void = () => {};
+
     public constructor(properties: TimelineProperties<View>) {
         super(properties);
         this.addClass("vc-timeline");
@@ -72,6 +74,10 @@ export class Timeline<
 
     protected get clipController(): TimelineClipController {
         return this.mvc.getController("clip") as TimelineClipController;
+    }
+
+    protected get playController(): TimelinePlayController {
+        return this.mvc.getController("play") as TimelinePlayController;
     }
 
     @auto()
@@ -174,5 +180,10 @@ export class Timeline<
     public addIndicatorAt(indicator: Element, index: number) {
         indicator.remove();
         this.view.scrubberContainer.addChild(indicator, index);
+    }
+
+    public async play(startTime: number = this.model.currentTime) {
+        this.model.currentTime = startTime;
+        await this.playController.play(true);
     }
 }

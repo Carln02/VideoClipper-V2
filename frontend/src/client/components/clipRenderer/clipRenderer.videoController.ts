@@ -43,5 +43,12 @@ export class ClipRendererVideoController extends RendererVideoController<ClipRen
 
     public async play() {
         if (this.model.getClip()?.metadataType == "video") await super.play();
+        if (this.model.renderOnCanvas) this.drawVideoToCanvas();
+    }
+
+    private drawVideoToCanvas() {
+        if (this.video.paused || this.video.ended) return;
+        this.view.canvasContext.drawImage(this.video, 0, 0, this.element.offsetWidth, this.element.offsetHeight);
+        setTimeout(() => this.drawVideoToCanvas(), 0);
     }
 }

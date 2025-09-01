@@ -15,7 +15,8 @@ export class TextElementSelectionInteractor extends TurboInteractor<ToolType, Te
     }
 
     public drag(e: TurboDragEvent) {
-        this.element.translateBy(e.scaledDeltaPosition);
+        e.stopImmediatePropagation();
+        // this.element.translateBy(e.scaledDeltaPosition);
         this.element.director.contextManager.getAllOfType(TextElement).forEach(entry => {
             if (!(entry instanceof TextElement)) return;
             entry.translateBy(e.scaledDeltaPosition);
