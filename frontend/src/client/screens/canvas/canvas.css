@@ -1,6 +1,7 @@
 vc-canvas {
     position: relative;
     display: block;
+    touch-action: none;
     
     overflow: hidden;
     width: 100%;

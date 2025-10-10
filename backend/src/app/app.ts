@@ -21,7 +21,8 @@ export class App {
 
     private readonly allowedOrigins = [
         "http://localhost:9000",
-        "http://localhost:3000"
+        "http://localhost:3000",
+        "https://timospetapp.fr"
     ];
 
     public readonly app: express.Application;

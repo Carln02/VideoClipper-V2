@@ -1488,6 +1488,7 @@ class HomeView extends turbodombuilder__WEBPACK_IMPORTED_MODULE_0__.TurboView {
                 this.generateProjects(group._id);
             }
             this.shareGroupButton.show(group._id && !(group.name === "My Projects" && group.members.length === 1));
+            this.addProjectButton.show(!!group._id);
         };
         if (!group._id)
             this.groupsSelect.select(entry);
