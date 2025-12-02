@@ -4,13 +4,13 @@ import {
     define, div, h3, p, TurboEvent,
     TurboMarkingMenu,
     TurboMarkingMenuProperties,
-    TurboSelectEntry, TurboSelectWheel
+    TurboSelectWheel
 } from "turbodombuilder";
 import {Card} from "../card/card";
 import QRCode from "qrcode";
 import {FlowSelectorMenu} from "./flowSelectorMarkingMenu.types";
 import {FlowSelector} from "../flowSelector/flowSelector";
-import {FlowPath} from "../flowPath/flowPath";
+import FlowPath from "../flowPath/flowPath";
 
 @define()
 export class FlowSelectorMarkingMenu extends TurboMarkingMenu {

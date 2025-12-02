@@ -1,7 +1,7 @@
-import {ClipRenderer} from "../clipRenderer/clipRenderer";
+import {clipRenderer, ClipRenderer} from "../clipRenderer/clipRenderer";
 import {ClipModel} from "./clip.model";
 import {Clip} from "./clip";
-import {TurboController} from "turbodombuilder";
+import {turbo, TurboController} from "turbodombuilder";
 import {ClipView} from "./clip.view";
 
 export class ClipThumbnailController extends TurboController<Clip, ClipView, ClipModel> {
@@ -30,12 +30,12 @@ export class ClipThumbnailController extends TurboController<Clip, ClipView, Cli
      */
     private initializeSnapshotRenderer() {
         if (ClipThumbnailController.rendererInitialized) return;
-        ClipThumbnailController.renderer = new ClipRenderer({
+        ClipThumbnailController.renderer = clipRenderer({
             director: this.element.director,
             id: "snapshot-renderer",
             videoProperties: {muted: true, playsInline: true}
         });
-        document.body.addChild(ClipThumbnailController.renderer);
+        turbo(document.body).addChild(ClipThumbnailController.renderer);
         ClipThumbnailController.rendererInitialized = true;
     }
 

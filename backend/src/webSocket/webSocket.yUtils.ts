@@ -44,17 +44,10 @@ export class WebSocketYUtils {
             const ldb = new LeveldbPersistence(this.persistenceDir);
             this.persistence = {
                 provider: ldb,
-                //TODO CHECKKKKKKKKK
                 bindState: async (docName, ydoc) => {
                     const persistedYdoc = await ldb.getYDoc(docName);
-                    const persistedContent = persistedYdoc.getMap("document_content");
                     Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc))
-
-                    ydoc.on("update", async (update: any) => {
-                        // console.log("💾 STORING UPDATE")
-                        await ldb.storeUpdate(docName, update);
-                        // await this.persistence?.provider.storeUpdate(docName, update);
-                    });
+                    ydoc.on("update", async (update: any) => await ldb.storeUpdate(docName, update));
                 },
                 writeState: async (docName, ydoc) => {
                     await ldb.storeUpdate(docName, Y.encodeStateAsUpdateV2(ydoc));
@@ -158,14 +151,24 @@ export class WebSocketYUtils {
      * @param {boolean} gc - whether to allow gc on the doc (applies only when created)
      * @return {WebSocketSharedDoc}
      */
-    public getYDoc = async (docName: string, gc: boolean = true): Promise<WebSocketSharedDoc> => {
-        if (this.docs.has(docName)) return this.docs.get(docName)!;
-        const doc = new WebSocketSharedDoc(docName, this, gc);
+    public getYDoc(docName: string, gc: boolean = true): WebSocketSharedDoc {
+        const existing = this.docs.get(docName);
+        if (existing) {
+            existing.gc = gc;
+            return existing;
+        }
 
-        if (this.persistence !== null) await this.persistence.bindState(docName, doc);
+        const doc = new WebSocketSharedDoc(docName, this, gc);
         this.docs.set(docName, doc);
+
+        if (this.persistence) {
+            this.persistence.bindState(docName, doc).catch(err => {
+                console.error("Error in bindState for", docName, err);
+            });
+        }
+
         return doc;
-    };
+    }
 
     /**
      * @param {any} conn
@@ -214,7 +217,7 @@ export class WebSocketYUtils {
      * @param {any} conn
      */
     private closeConn = (doc: WebSocketSharedDoc, conn: any) => {
-       if (doc.conns.has(conn)) {
+        if (doc.conns.has(conn)) {
             const controlledIds: Set<number> = doc.conns.get(conn) as Set<number>;
             doc.conns.delete(conn);
             awarenessProtocol.removeAwarenessStates(doc.awareness, Array.from(controlledIds), null);
@@ -248,7 +251,7 @@ export class WebSocketYUtils {
      * @param {any} req
      * @param {any} opts
      */
-    public async setupWSConnection(conn: any, req: any, opts: YPersistenceConnectionOptions = {}) {
+    public setupWSConnection(conn: any, req: any, opts: YPersistenceConnectionOptions = {}) {
         // 1. Get doc name and GC flag
         const docName = opts.docName ?? req.url?.slice(1).split("?")[0];
         const gc = opts.gc ?? (process.env.GC !== "false" && process.env.GC !== "0");
@@ -262,7 +265,7 @@ export class WebSocketYUtils {
         conn.binaryType = "arraybuffer";
 
         // 2. Await the doc to be loaded and bound (persistence-aware)
-        const doc = await this.getYDoc(docName, gc);
+        const doc = this.getYDoc(docName, gc);
         if (this.DEBUG) console.log("📄 Y.Doc ready for:", docName);
 
         // 3. Register connection before sending sync
@@ -273,6 +276,7 @@ export class WebSocketYUtils {
             if (this.DEBUG) console.log(`📩 Received ${message.byteLength} bytes from client for ${doc.name}`);
             this.messageListener(conn, doc, new Uint8Array(message));
         });
+
 
         // 5. Heartbeat ping-pong (prevents stale connections)
         let pongReceived = true;
@@ -330,13 +334,9 @@ export class WebSocketYUtils {
     }
 
     private debugDocState(doc: WebSocketSharedDoc, label: string) {
-        const content = doc.getMap("document_content");
         console.log(`🔍 [${label}] Doc state for ${doc.name}:`, {
             clientId: doc.clientID,
-            contentKeys: Array.from(content.keys()),
-            contentSize: content.size,
             stateVector: Array.from(Y.encodeStateVector(doc)),
-            state: doc.getMap("document_content")?.toJSON(),
             connections: doc.conns.size
         });
     }

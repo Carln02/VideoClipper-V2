@@ -1,54 +1,55 @@
 import {
+    $,
     DefaultEventName,
-    div,
-    flexCol,
-    img,
+    div, dropdown, effect,
+    flexCol, icon,
+    img, turbo,
     TurboDropdown,
-    TurboIcon,
-    TurboPopup,
-    TurboSelectEntry,
     TurboView
 } from "turbodombuilder";
 import {ProjectEntry} from "./projectEntry";
 import {ProjectEntryModel} from "./projectEntry.model";
-import {ObjectId} from "mongodb";
 
 export class ProjectEntryView extends TurboView<ProjectEntry, ProjectEntryModel> {
+    protected titleEl: HTMLElement;
     protected lastOpenedEl: HTMLElement;
     protected imageEl: HTMLImageElement;
 
     protected ellipsis: TurboDropdown;
+    private deleteEntry: HTMLElement;
 
     protected setupUIElements() {
+        this.titleEl = div();
         this.lastOpenedEl = div();
         this.imageEl = img({src: "assets/misc/sample-project-img.png"});
 
-        this.ellipsis = new TurboDropdown({
+        this.deleteEntry = div({text: "Delete"});
+        this.ellipsis = dropdown({
             classes: "project-ellipsis",
-            selector: new TurboIcon({icon: "ellipsis"}),
-            values: [
-                new TurboSelectEntry({
-                    value: "Delete",
-                    action: async () => {
-                        await this.element.director.groupsHandler.deleteProject(this.model.projectId);
-                        this.element.remove();
-                    }
-                })
-            ]
+            selector: icon({icon: "ellipsis"}),
+            entries: [this.deleteEntry]
         });
     }
 
     protected setupUILayout() {
         const titleBox = flexCol();
-        titleBox.addChild([this.element.element, this.lastOpenedEl]);
-        this.element.addChild([this.imageEl, titleBox, this.ellipsis]);
+        $(titleBox).addChild([this.titleEl, this.lastOpenedEl]);
+        $(this).addChild([this.imageEl, titleBox, this.ellipsis]);
     }
 
     protected setupUIListeners() {
-        this.element.addListener(DefaultEventName.click, async () => this.element.openProject());
+        $(this).on(DefaultEventName.click, () => this.element.openProject());
+        turbo(this.deleteEntry).on(DefaultEventName.click, () => {
+            this.element.director.groupsHandler.deleteProject(this.model.projectId);
+            $(this.element).remove();
+        });
     }
 
-    protected setupChangedCallbacks() {
-        this.emitter.add("lastOpened", (value: string) => this.lastOpenedEl.textContent = value);
+    @effect updateLastOpened() {
+        this.lastOpenedEl.textContent = this.model.lastOpened?.toDateString() || "";
+    }
+
+    @effect updateTitle() {
+        this.titleEl.textContent = this.model.projectName;
     }
 }

@@ -1,4 +1,5 @@
-import {YComponentModel} from "../../../yManagement/yModel/types/yComponentModel";
+import {TurboModel, TurboYBlock} from "turbodombuilder";
 
-export class MetadataDrawerModel extends YComponentModel {
+export class MetadataDrawerModel extends TurboModel {
+    public static dataBlockConstructor = TurboYBlock;
 }

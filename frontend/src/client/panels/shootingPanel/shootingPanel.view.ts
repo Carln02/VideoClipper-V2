@@ -5,12 +5,17 @@ import {CaptureFlowSelector} from "../../components/captureFlowSelector/captureF
 import {
     ClickMode,
     DefaultEventName,
-    div, icon, input,
+    div,
+    icon,
+    iconToggle,
+    input,
     spacer,
+    turbo,
+    TurboEventManager,
     TurboIcon,
     TurboIconToggle,
-    TurboSelectEntry,
-    TurboSelectWheel, TurboView
+    TurboSelectWheel,
+    TurboView
 } from "turbodombuilder";
 import {BackgroundSelector} from "../../components/backgroundSelector/backgroundSelector";
 import {CaptureMode} from "./shootingPanel.types";
@@ -23,7 +28,7 @@ import {ToolType} from "../../directors/project/project.types";
 
 export class ShootingPanelView extends TurboView<ShootingPanel, ShootingPanelModel> {
     private captureButton: CaptureButton;
-    private modeSlider: TurboSelectWheel;
+    // private modeSlider: TurboSelectWheel;
     public captureFlowSelector: CaptureFlowSelector;
 
     private ghost: TurboIconToggle;
@@ -35,49 +40,49 @@ export class ShootingPanelView extends TurboView<ShootingPanel, ShootingPanelMod
 
     private backgroundSelector: BackgroundSelector;
 
-    private shootingDiv: TurboSelectEntry;
-    private backgroundColorDiv: TurboSelectEntry;
-    private editTextDiv: TurboSelectEntry;
-    
+    // private shootingDiv: TurboSelectEntry;
+    // private backgroundColorDiv: TurboSelectEntry;
+    // private editTextDiv: TurboSelectEntry;
+
     private animatedDiv: AnimatedContentSwitchingDiv;
 
     public initialize() {
         super.initialize();
         this.ghost.toggled = true;
         this.microphone.toggled = true;
-        this.modeSlider.index = 1;
+        // this.modeSlider.index = 1;
     }
 
     protected setupUIElements() {
         super.setupUIElements();
 
-        this.modeSlider = new CaptureModeSlider({
-            classes: "capture-mode-slider",
-            values: [CaptureMode.photo, CaptureMode.video, CaptureMode.create, CaptureMode.edit],
-        });
+        // this.modeSlider = new CaptureModeSlider({
+        //     classes: "capture-mode-slider",
+        //     values: [CaptureMode.photo, CaptureMode.video, CaptureMode.create, CaptureMode.edit],
+        // });
 
         this.captureFlowSelector = new CaptureFlowSelector({director: this.element.director});
         this.captureButton = new CaptureButton();
 
-        this.ghost = new TurboIconToggle({icon: "ghost-on", toggleOnClick: true});
-        this.switchCamera = new TurboIconToggle({icon: "switch-camera", toggleOnClick: true});
-        this.microphone = new TurboIconToggle({icon: "microphone-on", toggleOnClick: true});
+        this.ghost = iconToggle({icon: "ghost-on", toggleOnClick: true});
+        this.switchCamera = iconToggle({icon: "switch-camera", toggleOnClick: true});
+        this.microphone = iconToggle({icon: "microphone-on", toggleOnClick: true});
 
         this.addGallery = icon({icon: "gallery"});
         this.addGalleryInput = input({type: "file", hidden: true, accept: "image/*,video/mp4,.mp4"});
 
         this.backgroundSelector = new BackgroundSelector();
 
-        this.shootingDiv = new TurboSelectEntry({value: "shooting", reflectValueOn: div()});
-        this.backgroundColorDiv = new TurboSelectEntry({value: "backgroundColor", reflectValueOn: div()});
-        this.editTextDiv = new TurboSelectEntry({value: "editText", reflectValueOn: div()});
-
-        this.animatedDiv = new AnimatedContentSwitchingDiv({values: [this.shootingDiv, this.backgroundColorDiv]});
+        // this.shootingDiv = new TurboSelectEntry({value: "shooting", reflectValueOn: div()});
+        // this.backgroundColorDiv = new TurboSelectEntry({value: "backgroundColor", reflectValueOn: div()});
+        // this.editTextDiv = new TurboSelectEntry({value: "editText", reflectValueOn: div()});
+        //
+        // this.animatedDiv = new AnimatedContentSwitchingDiv({values: [this.shootingDiv, this.backgroundColorDiv]});
     }
 
     protected setupUILayout() {
-        this.element.addChild([this.modeSlider, this.animatedDiv]);
-        this.element.camera.addChild(this.captureFlowSelector);
+        turbo(this).addChild([this.modeSlider, this.animatedDiv]);
+        turbo(this.element.camera).addChild(this.captureFlowSelector);
 
         this.shootingDiv.addClass("camera-buttons");
         this.shootingDiv.addChild([
@@ -98,7 +103,7 @@ export class ShootingPanelView extends TurboView<ShootingPanel, ShootingPanelMod
     protected setupUIListeners() {
         super.setupUIListeners();
 
-        this.captureButton.addListener(DefaultEventName.click, (e: Event) => {
+        turbo(this.captureButton).on(DefaultEventName.click, (e: Event) => {
             e.stopImmediatePropagation();
             if (this.model.mode == CaptureMode.photo) this.element.camera.snapPicture();
             else if (this.model.mode == CaptureMode.video) this.model.mode = CaptureMode.videoShooting;
@@ -117,12 +122,12 @@ export class ShootingPanelView extends TurboView<ShootingPanel, ShootingPanelMod
 
         this.switchCamera.onToggle = () => this.element.camera.switchCamera();
 
-        this.addGallery.addListener(DefaultEventName.click, () => this.addGalleryInput.click());
-        this.addGalleryInput.addListener(DefaultEventName.change, () => {
+        turbo(this.addGallery).on(DefaultEventName.click, () => this.addGalleryInput.click());
+        turbo(this.addGalleryInput).on(DefaultEventName.change, () => {
             Array.from(this.addGalleryInput.files || []).forEach(file => this.element.camera.uploadMedia(file));
         });
 
-        this.backgroundSelector.onSelect = () => this.element.camera.fillCanvas(this.backgroundSelector.selectedValue);
+        this.backgroundSelector.onSelect = () => this.element.camera.currentCanvasFill = this.backgroundSelector.selectedValue;
 
         this.modeSlider.onSelect = ((b, entry) => {
             if (b) this.model.mode = entry.value as CaptureMode;
@@ -145,7 +150,7 @@ export class ShootingPanelView extends TurboView<ShootingPanel, ShootingPanelMod
         const isCreateOrEdit = mode === CaptureMode.create || mode === CaptureMode.text;
 
         if (isCreateOrEdit) this.element.camera.visible = true;
-        // this.camera.fillCanvas(this.backgroundSelector.selectedValue);
+        // this.camera.currentCanvasFill = this.backgroundSelector.selectedValue;
         else if (mode == CaptureMode.videoShooting) {
             this.element.camera.visibilityMode = ClipRendererVisibility.hidden;
             this.captureFlowSelector.startTimer();
@@ -153,18 +158,16 @@ export class ShootingPanelView extends TurboView<ShootingPanel, ShootingPanelMod
         }
         else this.element.camera.visible = false;
 
-        this.element.director.toolManager.setTool(mode === CaptureMode.edit
-                ? this.element.director.toolManager.getToolByName(ToolType.selection)
-                : this.element.director.toolManager.getToolByName(ToolType.shoot),
-            ClickMode.left);
+        TurboEventManager.instance.setTool(TurboEventManager.instance
+            .getToolByName(mode === CaptureMode.edit ? ToolType.selection : ToolType.shoot), ClickMode.left);
 
-        this.modeSlider.show(mode != CaptureMode.videoShooting);
+        turbo(this.modeSlider).show(mode != CaptureMode.videoShooting);
         this.captureButton.updateState(mode);
         // this.backgroundSelector.show(this.mode == CaptureMode.create);
 
-        this.ghost.show(!isCreateOrEdit);
-        this.switchCamera.show(!isCreateOrEdit);
-        this.microphone.show(mode == CaptureMode.video || mode == CaptureMode.videoShooting);
+        turbo(this.ghost).show(!isCreateOrEdit);
+        turbo(this.switchCamera).show(!isCreateOrEdit);
+        turbo(this.microphone).show(mode == CaptureMode.video || mode == CaptureMode.videoShooting);
         this.animatedDiv.select(isCreateOrEdit ? this.backgroundColorDiv : this.shootingDiv);
     }
 }

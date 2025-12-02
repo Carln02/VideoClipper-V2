@@ -1,4 +1,4 @@
-import {TurboController} from "turbodombuilder";
+import {turbo, TurboController} from "turbodombuilder";
 import {Playback} from "./playback";
 import {PlaybackView} from "./playback.view";
 import {PlaybackModel} from "./playback.model";
@@ -62,6 +62,6 @@ export class PlaybackExportController extends TurboController<Playback, Playback
         const a = document.createElement("a");
         a.href = url;
         a.download = `${filename}.${ext}`;
-        this.element.addChild(a);
+        turbo(this).addChild(a);
     }
 }

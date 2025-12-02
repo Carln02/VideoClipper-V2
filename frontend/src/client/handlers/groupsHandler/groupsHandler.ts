@@ -1,7 +1,6 @@
-import {YDoc} from "../../../yManagement/yManagement.types";
 import {RequestHandler} from "../requestHandler/requestHandler";
 import {ObjectId} from "mongodb";
-import {Delegate} from "turbodombuilder";
+import {Delegate, YDoc} from "turbodombuilder";
 import {Group, PersistedDoc, ProjectData} from "./groupsHandler.types";
 import {WebsocketManager} from "../../managers/websocketManager/websocketManager";
 
@@ -71,7 +70,6 @@ export class GroupsHandler extends RequestHandler {
             body: JSON.stringify({name: projectName, groupId}),
         });
 
-        console.log(res)
         if (!res.ok) throw new Error("Failed to create project");
         return await res.json();
     }

@@ -1,4 +1,4 @@
-import {auto, define} from "turbodombuilder";
+import {auto, define, element, expose, turbo} from "turbodombuilder";
 import "./playback.css";
 import {PlaybackView} from "./playback.view";
 import {PlaybackModel} from "./playback.model";
@@ -6,46 +6,30 @@ import {Project} from "../../directors/project/project";
 import {VcComponent} from "../component/component";
 import {Clip} from "../clip/clip";
 import {PlaybackProperties} from "./playback.types";
-import {FlowPath} from "../flowPath/flowPath";
+import FlowPath from "../flowPath/flowPath";
 import {Card} from "../card/card";
 import {Timeline} from "../timeline/timeline";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {ProjectScreens} from "../../directors/project/project.types";
-import {PlaybackAddTextInteractor} from "./playback.addTextInteractor";
 import {PlaybackExportController} from "./playback.exportController";
 
 @define("vc-playback")
 export class Playback extends VcComponent<PlaybackView, object, PlaybackModel, Project> {
-    public constructor(properties: PlaybackProperties) {
-        super(properties);
+    @expose("view", false) public accessor renderer: ClipRenderer;
+    @expose("view", false) public accessor timeline: Timeline;
+    @expose("view.renderer") public accessor currentCanvasFill: string | null;
 
-        this.mvc.generate({
-            viewConstructor: PlaybackView,
-            modelConstructor: PlaybackModel,
-            interactorConstructors: [PlaybackAddTextInteractor],
-            controllerConstructors: [PlaybackExportController]
-        });
-        if (properties.path) this.path = properties.path;
-        if (properties.card) this.card = properties.card;
+    public initialize(): void {
+        super.initialize();
         this.showControlButtons(false);
     }
 
-    @auto()
-    public set path(value: FlowPath) {
+    @auto() public set path(value: FlowPath) {
         this.view.timeline.cardIds = value.nodeIds;
     }
 
-    @auto()
-    public set card(value: Card) {
+    @auto() public set card(value: Card) {
         this.view.timeline.card = value;
-    }
-
-    public get renderer(): ClipRenderer {
-        return this.view.renderer;
-    }
-
-    public get timeline(): Timeline {
-        return this.view.timeline;
     }
 
     public get frameWidth() {
@@ -56,12 +40,8 @@ export class Playback extends VcComponent<PlaybackView, object, PlaybackModel, P
         return this.view.renderer.offsetHeight;
     }
 
-    public fillCanvas(fill?: string | null) {
-        this.view.renderer.setFill(fill);
-    }
-
     public clear() {
-        this.view.timeline.data = undefined; //TODO idk if gd idea
+        this.view.timeline.data = undefined;
         this.director.currentType = ProjectScreens.canvas;
     }
 
@@ -73,4 +53,14 @@ export class Playback extends VcComponent<PlaybackView, object, PlaybackModel, P
     public showControlButtons(b: boolean) {
         this.view.showControlButtons(b);
     }
+}
+
+export function playback(properties: PlaybackProperties): Playback {
+    turbo(properties).applyDefaults({
+        tag: "vc-playback",
+        view: PlaybackView,
+        model: PlaybackModel,
+        controllers: PlaybackExportController
+    });
+    return element({...properties}) as Playback;
 }

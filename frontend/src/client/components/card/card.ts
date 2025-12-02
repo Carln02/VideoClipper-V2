@@ -1,4 +1,4 @@
-import {define} from "turbodombuilder";
+import {createYArray, createYMap, deepObserveAny, define, expose, turbo, YArray, YMap} from "turbodombuilder";
 import "./card.css";
 import {SyncedCard} from "./card.types";
 import {Timeline} from "../timeline/timeline";
@@ -6,35 +6,34 @@ import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {MetadataDrawer} from "../metadataDrawer/metadataDrawer";
 import {CardModel} from "./card.model";
 import {CardView} from "./card.view";
-import {BranchingNode} from "../branchingNode/branchingNode";
+import {branchingNode, BranchingNode} from "../branchingNode/branchingNode";
 import {SyncedCardMetadata} from "../metadataDrawer/metadataDrawer.types";
-import { YArray, YMap } from "../../../yManagement/yManagement.types";
 import {SyncedClip} from "../clip/clip.types";
-import {VcComponentProperties} from "../component/component.types";
+import {VcProperties} from "../component/component.types";
 import {Project} from "../../directors/project/project";
 import {Clip} from "../clip/clip";
-import {YUtilities} from "../../../yManagement/yUtilities";
-import {BranchingNodeSelectionInteractor} from "../branchingNode/branchingNode.selectionInteractor";
-import {CardShootingInteractor} from "./card.shootingInteractor";
-import {CardCreateCardInteractor} from "./card.createCardInteractor";
-import {BranchingNodeConnectionInteractor} from "../branchingNode/branchingNode.connectionInteractor";
-import {BranchingNodeDeleteInteractor} from "../branchingNode/branchingNode.deleteInteractor";
 
 /**
  * @description Class representing a card
  */
 @define("vc-card")
 export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
-    public constructor(properties: VcComponentProperties<CardView, SyncedCard, CardModel, Project> = {}) {
-        super({...properties, data: undefined});
-        this.mvc.generate({
-            viewConstructor: CardView,
-            modelConstructor: CardModel,
-            data: properties.data,
-            interactorConstructors: [BranchingNodeSelectionInteractor, CardShootingInteractor,
-                CardCreateCardInteractor, BranchingNodeConnectionInteractor, BranchingNodeDeleteInteractor]
+    @expose("model") public accessor duration: number;
+    @expose("model", false) public accessor title: string;
+    @expose("model", false) public accessor metadata: SyncedCardMetadata;
+    @expose("model", false) public accessor syncedClips: YArray<SyncedClip>;
+
+    @expose("view", false) public accessor renderer: ClipRenderer;
+    @expose("view", false) public accessor metadataDrawer: MetadataDrawer;
+    @expose("view", false) public accessor timeline: Timeline;
+
+    public initialize() {
+        super.initialize();
+        this.model.onSetBlock.add(() => {
+            this.renderer.card = this;
+            this.view.playback.card = this;
+            this.view.timeline.card = this;
         });
-        this.renderer.card = this;
     }
 
     public static createData(data?: SyncedCard): SyncedCard & YMap {
@@ -44,54 +43,11 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
         if (!data.syncedClips) data.syncedClips = [undefined];
         data.metadata = MetadataDrawer.createData(data.metadata);
 
-        const clipsArray =YUtilities.createYArray([]);
+        const clipsArray = createYArray([]);
         data.syncedClips?.forEach((clip: SyncedClip) => clipsArray.push([Clip.createData(clip)]));
         data.syncedClips = clipsArray;
 
-        return YUtilities.createYMap<SyncedCard>(data);
-    }
-
-    public get renderer(): ClipRenderer {
-        return this.view.renderer;
-    }
-
-    public get metadataDrawer(): MetadataDrawer {
-        return this.view.metadataDrawer;
-    }
-
-    public get timeline(): Timeline {
-        return this.view.timeline;
-    }
-
-    public get title(): string {
-        return this.model.title;
-    }
-
-    public get metadata(): SyncedCardMetadata {
-        return this.model.metadata;
-    }
-
-    /**
-     * @description Whether the element is selected or not. Setting it will accordingly toggle the "selected" CSS
-     * class on the element and update the UI, as well as bring it the card to the front.
-     */
-    public get selected(): boolean {
-        return super.selected;
-    }
-
-    public set selected(value: boolean) {
-        super.selected = value;
-    }
-
-    /**
-     * @description The total duration of the card. When set, will update the value of the duration UI element.
-     */
-    public set duration(value: number) {
-        this.view.duration = value;
-    }
-
-    public get syncedClips(): YArray<SyncedClip> {
-        return this.model.syncedClips;
+        return createYMap<SyncedCard>(data);
     }
 
     /**
@@ -102,7 +58,7 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
         this.view.editTitle();
     }
 
-    public async addClip(clip: SyncedClip & YMap, index?: number): Promise<number> {
+    public addClip(clip: SyncedClip & YMap, index?: number): number {
         return this.timeline.addClip(clip, index);
     }
 
@@ -120,4 +76,9 @@ export class Card extends BranchingNode<CardView, SyncedCard, CardModel> {
     //         this.setSaveTimer();
     //     }
     // }
+}
+
+export function card(properties: VcProperties<CardView, SyncedCard, CardModel, Project> = {}): Card {
+    turbo(properties).applyDefaults({tag: "vc-card", model: CardModel, view: CardView});
+    return branchingNode({...properties}) as Card;
 }

@@ -7,10 +7,6 @@ export class TimelineTimeController extends TurboController<Timeline, TimelineVi
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
 
-        this.emitter.add("totalDurationChanged", () => {
-            if (this.element.card) this.element.card.duration = this.model.totalDuration;
-        });
-
         this.emitter.add("containerClicked", (e: TurboEvent) => {
             this.model.currentTime = this.getTimeFromPosition(e);
         });

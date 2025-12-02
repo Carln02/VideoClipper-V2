@@ -1,9 +1,9 @@
 import "./styles/main.css";
-import {App} from "./directors/app/app";
 import {AppScreens} from "./directors/app/app.types";
 import {RootDirector} from "./directors/rootDirector/rootDirector";
+import {app} from "./directors/app/app";
 
 RootDirector.initialize();
-const app = new App({parent: document.body});
-app.preventDefaultEvents = false;
-app.currentType = AppScreens.home;
+const appInst = app({parent: document.body});
+appInst.preventDefaultEvents = false;
+appInst.currentType = AppScreens.home;

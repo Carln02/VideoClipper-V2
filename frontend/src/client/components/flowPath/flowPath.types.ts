@@ -1,5 +1,4 @@
-import {TurboSelectEntryProperties, TurboView} from "turbodombuilder";
-import {YMap} from "../../../yManagement/yManagement.types";
+import {TurboRichElementProperties, TurboView, YMap} from "turbodombuilder";
 import {FlowPathModel} from "./flowPath.model";
 import {Flow} from "../flow/flow";
 
@@ -13,6 +12,6 @@ export type SyncedFlowPath = {
     nodeIds?: string[],
 };
 
-export type FlowPathProperties = TurboSelectEntryProperties<string, string, "input", TurboView, SyncedFlowPath & YMap, FlowPathModel> & {
+export type FlowPathProperties = TurboRichElementProperties<"input", TurboView, SyncedFlowPath & YMap, FlowPathModel> & {
     flow: Flow;
 };

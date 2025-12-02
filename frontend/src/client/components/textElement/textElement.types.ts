@@ -3,7 +3,7 @@ import {SyncedResizableType} from "../basicComponents/resizer/resizer.types";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {TextElementView} from "./textElement.view";
 import {TextElementModel} from "./textElement.model";
-import {VcComponentProperties} from "../component/component.types";
+import {VcProperties} from "../component/component.types";
 import {Project} from "../../directors/project/project";
 
 export enum TextType {
@@ -20,6 +20,6 @@ export type SyncedText = SyncedResizableType & {
     fontSize?: number
 };
 
-export type TextElementProperties = VcComponentProperties<TextElementView, SyncedText, TextElementModel, Project> & {
+export type TextElementProperties = VcProperties<TextElementView, SyncedText, TextElementModel, Project> & {
     renderer?: ClipRenderer
 }

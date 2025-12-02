@@ -1,14 +1,12 @@
-import {define} from "turbodombuilder";
+import {createYMap, define, YMap} from "turbodombuilder";
 import "./flowSelector.css";
 import {FlowSelectorProperties, SyncedFlowSelector} from "./flowSelector.types";
 import {VcComponent} from "../component/component";
 import {FlowSelectorModel} from "./flowSelector.model";
 import {FlowSelectorView} from "./flowSelector.view";
 import {Project} from "../../directors/project/project";
-import {YMap} from "../../../yManagement/yManagement.types";
 import {SyncedFlowPath} from "../flowPath/flowPath.types";
-import {FlowPath} from "../flowPath/flowPath";
-import {YUtilities} from "../../../yManagement/yUtilities";
+import FlowPath from "../flowPath/flowPath";
 import {BranchingNode} from "../branchingNode/branchingNode";
 import {FlowSelectorPathHandler} from "./flowSelector.pathHandler";
 
@@ -35,8 +33,8 @@ export class FlowSelector extends VcComponent<FlowSelectorView, SyncedFlowSelect
         if (!data.nodeId) data.nodeId = "";
         if (!data.paths) data.paths = {};
         for (const key in data.paths) data.paths[key] = FlowPath.createData(data.paths[key]);
-        data.paths = YUtilities.createYMap(data.paths);
-        return YUtilities.createYMap<SyncedFlowSelector>(data);
+        data.paths = createYMap(data.paths);
+        return createYMap<SyncedFlowSelector>(data);
     }
 
     public get attachedNode(): BranchingNode {

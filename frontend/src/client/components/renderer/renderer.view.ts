@@ -1,5 +1,5 @@
 import {Renderer} from "./renderer";
-import {canvas, div, MvcViewProperties, Shown, StatefulReifect, TurboView, video} from "turbodombuilder";
+import {canvas, div, expose, Shown, StatefulReifect, turbo, TurboView, video} from "turbodombuilder";
 import {RendererModel} from "./renderer.model";
 
 export class RendererView<
@@ -7,6 +7,9 @@ export class RendererView<
     ModelType extends RendererModel = RendererModel
 > extends TurboView<ComponentType, ModelType> {
     private _canvas: HTMLCanvasElement;
+
+    @expose("canvas", false) public width: number;
+    @expose("canvas", false) public height: number;
 
     public readonly videos: HTMLVideoElement[] = [];
     protected snapshotEffectDiv: HTMLDivElement;
@@ -28,48 +31,31 @@ export class RendererView<
         states: [Shown.visible, Shown.hidden]
     });
 
-    public constructor(properties: MvcViewProperties<ComponentType, ModelType>) {
-        super(properties);
-        this.element.addClass("vc-renderer");
-        this.element.showTransition = this.rendererShowTransition;
-    }
-
-    public initialize() {
-        super.initialize();
-        this.snapshotEffectTransition.attach(this.snapshotEffectDiv);
-        this.snapshotEffectTransition.apply(Shown.hidden);
-    }
-
-    protected setupUIElements() {
-        this.canvas = canvas();
-        this.canvasContext = this.canvas.getContext("2d");
-        for (let i = 0; i < this.model.videoElementsCount; i++) this.videos.push(video());
-        this.snapshotEffectDiv = div({classes: "snapshot-effect-div"});
-    }
-
-    protected setupUILayout() {
-        super.setupUILayout();
-        this.element.addChild([...this.videos, this.snapshotEffectDiv, this.canvas]);
-    }
-
     public get video(): HTMLVideoElement {
         return this.videos[this.model.currentIndex];
-    }
-
-    public get width() {
-        return this.canvas.width;
-    }
-
-    public get height() {
-        return this.canvas.height;
     }
 
     public get canvas(): HTMLCanvasElement {
         return this._canvas;
     }
 
-    protected set canvas(canvas: HTMLCanvasElement) {
-        this._canvas = canvas;
+    public initialize() {
+        super.initialize();
+        turbo(this).showTransition = this.rendererShowTransition;
+        this.snapshotEffectTransition.attach(this.snapshotEffectDiv);
+        this.snapshotEffectTransition.apply(Shown.hidden);
+    }
+
+    protected setupUIElements() {
+        this._canvas = canvas(this.element.canvasProperties);
+        this.canvasContext = this.canvas.getContext("2d");
+        for (let i = 0; i < this.model.videoElementsCount; i++) this.videos.push(video(this.element.videoProperties));
+        this.snapshotEffectDiv = div({classes: "snapshot-effect-div"});
+    }
+
+    protected setupUILayout() {
+        super.setupUILayout();
+        turbo(this).addChild([...this.videos, this.snapshotEffectDiv, this.canvas]);
     }
 
     public animateSnapshotEffect() {
@@ -82,9 +68,9 @@ export class RendererView<
         if (width / height <= aspectRatio) height = width / aspectRatio;
         else width = height * aspectRatio;
 
-        this.element.setStyles(`width: ${width}px; height: ${height}px`);
-        this.snapshotEffectDiv.setStyles(`width: ${width}px; height: ${height}px`);
-        this.videos.forEach(video => video.setStyles(`width: ${width}px; height: ${height}px`));
+        turbo(this).setStyles(`width: ${width}px; height: ${height}px`);
+        turbo(this.snapshotEffectDiv).setStyles(`width: ${width}px; height: ${height}px`);
+        this.videos.forEach(video => turbo(video).setStyles(`width: ${width}px; height: ${height}px`));
 
         this.canvas.width = width;
         this.canvas.height = height;

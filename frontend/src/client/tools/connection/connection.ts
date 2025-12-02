@@ -1,52 +1,33 @@
-import {define} from "turbodombuilder";
+import {define, turbo} from "turbodombuilder";
 import {Flow} from "../../components/flow/flow";
-import {VcTool} from "../tool/tool";
-import {ToolType} from "../../directors/project/project.types";
+import {tool, Tool} from "../../components/tool/tool";
+import {ConnectionModel} from "./connection.model";
 import {FlowEntry} from "../../components/flowEntry/flowEntry";
+import {ToolProperties} from "../../components/tool/tool.types";
+import {ConnectionTool} from "./connection.tool";
+import {ConnectionFlowController} from "./connection.flowController";
 
 /**
  * @description Tool that handles creating flows and connecting nodes
  */
-@define("connection-tool")
-export class ConnectionTool extends VcTool<ToolType> {
-    private _currentFlow: Flow;
-    private _currentFlowId: string;
-
-    public lastNodeId: string = null;
-
-    public color: string = "#439482";
-
-    //Interval indicating the frequency at which points are permanently added to the flow
-    //A higher value will increase the smoothing effect of the flow
-    public readonly drawingInterval: number = 300 as const;
-    //The last time a point was added permanently (used for when drawing flows)
-    public lastDrawnTime: number = 0;
-
-    public activate() {
-        this.clear();
-    }
-
-    public get currentFlowId(): string {
-        return this._currentFlowId;
-    }
-
-    public set currentFlowId(value: string) {
-        this._currentFlowId = value;
-        this._currentFlow = undefined;
-    }
-
+@define("vc-connection-tool")
+export class Connection extends Tool<any, any, ConnectionModel> {
     public get currentFlow(): Flow {
-        if (!this._currentFlow) this._currentFlow = this.director.getFlow(this.currentFlowId);
-        return this._currentFlow;
+        if (!this.model.currentFlow) this.model.currentFlow = this.director.getFlow(this.model.currentFlowId);
+        return this.model.currentFlow;
     }
 
     public get currentEntry(): FlowEntry {
         return this.currentFlow?.currentEntry;
     }
+}
 
-    public clear() {
-        this.currentFlow?.clearCurrentEntry();
-        this.currentFlowId = null;
-        this.lastNodeId = null;
-    }
+export function connectionTool(properties: ToolProperties<any, any, ConnectionModel>): Connection {
+    turbo(properties).applyDefaults({
+        tag: "vc-connection-tool",
+        model: ConnectionModel,
+        tools: ConnectionTool,
+        controllers: ConnectionFlowController
+    });
+    return tool({...properties}) as Connection;
 }

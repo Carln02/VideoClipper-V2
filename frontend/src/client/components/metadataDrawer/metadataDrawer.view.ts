@@ -1,64 +1,71 @@
 import {MetadataDrawer} from "./metadataDrawer";
 import {MetadataDrawerModel} from "./metadataDrawer.model";
-import {div, TurboInput, TurboSelect, TurboSelectEntry, TurboView} from "turbodombuilder";
+import {div, turbo, turboInput, TurboInput, TurboSelect, TurboView} from "turbodombuilder";
 import {
+    animatedContentSwitch,
     AnimatedContentSwitchingDiv
 } from "../animationComponents/animatedContentSwitchingDiv/animatedContentSwitchingDiv";
 
 export class MetadataDrawerView extends TurboView<MetadataDrawer, MetadataDrawerModel> {
     private readonly metadataInputs: Record<string, TurboInput<"input" | "textarea">> = {};
 
-    private tabbedMenu: TurboSelect;
-    private animationDiv: AnimatedContentSwitchingDiv;
+    private tabbedMenu: HTMLElement;
+    private tabbedMenuSelector: TurboSelect;
 
-    private metadataPanel: TurboSelectEntry;
-    private instructionsPanel: TurboSelectEntry;
+    private animationDiv: AnimatedContentSwitchingDiv;
+    private metadataPanel: HTMLElement;
+    private instructionsPanel: HTMLElement;
 
     protected setupUIElements() {
         super.setupUIElements();
 
-        this.tabbedMenu = new TurboSelect({
+        this.tabbedMenu = div({classes: "tabbed-menu"});
+        this.tabbedMenuSelector = new TurboSelect({
+            parent: this.tabbedMenu,
+            selectedEntryClasses: "selected-tab",
             values: ["Metadata", "Instructions"],
-            customSelectedEntryClasses: "selected-tab",
-            onSelect: (value, entry) => {
-                if (value) this.animationDiv.select(entry.value);
+            onSelect: (value, entry: HTMLElement) => {
+                if (value) this.animationDiv.selector.select(this.tabbedMenuSelector.getValue(entry));
             }
         });
 
-        this.metadataPanel = new TurboSelectEntry({classes: "metadata-panel", value: "Metadata", element: div()});
-        this.instructionsPanel = new TurboSelectEntry({classes: "instructions-panel", value: "Instructions", element: div()});
+        this.metadataPanel = div({classes: "metadata-panel", ["data-value"]: "Metadata"});
+        this.instructionsPanel = div({classes: "instructions-panel", ["data-value"]: "Instructions"});
 
-        this.animationDiv = new AnimatedContentSwitchingDiv({values: [this.metadataPanel, this.instructionsPanel]});
+        this.animationDiv = animatedContentSwitch({});
+        this.animationDiv.selector.entries = this.animationDiv.children;
+        this.animationDiv.selector.getValue = (entry: HTMLElement) => entry["data-value"];
 
-        this.metadataInputs["instructions"] = new TurboInput({
+        this.metadataInputs["instructions"] = turboInput({
             dynamicVerticalResize: true,
-            element: {tag: "textarea", placeholder: "Add instructions..."},
+            inputTag: "textarea",
+            input: {placeholder: "Add instructions..."},
             style: "align-items: flex-start",
             onInput: () => this.element.refresh()
         });
 
-        this.metadataInputs["created"] = new TurboInput({
+        this.metadataInputs["created"] = turboInput({
             label: "Created on",
             locked: true,
-            element: {tag: "input", value: "01/01/2024"}
+            input: {value: "01/01/2024"}
         });
 
-        this.metadataInputs["lastModified"] = new TurboInput({
+        this.metadataInputs["lastModified"] = turboInput({
             label: "Last modified",
             locked: true,
-            element: {tag: "input", value: "01/07/2024"}
+            input: {value: "01/07/2024"}
         });
 
-        this.metadataInputs["author"] = new TurboInput({
+        this.metadataInputs["author"] = turboInput({
             label: "Author",
-            element: {tag: "input", value: "Someone"}
+            input: {value: "Someone"}
         });
 
-        this.metadataInputs["description"] = new TurboInput({
+        this.metadataInputs["description"] = turboInput({
             label: "Description",
             dynamicVerticalResize: true,
             style: "flex-direction: column; align-items: flex-start",
-            element: {tag: "textarea", placeholder: "Add a description..."},
+            input: {tag: "textarea", placeholder: "Add a description..."},
             onInput: () => this.element.refresh()
         });
     }
@@ -66,19 +73,16 @@ export class MetadataDrawerView extends TurboView<MetadataDrawer, MetadataDrawer
     protected setupUILayout() {
         super.setupUILayout();
 
-        this.element.addChild([this.tabbedMenu, this.animationDiv]);
-        this.metadataPanel.addChild([
+        turbo(this).addChild([this.tabbedMenu, this.animationDiv]);
+        turbo(this.animationDiv).addChild([this.metadataPanel, this.instructionsPanel]);
+
+        turbo(this.metadataPanel).addChild([
             this.metadataInputs["created"],
             this.metadataInputs["lastModified"],
             this.metadataInputs["author"],
             div({classes: "separator"}),
             this.metadataInputs["description"]
         ]);
-        this.instructionsPanel.addChild(this.metadataInputs["instructions"]);
-    }
-
-    public initialize() {
-        super.initialize();
-        requestAnimationFrame(() => this.tabbedMenu.select("Metadata"));
+        turbo(this.instructionsPanel).addChild(this.metadataInputs["instructions"]);
     }
 }

@@ -1,5 +1,4 @@
-import {Coordinate, Point, TurboHandler} from "turbodombuilder";
-import {YUtilities} from "../../../yManagement/yUtilities";
+import {addInYArray, Coordinate, Point, removeFromYArray, TurboHandler} from "turbodombuilder";
 import {TextType} from "../textElement/textElement.types";
 import {TextElement} from "../textElement/textElement";
 import {ClipModel} from "./clip.model";
@@ -12,7 +11,7 @@ export class ClipTextHandler extends TurboHandler<ClipModel> {
      * (between 0 and 1).
      */
     public addText(position: Point | Coordinate) {
-        YUtilities.addInYArray({
+        addInYArray({
             text: "Text",
             type: TextType.custom,
             origin: position instanceof Point ? position.object : position,
@@ -26,7 +25,7 @@ export class ClipTextHandler extends TurboHandler<ClipModel> {
      * @param {TextElement} entry - The text element to remove.
      */
     public removeText(entry: TextElement) {
-        if (!YUtilities.removeFromYArray(entry, this.model.content)) return;
+        if (!removeFromYArray(entry, this.model.content)) return;
         // const index = this.content?.indexOf(entry.data);
         // if (index < 0) return;
         // entry.data.destroyBoundObjects();

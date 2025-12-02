@@ -1,24 +1,16 @@
 import "./textPanel.css";
 import {TextPanelModel} from "./textPanel.model";
 import {TextPanelView} from "./textPanel.view";
-import {ClickMode, define} from "turbodombuilder";
+import {ClickMode, define, turbo, TurboEventManager} from "turbodombuilder";
 import {SyncedText} from "../../components/textElement/textElement.types";
-import {ToolPanelContent} from "../toolPanelContent/toolPanelContent";
+import {toolPanelContent, ToolPanelContent} from "../toolPanelContent/toolPanelContent";
 import {TextElement} from "../../components/textElement/textElement";
 import {ContextEntry} from "../../managers/contextManager/contextManager.types";
 import {ToolPanelContentProperties} from "../toolPanelContent/toolPanelContent.types";
 import {ToolType} from "../../directors/project/project.types";
 
 @define()
-export class TextPanel extends ToolPanelContent<ToolType, TextPanelView, SyncedText, TextPanelModel> {
-    public constructor(properties: ToolPanelContentProperties<ToolType, TextPanelView, SyncedText, TextPanelModel>) {
-        super(properties);
-        this.mvc.generate({
-            viewConstructor: TextPanelView,
-            modelConstructor: TextPanelModel,
-        });
-    }
-
+export class TextPanel extends ToolPanelContent<TextPanelView, SyncedText, TextPanelModel> {
     public attach() {
         this.contextManager.onContextChange.add(this.updateDataFromContext);
         this.toolPanel.addContextCallback(this.onContextChange);
@@ -42,7 +34,12 @@ export class TextPanel extends ToolPanelContent<ToolType, TextPanelView, SyncedT
     private onContextChange = (entry: ContextEntry) => {
         if (entry.element instanceof TextElement) {
             if (entry.changed == "added") this.toolPanel.changePanel(ToolType.createText);
-            else this.toolPanel.changePanel(this.toolManager.getTool(ClickMode.left).name);
+            else this.toolPanel.changePanel(TurboEventManager.instance.getCurrentToolName(ClickMode.left));
         }
     }
+}
+
+export function textPanel(properties: ToolPanelContentProperties<TextPanelView, SyncedText, TextPanelModel>): TextPanel {
+    turbo(properties).applyDefaults({tag: "vx-text-panel", view: TextPanelView, model: TextPanelModel});
+    return toolPanelContent({...properties}) as TextPanel;
 }

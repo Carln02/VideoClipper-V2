@@ -1,19 +1,15 @@
 import {VcComponent} from "../../components/component/component";
-import {define} from "turbodombuilder";
-import {VcComponentProperties} from "../../components/component/component.types";
+import {define, element, turbo} from "turbodombuilder";
+import {VcProperties} from "../../components/component/component.types";
 import {HomeView} from "./home.view";
 import "./home.css";
 import {App} from "../../directors/app/app";
 
 @define("vc-home")
 export class Home extends VcComponent<HomeView, any, any, App> {
-    public constructor(properties: VcComponentProperties<any, any, any, App>) {
-        super(properties);
+}
 
-        this.mvc.generate({
-            viewConstructor: HomeView,
-        });
-
-        this.director.groupsHandler.onGroupsChanged.add(this.view.generateGroups);
-    }
+export function home(properties: VcProperties<HomeView, any, any, App> = {}): Home {
+    turbo(properties).applyDefaults({tag: "vc-home", view: HomeView});
+    return element({...properties}) as Home;
 }

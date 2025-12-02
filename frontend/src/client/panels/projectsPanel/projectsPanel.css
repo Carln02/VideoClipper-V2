@@ -1,0 +1,17 @@
+vc-projects-panel {
+    flex-grow: 1;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+}
+
+vc-projects-panel #projects-select {
+    display: grid;
+    gap: 44px;
+    width: 100%;
+
+    grid-template-columns: repeat(auto-fit, minmax(max(200px, calc(25% - 44px)), 1fr));
+    grid-auto-rows: minmax(200px, auto);
+}

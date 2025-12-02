@@ -1,7 +1,6 @@
 import {WebsocketProvider} from "y-websocket";
 import {WebsocketOptions} from "./websocketManager.types";
-import {YDoc} from "../../../yManagement/yManagement.types";
-import {Delegate} from "turbodombuilder";
+import {Delegate, YDoc} from "turbodombuilder";
 import {encodeStateVector} from "yjs";
 import * as decoding from "lib0/decoding";
 

@@ -1,11 +1,9 @@
-import {auto, TurboModel} from "turbodombuilder";
+import {modelSignal, TurboModel} from "turbodombuilder";
 import {ObjectId} from "mongodb";
 
 export class ProjectEntryModel extends TurboModel {
-    public projectId: ObjectId;
-
-    @auto()
-    public set lastOpened(value: Date) {
-        this.fireCallback("lastOpened", value);
-    }
+    @modelSignal() public projectId: ObjectId;
+    @modelSignal() public lastOpened: Date;
+    @modelSignal() public createdOn: Date;
+    @modelSignal() public projectName: string;
 }

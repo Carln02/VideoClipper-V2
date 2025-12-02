@@ -1,81 +1,51 @@
 import {BranchingNode} from "../../components/branchingNode/branchingNode";
 import {Card} from "../../components/card/card";
-import {auto, Coordinate, define, Point, ToolManager} from "turbodombuilder";
+import {
+    addInYMap,
+    auto,
+    Coordinate,
+    createYMap,
+    define, expose,
+    Point,
+    turbo,
+    YDoc,
+    YMap
+} from "turbodombuilder";
 import {Flow} from "../../components/flow/flow";
 import {ToolPanel} from "../../panels/toolPanel/toolPanel";
-import {ShootingPanel} from "../../panels/shootingPanel/shootingPanel";
-import {TextPanel} from "../../panels/textPanel/textPanel";
+import {shootingPanel} from "../../panels/shootingPanel/shootingPanel";
+import {textPanel} from "../../panels/textPanel/textPanel";
 import {VcComponent} from "../../components/component/component";
 import {SyncedBranchingNode} from "../../components/branchingNode/branchingNode.types";
 import {ProjectProperties, ProjectScreens, SyncedDocument, ToolType} from "./project.types";
 import { ContextManager } from "../../managers/contextManager/contextManager";
 import {ProjectView} from "./project.view";
 import {ProjectModel} from "./project.model";
-import {YUtilities} from "../../../yManagement/yUtilities";
-import {YDoc, YMap} from "../../../yManagement/yManagement.types";
 import "./project.css";
-import {RootDirector} from "../rootDirector/rootDirector";
+import {rootDirector, RootDirector} from "../rootDirector/rootDirector";
 import {Canvas} from "../../screens/canvas/canvas";
 import {Camera} from "../../screens/camera/camera";
 import {MediaHandler} from "../../handlers/mediaHandler/mediaHandler";
 import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
-import {ProjectSelectionInteractor} from "./project.selectionInteractor";
-import {ProjectCreateCardInteractor} from "./project.createCardInteractor";
-import {ProjectNavigationInteractor} from "./project.navigationInteractor";
-import {ProjectConnectionInteractor} from "./project.connectionInteractor";
 
 @define("vc-project")
 export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDocument, ProjectModel> {
-    private readonly _mediaHandler: MediaHandler;
-    private readonly _contextManager: ContextManager;
-    private readonly _toolManager: ToolManager<ToolType>;
+    private _mediaHandler: MediaHandler;
+    private _contextManager: ContextManager;
 
-    public constructor(properties: ProjectProperties) {
-        super(properties);
-        if (properties.document) this.document = properties.document;
-
+    public initialize() {
         this._mediaHandler = new MediaHandler(this);
         this._contextManager = new ContextManager();
-        this._toolManager = new ToolManager<ToolType>();
-
-        this.mvc.generate({
-            modelConstructor: ProjectModel,
-            viewConstructor: ProjectView,
-            data: properties.document?.getMap("document_content"),
-            interactorConstructors: [ProjectSelectionInteractor, ProjectCreateCardInteractor,
-                ProjectNavigationInteractor, ProjectConnectionInteractor],
-            initialize: false
-        });
-
-        this.model.onBranchingNodeAdded = data => new BranchingNode({
-            parent: this.view.cardsParent,
-            data: data,
-            director: this
-        });
-
-        this.model.onCardAdded = data => new Card({
-            parent: this.view.cardsParent,
-            data: data,
-            director: this
-        });
-
-        this.model.onFlowAdded = data => new Flow({
-            parent: this.view.flowsParent,
-            data: data,
-            director: this
-        });
-
-        this.mvc.initialize();
-
+        super.initialize();
         this.currentType = ProjectScreens.canvas;
 
-        const shootingPanel = new ShootingPanel({
+        const shootingPanelEl = shootingPanel({
             toolPanel: this.toolPanel,
             director: this
         });
-        this.toolPanel.addPanel(shootingPanel, ToolType.shoot, ProjectScreens.camera);
-        this.toolPanel.addPanel(shootingPanel, ToolType.selection, ProjectScreens.camera);
-        this.toolPanel.addPanel(new TextPanel({
+        this.toolPanel.addPanel(shootingPanelEl, ToolType.shoot, ProjectScreens.camera);
+        this.toolPanel.addPanel(shootingPanelEl, ToolType.selection, ProjectScreens.camera);
+        this.toolPanel.addPanel(textPanel({
             toolPanel: this.toolPanel,
             director: this
         }), ToolType.createText, ProjectScreens.camera);
@@ -95,37 +65,30 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
         return this._contextManager;
     }
 
-    public get toolManager(): ToolManager<ToolType> {
-        return this._toolManager;
-    }
-
-    @auto()
-    public set document(value: YDoc) {
+    @auto() public set document(value: YDoc) {
         if (this.model) this.model.data = value.getMap("document_content");
     }
 
-    public get toolPanel(): ToolPanel<ToolType> {
-        return this.view.toolPanel;
+    @expose("view", false) public accessor toolPanel: ToolPanel;
+
+    public get cards(): Card[] {
+        return this.view.cardsObserver.getAllInstances();
+    }
+
+    public get branchingNodes(): BranchingNode[] {
+        return this.view.branchingNodesObserver.getAllInstances();
     }
 
     public get flows(): Flow[] {
-        return this.model.flows;
+        return this.view.flowsObserver.getAllInstances();
     }
 
     public getFlow(id: string): Flow {
-        return this.model.flowsModel.getInstance(id);
+        return this.view.flowsObserver.getInstance(id);
     }
 
     public getNode(id: string): BranchingNode {
-        return this.model.cardsModel.getInstance(id);
-    }
-
-    public getNodeData(id: string): SyncedBranchingNode {
-        return this.model.cardsModel.getInstance(id).data;
-    }
-
-    public getNodesData(...ids: string[]): SyncedBranchingNode[] {
-        return ids.map(id => this.getNodeData(id));
+        return this.view.cardsObserver.getInstance(id);
     }
 
     public getMedia(id: string): SyncedMedia & YMap {
@@ -133,30 +96,29 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
     }
 
     public setMedia(id: string, media: SyncedMedia) {
-        this.model.media.set(id, YUtilities.createYMap(media) as SyncedMedia);
+        this.model.media.set(id, createYMap(media) as SyncedMedia);
     }
-
-    //CARDS
 
     public async createNewNode(position: Coordinate, id?: string): Promise<string> {
         if (position instanceof Point) position = position.object;
-        if (!id) return await YUtilities.addInYMap(BranchingNode.createData({origin: position}), this.model.branchingNodesData);
+        if (!id) return await addInYMap(BranchingNode.createData({origin: position}), this.model.branchingNodesData);
         this.model.branchingNodesData.set(id, BranchingNode.createData({origin: position}));
         return id;
     }
 
     public async createNewCard(position: Point): Promise<string> {
         this.model.incrementCardsCount();
-        return await YUtilities.addInYMap(Card.createData({
+        const data = Card.createData({
             origin: position.object,
             title: "Card - " + this.model.cardsCount
-        }), this.model.cardsData);
+        });
+        return await addInYMap(data, this.model.cardsData);
     }
 
     public async createNewFlow(position: Point, nodeId: string, color: string): Promise<string> {
         this.model.incrementFlowsCount();
         const defaultName = "Flow " + this.model.flowsCount;
-        return await YUtilities.addInYMap(Flow.createData({
+        return await addInYMap(Flow.createData({
             entries: {},
             selectors: {
                 0: {nodeId: nodeId}
@@ -183,4 +145,14 @@ export class Project extends RootDirector<ProjectScreens, ProjectView, SyncedDoc
         else if (element instanceof BranchingNode) this.model.branchingNodesData.delete(element.dataId);
         else if (element instanceof Flow) this.model.flowsData.delete(element.dataId);
     }
+}
+
+export function project(properties: ProjectProperties = {}): Project {
+    turbo(properties).applyDefaults({
+        tag: "vc-project",
+        model: ProjectModel,
+        view: ProjectView,
+        data: properties.document?.getMap("document_content")
+    });
+    return rootDirector({...properties}) as Project;
 }

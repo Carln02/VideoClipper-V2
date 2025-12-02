@@ -1,75 +1,50 @@
 import {SyncedCard} from "../../components/card/card.types";
 import {SyncedFlow} from "../../components/flow/flow.types";
-import {BranchingNodeType, SyncedBranchingNode} from "../../components/branchingNode/branchingNode.types";
-import {BranchingNode} from "../../components/branchingNode/branchingNode";
-import {Card} from "../../components/card/card";
-import {Flow} from "../../components/flow/flow";
-import { YComponentModel } from "../../../yManagement/yModel/types/yComponentModel";
-import {ProjectCardsModel} from "./project.cardsModel";
-import {ProjectFlowsModel} from "./project.flowsModel";
-import { YMap } from "../../../yManagement/yManagement.types";
-import {YUtilities} from "../../../yManagement/yUtilities";
+import {SyncedBranchingNode} from "../../components/branchingNode/branchingNode.types";
 import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
-import {SyncedDocument} from "./project.types";
+import {
+    blockSignal,
+    createYMap, MvcBlockKeyType,
+    TurboModel,
+    TurboYBlock,
+    YMap
+} from "turbodombuilder";
 
-export class ProjectModel extends YComponentModel {
-    public readonly cardsModel: ProjectCardsModel;
-    public readonly flowsModel: ProjectFlowsModel;
+export class ProjectModel extends TurboModel {
+    public static dataBlockConstructor = TurboYBlock;
 
-    public onCardAdded: (data: SyncedCard, id: string, blockKey: string) => Card;
-    public onBranchingNodeAdded: (data: SyncedBranchingNode, id: string, blockKey: string) => BranchingNode;
-    public onFlowAdded: (data: SyncedFlow, id: string, blockKey: string) => Flow;
+    @blockSignal() public cardsBlock: TurboYBlock<YMap>;
+    @blockSignal() public branchingNodesBlock: TurboYBlock<YMap>;
+    @blockSignal() public flowsBlock: TurboYBlock<YMap>;
 
-    public constructor(data: SyncedDocument) {
-        super(data);
-        this.enabledCallbacks = false;
-
-        this.cardsModel = new ProjectCardsModel();
-        this.cardsModel.onAdded = (data, id, blockKey) => {
-            if ((data as YMap).get("type") == BranchingNodeType.node) return this.onBranchingNodeAdded(data, id, blockKey);
-            else return this.onCardAdded(data, id, blockKey);
-        };
-
-        this.flowsModel = new ProjectFlowsModel();
-        this.flowsModel.onAdded = (data, id, blockKey) => this.onFlowAdded(data, id, blockKey);
+    public initialize(blockKey: MvcBlockKeyType<any> = this.defaultBlockKey) {
+        if (blockKey === this.defaultBlockKey) {
+            if (this.data) this.initializeData();
+            this.cardsBlock = this.getData("cards");
+            this.branchingNodesBlock = this.getData("branchingNodes");
+            this.flowsBlock = this.getData("flows");
+        }
+        super.initialize(blockKey);
     }
 
-    public initialize(blockKey: string = this.defaultBlockKey) {
+    private initializeData() {
         if (!this.getData("cards")) this.setData("cards", new YMap());
         if (!this.getData("branchingNodes")) this.setData("branchingNodes", new YMap());
         if (!this.getData("flows")) this.setData("flows", new YMap());
         if (!this.getData("media")) this.setData("media", new YMap());
-        if (!this.getData("counters")) this.setData("counters", YUtilities.createYMap({cards: 0, flows: 0}));
-
-        super.initialize(blockKey);
-
-        this.cardsModel.cards = this.getData("cards");
-        this.cardsModel.branchingNodes = this.getData("branchingNodes");
-        this.flowsModel.data = this.getData("flows");
-    }
-
-    public get cards(): Card[] {
-        return this.cardsModel.cardsInstances;
-    }
-
-    public get branchingNodes(): BranchingNode[] {
-        return this.cardsModel.branchingNodesInstances;
-    }
-
-    public get flows(): Flow[] {
-        return this.flowsModel.getAllComponents();
+        if (!this.getData("counters")) this.setData("counters", createYMap({cards: 0, flows: 0}));
     }
 
     public get cardsData(): YMap<SyncedCard> {
-        return this.cardsModel.cards;
+        return this.cardsBlock?.data;
     }
 
     public get branchingNodesData(): YMap<SyncedBranchingNode> {
-        return this.cardsModel.branchingNodes;
+        return this.branchingNodesBlock?.data;
     }
 
     public get flowsData(): YMap<SyncedFlow> {
-        return this.flowsModel.data;
+        return this.flowsBlock?.data;
     }
 
     public get media(): YMap<SyncedMedia> {
@@ -92,7 +67,9 @@ export class ProjectModel extends YComponentModel {
         this.getData("counters").set("flows", this.flowsCount + 1);
     }
 
-    public clear(blockKey: string = this.defaultBlockKey) {
-        this.cardsModel?.clear(blockKey);
+    public clear() {
+        this.cardsBlock.clear(false);
+        this.branchingNodesBlock.clear(false);
+        this.flowsBlock.clear(false);
     }
 }

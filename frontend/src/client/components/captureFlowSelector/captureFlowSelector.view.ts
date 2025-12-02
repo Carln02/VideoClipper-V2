@@ -13,7 +13,7 @@ import {CaptureFlowSelector} from "./captureFlowSelector";
 import {CaptureFlowSelectorModel} from "./captureFlowSelector.model";
 import {Card} from "../card/card";
 import {Flow} from "../flow/flow";
-import {FlowPath} from "../flowPath/flowPath";
+import FlowPath from "../flowPath/flowPath";
 import {getUrlParam, replaceUrlParams} from "../../utils/url";
 
 export class CaptureFlowSelectorView extends TurboView<CaptureFlowSelector, CaptureFlowSelectorModel> {

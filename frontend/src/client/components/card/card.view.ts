@@ -2,32 +2,31 @@ import {BranchingNodeView} from "../branchingNode/branchingNode.view";
 import {
     ClickMode,
     DefaultEventName,
-    div, Open,
-    Point,
-    Side,
+    div, effect, Open,
+    Side, turbo,
     TurboEvent,
-    TurboEventName,
+    TurboEventName, turboInput,
     TurboInput,
 } from "turbodombuilder";
 import {formatMmSs} from "../../utils/time";
 import {Card} from "./card";
 import {CardModel} from "./card.model";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
-import {MetadataDrawer} from "../metadataDrawer/metadataDrawer";
+import {metadataDrawer, MetadataDrawer} from "../metadataDrawer/metadataDrawer";
 import {Timeline} from "../timeline/timeline";
-import {ClipTimeline} from "../timeline/clipTimeline/clipTimeline";
-import {Playback} from "../playback/playback";
+import {clipTimeline} from "../timeline/clipTimeline/clipTimeline";
+import {playback, Playback} from "../playback/playback";
 import {CardMarkingMenu} from "../cardMarkingMenu/cardMarkingMenu";
 
 export class CardView extends BranchingNodeView<Card, CardModel> {
     private titleElement: TurboInput;
     private durationElement: HTMLDivElement;
 
-    private playback: Playback;
+    public playback: Playback;
     private _metadataDrawer: MetadataDrawer;
     private _timeline: Timeline;
 
-    private static markingMenu: CardMarkingMenu;
+    // private static markingMenu: CardMarkingMenu;
 
     public get renderer(): ClipRenderer {
         return this.playback.renderer;
@@ -42,37 +41,30 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
     }
 
     /**
-     * @description The total duration of the card. When set, will update the value of the duration element.
-     */
-    public set duration(value: number) {
-        this.durationElement.textContent = formatMmSs(value);
-    }
-
-    /**
      * @function editTitle
      * @description Focuses the title field of the card.
      */
     public editTitle() {
-        this.titleElement.inputElement.dispatchEvent(
-            new TurboEvent(new Point(), ClickMode.left, [], TurboEventName.click));
+        this.titleElement.element.dispatchEvent(new TurboEvent({clickMode: ClickMode.left, eventName: TurboEventName.click}));
     }
 
     protected setupUIElements(): void {
-        this.titleElement = new TurboInput({selectTextOnFocus: true});
+        super.setupUIElements();
+        this.titleElement = turboInput({selectTextOnFocus: true});
         this.durationElement = div();
 
-        this.playback = new Playback({director: this.element.director, card: this.element, classes: "card-playback"});
-
+        this.playback = playback({director: this.element.director, classes: "card-playback"});
         this.playback.timeline.scaled = true;
 
-        this._metadataDrawer = new MetadataDrawer({
+        this._metadataDrawer = metadataDrawer({
             card: this.element,
             icon: "chevron",
             hideOverflow: true,
+            side: Side.bottom,
             offset: {[Open.open]: 12}
         });
 
-        this._timeline = new ClipTimeline({
+        this._timeline = clipTimeline({
             drawerProperties: {
                 icon: "chevron",
                 side: Side.right,
@@ -80,21 +72,21 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
                 offset: {[Open.open]: 12}
             },
             director: this.element.director,
-            card: this.element,
             renderer: this.renderer,
-            model: this.playback.timeline.model
+            card: this.element,
+            model: this.playback.timeline.model,
+            hasControls: false
         });
 
-        this._timeline.hasControls = false;
-
-       if (!CardView.markingMenu) {
-           CardView.markingMenu = new CardMarkingMenu();
-           this.element.director.addChild(CardView.markingMenu);
-       }
+       // if (!CardView.markingMenu) {
+       //     CardView.markingMenu = new CardMarkingMenu();
+       //     turbo(this.element.director).addChild(CardView.markingMenu);
+       // }
     }
 
     protected setupUILayout(): void {
-        this.element.addChild([
+        super.setupUILayout();
+        turbo(this).addChild([
             this.playback,
             this.metadataDrawer,
             this.timeline,
@@ -106,12 +98,16 @@ export class CardView extends BranchingNodeView<Card, CardModel> {
     }
 
     protected setupUIListeners(): void {
+        super.setupUIListeners();
         this.titleElement.addEventListener(DefaultEventName.blur, () => this.model.title = this.titleElement.value);
-        CardView.markingMenu.attachCard(this.element);
+        // CardView.markingMenu.attachCard(this.element);
     }
 
-    protected setupChangedCallbacks() {
-        super.setupChangedCallbacks();
-        this.emitter.add("title", (value: string) => this.titleElement.value = value);
+    @effect private updateTitle() {
+        this.titleElement.value = this.model.title ?? "";
+    }
+
+    @effect public updateDuration() {
+        this.durationElement.textContent = formatMmSs(this.model.duration);
     }
 }

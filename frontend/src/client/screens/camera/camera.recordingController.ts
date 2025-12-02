@@ -1,4 +1,4 @@
-import {TurboController} from "turbodombuilder";
+import {effect, TurboController} from "turbodombuilder";
 import {CameraModel} from "./camera.model";
 import {Camera} from "./camera";
 import {CameraView} from "./camera.view";
@@ -8,11 +8,6 @@ import {getVideoDuration} from "../../utils/video";
 
 export class CameraRecordingController extends TurboController<Camera, CameraView, CameraModel> {
     private negotiatedType: string = "";
-
-    protected setupChangedCallbacks() {
-        super.setupChangedCallbacks();
-        this.emitter.add("stream", () => this.setupMediaRecorder());
-    }
 
     protected get mediaHandler(): MediaHandler {
         return this.element.director.mediaHandler;
@@ -50,7 +45,7 @@ export class CameraRecordingController extends TurboController<Camera, CameraVie
         return "";
     }
 
-    protected setupMediaRecorder() {
+    @effect protected setupMediaRecorder() {
         if (!this.model.stream) return;
 
         const mimeType = this.pickMimeType();

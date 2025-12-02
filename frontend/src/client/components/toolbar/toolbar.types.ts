@@ -1,7 +1,9 @@
-import {VcComponentProperties} from "../component/component.types";
+import {VcProperties} from "../component/component.types";
 import {Project} from "../../directors/project/project";
-import {Tool, ToolProperties} from "turbodombuilder";
+import {TurboTool} from "turbodombuilder";
+import {ToolProperties} from "../tool/tool.types";
+import {Tool} from "../tool/tool";
 
-export type ToolbarProperties<ToolType = string> = VcComponentProperties<any, any, any, Project> & {
-    tools?: (ToolType | ToolProperties<ToolType> | Tool<ToolType>)[]
+export type ToolbarToolProperties = (new (...args: any[]) => TurboTool) | ToolProperties | Tool;
+export type ToolbarProperties = VcProperties<any, any, any, Project> & {
 };

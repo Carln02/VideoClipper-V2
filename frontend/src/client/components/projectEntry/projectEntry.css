@@ -1,4 +1,4 @@
-project-entry {
+vc-project-entry {
     position: relative;
     overflow: hidden;
     display: flex;
@@ -7,7 +7,7 @@ project-entry {
     background-color: white;
 }
 
-project-entry > img {
+vc-project-entry > img {
     display: block;
     position: absolute;
     width: 100%;
@@ -15,7 +15,7 @@ project-entry > img {
     object-fit: cover;
 }
 
-project-entry > div:nth-child(2) {
+vc-project-entry > div:nth-child(2) {
     position: absolute;
     max-height: 100%;
     display: flex;
@@ -27,7 +27,7 @@ project-entry > div:nth-child(2) {
     right: 0;
 }
 
-project-entry .project-ellipsis {
+vc-project-entry .project-ellipsis {
     position: absolute;
     top: 8px;
     right: 8px;

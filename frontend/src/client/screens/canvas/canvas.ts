@@ -1,15 +1,20 @@
-import {ClickMode, css, define, div, Point, ToolManager} from "turbodombuilder";
+import {ClickMode, css, define, div, element, Point, turbo, TurboEventManager} from "turbodombuilder";
 import "./canvas.css";
-import {Toolbar} from "../../components/toolbar/toolbar";
-import {NavigatorTool} from "../../tools/navigator/navigator";
+import {toolbar, Toolbar} from "../../components/toolbar/toolbar";
 import {NavigationManager} from "../../managers/navigationManager/navigationManager";
 import {VcComponent} from "../../components/component/component";
 import {Project} from "../../directors/project/project";
 import {ProjectScreens, ToolType} from "../../directors/project/project.types";
-import {ShootTool} from "../../tools/shoot/shoot";
 import {NavigatableElement} from "../../managers/navigationManager/navigationManager.types";
-import {SelectionTool} from "../../tools/selection/selection";
-import {ConnectionTool} from "../../tools/connection/connection";
+import {VcProperties} from "../../components/component/component.types";
+import {CreateCardTool} from "../../tools/createCard/createCard.tool";
+import {ShootTool} from "../../tools/shoot/shoot.tool";
+import {DeleteTool} from "../../tools/delete/delete.tool";
+import {AddTextTool} from "../../tools/addText/addText.tool";
+import {selectionTool} from "../../tools/selection/selection";
+import {NavigatorTool} from "../../tools/navigator/navigator";
+import {connectionTool} from "../../tools/connection/connection";
+import {tool} from "../../components/tool/tool";
 
 /**
  * @description Class representing a canvas on which the user can add cards, connect them, move them around, etc.
@@ -17,43 +22,43 @@ import {ConnectionTool} from "../../tools/connection/connection";
 @define("vc-canvas")
 export class Canvas extends VcComponent<any, any, any, Project>  implements NavigatableElement {
     //Canvas parent --> contains the main components that are translated/scaled
-    public readonly content: HTMLDivElement;
+    private _content: HTMLDivElement;
+    public get content(): HTMLDivElement {
+        return this._content;
+    }
 
     //Canvas's attached navigation manager
-    public readonly navigationManager: NavigationManager;
+    public navigationManager: NavigationManager;
 
     //Main toolbar
-    private readonly toolbar: Toolbar;
+    private toolbar: Toolbar;
 
-    public constructor(document: Project) {
-        super({director: document});
-
-        this.content = div({parent: this, id: "canvas-content"});
-
-        //Init navigation manager
+    public initialize() {
+        super.initialize();
         this.navigationManager = new NavigationManager(this);
-
-        //Init toolbar
-        this.toolbar = new Toolbar({
-            parent: this,
-            classes: "bottom-toolbar",
-            director: this.director,
-            tools: [
-                new SelectionTool({name: ToolType.selection, toolManager: this.toolManager, director: this.director, key: "Shift"}),
-                new NavigatorTool({name: ToolType.navigator, toolManager: this.toolManager, director: this.director}),
-                ToolType.createCard,
-                ToolType.createText,
-                ToolType.delete,
-                new ConnectionTool({name: ToolType.connection, toolManager: this.toolManager, director: this.director}),
-                new ShootTool({name: ToolType.shoot, toolManager: this.toolManager, director: this.director}),
-            ]
-        });
-
         this.initTools();
     }
 
-    public get toolManager(): ToolManager<ToolType> {
-        return this.director.toolManager as ToolManager<ToolType>;
+    protected setupUIElements() {
+        super.setupUIElements();
+        this._content = div({id: "canvas-content"});
+
+        this.toolbar = toolbar({classes: "bottom-toolbar", director: this.director});
+        this.toolbar.addTools(
+            selectionTool({text: ToolType.selection, director: this.director}),
+            tool({text: ToolType.navigator, tools: NavigatorTool, director: this.director}),
+            tool({text: ToolType.createCard, tools: CreateCardTool, director: this.director}),
+            tool({text: ToolType.createText, tools: AddTextTool, director: this.director}),
+            tool({text: ToolType.delete, tools: DeleteTool, director: this.director}),
+            connectionTool({text: ToolType.connection, director: this.director}),
+            tool({text: ToolType.shoot, tools: ShootTool, director: this.director}),
+        );
+
+    }
+
+    protected setupUILayout() {
+        super.setupUILayout();
+        turbo(this).addChild([this.content, this.toolbar]);
     }
 
     private initTools() {
@@ -61,8 +66,8 @@ export class Canvas extends VcComponent<any, any, any, Project>  implements Navi
         // this.toolManager.addTool(new ConnectionTool(this.director));
 
         //Init default tools at hand
-        this.toolManager.setTool(this.toolManager.getToolByKey("Shift"), ClickMode.left);
-        this.toolManager.setTool(this.toolManager.getToolByKey("Control"), ClickMode.middle, {select: false, activate: false});
+        TurboEventManager.instance.setTool(TurboEventManager.instance.getToolByKey("Shift"), ClickMode.left);
+        TurboEventManager.instance.setTool(TurboEventManager.instance.getToolByKey("Control"), ClickMode.middle, {select: false, activate: false});
     }
 
     public remove(): this {
@@ -81,6 +86,11 @@ export class Canvas extends VcComponent<any, any, any, Project>  implements Navi
      * @param scale
      */
     public transform(translation: Point, scale: number) {
-        this.content.setStyle("transform", css`translate3d(${translation.x}px, ${translation.y}px, 0) scale3d(${scale}, ${scale}, 1)`);
+        turbo(this.content).setStyle("transform", css`translate3d(${translation.x}px, ${translation.y}px, 0) scale3d(${scale}, ${scale}, 1)`);
     }
+}
+
+export function vcCanvas(properties: VcProperties<any, any, any, Project>): Canvas {
+    turbo(properties).applyDefaults({tag: "vc-canvas"});
+    return element({...properties}) as Canvas;
 }

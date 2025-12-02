@@ -1,6 +1,14 @@
 import {TextPanel} from "./textPanel";
 import {TextPanelModel} from "./textPanel.model";
-import {Coordinate, DefaultEventName, flexRow, input, spacer, TurboNumericalInput, TurboView} from "turbodombuilder";
+import {
+    Coordinate,
+    DefaultEventName,
+    flexRow,
+    numericalInput,
+    spacer, turbo,
+    TurboNumericalInput,
+    TurboView
+} from "turbodombuilder";
 
 export class TextPanelView extends TurboView<TextPanel, TextPanelModel> {
     private originXInput: TurboNumericalInput;
@@ -22,8 +30,8 @@ export class TextPanelView extends TurboView<TextPanel, TextPanelModel> {
         super.setupUIElements();
         // this.element.setStyle("top", this.element.toolPanel.panelMarginTop + "px");
 
-        this.originXInput = new TurboNumericalInput({
-            element: input({type: "number", step: "1", min: "0", max: "100"}),
+        this.originXInput = numericalInput({
+            input: {type: "number", step: "1", min: "0", max: "100"},
             label: "Position : ",
             prefix: "x: ",
             suffix: "%",
@@ -31,16 +39,16 @@ export class TextPanelView extends TurboView<TextPanel, TextPanelModel> {
             decimalPlaces: 2
         });
 
-        this.originYInput = new TurboNumericalInput({
-            element: input({type: "number", step: "1", min: "0", max: "100"}),
+        this.originYInput = numericalInput({
+            input: {type: "number", step: "1", min: "0", max: "100"},
             prefix: "y: ",
             suffix: "%",
             multiplier: 100,
             decimalPlaces: 2
         });
 
-        this.fontSizeInput = new TurboNumericalInput({
-            element: input({type: "number", step: "1", min: "0", max: "100"}),
+        this.fontSizeInput = numericalInput({
+            input: {type: "number", step: "1", min: "0", max: "100"},
             label: "Font size : ",
             suffix: "%",
             multiplier: 100,
@@ -51,7 +59,7 @@ export class TextPanelView extends TurboView<TextPanel, TextPanelModel> {
     protected setupUILayout() {
         super.setupUILayout();
 
-        this.element.addChild([
+        turbo(this).addChild([
             flexRow({
                 style: "gap: 0.5em; align-items: end",
                 children: [this.originXInput, spacer(), this.originYInput]
@@ -63,17 +71,17 @@ export class TextPanelView extends TurboView<TextPanel, TextPanelModel> {
     protected setupUIListeners() {
         super.setupUIListeners();
 
-        this.originXInput.addListener(DefaultEventName.input, () => {
+        turbo(this.originXInput).on(DefaultEventName.input, () => {
             if (!this.model.data) return;
             this.model.origin = {x: this.originXInput.value, y: this.originYInput.value};
         });
 
-        this.originYInput.addListener(DefaultEventName.input, () => {
+        turbo(this.originYInput).on(DefaultEventName.input, () => {
             if (!this.model.data) return;
             this.model.origin = {x: this.originXInput.value, y: this.originYInput.value};
         });
 
-        this.fontSizeInput.addListener(DefaultEventName.input, () => {
+        turbo(this.fontSizeInput).on(DefaultEventName.input, () => {
             if (!this.model.data) return;
             this.model.fontSize = this.fontSizeInput.value;
         });

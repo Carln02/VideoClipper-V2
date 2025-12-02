@@ -1,17 +1,24 @@
 import {FlowPathProperties, SyncedFlowPath} from "./flowPath.types";
-import {YUtilities} from "../../../yManagement/yUtilities";
 import {FlowPathModel} from "./flowPath.model";
-import {DefaultEventName, define, input, TurboSelectEntry, TurboView} from "turbodombuilder";
-import {YArray, YMap} from "../../../yManagement/yManagement.types";
+import {
+    createYArray,
+    createYMap,
+    DefaultEventName,
+    define,
+    input,
+    TurboRichElement,
+    TurboView, YArray,
+    YMap
+} from "turbodombuilder";
 import "./flowPath.css";
 
 @define()
-export class FlowPath extends TurboSelectEntry<string, string, "input", TurboView, SyncedFlowPath & YMap, FlowPathModel> {
+class FlowPath extends TurboRichElement<"input", TurboView, SyncedFlowPath & YMap, FlowPathModel> {
     public static createData(data?: SyncedFlowPath) {
         if (!data) data = {};
         if (!data.name) data.name = "Flow Path";
-        data.nodeIds = YUtilities.createYArray(data.nodeIds ?? []) as any;
-        return YUtilities.createYMap(data);
+        data.nodeIds = createYArray(data.nodeIds ?? []) as any;
+        return createYMap(data);
     }
 
     public constructor(properties: FlowPathProperties) {
@@ -75,3 +82,5 @@ export class FlowPath extends TurboSelectEntry<string, string, "input", TurboVie
         return this.nodeIdsArray.includes(id);
     }
 }
+
+export default FlowPath

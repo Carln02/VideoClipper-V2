@@ -1,8 +1,15 @@
-import {DefaultEventName, Direction, define, div, icon, TurboDragEvent, TurboEvent, TurboIcon} from "turbodombuilder";
+import {
+    DefaultEventName,
+    define,
+    div,
+    icon,
+    TurboIcon,
+    turbo, element
+} from "turbodombuilder";
 import "./clipScrubber.css";
-import {ScrubberProperties} from "../scrubber.types";
 import {ScrubberMarkingMenu} from "../../scrubberMarkingMenu/scrubberMarkingMenu";
 import {Scrubber} from "../scrubber";
+import {ScrubberProperties} from "../scrubber.types";
 
 @define("vc-clip-scrubber")
 export class ClipScrubber extends Scrubber {
@@ -11,22 +18,12 @@ export class ClipScrubber extends Scrubber {
     protected head: TurboIcon;
     protected markingMenuHandle: HTMLDivElement;
 
-    public constructor(properties: ScrubberProperties = {}, orientation: Direction = Direction.vertical) {
-        super({...properties, initialize: false});
-        this.addClass("vc-clip-scrubber");
-
-        this.orientation = orientation;
-        //this.orientation == Direction.vertical ? this.addClass("vc-scrubber-v") : this.addClass("vc-scrubber-h");
-
-        this.toggleClass("vc-scrubber-v", orientation === Direction.vertical);
-        this.toggleClass("vc-scrubber-h", orientation === Direction.horizontal);
-
-        if (!ClipScrubber.markingMenu) {
-            ClipScrubber.markingMenu = new ScrubberMarkingMenu({scrubber: this});
-            this.director.addChild(ClipScrubber.markingMenu);
-        }
-
-        if (properties.initialize) this.initializeUI();
+    public initialize(): void {
+        super.initialize();
+        // if (!ClipScrubber.markingMenu) {
+        //     ClipScrubber.markingMenu = new ScrubberMarkingMenu({scrubber: this});
+        //     turbo(this.director).addChild(ClipScrubber.markingMenu);
+        // }
     }
 
     protected setupUIElements() {
@@ -37,23 +34,29 @@ export class ClipScrubber extends Scrubber {
 
     protected setupUILayout() {
         super.setupUILayout();
-        this.addChild([this.head, this.markingMenuHandle]);
+        turbo(this).addChild([this.head, this.markingMenuHandle]);
     }
 
     protected setupUIListeners() {
         super.setupUIListeners();
 
-        this.markingMenuHandle.addListener(DefaultEventName.drag, (e) => e.stopImmediatePropagation());
+        turbo(this.markingMenuHandle).on(DefaultEventName.drag, (e) => e.stopImmediatePropagation());
 
-        ClipScrubber.markingMenu.attachTo(this.markingMenuHandle,
-            (e: TurboEvent) => {
-                e.stopImmediatePropagation();
-                ClipScrubber.markingMenu.scrubber = this;
-                ClipScrubber.markingMenu.show(true, e.position);
-            }, (e: TurboDragEvent) => {
-                e.stopImmediatePropagation();
-                ClipScrubber.markingMenu.scrubber = this;
-                ClipScrubber.markingMenu.show(undefined, e.origins.first);
-            });
+        // TOdo
+        // ClipScrubber.markingMenu.attachTo(this.markingMenuHandle,
+        //     (e: TurboEvent) => {
+        //         e.stopImmediatePropagation();
+        //         ClipScrubber.markingMenu.scrubber = this;
+        //         ClipScrubber.markingMenu.show(true, e.position);
+        //     }, (e: TurboDragEvent) => {
+        //         e.stopImmediatePropagation();
+        //         ClipScrubber.markingMenu.scrubber = this;
+        //         ClipScrubber.markingMenu.show(undefined, e.origins.first);
+        //     });
     }
+}
+
+export function clipScrubber(properties: ScrubberProperties): ClipScrubber {
+    turbo(properties).applyDefaults({tag: "vc-clip-scrubber"});
+    return element({...properties}) as ClipScrubber;
 }

@@ -1,16 +1,11 @@
 import {BranchingNodeType, SyncedBranchingNode} from "./branchingNode.types";
-import {define, Point} from "turbodombuilder";
+import {createYMap, define, element, Point, turbo, YMap} from "turbodombuilder";
 import "./branchingNode.css";
 import {BranchingNodeModel} from "./branchingNode.model";
 import {BranchingNodeView} from "./branchingNode.view";
-import {VcComponentProperties} from "../component/component.types";
+import {VcProperties} from "../component/component.types";
 import {VcComponent} from "../component/component";
 import {Project} from "../../directors/project/project";
-import {YUtilities} from "../../../yManagement/yUtilities";
-import { YMap } from "../../../yManagement/yManagement.types";
-import {BranchingNodeSelectionInteractor} from "./branchingNode.selectionInteractor";
-import {BranchingNodeDeleteInteractor} from "./branchingNode.deleteInteractor";
-import {BranchingNodeConnectionInteractor} from "./branchingNode.connectionInteractor";
 
 /**
  * @class BranchingNode
@@ -25,22 +20,11 @@ export class BranchingNode<
     Data extends SyncedBranchingNode = SyncedBranchingNode,
     Model extends BranchingNodeModel = BranchingNodeModel
 > extends VcComponent<View, Data, Model, Project> {
-    public constructor(properties: VcComponentProperties<View, Data, Model, Project> = {}) {
-        super(properties);
-        if (properties.data) this.mvc.generate({
-            viewConstructor: BranchingNodeView as new () => View,
-            modelConstructor: BranchingNodeModel as new () => Model,
-            data: properties.data,
-            interactorConstructors: [BranchingNodeSelectionInteractor, BranchingNodeDeleteInteractor,
-                BranchingNodeConnectionInteractor]
-        });
-    }
-
     public static createData(data?: SyncedBranchingNode): YMap & SyncedBranchingNode {
         if (!data) data = {};
         if (!data.origin) data.origin = {x: 0, y: 0};
         data.type = BranchingNodeType.node;
-        return YUtilities.createYMap(data);
+        return createYMap(data);
     }
 
     /**
@@ -49,7 +33,9 @@ export class BranchingNode<
      * @param {Point} deltaPosition - The values by which to move the data.
      */
     public move(deltaPosition: Point) {
+        //TODO CHECK SUBSTRATE
         this.model.origin = deltaPosition.add(this.model.origin).object;
+        this.director.flows.forEach((flow) => flow.updateAfterMovingNode(this.dataId, deltaPosition));
     }
 
     /**
@@ -61,4 +47,17 @@ export class BranchingNode<
         this.director.flows.forEach(flow => flow.updateOnDetachingNode(this.dataId));
         this.director.delete(this);
     }
+}
+
+export function branchingNode<
+    View extends BranchingNodeView = BranchingNodeView,
+    Data extends SyncedBranchingNode = SyncedBranchingNode,
+    Model extends BranchingNodeModel = BranchingNodeModel
+>(properties: VcProperties<View, Data, Model, Project> = {}): BranchingNode<View, Data, Model> {
+    turbo(properties).applyDefaults({
+        tag: "vc-branching-node",
+        view: BranchingNodeView as new () => View,
+        model: BranchingNodeModel as any
+    });
+    return element({...properties}) as BranchingNode<View, Data, Model>;
 }

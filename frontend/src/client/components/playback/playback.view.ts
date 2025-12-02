@@ -1,8 +1,8 @@
-import {DefaultEventName, div, TurboIcon, TurboView} from "turbodombuilder";
+import {DefaultEventName, div, icon, turbo, TurboIcon, TurboView} from "turbodombuilder";
 import {Playback} from "./playback";
 import {PlaybackModel} from "./playback.model";
-import {Timeline} from "../timeline/timeline";
-import {ClipRenderer} from "../clipRenderer/clipRenderer";
+import {timeline, Timeline} from "../timeline/timeline";
+import {clipRenderer, ClipRenderer} from "../clipRenderer/clipRenderer";
 
 export class PlaybackView extends TurboView<Playback, PlaybackModel> {
     protected scaleContainer: HTMLElement;
@@ -25,32 +25,30 @@ export class PlaybackView extends TurboView<Playback, PlaybackModel> {
         super.setupUIElements();
 
         this.scaleContainer = div();
-        this.renderer = new ClipRenderer({director: this.element.director, videoProperties: {playsInline: true}});
-        this.timeline = new Timeline({director: this.element.director, renderer: this.renderer, initialize: true});
+        this.renderer = clipRenderer({director: this.element.director, videoProperties: {playsInline: true}});
+        this.timeline = timeline({director: this.element.director, renderer: this.renderer});
 
         this.buttonsDiv = div({classes: "buttons-div"});
-        this.closeButton = new TurboIcon({icon: "x"});
-        this.maximizeButton = new TurboIcon({icon: "maximize"});
+        this.closeButton = icon({icon: "x"});
+        this.maximizeButton = icon({icon: "maximize"});
     }
 
     protected setupUILayout() {
         super.setupUILayout();
 
-        this.element.addChild(this.scaleContainer);
-        this.buttonsDiv.addChild([this.closeButton]);
-        this.element.addChild(this.buttonsDiv);
-
-        this.scaleContainer.addChild([this.renderer, this.timeline]);
-        this.element.childHandler = this.scaleContainer;
+        turbo(this).addChild([this.scaleContainer, this.buttonsDiv]);
+        turbo(this.buttonsDiv).addChild([this.closeButton]);
+        turbo(this.scaleContainer).addChild([this.renderer, this.timeline]);
+        turbo(this).childHandler = this.scaleContainer;
     }
 
     protected setupUIListeners() {
         super.setupUIListeners();
         window.addEventListener("resize", () => this.resize());
-        this.closeButton.addListener(DefaultEventName.click, () => this.element.remove());
-        this.maximizeButton.addListener(DefaultEventName.click, () => {
+        turbo(this.closeButton).on(DefaultEventName.click, () => this.element.remove());
+        turbo(this.maximizeButton).on(DefaultEventName.click, () => {
             this.isMaximized = !this.isMaximized;
-            this.element.toggleClass("maximized-playback", this.isMaximized);
+            turbo(this).toggleClass("maximized-playback", this.isMaximized);
             this.maximizeButton.icon = this.isMaximized ? "minimize" : "maximize";
             requestAnimationFrame(() => requestAnimationFrame(() => this.resize()));
         });

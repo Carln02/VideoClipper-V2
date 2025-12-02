@@ -1,4 +1,4 @@
-shooting-panel {
+vc-shooting-panel {
     position: relative;
     height: 100%;
 
@@ -11,17 +11,17 @@ shooting-panel {
     transition: width 0.3s ease-out;
 }
 
-shooting-panel animated-content-switch {
+vc-shooting-panel animated-content-switch {
     margin-left: 1.5em;
 }
 
-shooting-panel animated-content-switch .camera-buttons {
+vc-shooting-panel animated-content-switch .camera-buttons {
     display: grid;
     grid-template-rows: 1fr auto 1fr;
     gap: 2em;
 }
 
-shooting-panel .camera-buttons > .camera-buttons-child {
+vc-shooting-panel .camera-buttons > .camera-buttons-child {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -30,11 +30,11 @@ shooting-panel .camera-buttons > .camera-buttons-child {
     gap: 1em;
 }
 
-shooting-panel .camera-buttons > .camera-buttons-child:first-child {
+vc-shooting-panel .camera-buttons > .camera-buttons-child:first-child {
     justify-content: flex-end;
 }
 
-shooting-panel turbo-icon-toggle, shooting-panel turbo-icon {
+vc-shooting-panel turbo-icon-toggle, vc-shooting-panel turbo-icon {
     width: 2em;
     height: 2em;
 
@@ -43,11 +43,11 @@ shooting-panel turbo-icon-toggle, shooting-panel turbo-icon {
     background-color: rgba(255, 255, 255, 0.3);
 }
 
-shooting-panel turbo-icon-toggle:hover, shooting-panel turbo-icon:hover {
+vc-shooting-panel turbo-icon-toggle:hover, vc-shooting-panel turbo-icon:hover {
     cursor: pointer;
 }
 
-shooting-panel turbo-icon-toggle > svg, shooting-panel turbo-icon > svg {
+vc-shooting-panel turbo-icon-toggle > svg, vc-shooting-panel turbo-icon > svg {
     width: 100%;
     height: 100%;
     fill: white;

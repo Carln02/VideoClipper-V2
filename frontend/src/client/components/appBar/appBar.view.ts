@@ -1,4 +1,4 @@
-import {DefaultEventName, h3, icon, spacer, TurboIcon, TurboView} from "turbodombuilder";
+import {DefaultEventName, h3, icon, spacer, turbo, TurboIcon, TurboView} from "turbodombuilder";
 import {AppBar} from "./appBar";
 
 export class AppBarView extends TurboView<AppBar> {
@@ -8,22 +8,23 @@ export class AppBarView extends TurboView<AppBar> {
 
     protected setupUIElements() {
         super.setupUIElements();
-
-        this.fullscreenToggle = icon({icon: "maximize"})
+        this.fullscreenToggle = icon({icon: "maximize"});
         this.canvasTitle = h3({text: "VideoClipper"});
         this.backButton = icon({icon: "home"});
     }
 
     protected setupUILayout() {
         super.setupUILayout();
-        this.element.addChild([this.backButton, spacer(), this.canvasTitle, spacer(), this.fullscreenToggle]);
+        turbo(this.element).addChild([this.backButton, spacer(), this.canvasTitle, spacer(), this.fullscreenToggle]);
     }
 
     protected setupUIListeners() {
         super.setupUIListeners();
 
-        this.fullscreenToggle.addListener(DefaultEventName.click, () => this.toggleFullscreen());
-        this.backButton.addListener(DefaultEventName.click, () => window.location.href = window.location.origin);
+        turbo(this.fullscreenToggle).on(DefaultEventName.click, () => this.toggleFullscreen());
+        turbo(this.backButton).on(DefaultEventName.click, () => {
+            window.location.href = window.location.origin;
+        });
     }
 
     private toggleFullscreen() {

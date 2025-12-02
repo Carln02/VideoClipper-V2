@@ -1,8 +1,6 @@
-import {YMap} from "../../../yManagement/yManagement.types";
-import {YUtilities} from "../../../yManagement/yUtilities";
 import {FlowEntryProperties, SplitEntryData, SyncedFlowEntry} from "./flowEntry.types";
 import {FlowEntryModel} from "./flowEntry.model";
-import {Coordinate, Point, SvgNamespace, TurboProxiedElement} from "turbodombuilder";
+import {Coordinate, createYMap, Point, SvgNamespace, TurboProxiedElement, YMap} from "turbodombuilder";
 import {FlowEntryView} from "./flowEntry.view";
 import {FlowIntersection} from "../flow/flow.types";
 import {FlowEntryIntersectionHandler} from "./flowEntry.intersectionHandler";
@@ -32,7 +30,7 @@ export class FlowEntry extends TurboProxiedElement<"g", FlowEntryView, SyncedFlo
         if (!data.startNodeId) data.startNodeId = "";
         if (!data.endNodeId) data.endNodeId = "";
         if (!data.points) data.points = [];
-        return YUtilities.createYMap(data);
+        return createYMap(data);
     }
 
     public updateAfterMovingNode(nodeId: string, deltaPosition: Point) {
@@ -125,7 +123,6 @@ export class FlowEntry extends TurboProxiedElement<"g", FlowEntryView, SyncedFlo
     }
 
     public delete() {
-        console.log("ENTRY DELETED")
         this.view.clearDrawing();
         this.model.flow.removeEntry(this);
     }

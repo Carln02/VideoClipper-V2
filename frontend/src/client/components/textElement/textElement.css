@@ -1,7 +1,7 @@
-vc-text-entry {
+vc-text-element {
     position: absolute;
 }
 
-vc-text-entry input {
+vc-text-element input {
     width: auto;
 }

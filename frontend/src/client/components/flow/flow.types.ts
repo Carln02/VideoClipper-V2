@@ -1,6 +1,6 @@
-import {YArray, YMap} from "../../../yManagement/yManagement.types";
 import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 import {SyncedFlowSelector} from "../flowSelector/flowSelector.types";
+import {YArray, YMap} from "turbodombuilder";
 
 /**
  * Represents the entire flow document:

@@ -1,18 +1,14 @@
-import {YArray, YMap} from "../../../yManagement/yManagement.types";
-import {YComponentModel} from "../../../yManagement/yModel/types/yComponentModel";
 import {SyncedFlow} from "./flow.types";
-import {Point} from "turbodombuilder";
+import {deepObserveAll, Point, TurboModel, YArray, YMap} from "turbodombuilder";
 import {FlowIntersectionHandler} from "./flow.intersectionHandler";
 import {FlowSelector} from "../flowSelector/flowSelector";
-import {YUtilities} from "../../../yManagement/yUtilities";
 import {FlowEntryHandler} from "./flow.entryHandler";
 import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 import {FlowEntry} from "../flowEntry/flowEntry";
 import {FlowUpdateHandler} from "./flow.updateHandler";
-import {YManagerModel} from "../../../yManagement/yModel/types/yManagerModel";
 import {SyncedFlowSelector} from "../flowSelector/flowSelector.types";
 
-export class FlowModel extends YComponentModel {
+export class FlowModel extends TurboModel {
     public currentEntryId: string;
 
     public readonly selectorModel: YManagerModel<SyncedFlowSelector, FlowSelector, string, YMap>;
@@ -47,7 +43,7 @@ export class FlowModel extends YComponentModel {
 
         this.selectorModel.data = this.selectorsData;
         this.selectorModel.onAdded = (data) => this.onFlowSelectorAdded(data);
-        YUtilities.deepObserveAll(this.data, () => this.fireCallback("__redraw"), "entries");
+        deepObserveAll(this.data, () => this.fireCallback("__redraw"), "entries");
     }
 
     public get currentEntry(): FlowEntry {

@@ -1,14 +1,13 @@
-import {YComponentModel} from "../../../yManagement/yModel/types/yComponentModel";
-import {auto, Coordinate, Point} from "turbodombuilder";
+import {auto, Coordinate, deepObserveAny, Point, TurboModel, TurboYBlock} from "turbodombuilder";
 import {SplitEntryData, SyncedFlowEntry} from "./flowEntry.types";
-import {YUtilities} from "../../../yManagement/yUtilities";
 import {Flow} from "../flow/flow";
 import d3 from "d3";
 import {FlowEntryPointHandler} from "./flowEntry.pointHandler";
 import {FlowEntryUpdateHandler} from "./flowEntry.updateHandler";
 import {FlowEntryIntersectionHandler} from "./flowEntry.intersectionHandler";
 
-export class FlowEntryModel extends YComponentModel {
+export class FlowEntryModel extends TurboModel {
+    public dataBlockConstructor = TurboYBlock;
     public flow: Flow;
 
     public groupSelection: d3.Selection<SVGGElement, unknown, null, undefined>;
@@ -25,14 +24,8 @@ export class FlowEntryModel extends YComponentModel {
     public lastRedraw: number;
     public chevronTimer: NodeJS.Timeout;
 
-    public get data(): any {
-        return super.data;
-    }
-
-    public set data(value: any) {
-        super.data = value;
-
-        YUtilities.deepObserveAny(this.data, () => this.fireCallback("__redraw"), "points");
+    @auto({override: true}) public set data(value: any) {
+        deepObserveAny(this.data, () => this.fireCallback("__redraw"), "points");
     }
 
     public get path(): SVGPathElement {

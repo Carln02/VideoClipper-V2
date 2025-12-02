@@ -1,7 +1,7 @@
 import {Renderer} from "./renderer";
 import {RendererView} from "./renderer.view";
 import {RendererModel} from "./renderer.model";
-import {TurboController} from "turbodombuilder";
+import {effect, TurboController} from "turbodombuilder";
 import {RendererVideoController} from "./renderer.videoController";
 
 export class RendererCanvasController<
@@ -9,9 +9,8 @@ export class RendererCanvasController<
     ViewType extends RendererView = RendererView,
     ModelType extends RendererModel = RendererModel
 > extends TurboController<ElementType, ViewType, ModelType> {
-    protected setupChangedCallbacks() {
-        super.setupChangedCallbacks();
-        this.emitter.add("canvasFillChanged", () => this.refreshCanvas());
+    @effect private canvasFillChanged() {
+        this.refreshCanvas();
     }
 
     public async refreshCanvas() {

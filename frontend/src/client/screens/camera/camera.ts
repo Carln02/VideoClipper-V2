@@ -1,4 +1,4 @@
-import {auto, define} from "turbodombuilder";
+import {auto, controller, define, element, expose, turbo} from "turbodombuilder";
 import "./camera.css";
 import {Card} from "../../components/card/card";
 import {ClipRendererVisibility} from "../../components/clipRenderer/clipRenderer.types";
@@ -13,30 +13,27 @@ import {ProjectScreens, ToolType} from "../../directors/project/project.types";
 import {SyncedMedia} from "../../handlers/mediaHandler/mediaHandler.types";
 import {ShootingPanel} from "../../panels/shootingPanel/shootingPanel";
 import {replaceUrlParams} from "../../utils/url";
+import {VcProperties} from "../../components/component/component.types";
 
 @define("vc-camera")
 export class Camera extends VcComponent<CameraView, object, CameraModel, Project> {
-    public constructor(document: Project) {
-        super({director: document});
+    @controller() protected recordingController: CameraRecordingController;
 
-        this.mvc.generate({
-            viewConstructor: CameraView,
-            modelConstructor: CameraModel,
-            handlerConstructors: [CameraCaptureHandler],
-            controllerConstructors: [CameraRecordingController]
-        });
+    @expose("model", false) public accessor ghosting: boolean;
+    @expose("view.clipRenderer") public accessor visibilityMode: ClipRendererVisibility;
+    @expose("view.clipRenderer") public accessor currentCanvasFill: string | null;
 
+    public initialize() {
+        super.initialize();
         this.model.ghosting = true;
-
         this.mvc.emitter.add("recordedMedia", async (media: SyncedMedia, blob?: Blob) => {
             await this.director.mediaHandler.saveMedia(media, blob);
-            await this.card.addClip(Clip.createData({endTime: (media?.duration ?? 5), mediaId: media.id}),
+            this.card.addClip(Clip.createData({endTime: (media?.duration ?? 5), mediaId: media.id}),
                 this.view.timeline.currentClipInfo.closestIntersection);
         });
     }
 
-    @auto()
-    public set card(value: Card) {
+    @auto() public set card(value: Card) {
         this.view.timeline.card = value;
         this.view.metadataDrawer.card = value;
         replaceUrlParams({name: "card", value: value.dataId});
@@ -49,14 +46,6 @@ export class Camera extends VcComponent<CameraView, object, CameraModel, Project
 
     public get frameHeight() {
         return this.view.clipRenderer.offsetHeight;
-    }
-
-    public fillCanvas(fill?: string | null) {
-        this.view.clipRenderer.setFill(fill);
-    }
-
-    public get ghosting(): boolean {
-        return this.model.ghosting;
     }
 
     public clear() {
@@ -97,14 +86,6 @@ export class Camera extends VcComponent<CameraView, object, CameraModel, Project
         this.recordingController.stopRecording();
     }
 
-    protected get recordingController(): CameraRecordingController {
-        return this.mvc.getController("recording") as CameraRecordingController;
-    }
-
-    public set visibilityMode(value: ClipRendererVisibility) {
-        this.view.clipRenderer.visibilityMode = value;
-    }
-
     public set visible(value: boolean) {
         this.visibilityMode = value ? ClipRendererVisibility.shown
             : (this.ghosting ? ClipRendererVisibility.ghosting : ClipRendererVisibility.hidden);
@@ -119,4 +100,15 @@ export class Camera extends VcComponent<CameraView, object, CameraModel, Project
         if (!media) return;
         await this.recordingController.saveMedia(media);
     }
+}
+
+export function camera(properties: VcProperties<CameraView, object, CameraModel, Project>): Camera {
+    turbo(properties).applyDefaults({
+        tag: "vc-camera",
+        view: CameraView,
+        model: CameraModel,
+        handlers: CameraCaptureHandler,
+        controllers: CameraRecordingController
+    });
+    return element({...properties}) as Camera;
 }

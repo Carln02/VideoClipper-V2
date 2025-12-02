@@ -1,21 +1,23 @@
-import {Side, TurboDrawer} from "turbodombuilder";
+import {drawer, Side, turbo, TurboDrawer} from "turbodombuilder";
 import {TimelineView} from "../timeline.view";
 import {ClipTimeline} from "./clipTimeline";
-import {ClipScrubber} from "../../scrubber/clipScrubber/clipScrubber";
+import {clipScrubber} from "../../scrubber/clipScrubber/clipScrubber";
 
 export class ClipTimelineView extends TimelineView<ClipTimeline> {
     public drawer: TurboDrawer;
 
     protected setupUIElements() {
         super.setupUIElements();
-
-        this.drawer = new TurboDrawer({icon: "chevron", side: Side.right});
-        this.scrubber = new ClipScrubber({timeline: this.element, director: this.element.director, initialize: true});
+        this.drawer = drawer({icon: "chevron", side: Side.right, ...(this.element.drawerProperties ?? {})});
+        this.scrubber = clipScrubber({timeline: this.element, director: this.element.director});
     }
 
     protected setupUILayout() {
-        this.element.addChild(this.drawer);
-        this.element.childHandler = this.drawer.childHandler;
+        turbo(this).addChild(this.drawer).childHandler = turbo(this.drawer).childHandler;
         super.setupUILayout();
+
+        //TODO TOGGLE
+        // this.totalDurationText.remove();
+        // turbo(this.drawer).addChild(this.currentTimeText, 0);
     }
 }

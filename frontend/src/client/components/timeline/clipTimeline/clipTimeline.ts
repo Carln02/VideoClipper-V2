@@ -1,8 +1,8 @@
-import {define, Side, TurboIconSwitch} from "turbodombuilder";
+import {define, turbo, TurboDrawerProperties} from "turbodombuilder";
 import {ClipRenderer} from "../../clipRenderer/clipRenderer";
 import {Clip} from "../../clip/clip";
 import "./clipTimeline.css";
-import {Timeline} from "../timeline";
+import {timeline, Timeline} from "../timeline";
 import {ClipView} from "../../clip/clip.view";
 import {SyncedClip} from "../../clip/clip.types";
 import {ClipTimelineView} from "./clipTimeline.view";
@@ -11,25 +11,18 @@ import {ClipTimelineProperties} from "./clipTimeline.types";
 @define("vc-clip-timeline")
 export class ClipTimeline extends Timeline<ClipTimelineView> {
     public readonly renderer: ClipRenderer;
+    public drawerProperties: TurboDrawerProperties;
 
-    public constructor(properties: ClipTimelineProperties) {
-        super({
-            ...properties,
-            viewConstructor: ClipTimelineView,
-        });
-        this.addClass("vc-clip-timeline");
-        this.scaled = true;
-        if (properties.drawerProperties) this.view.drawer.setProperties(properties.drawerProperties);
-        //TODO FIX THIS IN TURBO DRAWER
-        requestAnimationFrame(() => {
-            (this.view.drawer.icon as TurboIconSwitch<Side>).switchReifect.apply(this.view.drawer.getOppositeSide());
-            requestAnimationFrame(() => (this.view.drawer.icon as TurboIconSwitch<Side>).switchReifect.apply(this.view.drawer.side));
-        });
+    public initialize(): void {
+        this.view.onClipAdded = (syncedClip, id, self, blockKey) =>
+            this.onClipAdded(syncedClip, id, self, blockKey);
+        super.initialize();
+
     }
 
-    protected onClipAdded(syncedClip: SyncedClip, id: number, blockKey: number): Clip {
-        const clip = super.onClipAdded(syncedClip, id, blockKey, {viewConstructor: ClipView});
-        this.view.scrubberContainer.addChild(clip, this.model.clipHandler.convertBlockScopeToIndex(id + 1, blockKey));
+    protected onClipAdded(syncedClip: SyncedClip, id: number, self, blockKey: number): Clip {
+        const clip = super.onClipAdded(syncedClip, id, self, blockKey, {view: ClipView});
+        turbo(this.view.scrubberContainer).addChild(clip, this.model.flattenKey(id + 1, blockKey));
         return clip;
     }
 
@@ -42,12 +35,12 @@ export class ClipTimeline extends Timeline<ClipTimelineView> {
         this.view.drawer.refresh();
     }
 
-    public addIndicatorAt(indicator: Element, index: number) {
-        indicator.remove();
-        this.view.scrubberContainer.addChild(indicator, index);
-    }
-
     public get clipsContainer(): HTMLDivElement {
         return this.view.scrubberContainer;
     }
+}
+
+export function clipTimeline(properties: ClipTimelineProperties): ClipTimeline {
+    turbo(properties).applyDefaults({tag: "vc-clip-timeline", view: ClipTimelineView, scaled: true});
+    return timeline({...properties}) as ClipTimeline;
 }

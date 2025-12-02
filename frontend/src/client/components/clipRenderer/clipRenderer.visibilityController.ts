@@ -1,5 +1,5 @@
 import {ClipRendererVisibility} from "./clipRenderer.types";
-import {StatefulReifect, TurboController} from "turbodombuilder";
+import {effect, StatefulReifect, TurboController} from "turbodombuilder";
 import {ClipRenderer} from "./clipRenderer";
 import {ClipRendererView} from "./clipRenderer.view";
 import {ClipRendererModel} from "./clipRenderer.model";
@@ -30,14 +30,13 @@ export class ClipRendererVisibilityController extends TurboController<ClipRender
     }
 
     protected setupChangedCallbacks() {
-        super.setupChangedCallbacks();
         this.elementVisibilityReifect.attach(this.element);
         this.canvasVisibilityReifect.attach(this.view.canvas);
         this.textVisibilityReifect.attach(this.view.textParent);
-        this.emitter.add("reloadVisibility", () => this.reloadVisibility());
+        super.setupChangedCallbacks();
     }
 
-    public async reloadVisibility() {
+    @effect public reloadVisibility() {
         this.elementVisibilityReifect.apply(this.model.visibilityMode);
         this.canvasVisibilityReifect.apply(this.model.visibilityMode);
         this.textVisibilityReifect.apply(this.model.visibilityMode);

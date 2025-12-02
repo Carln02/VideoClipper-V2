@@ -10,11 +10,6 @@ export class AuthenticationHandler extends RequestHandler {
 
     public readonly onLogin: Delegate<(loggedIn: boolean) => void> = new Delegate();
 
-    public constructor() {
-        super();
-        this.onLogin.add((l) => console.log("LOGGED IN CLLED WITH", l));
-    }
-
     private get url(): string {
         return this.serverUrl + "api/auth/";
     }

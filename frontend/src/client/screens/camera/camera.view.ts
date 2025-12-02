@@ -1,12 +1,12 @@
-import {DefaultEventName, div, icon, Open, Side, TurboIcon, TurboView} from "turbodombuilder";
+import {DefaultEventName, Direction, div, effect, icon, Open, Side, turbo, TurboIcon, TurboView} from "turbodombuilder";
 import {Camera} from "./camera";
 import {CameraModel} from "./camera.model";
-import {ClipRenderer} from "../../components/clipRenderer/clipRenderer";
-import {Toolbar} from "../../components/toolbar/toolbar";
-import {MetadataDrawer} from "../../components/metadataDrawer/metadataDrawer";
-import {Renderer} from "../../components/renderer/renderer";
-import {ShootingTimeline} from "../../components/timeline/shootingTimeline/shootingTimeline";
+import {clipRenderer, ClipRenderer} from "../../components/clipRenderer/clipRenderer";
+import {Toolbar, toolbar} from "../../components/toolbar/toolbar";
+import {metadataDrawer, MetadataDrawer} from "../../components/metadataDrawer/metadataDrawer";
+import {renderer, Renderer} from "../../components/renderer/renderer";
 import {ClipRendererVisibility} from "../../components/clipRenderer/clipRenderer.types";
+import {ClipTimeline, clipTimeline} from "../../components/timeline/clipTimeline/clipTimeline";
 
 
 export class CameraView extends TurboView<Camera, CameraModel> {
@@ -14,11 +14,11 @@ export class CameraView extends TurboView<Camera, CameraModel> {
     public clipRenderer: ClipRenderer;
 
     public toolbar: Toolbar;
-    public timeline: ShootingTimeline;
+    public timeline: ClipTimeline;
     public metadataDrawer: MetadataDrawer;
     protected backButton: TurboIcon;
 
-    initialize() {
+    public initialize() {
         super.initialize();
         this.resize();
     }
@@ -28,27 +28,34 @@ export class CameraView extends TurboView<Camera, CameraModel> {
 
         this.backButton = icon({icon: "arrow-right"});
 
-        this.cameraRenderer = new Renderer({director: this.element.director,
-            videoProperties: {autoplay: true, muted: true, playsInline: true}});
-        this.clipRenderer = new ClipRenderer({director: this.element.director, videoProperties: {playsInline: true}});
+        this.cameraRenderer = renderer({
+            director: this.element.director,
+            videoProperties: {autoplay: true, muted: true, playsInline: true}
+        });
+        this.clipRenderer = clipRenderer({
+            director: this.element.director,
+            videoProperties: {playsInline: true}
+        });
 
-        this.toolbar = new Toolbar({classes: "right-toolbar", director: this.element.director});
+        this.toolbar = toolbar({classes: "right-toolbar", director: this.element.director});
         // this.toolbar.populateWith(ToolType.selection, ToolType.shoot, ToolType.text, ToolType.delete);
 
-        this.timeline = new ShootingTimeline({
+        this.timeline = clipTimeline({
             drawerProperties: {
                 side: Side.right,
                 icon: "chevron",
                 offset: {[Open.open]: -4},
                 initiallyOpen: true
             },
+            classes: "vc-shooting-timeline",
+            orientation: Direction.vertical,
             director: this.element.director,
             card: this.element.card,
             scaled: false,
             renderer: this.clipRenderer,
         });
 
-        this.metadataDrawer = new MetadataDrawer({
+        this.metadataDrawer = metadataDrawer({
             card: this.element.card,
             side: Side.bottom,
             icon: "chevron",
@@ -59,31 +66,31 @@ export class CameraView extends TurboView<Camera, CameraModel> {
 
     protected setupUILayout() {
         super.setupUILayout();
-
-        this.element.addChild(div({classes: "back-button-div", children: [this.backButton]}));
-        this.element.addChild([this.cameraRenderer, this.clipRenderer, this.toolbar,
-            this.timeline, this.metadataDrawer]);
-    }
-
-    protected setupChangedCallbacks() {
-        super.setupChangedCallbacks();
-
-        this.emitter.add("stream", () => this.cameraRenderer.video.srcObject = this.model.stream);
-        this.emitter.add("ghosting", (value: boolean) => {
-            if (this.model.videoStreamOn) this.clipRenderer.setStyle("opacity", value ? "0.2" : "0");
-        });
+        turbo(this).addChild([
+            div({classes: "back-button-div", children: [this.backButton]}),
+            this.cameraRenderer, this.clipRenderer, this.toolbar,
+            this.timeline, this.metadataDrawer
+        ]);
     }
 
     protected setupUIListeners() {
         super.setupUIListeners();
         window.addEventListener("resize", () => this.resize());
-        this.backButton.addListener(DefaultEventName.click, () => history.back());
+        turbo(this.backButton).on(DefaultEventName.click, () => history.back());
 
         this.timeline.onPlay = (b: boolean) => {
-            this.cameraRenderer.show(!b);
+            turbo(this.cameraRenderer).show(!b);
             this.clipRenderer.visibilityMode = b ? ClipRendererVisibility.shown : this.element.ghosting
                 ? ClipRendererVisibility.ghosting : ClipRendererVisibility.hidden;
         }
+    }
+
+    @effect private streamChanged() {
+        this.cameraRenderer.video.srcObject = this.model.stream;
+    }
+
+    @effect private ghostingChanged() {
+        if (this.model.videoStreamOn) turbo(this.clipRenderer).setStyle("opacity", this.model.ghosting ? "0.2" : "0");
     }
 
     public resize() {

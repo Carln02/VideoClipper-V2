@@ -1,9 +1,8 @@
-import {DefaultEventName, Direction, TurboIcon, TurboSelectWheel, TurboView} from "turbodombuilder";
+import {deepObserveAny, DefaultEventName, Direction, TurboIcon, TurboSelectWheel, TurboView} from "turbodombuilder";
 import {FlowSelector} from "./flowSelector";
 import {FlowSelectorModel} from "./flowSelector.model";
 import {Playback} from "../playback/playback";
-import {FlowPath} from "../flowPath/flowPath";
-import {YUtilities} from "../../../yManagement/yUtilities";
+import FlowPath from "../flowPath/flowPath";
 import {FlowSelectorMarkingMenu} from "../flowSelectorMarkingMenu/flowSelectorMarkingMenu";
 import {Card} from "../card/card";
 
@@ -57,7 +56,7 @@ export class FlowSelectorView extends TurboView<FlowSelector, FlowSelectorModel>
             this.model.pathHandler.updatePaths();
             requestAnimationFrame(() => this.updateHighlightedEntries());
         });
-        YUtilities.deepObserveAny(this.model.data, () => this.wheel.select(this.wheel.selectedEntry), "name");
+        deepObserveAny(this.model.data, () => this.wheel.select(this.wheel.selectedEntry), "name");
     }
 
     private updateHighlightedEntries() {

@@ -1,12 +1,6 @@
-import {Coordinate} from "turbodombuilder";
-import {YComponentModel} from "../../../yManagement/yModel/types/yComponentModel";
+import {Coordinate, modelSignal, TurboModel, TurboYBlock} from "turbodombuilder";
 
-export class BranchingNodeModel extends YComponentModel {
-    public get origin(): Coordinate {
-        return this.getData("origin") as Coordinate;
-    }
-
-    public set origin(value: Coordinate) {
-        this.setData("origin", value);
-    }
+export class BranchingNodeModel extends TurboModel {
+    public static dataBlockConstructor = TurboYBlock;
+    @modelSignal() public origin: Coordinate;
 }

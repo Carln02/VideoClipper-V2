@@ -1,6 +1,5 @@
-import {Coordinate} from "turbodombuilder";
+import {Coordinate, YMap} from "turbodombuilder";
 import {Flow} from "../flow/flow";
-import { YMap } from "../../../yManagement/yManagement.types";
 
 /**
  * A single node-to-node connection, with user-drawn geometry in "points".

@@ -1,10 +1,10 @@
-import {YMap} from "../../../yManagement/yManagement.types";
-import {VcComponentProperties} from "../component/component.types";
+import {VcProperties} from "../component/component.types";
 import {FlowSelectorView} from "./flowSelector.view";
 import {FlowSelectorModel} from "./flowSelector.model";
 import {Flow} from "../flow/flow";
 import {SyncedFlowPath} from "../flowPath/flowPath.types";
 import {Project} from "../../directors/project/project";
+import {YMap} from "turbodombuilder";
 
 /**
  * A flow tag might store a "nodeId" (as a root for traversal)
@@ -15,6 +15,6 @@ export type SyncedFlowSelector = {
     paths?: YMap<SyncedFlowPath> | Record<string, SyncedFlowPath>;
 };
 
-export type FlowSelectorProperties = VcComponentProperties<FlowSelectorView, SyncedFlowSelector, FlowSelectorModel, Project> & {
+export type FlowSelectorProperties = VcProperties<FlowSelectorView, SyncedFlowSelector, FlowSelectorModel, Project> & {
     flow: Flow,
 };

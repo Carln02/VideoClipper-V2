@@ -1,8 +1,8 @@
-import {auto, callOnce, define, TurboEventManager, turbofy, TurboIcon, TurboModel} from "turbodombuilder";
+import {$, auto, callOnce, define, turbo, TurboEventManager, TurboIcon, TurboModel} from "turbodombuilder";
 import {CursorManager} from "../../managers/cursorManager/cursorManager";
 import {RootDirectorView} from "./rootDirector.view";
 import "./rootDirector.css";
-import {Director} from "../director/director";
+import {director, Director} from "../director/director";
 import {DirectorProperties} from "../director/director.types";
 import {AuthenticationHandler} from "../../handlers/authenticationHandler/authenticationHandler";
 import {GroupsHandler} from "../../handlers/groupsHandler/groupsHandler";
@@ -14,17 +14,17 @@ export class RootDirector<
     DataType extends object = object,
     ModelType extends TurboModel<DataType> = TurboModel,
 > extends Director<ScreenType, ViewType, DataType, ModelType> {
-    private readonly _eventManager: TurboEventManager;
-    private readonly _cursorManager: CursorManager;
-    private readonly _authenticationHandler: AuthenticationHandler;
-    private readonly _groupsHandler: GroupsHandler;
+    private _eventManager: TurboEventManager;
+    private _cursorManager: CursorManager;
+    private _authenticationHandler: AuthenticationHandler;
+    private _groupsHandler: GroupsHandler;
 
-    public constructor(properties: DirectorProperties<ScreenType, ViewType, DataType, ModelType>) {
-        super(properties);
-        this.addClass("vc-root-director");
-
+    public initialize(): void {
+        super.initialize();
         this._authenticationHandler = new AuthenticationHandler();
-        this._eventManager = new TurboEventManager();
+        this._eventManager = TurboEventManager.instance;
+        this.eventManager.preventDefaultMouse = false;
+        this.eventManager.preventDefaultTouch = false;
         this._cursorManager = new CursorManager();
         this._groupsHandler = new GroupsHandler();
 
@@ -36,7 +36,6 @@ export class RootDirector<
 
     @callOnce
     public static initialize() {
-        turbofy();
         TurboIcon.config.defaultDirectory = "/assets/icons";
         TurboIcon.config.defaultClasses = "icon";
     }
@@ -59,8 +58,19 @@ export class RootDirector<
 
     @auto()
     public set preventDefaultEvents(value: boolean) {
-        this.eventManager.defaultState.preventDefaultTouch = value;
-        this.eventManager.defaultState.preventDefaultMouse = value;
-        this.eventManager.defaultState.preventDefaultWheel = value;
+        this.eventManager.preventDefaultTouch = value;
+        this.eventManager.preventDefaultMouse = value;
+        this.eventManager.preventDefaultWheel = value;
     }
+}
+
+export function rootDirector<
+    ScreenType extends string | number | symbol = string | number | symbol,
+    ViewType extends RootDirectorView = RootDirectorView<any, any>,
+    DataType extends object = object,
+    ModelType extends TurboModel<DataType> = TurboModel,
+>(properties: DirectorProperties<ScreenType, ViewType, DataType, ModelType>
+): RootDirector<ScreenType, ViewType, DataType, ModelType> {
+    turbo(properties).applyDefaults({tag: "vc-root-director", view: RootDirectorView as new () => ViewType});
+    return director({...properties}) as RootDirector<ScreenType, ViewType, DataType, ModelType>;
 }

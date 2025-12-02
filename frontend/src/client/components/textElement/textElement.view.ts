@@ -1,63 +1,23 @@
 import {TextElementModel} from "./textElement.model";
 import {TextElement} from "./textElement";
 import {TextType} from "./textElement.types";
-import {Coordinate, span, TurboEvent, TurboEventName, TurboView} from "turbodombuilder";
-import {Resizer} from "../basicComponents/resizer/resizer";
+import {effect, span, turbo, TurboEvent, TurboEventName, TurboView} from "turbodombuilder";
+import {resizer, Resizer} from "../basicComponents/resizer/resizer";
 import {ProjectScreens, ToolType} from "../../directors/project/project.types";
 
 export class TextElementView extends TurboView<TextElement, TextElementModel> {
     private content: HTMLSpanElement;
-    private _resizer: Resizer;
-
-    public get resizer(): Resizer {
-        return this._resizer;
-    }
-
-    protected set resizer(value: Resizer) {
-        this._resizer = value;
-    }
-
-    protected setupChangedCallbacks() {
-        super.setupChangedCallbacks();
-
-        this.emitter.add("type", (value: TextType) => {
-            switch (value.valueOf()) {
-                case TextType.timestamp:
-                    this.textValue = this.element.card.metadata.timestamp;
-                    return;
-                case TextType.title:
-                    this.textValue = this.element.card?.title;
-                    return;
-                default:
-                    this.textValue = this.model.text;
-                    return;
-            }
-        });
-
-        this.emitter.add("origin", (value: Coordinate) => this.element.setStyle("transform",
-            `translate3d(calc(${(value.x * this.element.renderer.width) || 0}px - 50%), 
-                        calc(${(value.y * this.element.renderer.height) || 0}px - 50%), 0)`));
-
-        this.emitter.add("fontSize", (value: number) => this.content
-            .setStyle("fontSize", value * this.element.renderer.offsetHeight + "px"));
-
-        this.emitter.add("text", (value: string) => {
-            if (this.model.type == TextType.custom) this.content.textContent = value;
-        });
-
-        this.emitter.add("boxWidth", (value: number) => this.element.setStyle("width", value + "%"));
-        this.emitter.add("boxHeight", (value: number) => this.element.setStyle("height", value + "%"));
-    }
+    public resizer: Resizer;
 
     protected setupUIElements() {
         super.setupUIElements();
         this.content = span({contentEditable: "true", role: "textbox"});
-        if (this.element.renderer) this.resizer = new Resizer(this.element);
+        if (this.element.renderer) this.resizer = resizer({content: this.element});
     }
 
     protected setupUILayout() {
         super.setupUILayout();
-        this.element.addChild([this.content, this.resizer]);
+        turbo(this).addChild([this.content, this.resizer]);
     }
 
     protected setupUIListeners() {
@@ -65,7 +25,7 @@ export class TextElementView extends TurboView<TextElement, TextElementModel> {
 
         this.element.addEventListener(TurboEventName.click, (e: TurboEvent) => {
             if (this.element.director.currentType != ProjectScreens.camera) return;
-            if (this.element.director.toolManager.getFiredTool(e).name != ToolType.createText) return;
+            if (e.toolName != ToolType.createText) return;
             this.content.focus();
             e.stopImmediatePropagation();
         });
@@ -81,5 +41,45 @@ export class TextElementView extends TurboView<TextElement, TextElementModel> {
 
     public set textValue(value: string) {
         this.content.textContent = value;
+    }
+
+    @effect private updateType() {
+        if (!this.model.type) return;
+        switch (this.model.type?.valueOf()) {
+            case TextType.timestamp:
+                this.textValue = this.element.card?.metadata.timestamp;
+                return;
+            case TextType.title:
+                this.textValue = this.element.card?.title;
+                return;
+            default:
+                this.textValue = this.model.text;
+                return;
+        }
+    }
+
+    @effect private updateOrigin() {
+        if (!this.model.origin) return;
+        turbo(this).setStyle("transform", `translate3d(
+            calc(${(this.model.origin.x * this.element.renderer.width) || 0}px - 50%), 
+            calc(${(this.model.origin.y * this.element.renderer.height) || 0}px - 50%), 
+        0)`);
+    }
+
+    @effect private updateFontSize() {
+        turbo(this.content).setStyle("fontSize", this.model.fontSize * this.element.renderer.offsetHeight + "px");
+    }
+
+    @effect private updateText() {
+        this.model.text;
+        if (this.model.type == TextType.custom) this.content.textContent = this.model.text;
+    }
+
+    @effect private updateBoxWidth() {
+        turbo(this).setStyle("width", this.model.boxWidth + "%");
+    }
+
+    @effect private updateBoxHeight() {
+        turbo(this).setStyle("height", this.model.boxHeight + "%");
     }
 }

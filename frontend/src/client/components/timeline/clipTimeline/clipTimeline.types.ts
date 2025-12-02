@@ -1,5 +1,4 @@
-import {TurboDrawerProperties} from "turbodombuilder";
-import {YArray} from "../../../../yManagement/yManagement.types";
+import {TurboDrawerProperties, YArray} from "turbodombuilder";
 import {SyncedClip} from "../../clip/clip.types";
 import {TimelineModel} from "../timeline.model";
 import {TimelineProperties} from "../timeline.types";

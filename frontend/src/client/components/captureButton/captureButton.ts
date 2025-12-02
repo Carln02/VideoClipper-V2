@@ -1,21 +1,16 @@
-import {DefaultEventName, define, div, TurboElement, TurboProperties} from "turbodombuilder";
+import {DefaultEventName, define, div, element, turbo, TurboElement, TurboElementProperties} from "turbodombuilder";
 import "./captureButton.css";
 import {CaptureMode} from "../../panels/shootingPanel/shootingPanel.types";
 
-@define()
+@define("vc-capture-button")
 export class CaptureButton extends TurboElement {
     private lowerDiv: HTMLDivElement;
     private upperDiv: HTMLDivElement;
     private innerIcon: HTMLDivElement;
 
-    public constructor(properties: TurboProperties = {}) {
-        super(properties);
-        this.initializeUI();
-    }
-
     public updateState(mode: CaptureMode) {
-        this.toggleClass("video", mode == CaptureMode.video);
-        this.toggleClass("video-capturing", mode == CaptureMode.videoShooting);
+        turbo(this).toggleClass("video", mode == CaptureMode.video)
+            .toggleClass("video-capturing", mode == CaptureMode.videoShooting);
     }
 
     protected setupUIElements() {
@@ -29,14 +24,23 @@ export class CaptureButton extends TurboElement {
     protected setupUILayout() {
         super.setupUILayout();
 
-        this.addChild([this.lowerDiv, this.upperDiv]);
-        this.upperDiv.addChild(this.innerIcon);
+        turbo(this).addChild([this.lowerDiv, this.upperDiv]);
+        turbo(this.upperDiv).addChild(this.innerIcon);
     }
 
     protected setupUIListeners() {
         super.setupUIListeners();
 
-        this.addListener(DefaultEventName.clickStart, () => this.upperDiv.setStyle("transform", "scale(0.7)"));
-        this.addListener(DefaultEventName.clickEnd, () => this.upperDiv.setStyle("transform", "scale(1)"));
+        turbo(this).on(DefaultEventName.clickStart, () => {
+            turbo(this.upperDiv).setStyle("transform", "scale(0.7)")
+        }).on(DefaultEventName.clickEnd, () => {
+            turbo(this.upperDiv).setStyle("transform", "scale(1)")
+        });
     }
 }
+
+export function captureButton(properties: TurboElementProperties): CaptureButton {
+    turbo(properties).applyDefaults({tag: "vc-capture-button"});
+    return element({...properties}) as CaptureButton;
+}
+

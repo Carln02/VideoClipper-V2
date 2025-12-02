@@ -1,5 +1,12 @@
-import {DefaultEventName, define, div, TurboDragEvent, TurboElement, TurboProperties} from "turbodombuilder";
+import {
+    DefaultEventName,
+    define,
+    element, turbo,
+    TurboDragEvent,
+    TurboElement,
+} from "turbodombuilder";
 import "./resizer.css";
+import {ResizerProperties} from "./resizer.types";
 
 //TODO FIX AND MAKE MORE GENERIC
 @define("vc-resizer")
@@ -7,34 +14,27 @@ export class Resizer extends TurboElement {
     private readonly content: Element;
     public parent: HTMLElement;
 
-    public constructor(content: Element, properties: TurboProperties = {}) {
-        super(properties);
-        this.content = content;
+    public initialize() {
+        this.parent = this.content?.parentElement;
+        turbo(this).show(false);
+
+        super.initialize();
+
     }
 
-    public connectedCallback() {
-        this.parent = this.content.parentElement;
+    protected setupUIElements() {
+        super.setupUIElements();
 
-        this.initUI();
-        this.show(false);
-    }
-
-    private initUI() {
-        for (const direction of ["nw", "ne", "sw", "se"]) {
-            const anchor = div({
-                parent:  this,
-                classes: "resizer-handle resizer-handle-" + direction,
-            });
-            anchor.addListener(DefaultEventName.drag, (e: TurboDragEvent) => {
-                e.stopImmediatePropagation();
+        for (const direction of ["nw", "ne", "sw", "se"]) turbo("div")
+            .addToParent(this)
+            .addClass("resizer-handle resizer-handle-" + direction)
+            .on(DefaultEventName.drag, (e: TurboDragEvent) => {
                 this.incrementWidthByPx(e.deltaPosition.x
                     * ((direction == "nw" || direction == "sw") ? -2 : 2));
                 this.incrementHeightByPx(e.deltaPosition.y
                     * ((direction == "nw" || direction == "ne") ? -2 : 2));
+                return true;
             });
-        }
-
-
     }
 
     public incrementWidthByPx(delta: number) {
@@ -47,4 +47,9 @@ export class Resizer extends TurboElement {
         if ("boxHeight" in this.content && typeof this.content.boxHeight == "number")
             this.content.boxHeight += delta / this.parent?.offsetHeight * 100;
     }
+}
+
+export function resizer(properties: ResizerProperties = {}): Resizer {
+    turbo(properties).applyDefaults({tag: "vc-resizer"});
+    return element({...properties}) as Resizer;
 }

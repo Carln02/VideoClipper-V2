@@ -1,8 +1,15 @@
 .vc-timeline.vc-clip-timeline {
-    height: 100%;
-    display: flex;
-    width: 0;
+    position: absolute;
     right: 0;
+    width: 0;
+    overflow: visible;
+    justify-content: center;
+}
+
+.vc-clip-timeline .turbo-drawer {
+    height: 120%;
+    left: 0;
+    position: absolute;
 }
 
 .vc-timeline.vc-clip-timeline .scrubber-container {
@@ -14,17 +21,6 @@
     display: flex;
     flex-direction: row;
     margin: 0.35em 0.7em;
-}
-
-.vc-clip-timeline .turbo-drawer {
-    height: 120%;
-    align-items: center;
-}
-
-.vc-clip-timeline .turbo-drawer .turbo-drawer-panel-container {
-    height: 100%;
-    display: flex;
-    background-color: transparent;
 }
 
 .vc-clip-timeline .turbo-drawer .turbo-drawer-panel {
@@ -48,13 +44,6 @@
 
 .vc-clip-timeline .top-drawer {
     bottom: 1em;
-}
-
-.vc-clip-timeline .right-drawer {
-    position: absolute;
-    left: 100%;
-    top: 50%;
-    transform: translateY(-50%);
 }
 
 .vc-clip-timeline .play-button {

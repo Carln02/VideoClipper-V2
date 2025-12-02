@@ -1,39 +1,39 @@
-metadata-drawer {
+vc-metadata-drawer {
     position: absolute;
     top: 100%;
 }
 
-metadata-drawer turbo-select {
+vc-metadata-drawer .tabbed-menu {
     display: flex;
     flex-direction: row;
     gap: 0.5em;
     padding-bottom: 1em;
 }
 
-metadata-drawer turbo-select > turbo-select-entry {
+vc-metadata-drawer .tabbed-menu > .turbo-rich-element {
     font-size: 0.9em;
     color: #727377;
     padding: 0.5em 0.8em;
 }
 
-metadata-drawer turbo-select > turbo-select-entry.selected-tab {
+vc-metadata-drawer .tabbed-menu > .turbo-rich-element.selected-tab {
     color: black;
     font-size: 1em;
     background-color: #d4ffff;
     border-radius: 100px;
 }
 
-metadata-drawer animated-content-switch {
+vc-metadata-drawer animated-content-switch {
     min-width: 100%;
 }
 
-metadata-drawer .metadata-panel {
+vc-metadata-drawer .metadata-panel {
     display: flex;
     flex-direction: column;
     gap: 0.6em;
 }
 
-metadata-drawer turbo-input {
+vc-metadata-drawer turbo-input {
     display: flex;
     flex-direction: row;
     gap: 0.6em;
@@ -41,28 +41,28 @@ metadata-drawer turbo-input {
     align-items: center;
 }
 
-metadata-drawer turbo-input label {
+vc-metadata-drawer turbo-input label {
     font-weight: 600;
     font-size: 0.9em;
     color: #727377;
     white-space:nowrap;
 }
 
-metadata-drawer turbo-input turbo-rich-element {
+vc-metadata-drawer turbo-input turbo-rich-element {
     padding: 0;
     border: none;
 }
 
-metadata-drawer .separator {
+vc-metadata-drawer .separator {
     height: 1em;
 }
 
-metadata-drawer turbo-input input {
+vc-metadata-drawer turbo-input input {
     font-size: 0.9em;
     font-weight: 600;
 }
 
-metadata-drawer turbo-input div {
+vc-metadata-drawer turbo-input div {
     padding: 0;
     border: none;
 }

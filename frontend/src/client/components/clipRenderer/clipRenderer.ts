@@ -1,75 +1,40 @@
-import {auto, define} from "turbodombuilder";
-import {TextElement} from "../textElement/textElement";
-import {Renderer} from "../renderer/renderer";
+import {auto, controller, define, expose, turbo} from "turbodombuilder";
+import {renderer, Renderer} from "../renderer/renderer";
 import {ClipRendererView} from "./clipRenderer.view";
 import {ClipRendererModel} from "./clipRenderer.model";
 import {Card} from "../card/card";
 import {RendererProperties} from "../renderer/renderer.types";
-import {RendererDrawingController} from "../renderer/renderer.drawingController";
 import {ClipRendererVideoController} from "./clipRenderer.videoController";
 import {ClipRendererVisibilityController} from "./clipRenderer.visibilityController";
 import {Clip} from "../clip/clip";
 import {ClipRendererFrameController} from "./clipRenderer.frameController";
-import {RendererCanvasController} from "../renderer/renderer.canvasController";
 import domToImage from "dom-to-image-more";
 import {ClipRendererVisibility} from "./clipRenderer.types";
 
 @define("vc-clip-renderer")
 export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> {
-    public constructor(properties: RendererProperties<ClipRendererView, ClipRendererModel> = {}) {
-        properties.generate = false;
-        super(properties);
-        this.mvc.generate({
-            viewConstructor: ClipRendererView,
-            modelConstructor: ClipRendererModel,
-            controllerConstructors: [RendererDrawingController, RendererCanvasController,
-                ClipRendererFrameController, ClipRendererVisibilityController, ClipRendererVideoController],
-            initialize: false
+    @controller() protected frameController: ClipRendererFrameController;
+    @controller() protected videoController: ClipRendererVideoController;
+
+    @expose("model") public accessor visibilityMode: ClipRendererVisibility;
+    @expose("model") public accessor renderOnCanvas: boolean;
+
+    @expose("view", false) public accessor canvas: HTMLCanvasElement;
+
+    public initialize(): void {
+        this.onAttach.add(() => {
+            this.view?.resize();
+            this.canvasController?.refreshCanvas();
         });
-
-        this.model.onTextAdded = (syncedText, id) => {
-            const text = new TextElement({data: syncedText, renderer: this, director: this.director});
-            this.view.addTextElement(text, id);
-            return text;
-        };
-
-        this.mvc.initialize();
-        this.view.canvas.setProperties(properties.canvasProperties);
-        this.view.videos.forEach((video: HTMLVideoElement) => video.setProperties(properties.videoProperties));
+        super.initialize();
     }
 
-    protected get frameController(): ClipRendererFrameController {
-        return this.mvc.getController("frame") as ClipRendererFrameController;
-    }
-
-    protected get videoController(): ClipRendererVideoController {
-        return this.mvc.getController("video") as ClipRendererVideoController;
-    }
-
-    public connectedCallback() {
-        this.view?.resize();
-        this.canvasController?.refreshCanvas();
-    }
-
-    public set visibilityMode(value: ClipRendererVisibility) {
-        this.model.visibilityMode = value;
-    }
-    
-    public get visibilityMode(): ClipRendererVisibility {
-        return this.model.visibilityMode;
-    }
-
-    @auto()
-    public set card(value: Card) {
-        this.model.cardData = value.data;
+    @auto() public set card(value: Card) {
+        this.model.cardData = value.data as any;
     }
 
     public get clip(): Clip {
         return this.model.getClip();
-    }
-
-    public get canvas(): HTMLCanvasElement {
-        return this.view.canvas;
     }
 
     public async setFrame(clip: Clip = this.model.getClip(), offsetTime: number = 0) {
@@ -101,12 +66,14 @@ export class ClipRenderer extends Renderer<ClipRendererView, ClipRendererModel> 
     public async playNext() {
         await this.videoController.playNext();
     }
+}
 
-    public get renderOnCanvas(): boolean {
-        return this.model.renderOnCanvas;
-    }
-
-    public set renderOnCanvas(value: boolean) {
-        this.model.renderOnCanvas = value;
-    }
+export function clipRenderer(properties: RendererProperties<ClipRendererView, ClipRendererModel> = {}): ClipRenderer {
+    turbo(properties).applyDefaults({
+        tag: "vc-clip-renderer",
+        view: ClipRendererView,
+        model: ClipRendererModel,
+        controllers: [ClipRendererFrameController, ClipRendererVisibilityController, ClipRendererVideoController]
+    });
+    return renderer({...properties}) as ClipRenderer;
 }

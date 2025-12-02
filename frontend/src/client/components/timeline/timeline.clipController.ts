@@ -2,37 +2,32 @@ import "./timeline.css";
 import {ClipRendererVisibility} from "../clipRenderer/clipRenderer.types";
 import {TimelineIndexInfo} from "./timeline.types";
 import {Timeline} from "./timeline";
-import {TurboController, TurboEvent} from "turbodombuilder";
+import {effect, TurboController, TurboEvent} from "turbodombuilder";
 import {TimelineView} from "./timeline.view";
 import {TimelineModel} from "./timeline.model";
-import {TimelineClipHandler} from "./timeline.clipHandler";
 import {ToolType} from "../../directors/project/project.types";
 
 export class TimelineClipController extends TurboController<Timeline, TimelineView, TimelineModel> {
     protected setupChangedCallbacks() {
         super.setupChangedCallbacks();
 
-        this.emitter.add("currentTimeChanged", () => this.reloadCurrentClip());
-
         const snapWhenShooting = (e: TurboEvent) => requestAnimationFrame(() => {
-            if (this.element.director.toolManager.getFiredTool(e).name == ToolType.shoot) this.snapToClosest();
+            if (e.toolName == ToolType.shoot) this.snapToClosest();
         });
 
         this.view.scrubber.onScrubbingEnd = snapWhenShooting;
         this.emitter.add("containerClicked", (e: TurboEvent) => snapWhenShooting(e));
     }
 
-    protected get clipHandler(): TimelineClipHandler {
-        return this.model.clipHandler;
-    }
-
     public reloadCurrentClip() {
-        this.model.indexInfo = this.clipHandler.getClipIndexAtTimestamp();
-        if (this.model.currentClip.selected) this.element.director.contextManager.setContext(this.model.currentClip, 2, true);
+        this.model.indexInfo = this.view.getClipIndexAtTimestamp();
+        if (!this.model.indexInfo || !this.view.currentClip) return; //TODO
+
+        if (this.view.currentClip?.selected) this.element.director.contextManager.setContext(this.view.currentClip, 2, true);
 
         if (!this.element.isPlaying)
             this.element.renderer.setFrame(this.element.renderer.visibilityMode == ClipRendererVisibility.ghosting
-            ? this.model.currentGhostingClip : this.model.currentClip, this.model.indexInfo?.offset);
+            ? this.view.currentGhostingClip : this.view.currentClip, this.model.indexInfo?.offset);
 
         this.emitter.fire("clipReloaded");
     }
@@ -51,6 +46,10 @@ export class TimelineClipController extends TurboController<Timeline, TimelineVi
     }
 
     private getDuration(index: number) {
-        return this.clipHandler.getClipAt(index)?.duration || 0;
+        return this.view.getClipAt(index)?.duration || 0;
+    }
+
+    @effect private currentTimeChanged() {
+        this.reloadCurrentClip();
     }
 }

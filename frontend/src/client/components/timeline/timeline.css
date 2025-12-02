@@ -17,6 +17,11 @@
     background-color: #eaeaea;
 }
 
+.vc-timeline > :nth-child(2) {
+    display: flex;
+    flex-direction: row;
+}
+
 .vc-timeline .play-button {
     height: 1.5em;
     padding: 0.2em;

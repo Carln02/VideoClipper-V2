@@ -1,30 +1,27 @@
-import {define, Point, TurboElement, TurboProperties} from "turbodombuilder";
+import {auto, define, element, Point, turbo, TurboElement} from "turbodombuilder";
 import "./movableComponent.css";
+import {MovableComponentProperties} from "./movableComponent.types";
 
-@define("movable-component")
-export class MovableComponent<T extends Element> extends TurboElement {
-    public readonly originElement: T;
-    readonly clone: T;
+@define("vc-movable-component")
+export class MovableComponent<Type extends Element> extends TurboElement {
+    public originElement: Type;
+    public clone: Type;
 
-    private _translation: Point;
-
-    constructor(clone: T, originElement: T, properties: TurboProperties = {}) {
-        super(properties);
-        this.clone = clone;
-        this.originElement = originElement;
-        this.appendChild(this.clone);
+    protected setupUILayout() {
+        super.setupUILayout();
+        turbo(this).addChild(this.clone);
     }
 
-    public get translation() {
-        return this._translation;
-    }
-
-    public set translation(value: Point) {
-        this._translation = value;
-        this.setStyle("transform", `translate3d(calc(${value.x}px - 50%), calc(${value.y}px - 50%), 0)`);
+    @auto() public set translation(value: Point) {
+        turbo(this).setStyle("transform", `translate3d(calc(${value.x}px - 50%), calc(${value.y}px - 50%), 0)`);
     }
 
     public translateBy(delta: Point) {
         this.translation = this.translation.add(delta);
     }
+}
+
+export function movable<Type extends Element>(properties: MovableComponentProperties<Type> = {}): MovableComponent<Type> {
+    turbo(properties).applyDefaults({tag: "vc-movable-component"});
+    return element({...properties}) as MovableComponent<Type>;
 }

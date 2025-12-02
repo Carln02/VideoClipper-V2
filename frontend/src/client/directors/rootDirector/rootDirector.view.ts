@@ -1,5 +1,5 @@
-import {div, Shown, StatefulReifect, TurboModel, TurboView} from "turbodombuilder";
-import {AppBar} from "../../components/appBar/appBar";
+import {$, div, Shown, StatefulReifect, turbo, TurboModel, TurboView} from "turbodombuilder";
+import {appBar, AppBar} from "../../components/appBar/appBar";
 import {RootDirector} from "./rootDirector";
 
 export class RootDirectorView<
@@ -11,8 +11,8 @@ export class RootDirectorView<
 
     protected setupUIElements() {
         super.setupUIElements();
-        this.appBar = new AppBar();
-        this.appBar.showTransition = new StatefulReifect<Shown>({
+        this.appBar = appBar();
+        turbo(this.appBar).showTransition = new StatefulReifect<Shown>({
             states: [Shown.visible, Shown.hidden],
             styles: {
                 [Shown.visible]: {"display": ""},
@@ -25,11 +25,11 @@ export class RootDirectorView<
 
     protected setupUILayout() {
         super.setupUILayout();
-        this.element.addChild([this.appBar, this.content]);
-        this.element.childHandler = this.content;
+        $(this).addChild([this.appBar, this.content]);
+        $(this).childHandler = this.content;
     }
 
     public showAppBar(shown: boolean) {
-        this.appBar.show(shown);
+        turbo(this.appBar).show(shown);
     }
 }

@@ -1,4 +1,4 @@
-text-panel {
+vc-text-panel {
     position: relative;
     color: white;
 
@@ -7,13 +7,13 @@ text-panel {
     align-items: normal;
 }
 
-text-panel {
+vc-text-panel {
     padding: 2em;
     background-color: rgba(0, 0, 0, 0.3);
     transition: width 0.3s ease-out;
 }
 
-text-panel .side-panel-buttons-div {
+vc-text-panel .side-panel-buttons-div {
     z-index: 2;
 
     display: flex;
@@ -25,11 +25,11 @@ text-panel .side-panel-buttons-div {
 
 }
 
-text-panel .side-panel-buttons-div .icon {
+vc-text-panel .side-panel-buttons-div .icon {
     width: 2em;
     height: 2em;
 }
 
-text-panel .side-panel-buttons-div .icon svg {
+vc-text-panel .side-panel-buttons-div .icon svg {
     fill: rgba(255, 255, 255, 0.7);
 }

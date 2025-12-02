@@ -1,8 +1,9 @@
 import {
-    define, Delegate,
+    $,
+    define, Delegate, element, PartialRecord,
     Shown,
     StatefulReifect,
-    StatefulReifectProperties,
+    StatefulReifectProperties, turbo,
     TurboModel,
     TurboView
 } from "turbodombuilder";
@@ -17,7 +18,7 @@ export class Director<
     ModelType extends TurboModel<DataType> = TurboModel,
     DirectorType extends Director = any
 > extends VcComponent<ViewType, DataType, ModelType, DirectorType> {
-    private readonly screens: Map<ScreenType, VcComponent> = new Map();
+    private readonly screensMap: Map<ScreenType, VcComponent> = new Map();
 
     public screensParent: Node = this;
 
@@ -27,20 +28,7 @@ export class Director<
     /**
      * @description Delegate fired when a tool is changed on a certain click button/mode
      */
-    public readonly onScreenChange: Delegate<(oldScreen: VcComponent, newScreen: VcComponent, type: ScreenType) => void>;
-
-
-    public constructor(properties: DirectorProperties<ScreenType, ViewType, DataType, ModelType, DirectorType>) {
-        super(properties);
-        this.addClass("director");
-
-        this.onScreenChange = new Delegate<(oldScreen: VcComponent, newScreen: VcComponent, type: ScreenType) => void>();
-        this.showReifect = properties.showReifect;
-        if (properties.screensParent) this.screensParent = properties.screensParent;
-        if (properties.screens) Object.entries(properties.screens).forEach(([key, entry]) => {
-            this.addScreen(entry as VcComponent, key as ScreenType);
-        });
-    }
+    public readonly onScreenChange: Delegate<(oldScreen: VcComponent, newScreen: VcComponent, type: ScreenType) => void> = new Delegate();
 
     public get currentType(): ScreenType {
         return this._currentType;
@@ -75,26 +63,44 @@ export class Director<
             });
     }
 
+    public set screens(value: PartialRecord<ScreenType, VcComponent>) {
+        Object.entries(value).forEach(([key, entry]) =>
+            this.addScreen(entry as VcComponent, key as ScreenType));
+    }
+
     public addScreen(screen: VcComponent, type: ScreenType) {
-        this.screens.set(type, screen);
+        this.screensMap.set(type, screen);
         // this.screensParent.addChild(screen);
         // this.showReifect.apply(Shown.hidden, screen);
     }
 
     public removeScreen(type: ScreenType) {
-        this.screens.get(type)?.remove();
-        this.screens.delete(type);
+        this.screensMap.get(type)?.remove();
+        this.screensMap.delete(type);
     }
 
     public getScreen(type: ScreenType): VcComponent {
-        return this.screens.get(type);
+        return this.screensMap.get(type);
     }
 
     protected switchScreens(oldScreen: VcComponent, newScreen: VcComponent) {
         if (oldScreen) oldScreen.remove();
-        if (newScreen) this.screensParent.addChild(newScreen);
+        if (newScreen) $(this.screensParent).addChild(newScreen);
         return;
         if (oldScreen) this.showReifect.apply(Shown.hidden, oldScreen);
         if (newScreen) this.showReifect.apply(Shown.visible, newScreen);
     }
+}
+
+export function director<
+    ScreenType extends string | number | symbol = string | number | symbol,
+    ViewType extends TurboView = TurboView<any, any>,
+    DataType extends object = object,
+    ModelType extends TurboModel<DataType> = TurboModel,
+    DirectorType extends Director = any
+>(
+    properties: DirectorProperties<ScreenType, ViewType, DataType, ModelType, DirectorType>
+): Director<ScreenType, ViewType, DataType, ModelType, DirectorType> {
+    turbo(properties).applyDefaults({tag: "vc-director"});
+    return element({...properties}) as Director<ScreenType, ViewType, DataType, ModelType, DirectorType>;
 }

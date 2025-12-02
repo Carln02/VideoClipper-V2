@@ -1,14 +1,12 @@
-import {YMap} from "../../../yManagement/yManagement.types";
-import {YComponentModel} from "../../../yManagement/yModel/types/yComponentModel";
 import {SyncedFlowPath} from "../flowPath/flowPath.types";
-import {FlowPath} from "../flowPath/flowPath";
-import {YManagerModel} from "../../../yManagement/yModel/types/yManagerModel";
-import {MvcBlockKeyType} from "turbodombuilder";
+import FlowPath from "../flowPath/flowPath";
+import {MvcBlockKeyType, TurboModel, TurboYBlock, YMap} from "turbodombuilder";
 import {Flow} from "../flow/flow";
 import {FlowSelectorPathHandler} from "./flowSelector.pathHandler";
 import {randomString} from "../../utils/random";
 
-export class FlowSelectorModel extends YComponentModel {
+export class FlowSelectorModel extends TurboModel {
+    public dataBlockConstructor = TurboYBlock;
     private pathsModel: YManagerModel<SyncedFlowPath, FlowPath, string, YMap>;
     public flow: Flow;
 
@@ -18,11 +16,11 @@ export class FlowSelectorModel extends YComponentModel {
         super(data);
 
         this.pathsModel = new YManagerModel();
-        this.pathsModel.onAdded = (pathData: SyncedFlowPath & YMap, id: string) => {
+        this.pathsModel.onAdded.add((pathData: SyncedFlowPath & YMap, id: string) => {
             const path = new FlowPath({value: pathData.get("name"), data: pathData, flow: this.flow});
             this.onPathAdded?.(path, id);
             return path;
-        }
+        });
     }
 
     public initialize(blockKey: MvcBlockKeyType<"map"> = this.defaultBlockKey) {

@@ -1,6 +1,6 @@
 import {ObjectId} from "mongodb";
-import { YDoc } from "../../../yManagement/yManagement.types";
 import {WebsocketManager} from "../../managers/websocketManager/websocketManager";
+import {YDoc} from "turbodombuilder";
 
 export type Group = {
     _id: ObjectId,

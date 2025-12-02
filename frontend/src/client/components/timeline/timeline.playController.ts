@@ -2,7 +2,6 @@ import {Timeline} from "./timeline";
 import {TimelineView} from "./timeline.view";
 import {TurboController} from "turbodombuilder";
 import {TimelineModel} from "./timeline.model";
-import {TimelineClipHandler} from "./timeline.clipHandler";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 
 export class TimelinePlayController extends TurboController<Timeline, TimelineView, TimelineModel> {
@@ -33,10 +32,6 @@ export class TimelinePlayController extends TurboController<Timeline, TimelineVi
         return this.element.renderer;
     }
 
-    protected get clipHandler(): TimelineClipHandler {
-        return this.model.clipHandler;
-    }
-
     private initializePlayTimer(): void {
         this.model.playTimer = setInterval(() => {
             this.model.timeHandler.incrementTime();
@@ -51,8 +46,8 @@ export class TimelinePlayController extends TurboController<Timeline, TimelineVi
         if (index >= this.model.totalClipsCount) return this.play(false);
         if (this.model.playTimer) clearInterval(this.model.playTimer);
 
-        const curClip = this.clipHandler.getClipAt(index);
-        const nextClip = this.clipHandler.getClipAt(index + 1);
+        const curClip = this.view.getClipAt(index);
+        const nextClip = this.view.getClipAt(index + 1);
 
         await this.renderer.setFrame(curClip, offset);
         await this.renderer.playNext();
@@ -71,7 +66,7 @@ export class TimelinePlayController extends TurboController<Timeline, TimelineVi
 
         if (!play) {
             this.renderer.pause();
-            this.emitter.fire("currentTimeChanged");
+            //todo this.emitter.fire("currentTimeChanged");
             this.resolveEnd();
             return this.endPromise;
         }
@@ -80,7 +75,7 @@ export class TimelinePlayController extends TurboController<Timeline, TimelineVi
         this.endPromise = new Promise<void>(resolve => this.endResolver = resolve);
 
         this.model.timeHandler.resetTimeIfOutsideBounds();
-        await this.renderer.loadNext(this.model.currentClip, this.model.indexInfo.offset);
+        await this.renderer.loadNext(this.view.currentClip, this.model.indexInfo.offset);
         void this.playRecur(this.model.indexInfo.clipIndex, this.model.indexInfo.offset);
 
         return this.endPromise;

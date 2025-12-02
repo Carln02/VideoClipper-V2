@@ -3,9 +3,9 @@ import {Card} from "../card/card";
 import {ClipRenderer} from "../clipRenderer/clipRenderer";
 import {TimelineModel} from "./timeline.model";
 import {TimelineView} from "./timeline.view";
-import {YArray} from "../../../yManagement/yManagement.types";
 import {Project} from "../../directors/project/project";
-import {VcComponentProperties} from "../component/component.types";
+import {VcProperties} from "../component/component.types";
+import {YArray} from "turbodombuilder";
 
 export type TimelineIndexInfo = {
     clipIndex?: number,
@@ -17,7 +17,7 @@ export type TimelineIndexInfo = {
 }
 
 export type TimelineProperties<View extends TimelineView = TimelineView> =
-    VcComponentProperties<View, YArray<SyncedClip>, TimelineModel, Project> & {
+    VcProperties<View, YArray<SyncedClip>, TimelineModel, Project> & {
     renderer: ClipRenderer,
     card?: Card,
     scaled?: boolean,

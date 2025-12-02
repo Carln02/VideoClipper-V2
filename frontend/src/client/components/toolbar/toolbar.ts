@@ -1,29 +1,26 @@
-import {define, ToolManager, ToolProperties, Tool} from "turbodombuilder";
+import {define, element, turbo, TurboTool} from "turbodombuilder";
 import "./toolbar.css";
 import {VcComponent} from "../component/component";
 import {Project} from "../../directors/project/project";
-import {ToolbarProperties} from "./toolbar.types";
-import {VcTool} from "../../tools/tool/tool";
+import {ToolbarProperties, ToolbarToolProperties} from "./toolbar.types";
+import {tool, Tool} from "../tool/tool";
 
 @define("vc-toolbar")
-export class Toolbar<ToolType = string> extends VcComponent<any, any, any, Project> {
-    public constructor(properties: ToolbarProperties<ToolType> = {}) {
-        super(properties);
-        properties.tools?.forEach(tool => this.addTool(tool));
+export class Toolbar extends VcComponent<any, any, any, Project> {
+    public createTool(entry: ToolbarToolProperties): Tool {
+        if (typeof entry === "function") return tool({tools: entry, director: this.director});
+        if (entry instanceof Tool) return entry;
+        return tool({director: this.director, ...entry});
     }
 
-    public get toolManager(): ToolManager<ToolType> {
-        return this.director.toolManager as ToolManager<ToolType>;
+    public addTools(...tools: ToolbarToolProperties[]) {
+        tools.forEach(tool => {
+            turbo(this).addChild(this.createTool(tool));
+        });
     }
+}
 
-    private createTool(tool: ToolType | ToolProperties<ToolType> | Tool<ToolType>): Tool<ToolType> {
-        if (tool instanceof Tool) return tool;
-        if (typeof tool === "object") return new VcTool<ToolType>({...tool, toolManager: this.toolManager, director: this.director});
-        if (typeof tool === "string") return new VcTool<ToolType>({name: tool, toolManager: this.toolManager, director: this.director});
-    }
-
-    public addTool(tool: ToolType | ToolProperties<ToolType> | Tool<ToolType>) {
-        const genTool = this.createTool(tool);
-        this.addChild(genTool);
-    }
+export function toolbar(properties: ToolbarProperties = {}): Toolbar {
+    turbo(properties).applyDefaults({tag: "vc-toolbar"});
+    return element({...properties}) as Toolbar;
 }

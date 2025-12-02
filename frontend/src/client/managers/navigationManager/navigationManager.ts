@@ -1,4 +1,4 @@
-import {Point, TurboDragEvent, TurboEventName, TurboWheelEvent} from "turbodombuilder";
+import {Point, turbo, TurboDragEvent, TurboEventName, TurboWheelEvent} from "turbodombuilder";
 import {NavigatableElement} from "./navigationManager.types";
 
 /**
@@ -149,8 +149,8 @@ export class NavigationManager {
     private fireWillChangeTimeout() {
         if (this.willChangeTimeout) clearTimeout(this.willChangeTimeout);
         this.willChangeTimeout = setTimeout(() => {
-            this.element.setStyle("willChange", "");
-            requestAnimationFrame(() => this.element.setStyle("willChange", "transform"));
+            turbo(this.element).setStyle("willChange", "");
+            requestAnimationFrame(() => turbo(this.element).setStyle("willChange", "transform"));
         }, 200);
     }
 

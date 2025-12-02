@@ -1,22 +1,22 @@
 import {
     auto,
     define,
-    Direction,
+    Direction, element, turbo,
     TurboDragEvent,
     TurboEventName,
 } from "turbodombuilder";
 import "./scrubber.css";
-import {ScrubberProperties} from "./scrubber.types";
 import {Timeline} from "../timeline/timeline";
 import {VcComponent} from "../component/component";
 import {Project} from "../../directors/project/project";
+import {ScrubberProperties} from "./scrubber.types";
 
 @define("vc-scrubber")
 export class Scrubber extends VcComponent<any, any, any, Project> {
     //The timeline it is attached to
     public readonly timeline: Timeline;
 
-    public scaled: boolean = false;
+    public scaled: boolean = true;
 
     //Whether it is currently scrubbing (fired by the user's action)
     private scrubbing: boolean = false;
@@ -25,37 +25,30 @@ export class Scrubber extends VcComponent<any, any, any, Project> {
     public onScrubbing: (e: TurboDragEvent) => void;
     public onScrubbingEnd: (e: TurboDragEvent) => void;
 
-    public constructor(properties: ScrubberProperties = {}) {
-        super(properties);
-        this.addClass("vc-scrubber");
-
-        this.timeline = properties.timeline;
-        this.scaled = properties.scaled ?? true;
-        if (properties.initialize) this.initializeUI();
-    }
-
     protected setupUIListeners() {
         super.setupUIListeners();
 
         //Drag start --> start scrubbing and stop propagation
-        this.addListener(TurboEventName.dragStart, (e: TurboDragEvent) => {
+        turbo(this).on(TurboEventName.dragStart, (e: TurboDragEvent) => {
             e.stopImmediatePropagation();
             this.scrubbing = true;
             if (this.onScrubbingStart) this.onScrubbingStart(e);
         });
 
         //On drag and if scrubbing --> stop propagation and move scrubber by delta position
-        document.body.addListener(TurboEventName.drag, (e: TurboDragEvent) => {
+        turbo(this).on(TurboEventName.drag, (e: TurboDragEvent) => {
             if (!this.scrubbing) return;
             e.stopImmediatePropagation();
             if (this.onScrubbing) this.onScrubbing(e);
+            return true;
         });
 
         //Drag end and if scrubbing --> end scrubbing and stop propagation
-        document.body.addListener(TurboEventName.dragEnd, (e: TurboDragEvent) => {
+        turbo(this).on(TurboEventName.dragEnd, (e: TurboDragEvent) => {
             if (!this.scrubbing) return;
             this.scrubbing = false;
             if (this.onScrubbingEnd) this.onScrubbingEnd(e);
+            return true;
         });
     }
 
@@ -73,7 +66,12 @@ export class Scrubber extends VcComponent<any, any, any, Project> {
 
     @auto()
     public set orientation(value: Direction) {
-        this.toggleClass("vc-scrubber-v", value === Direction.vertical);
-        this.toggleClass("vc-scrubber-h", value === Direction.horizontal);
+        turbo(this).toggleClass("vc-scrubber-v", value === Direction.vertical)
+            .toggleClass("vc-scrubber-h", value === Direction.horizontal);
     }
+}
+
+export function scrubber(properties: ScrubberProperties): Scrubber {
+    turbo(properties).applyDefaults({tag: "vc-scrubber"});
+    return element({...properties}) as Scrubber;
 }

@@ -1,5 +1,5 @@
 import {RendererModel} from "./renderer.model";
-import {TurboController} from "turbodombuilder";
+import {expose, TurboController} from "turbodombuilder";
 import {Renderer} from "./renderer";
 import {RendererView} from "./renderer.view";
 
@@ -8,13 +8,8 @@ export class RendererVideoController<
     ViewType extends RendererView = RendererView,
     ModelType extends RendererModel = RendererModel,
 > extends TurboController<ElementType, ViewType, ModelType> {
-    protected get videos(): HTMLVideoElement[] {
-        return this.view.videos;
-    }
-
-    protected get video(): HTMLVideoElement {
-        return this.view.video;
-    }
+    @expose("view", false) protected accessor videos: HTMLVideoElement[];
+    @expose("view", false) protected video: HTMLVideoElement;
 
     public async play() {
         await this.video.play();

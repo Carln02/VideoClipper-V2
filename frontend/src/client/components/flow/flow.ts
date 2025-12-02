@@ -1,27 +1,25 @@
-import {define, Point} from "turbodombuilder";
+import {addInYMap, createYMap, define, Point, YMap} from "turbodombuilder";
 import "./flow.css";
 import {SyncedFlow} from "./flow.types";
 import {FlowView} from "./flow.view";
 import {FlowModel} from "./flow.model";
 import {VcComponent} from "../component/component";
-import {VcComponentProperties} from "../component/component.types";
+import {VcProperties} from "../component/component.types";
 import {Project} from "../../directors/project/project";
 import {FlowIntersectionHandler} from "./flow.intersectionHandler";
-import {YMap} from "../../../yManagement/yManagement.types";
-import {YUtilities} from "../../../yManagement/yUtilities";
 import {FlowSelector} from "../flowSelector/flowSelector";
 import {FlowEntry} from "../flowEntry/flowEntry";
 import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
 import {FlowEntryHandler} from "./flow.entryHandler";
 import {FlowUpdateHandler} from "./flow.updateHandler";
-import {FlowPath} from "../flowPath/flowPath";
+import FlowPath from "../flowPath/flowPath";
 
 /**
  * @description A reactiveComponent that represents a flow connecting cards
  */
 @define("vc-flow")
 export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> {
-    public constructor(properties: VcComponentProperties<FlowView, SyncedFlow, FlowModel, Project> = {}) {
+    public constructor(properties: VcProperties<FlowView, SyncedFlow, FlowModel, Project> = {}) {
         super(properties);
         this.mvc.generate({
             viewConstructor: FlowView,
@@ -44,10 +42,10 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
 
         Object.entries(data.entries).forEach(([key, branch]) => data.entries[key] = FlowEntry.createData(branch));
         Object.entries(data.selectors).forEach(([key, selector]) => data.selectors[key] = FlowSelector.createData(selector));
-        data.entries = YUtilities.createYMap(data.entries);
-        data.selectors = YUtilities.createYMap(data.selectors);
+        data.entries = createYMap(data.entries);
+        data.selectors = createYMap(data.selectors);
 
-        return YUtilities.createYMap(data);
+        return createYMap(data);
     }
 
     public get svg(): SVGSVGElement {
@@ -112,7 +110,7 @@ export class Flow extends VcComponent<FlowView, SyncedFlow, FlowModel, Project> 
     }
 
     public createSelector(nodeId: string) {
-        return YUtilities.addInYMap(FlowSelector.createData({nodeId: nodeId}), this.model.selectorsData);
+        return addInYMap(FlowSelector.createData({nodeId: nodeId}), this.model.selectorsData);
     }
 
     /**

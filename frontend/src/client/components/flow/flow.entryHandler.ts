@@ -1,8 +1,6 @@
-import {TurboHandler} from "turbodombuilder";
+import {TurboHandler, YArray, YManagerModel, YMap} from "turbodombuilder";
 import {FlowModel} from "./flow.model";
 import {SyncedFlowEntry} from "../flowEntry/flowEntry.types";
-import {YManagerModel} from "../../../yManagement/yModel/types/yManagerModel";
-import {YArray, YMap} from "../../../yManagement/yManagement.types";
 import {FlowEntry} from "../flowEntry/flowEntry";
 
 export class FlowEntryHandler extends TurboHandler<FlowModel> {
@@ -19,17 +17,13 @@ export class FlowEntryHandler extends TurboHandler<FlowModel> {
     public constructor(model: FlowModel) {
         super(model);
         this.entryModel = new YManagerModel();
-        this.entryModel.onAdded = array => {
+        this.entryModel.onAdded.add(array => {
             const manager = new YManagerModel<SyncedFlowEntry & YMap, FlowEntry, number, YArray>(array);
-            manager.onAdded =  data => this.onFlowEntryAdded?.(data);
+            manager.onAdded.add(data => this.onFlowEntryAdded?.(data));
             return manager;
-        }
+        });
 
-        const oldUpdated = this.entryModel.onUpdated;
-        this.entryModel.onUpdated = (data, instance, id, blockKey) => {
-            oldUpdated(data, instance, id, blockKey);
-            this.onUpdated();
-        }
+        this.entryModel.onUpdated.add(() => this.onUpdated());
     }
 
     protected getData(): YMap<YArray<SyncedFlowEntry & YMap>> {

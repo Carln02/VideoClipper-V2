@@ -2,7 +2,7 @@ import {RequestHandler} from "../requestHandler/requestHandler";
 import {IDBPDatabase, openDB} from "idb";
 import {Project} from "../../directors/project/project";
 import {MediaData, SyncedMedia} from "./mediaHandler.types";
-import { YMap } from "../../../yManagement/yManagement.types";
+import {YMap} from "turbodombuilder";
 
 export class MediaHandler extends RequestHandler {
     private document: Project;
